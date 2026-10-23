@@ -1,0 +1,31 @@
+
+> nova-image-frontend@3.4.0 build
+> next build --webpack
+
+▲ Next.js 16.2.6 (webpack)
+
+  Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker is disabled, please call following code in componentDidMount callback or useEffect hook
+> [PWA]   window.workbox.register()
+> [PWA] Service worker: E:\Learn\AI\nova-image-studio\frontend\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+✓ Compiled successfully in 7.5s
+  Running TypeScript ...
+  Finished TypeScript in 10.2s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 543ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+

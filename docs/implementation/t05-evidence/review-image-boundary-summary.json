@@ -1,0 +1,53 @@
+{
+  "reviewFindings": [
+    "Gemini 4xx error metadata referenced responseText in its TDZ",
+    "Image request timer/controller ended at headers, before body consumption"
+  ],
+  "reproduction": {
+    "log": "review-image-boundary-before.log",
+    "tests": 10,
+    "passed": 4,
+    "failed": 6,
+    "failures": [
+      "Gemini Web 400/401/403/429 replaced the upstream error with a TDZ ReferenceError",
+      "Desktop JSON and SSE hanging bodies did not reach submission_unknown inside the compressed deadline"
+    ]
+  },
+  "initialFixVerification": {
+    "log": "review-image-boundary-after.log",
+    "tests": 10,
+    "passed": 10,
+    "failed": 0
+  },
+  "finalAffectedVerification": {
+    "log": "review-image-boundary-targeted.log",
+    "tests": 115,
+    "passed": 115,
+    "failed": 0,
+    "skipped": 0,
+    "newBoundaryTests": 11
+  },
+  "runtimeVerification": {
+    "nativeChecks": 19,
+    "nativeLog": "review-image-boundary-native.log",
+    "packagedChecks": 18,
+    "packagedLog": "review-image-boundary-packaged-smoke.log"
+  },
+  "implementationScope": [
+    "Single response.text read in a local Gemini parser before metadata classification",
+    "Image generation parsers run inside optional fetchWithTimeout consumeResponse callback lifetime",
+    "Timer/controller retained through response body and parsing; non-image proxy/download Response boundary unchanged",
+    "No supplier request URL/body/auth/mode expansion or POST retry"
+  ],
+  "testInstrumentation": "Only backend/test/support compresses the existing 30-minute setTimeout to 180ms and observes response.text read counts; no production env/HTTP switch and no test helper in package",
+  "packageBeforeReview": {
+    "appAsarSha256": "34a25af61d1de0f6fe295cd29675134e8d259b76fc058fdaf34bdc33928555de",
+    "exeSha256": "6383c544bafd5ee0549c00be1b3044495a37d8391d54a0606b786516cfe58fb2"
+  },
+  "packageAfterReview": {
+    "appAsarSha256": "9f40b8d7aa19e43b85ca69bc8854d2fa017bd95c8b5b7ea553fd827b2f63c034",
+    "exeSha256": "1b72776b552a6b0f580a0e252c3d238c4a7dad2cc8afc0e0aaba1feb9a8384a8",
+    "identicalModules": 9
+  },
+  "gitState": "Primary session accepted both fixes and authorized T05 commit/push origin/dev; no B1."
+}

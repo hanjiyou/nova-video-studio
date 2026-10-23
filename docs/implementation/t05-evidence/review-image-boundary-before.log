@@ -1,0 +1,108 @@
+✖ actual Web Gemini 400 preserves its upstream error and consumes the response body exactly once (254.6613ms)
+✖ actual Web Gemini 401 preserves its upstream error and consumes the response body exactly once (213.8519ms)
+✖ actual Web Gemini 403 preserves its upstream error and consumes the response body exactly once (205.0929ms)
+✖ actual Web Gemini 429 preserves its upstream error and consumes the response body exactly once (216.7708ms)
+✔ actual desktop image 400 reads once, retains safe rejection/auth classification and never repeats POST (251.3888ms)
+✔ actual desktop image 401 reads once, retains safe rejection/auth classification and never repeats POST (250.3505ms)
+✔ actual desktop image 403 reads once, retains safe rejection/auth classification and never repeats POST (283.0615ms)
+✔ actual desktop image 429 reads once, retains safe rejection/auth classification and never repeats POST (278.0472ms)
+✖ actual desktop JSON headers followed by a hanging body time out as submission_unknown without a second POST (1422.9423ms)
+✖ actual desktop SSE headers followed by a hanging body time out as submission_unknown without a second POST (1436.4333ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 4
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4888.8068
+
+✖ failing tests:
+
+test at backend\test\workbench-image-boundary.test.js:32:40
+✖ actual Web Gemini 400 preserves its upstream error and consumes the response body exactly once (254.6613ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /API 请求失败: 400 Synthetic Gemini refusal 400/. Input:
+  
+  "所有图片生成失败: Cannot access 'responseText' before initialization"
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:34:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "所有图片生成失败: Cannot access 'responseText' before initialization",
+    expected: /API 请求失败: 400 Synthetic Gemini refusal 400/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-image-boundary.test.js:32:40
+✖ actual Web Gemini 401 preserves its upstream error and consumes the response body exactly once (213.8519ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /API 请求失败: 401 Synthetic Gemini refusal 401/. Input:
+  
+  "所有图片生成失败: Cannot access 'responseText' before initialization"
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:34:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "所有图片生成失败: Cannot access 'responseText' before initialization",
+    expected: /API 请求失败: 401 Synthetic Gemini refusal 401/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-image-boundary.test.js:32:40
+✖ actual Web Gemini 403 preserves its upstream error and consumes the response body exactly once (205.0929ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /API 请求失败: 403 Synthetic Gemini refusal 403/. Input:
+  
+  "所有图片生成失败: Cannot access 'responseText' before initialization"
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:34:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "所有图片生成失败: Cannot access 'responseText' before initialization",
+    expected: /API 请求失败: 403 Synthetic Gemini refusal 403/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-image-boundary.test.js:32:40
+✖ actual Web Gemini 429 preserves its upstream error and consumes the response body exactly once (216.7708ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /API 请求失败: 429 Synthetic Gemini refusal 429/. Input:
+  
+  "所有图片生成失败: Cannot access 'responseText' before initialization"
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:34:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "所有图片生成失败: Cannot access 'responseText' before initialization",
+    expected: /API 请求失败: 429 Synthetic Gemini refusal 429/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-image-boundary.test.js:44:40
+✖ actual desktop JSON headers followed by a hanging body time out as submission_unknown without a second POST (1422.9423ms)
+  Error: Image boundary did not settle inside the local test budget
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:11:164)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:46:85)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at backend\test\workbench-image-boundary.test.js:44:40
+✖ actual desktop SSE headers followed by a hanging body time out as submission_unknown without a second POST (1436.4333ms)
+  Error: Image boundary did not settle inside the local test budget
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:11:164)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-image-boundary.test.js:46:85)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)

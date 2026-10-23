@@ -1,0 +1,27 @@
+[
+  {
+    "kind": "test-expectation",
+    "evidence": "initial-backend-regression.log",
+    "resolution": "Existing v3-specific migration test pins migrations.slice(0,3); dedicated new test covers v3->v4. Full 262 and final affected 72 pass."
+  },
+  {
+    "kind": "production-build",
+    "evidence": "initial-frontend-build.log",
+    "resolution": "Keep use client as the first directive before importing generateUUID. Production build and focused 14 pass."
+  },
+  {
+    "kind": "packaging-network",
+    "evidence": "initial-unpacked-windows-package.log",
+    "resolution": "Use preinstalled same Electron 43.4.0 via local electronDist. No dependency/global config change or NSIS action."
+  },
+  {
+    "kind": "early-fixture-adjustments",
+    "evidence": "Conversation tool outputs; no separate raw file claimed",
+    "details": "Initial service retry test expected sixth query but elapsed budget paused at five; split independent elapsed/count tests. Legacy statuses/completion assertions updated to new semantics. One new frontend test write used an extra frontend path segment, then corrected. An early lint command used incorrect relative paths, and unused/control-regex lint issues were fixed."
+  },
+  {
+    "kind": "audit-helper",
+    "evidence": "Conversation tool outputs; no separate raw file claimed",
+    "resolution": "Windows asar extraction uses path.sep; compare runtime SQL against LF-normalized HEAD literal, not CRLF source representation. Final 9-module audit and historical SQL hashes pass."
+  }
+]

@@ -49,7 +49,7 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     assert.equal(oldTask.status, 'completed');
     assert.equal(oldTask.expiresAt, null);
     const processing = await (await runtime.request('/api/nova/tasks/' + old.processing)).json();
-    assert.equal(processing.status, 'processing');
+    assert.equal(processing.status, 'submission_unknown');
     assert.ok(fs.existsSync(path.join(directory, 'images', old.processing + '-0-0.png')));
     assert.ok(fs.existsSync(path.join(directory, 'plugin-media', old.file)));
     const assets = [];
@@ -65,6 +65,8 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     const secretRejected = await runtime.request('/api/nova/storage/drafts/image.text', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: 'x', model: 'fixture', parameters: { apiKey: 'synthetic-secret' }, inputAssets: [] }) });
     assert.equal(secretRejected.status, 400);
     assert.equal((await runtime.request('/api/nova/storage/settings/theme', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value: 'dark', expectedRevision: 0 }) })).status, 200);
+    const beforeQueue = new Database(path.join(directory, 'tasks.sqlite'));
+    beforeQueue.prepare("UPDATE tasks SET status='failed' WHERE id=?").run(old.processing); beforeQueue.close(); // explicit synthetic remote conclusion; not a production release action
     const posts = [];
     upstream = http.createServer(async (req, res) => { const chunks = []; for await (const chunk of req)
         chunks.push(chunk); posts.push(Buffer.concat(chunks)); if (posts.length > 2) {
@@ -75,7 +77,7 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     const fixtureConnection = await runtime.saveConnection({baseUrl:'http://127.0.0.1:' + upstream.address().port,apiKey:'fixture-token'});
     const ids = [];
     for (const input of [[refs[1], refs[0]], [refs[0]]]) {
-        const response = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId: fixtureConnection.connectionVersionId, mode: 'image-to-image', prompt: 'synthetic', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', inputAssets: input.map((item, position) => ({ ...item, position })) }) });
+        const response = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ localRequestId:randomUUID(), connectionVersionId: fixtureConnection.connectionVersionId, mode: 'image-to-image', prompt: 'synthetic', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', inputAssets: input.map((item, position) => ({ ...item, position })) }) });
         assert.equal(response.status, 202);
         const { taskId } = await response.json();
         ids.push(taskId);
@@ -88,15 +90,19 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     const uploaded = await upload.json();
     assert.equal(uploaded.assetId, assets[0].assetId);
     assert.deepEqual(Buffer.from(await (await runtime.request(new URL(uploaded.url).pathname)).arrayBuffer()), fixture('reference-a.png'));
-    const success = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId: fixtureConnection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic output', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
+    const success = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ localRequestId:randomUUID(), connectionVersionId: fixtureConnection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic output', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
     assert.equal(success.status, 202);
     const outputId = (await success.json()).taskId;
     const unknown = path.join(directory, 'images', outputId + '-0-0.png');
     fs.writeFileSync(unknown, 'unknown pre-existing file');
-    await until(async () => { const value = await (await runtime.request('/api/nova/tasks/' + outputId)).json(); return value.status === 'completed'; });
+    await until(async () => { const value = await (await runtime.request('/api/nova/tasks/' + outputId)).json(); return value.status === 'remote_completed'; });
     assert.equal(posts.length, 3);
     assert.equal(fs.readFileSync(unknown, 'utf8'), 'unknown pre-existing file');
-    assert.deepEqual(Buffer.from(await (await runtime.request('/api/nova/images/' + outputId + '/0')).arrayBuffer()), fixture('reference-a.png'));
+    const candidateDb = new Database(path.join(directory, 'tasks.sqlite'), {readonly:true});
+    const candidates=JSON.parse(candidateDb.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(outputId).result_sources_json);candidateDb.close();
+    assert.equal(candidates[0].kind,'asset');
+    assert.deepEqual(Buffer.from(await (await runtime.request('/api/nova/assets/'+candidates[0].assetId+'/content')).arrayBuffer()), fixture('reference-a.png'));
+    assert.equal((await (await runtime.request('/api/nova/tasks/'+outputId)).json()).outputAssets.length,0); // candidate is not a verified local output
     const db = new Database(path.join(directory, 'tasks.sqlite'));
     const beforeAck = db.prepare('SELECT expires_at FROM tasks WHERE id=?').get(ids[0]).expires_at;
     const snapshot = JSON.parse(db.prepare('SELECT input_snapshot_json FROM tasks WHERE id=?').get(ids[0]).input_snapshot_json);
@@ -159,7 +165,7 @@ test('actual HTTP legacy images cannot forge asset identity; missing/corrupt aut
     assert.equal(imported.status, 201);
     const original = (await imported.json()).asset;
     const payload = { connectionVersionId: fixtureConnection.connectionVersionId, mode: 'image-to-image', prompt: 'synthetic identity forgery', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto' };
-    const submit = input => runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...payload, ...input }) });
+    const submit = input => runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...payload, localRequestId:randomUUID(), ...input }) });
     const ids = [];
     const forged = async () => {
         const response = await submit({ images: [{ assetId: original.assetId, data: actualBytes.toString('base64'), mimeType: 'image/png' }] });

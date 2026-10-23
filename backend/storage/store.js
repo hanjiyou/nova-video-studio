@@ -331,7 +331,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
         }
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
         return { localTaskId: task.id, status: task.status, mode: task.mode, prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', createdAt: task.created_at, completedAt: task.completed_at,
-            connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id, inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
+            localRequestId: task.local_request_id, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
+            remoteState: task.remote_state, rawStatus: task.raw_status, pauseReason: task.pause_reason, notBeforeAt: task.not_before_at, requiresContinue: Boolean(task.requires_continue),
+            taskError: task.task_error_json ? JSON.parse(task.task_error_json) : null, inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
     }
     function listTasks({ limit = 50, offset = 0 } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0)

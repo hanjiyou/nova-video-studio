@@ -61,6 +61,8 @@ AssetSummary 返回 assetId、kind、mimeType、byteLength、sha256、width/heig
 
 RemoteStatus 单独保存 rawStatus 及规范 remoteState：queued、generating、completed、failed、cancelled、unknown。未知状态保留原文并暂停/有界查询，不能猜成 failed 或 completed。
 
+T05 期间用户明确批准的调度规则：已派发且处于 submission_unknown 或 polling_paused、远端可能仍生成时，继续保留唯一生成占位。后续未派发队列等待同一上游任务明确完成、失败或取消；不得以本地超时、断网、鉴权失败或停止查询自动释放占位并派发下一收费 POST。DTO 提供 generationReserved、remoteMayContinue、pauseReason、schedulingNotice；后续界面说明远端可能仍生成或计费。已确认 remote_completed/download_failed 可释放生成占位，下载队列独立。尚未派发的凭据暂停不占远端生成名额，可取消本地排队。
+
 “停止查询”仅将本地查询置为 polling_paused，远端可能继续；它与“取消远端”不是同一操作。当前不定义远端取消端点，也不承诺费用退还。排队取消必须在持久化派发检查前确认，不能把已 dispatch 的任务伪装为 local_cancelled。
 
 恢复判据：没有 dispatch_started 的队列可手动继续；已 dispatch 且无可用 ID 为 submission_unknown；有 ID 的远端任务仅 GET；下载中的结果仅恢复下载；completed 保留原文件和历史。任意通信异常不能凭空证明 POST 没有发送。

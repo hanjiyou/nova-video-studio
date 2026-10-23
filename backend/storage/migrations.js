@@ -129,10 +129,37 @@ BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CAPABILITY_VERSION'); END;
 CREATE TRIGGER model_capabilities_immutable_delete BEFORE DELETE ON model_capabilities
 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CAPABILITY_VERSION'); END;
 `;
+const TASK_SCHEMA = `
+ALTER TABLE tasks ADD COLUMN dispatch_started_at TEXT;
+ALTER TABLE tasks ADD COLUMN remote_state TEXT;
+ALTER TABLE tasks ADD COLUMN raw_status TEXT;
+ALTER TABLE tasks ADD COLUMN remote_progress REAL;
+ALTER TABLE tasks ADD COLUMN pause_reason TEXT;
+ALTER TABLE tasks ADD COLUMN not_before_at TEXT;
+ALTER TABLE tasks ADD COLUMN next_poll_at TEXT;
+ALTER TABLE tasks ADD COLUMN poll_attempts INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE tasks ADD COLUMN poll_budget_started_at TEXT;
+ALTER TABLE tasks ADD COLUMN task_error_json TEXT;
+ALTER TABLE tasks ADD COLUMN result_sources_json TEXT;
+ALTER TABLE tasks ADD COLUMN requires_continue INTEGER NOT NULL DEFAULT 0;
+CREATE TABLE task_downloads (
+  task_id TEXT PRIMARY KEY REFERENCES tasks(id) ON DELETE CASCADE,
+  state TEXT NOT NULL CHECK(state IN ('waiting','running','failed','completed')),
+  created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+);
+CREATE INDEX idx_task_dispatch ON tasks(status,requires_continue,created_at);
+CREATE TRIGGER task_upstream_id_immutable BEFORE UPDATE OF upstream_task_id ON tasks
+WHEN OLD.upstream_task_id IS NOT NULL AND NEW.upstream_task_id IS NOT OLD.upstream_task_id
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_UPSTREAM_TASK_ID'); END;
+CREATE TRIGGER task_dispatch_immutable BEFORE UPDATE OF dispatch_started_at ON tasks
+WHEN OLD.dispatch_started_at IS NOT NULL AND NEW.dispatch_started_at IS NOT OLD.dispatch_started_at
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DISPATCH_BOUNDARY'); END;
+`;
 const MIGRATIONS = [
     { version: 1, name: 'legacy-baseline', sql: BASE_SCHEMA },
     { version: 2, name: 'durable-workbench-storage', sql: DURABLE_SCHEMA },
     { version: 3, name: 'protected-connections-and-capabilities', sql: CONNECTION_SCHEMA },
+    { version: 4, name: 'durable-task-orchestration', sql: TASK_SCHEMA },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

@@ -13,6 +13,9 @@ const { createWorkbenchStore } = require('./storage/store');
 const { createStorageHttp } = require('./storage/http');
 let workbenchStore = null;
 let connectionService = null;
+let taskService = null;
+const { createTaskService } = require('./tasks/service');
+const { createPluginAdapter } = require('./tasks/plugin-adapter');
 const { createConnectionService } = require('./connections/service');
 const { createConnectionHttp } = require('./connections/http');
 const { createHostVault } = require('./connections/host');
@@ -626,6 +629,7 @@ function isRejectNewTasksEnabled() {
 
 function getQueueStats() {
   const config = getLimitConfig();
+  if (taskService) { const stats=taskService.stats(); return {...stats, maxQueueSize:config.maxQueueSize, remainingQueueSlots:Math.max(0,config.maxQueueSize-stats.pendingCount), acceptingNewTasks:stats.acceptingNewTasks && !isShuttingDown && !isRejectNewTasksEnabled()}; }
   const rows = db.prepare(`
     SELECT status, COUNT(*) AS count
     FROM tasks
@@ -1139,7 +1143,77 @@ function credentialSafeError(error,apiKey) {
   const value=error instanceof Error?error.message:String(error);
   return new Error(containsCredential(value,apiKey)?'上游错误包含连接凭据，已隐藏详情。':value);
 }
+function desktopSnapshot(body, details) {
+  return {contractVersion:1,localRequestId:body.localRequestId,connectionVersionId:body.connectionVersionId,
+    ...(body.capabilityVersionId?{capabilityVersionId:body.capabilityVersionId}:{}),
+    ...(body.outputDirectoryVersionId?{outputDirectoryVersionId:body.outputDirectoryVersionId}:{}),
+    ...(body.outputRootRef?{outputRootRef:body.outputRootRef}:{}),...details};
+}
+function guardDesktopTaskInput(body) {
+  if (!body || typeof body!=='object' || Array.isArray(body) || ['apiKey','baseUrl','protocol','credentialRef'].some(key=>Object.hasOwn(body,key))) throw createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','桌面任务只接收连接版本。');
+}
+function guardDesktopAdmission(body, req) {
+  const limits=getLimitConfig();
+  if (isShuttingDown || isRejectNewTasksEnabled()) throw createHttpError(503,'SERVER_NOT_ACCEPTING_TASKS',LIMIT_ERROR_MESSAGES.notAcceptingTasks);
+  const source=enforceRateLimit(req,body,limits);enforceQueueCapacity(source,limits);
+}
+function createDesktopImageTask(body, req) {
+  guardDesktopTaskInput(body);
+  let inputAssets;
+  if (body.inputAssets!==undefined) {
+    if (!Array.isArray(body.inputAssets) || body.inputAssets.length>32 || body.images?.length) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材引用无效。');
+    inputAssets=body.inputAssets.map((item,position)=>{
+      if (item.position!==position || item.role!=='reference' || Object.keys(item).some(key=>!['position','role','assetId'].includes(key))) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材顺序无效。');
+      const asset=workbenchStore.getAsset(item.assetId);if(!asset)throw createHttpError(404,'ASSET_NOT_FOUND','找不到素材。');if(asset.kind!=='image')throw createHttpError(400,'ASSET_TYPE_INVALID','参考素材必须是图片。');
+      return {assetId:asset.assetId,role:'reference',position};
+    });
+  } else {
+    if (body.images!==undefined && (!Array.isArray(body.images) || body.images.length>32)) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材引用无效。');
+    inputAssets=(body.images || []).map((image,position)=>{
+      const asset=workbenchStore.importBuffer(Buffer.from(image.data || '','base64'),{mimeType:image.mimeType || 'image/png',displayName:'reference-'+(position+1)});
+      return {assetId:asset.assetId,role:'reference',position};
+    });
+  }
+  const parameters=Object.fromEntries(['outputSize','customSize','aspectRatio','temperature','gptImageQuality','gptImageStyle','gptImageBackground','parallelCount'].filter(key=>body[key]!==undefined).map(key=>[key,body[key]]));
+  const snapshot=desktopSnapshot(body,{mode:body.mode==='image-to-image'?'image.reference':'image.text',model:body.model,prompt:body.prompt,parameters,inputAssets,adapterId:'legacy-image',adapterVersion:'3.4.0'});
+  const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
+  for (const input of inputAssets) workbenchStore.readAsset(input.assetId);
+  const auth=connectionService.getAuth(body.connectionVersionId), checked={...body,...auth};validateCreatePayload(checked);
+  if (body.parallelCount!==1 || (body.mode==='image-to-image' && inputAssets.length===0) || (body.mode==='text-to-image' && inputAssets.length)) throw createHttpError(400,'INPUT_INVALID','桌面首版每个任务只支持一个生成占位，参考图必须与模式一致。');
+  guardDesktopAdmission(checked,req);
+  return taskService.enqueue({snapshot,mode:body.mode,request:{mode:body.mode,model:body.model,prompt:body.prompt,...parameters,inputAssets}});
+}
+function createDesktopPluginTask(body, req) {
+  guardDesktopTaskInput(body);
+  const plugin=pluginRegistry.getPlugin(body.pluginId);if(!plugin)throw createHttpError(404,'PLUGIN_NOT_FOUND','原插件未安装或加载失败。');
+  const normalized=validateAndNormalizeInput(plugin,body);
+  for (const field of plugin.uiSchema?.fields || plugin.schema?.fields || []) {if(['text','textarea'].includes(field.type) && Object.hasOwn(normalized.fields,field.key) && typeof body.fields?.[field.key]==='string') normalized.fields[field.key]=body.fields[field.key];}
+  if(typeof body.fields?.prompt==='string' && Object.hasOwn(normalized.fields,'prompt')) normalized.fields.prompt=body.fields.prompt;
+  const inputAssets=[];
+  for (const url of normalized.mediaUrls) {const asset=workbenchStore.legacyAsset('plugin-media',String(url).split('/').pop());if(!asset)throw createHttpError(400,'ASSET_NOT_FOUND','参考素材必须来自受管导入。');inputAssets.push({assetId:asset.assetId,position:inputAssets.length,role:'reference'});}
+  const snapshot=desktopSnapshot(body,{mode:'legacy.plugin',model:normalized.model,prompt:typeof normalized.fields.prompt==='string'?normalized.fields.prompt:'',parameters:{facets:normalized.facets,fields:normalized.fields},inputAssets,adapterId:'plugin:'+plugin.id,adapterVersion:plugin.manifest.version});
+  const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
+  const auth=connectionService.getAuth(body.connectionVersionId);pluginExecutor.assertUrlAllowed(plugin,auth.baseUrl+'/','API 基地址');
+  guardDesktopAdmission({...body,...auth},req);
+  const taskId=taskService.enqueue({snapshot,mode:'plugin',request:{mode:'plugin',pluginId:plugin.id,pluginVersion:plugin.manifest.version,model:normalized.model,facets:normalized.facets,fields:normalized.fields,media:normalized.media}});
+  return taskId; // enqueue stores the immutable input references in the same transaction
+}
+function resolveDesktopTaskAdapter(task) {
+  if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=pluginRegistry.getPlugin(request.pluginId);return plugin?createPluginAdapter(plugin):null;}
+  if (task.adapter_id!=='legacy-image') return null;
+  const requestFor=(snapshot,auth)=>({mode:snapshot.mode==='image.reference'?'image-to-image':'text-to-image',model:snapshot.model,prompt:snapshot.prompt,...snapshot.parameters,
+    protocol:auth.protocol,baseUrl:normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl),images:snapshot.inputAssets.map(item=>{const {bytes,asset}=workbenchStore.readAsset(item.assetId);return {data:bytes.toString('base64'),mimeType:asset.mimeType};})});
+  return {id:'legacy-image',version:'3.4.0',preflight(_task,snapshot,auth){validateCreatePayload({...requestFor(snapshot,auth),apiKey:auth.apiKey});},
+    async submit(_task,snapshot,auth){
+      try {
+        const image=await generateNovaImage(auth.apiKey,{...requestFor(snapshot,auth),signal:auth.signal});
+        const images=image.startsWith('MULTI_URL:')?image.substring(10).split('|||').map(url=>'URL:'+url):[image];
+        return {resultSources:images.map(value=>value.startsWith('URL:')?{kind:'url',url:value.substring(4),authScope:'none',mediaKind:'image'}:{kind:'inline',bytes:Buffer.from(value,'base64'),mimeType:'image/png'})};
+      } catch(error) {if(containsCredential(error.message,auth.apiKey))error.credentialRedacted=true;throw error;}
+    },poll(){throw Object.assign(new Error('ADAPTER_UNAVAILABLE'),{code:'ADAPTER_UNAVAILABLE'});}};
+}
 function createTask(body, req) {
+  if (taskService) return createDesktopImageTask(body, req);
   body=prepareTaskConnection(body);
   if (workbenchStore && body?.inputAssets !== undefined) {
     if (!Array.isArray(body.inputAssets) || body.inputAssets.length > 32 || (body.images?.length > 0)) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材引用无效。');
@@ -1630,7 +1704,7 @@ async function parseGptImageResponse(response) {
 
   if (!response.ok) {
     const errorText = getUpstreamErrorText(responseText, response.status);
-    throw new Error(`API 请求失败: ${response.status}${errorText ? ` ${errorText}` : ''}`);
+    throw Object.assign(new Error(`API 请求失败: ${response.status}${errorText ? ` ${errorText}` : ''}`), {httpStatus:response.status,transmission:'response_received',definiteRejection:response.status>=400 && response.status<500 && Boolean(parseJsonSafely(responseText)?.error)});
   }
 
   if (contentType.includes('text/event-stream')) {
@@ -1663,11 +1737,10 @@ async function requestGptImage(apiKey, request, resolvedSize, options = {}) {
   const endpoint = request.mode === 'image-to-image'
     ? '/v1/images/edits'
     : '/v1/images/generations';
-  const response = await fetchWithTimeout(
+  return fetchWithTimeout(
     `${baseUrl}${endpoint}`,
-    createGptImageRequestInit(apiKey, request, resolvedSize, options)
+    createGptImageRequestInit(apiKey, request, resolvedSize, options), request.signal, parseGptImageResponse
   );
-  return parseGptImageResponse(response);
 }
 
 function getGrokResolution(outputSize) {
@@ -1752,11 +1825,10 @@ async function requestGrokImage(apiKey, request, options = {}) {
   const endpoint = request.mode === 'image-to-image'
     ? '/v1/images/edits'
     : '/v1/images/generations';
-  const response = await fetchWithTimeout(
+  return fetchWithTimeout(
     `${baseUrl}${endpoint}`,
-    createGrokImageRequestInit(apiKey, request, options)
+    createGrokImageRequestInit(apiKey, request, options), request.signal, parseGptImageResponse
   );
-  return parseGptImageResponse(response);
 }
 
 // 豆包 Seedream（ark）：文生图/图生图统一走 /v3/images/generations，
@@ -1766,15 +1838,14 @@ async function requestDoubaoImage(apiKey, request, options = {}) {
   const url = buildDoubaoImagesUrl(baseUrl);
   const size = resolveDoubaoImageSize(request, req => resolveGptImageRequestSize(req));
   const payload = buildDoubaoImagePayload(request, size);
-  const response = await fetchWithTimeout(url, {
+  return fetchWithTimeout(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
-  });
-  return parseGptImageResponse(response);
+  }, request.signal, parseGptImageResponse);
 }
 
 // 阿里云百炼 Token Plan（DashScope multimodal-generation）：
@@ -1785,14 +1856,17 @@ async function requestAlibabaDashScopeImage(apiKey, request, options = {}) {
   const url = buildDashScopeImageUrl(baseUrl);
   const size = resolveGptImageRequestSize(request);
   const payload = buildDashScopeImagePayload(request, size);
-  const response = await fetchWithTimeout(url, {
+  return fetchWithTimeout(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify(payload),
-  });
+  }, request.signal, parseAlibabaImageResponse);
+}
+
+async function parseAlibabaImageResponse(response) {
   if (!response.ok) {
     const text = await response.text();
     throw new Error(getErrorMessageFromPayload(parseJsonSafely(text)) || `HTTP ${response.status}: ${text.slice(0, 200)}`);
@@ -1837,12 +1911,15 @@ try {
   console.warn('[network] undici Agent 配置失败，使用默认设置:', e?.message || e);
 }
 
-async function fetchWithTimeout(url, init) {
+// Image callers consume/parse inside this lifetime so headers do not end the deadline.
+// Streaming proxy/download callers retain their existing Response-returning boundary.
+async function fetchWithTimeout(url, init, externalSignal, consumeResponse) {
   const controller = new AbortController();
   activeRequestControllers.add(controller);
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    return await fetch(url, { ...init, ...(desktopSession.isDesktopMode()?{redirect:'manual'}:{}), signal: controller.signal });
+    const response = await fetch(url, { ...init, ...(desktopSession.isDesktopMode()?{redirect:'manual'}:{}), signal: externalSignal ? AbortSignal.any([controller.signal,externalSignal]) : controller.signal });
+    return consumeResponse ? await consumeResponse(response) : response;
   } finally {
     clearTimeout(timeout);
     activeRequestControllers.delete(controller);
@@ -1935,7 +2012,7 @@ async function generateNovaGeminiImage(apiKey, request, options = {}) {
     ...images.map(img => ({ inlineData: { data: img.data, mimeType: img.mimeType || 'image/png' } })),
   ];
   const imageConfig = resolveGeminiImageConfig(request);
-  const response = await fetchWithTimeout(`${baseUrl}/v1beta/models/${encodeURIComponent(request.model)}:generateContent`, {
+  return fetchWithTimeout(`${baseUrl}/v1beta/models/${encodeURIComponent(request.model)}:generateContent`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1949,14 +2026,16 @@ async function generateNovaGeminiImage(apiKey, request, options = {}) {
         imageConfig,
       },
     }),
-  });
+  }, request.signal, parseGeminiImageResponse);
+}
 
+async function parseGeminiImageResponse(response) {
+  const responseText = await response.text();
   if (!response.ok) {
-    const errorText = getUpstreamErrorText(await response.text(), response.status);
-    throw new Error(`API 请求失败: ${response.status}${errorText ? ` ${errorText}` : ''}`);
+    const errorText = getUpstreamErrorText(responseText, response.status);
+    throw Object.assign(new Error(`API 请求失败: ${response.status}${errorText ? ` ${errorText}` : ''}`), {httpStatus:response.status,transmission:'response_received',definiteRejection:response.status>=400 && response.status<500 && Boolean(parseJsonSafely(responseText)?.error)});
   }
 
-  const responseText = await response.text();
   if (isLikelyHtmlResponse(responseText)) {
     throw new Error('上游返回了 HTML 页面而不是 JSON。通常是 baseUrl 配置错误、请求被站点网关拦截，或该地址并非兼容的图片 API。');
   }
@@ -2123,6 +2202,7 @@ function sleep(ms) {
  * 上游创建挪到 runPluginTask 里，这样名额从「开始跑」一直持有到「轮询出终态」。
  */
 function createPluginTask(body, req) {
+  if (taskService) return createDesktopPluginTask(body, req);
   body=prepareTaskConnection(body);
   if (!body || typeof body !== 'object') throw new Error('请求体不能为空');
   if (typeof body.apiKey !== 'string' || body.apiKey.trim().length === 0) throw new Error('缺少 API 密钥');
@@ -2386,6 +2466,7 @@ function normalizePluginError(error) {
  * 仅当任务已在跑但后端轮询还没写回时，才顺带补一次上游查询。
  */
 async function getPluginTaskForClient(taskId) {
+  if (taskService) return taskService.get(taskId); // GET is observational; never starts an upstream request.
   const row = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
   if (!row) {
     return { id: taskId, status: 'expired', error: '该任务已超出取回时间' };
@@ -2447,6 +2528,7 @@ async function getPluginTaskForClient(taskId) {
 
 function serializeTask(task) {
   if (!task) return null;
+  if (taskService) return taskService.get(task.id);
   if (!desktopSession.isDesktopMode() && task.expires_at && Date.parse(task.expires_at) <= Date.now()) {
     return { id: task.id, status: 'expired', error: '该任务已超出取回时间' };
   }
@@ -2747,6 +2829,7 @@ async function shutdown({ drain = true, timeoutMs = 2000 } = {}) {
     lifecycleTimers.clear();
     if (queueBroadcastTimer) clearTimeout(queueBroadcastTimer);
     if (!drain) for (const controller of activeRequestControllers) controller.abort();
+    const closingTasks = taskService?.close();
     const closing = Promise.allSettled([closeHttpServer(httpServerRef), closeWebSocketServer(wsServerRef)]);
     if (!drain) {
       httpServerRef?.closeAllConnections?.();
@@ -2757,6 +2840,7 @@ async function shutdown({ drain = true, timeoutMs = 2000 } = {}) {
       await Promise.race([waitForRunningTasks(), new Promise(resolve => { deadline = setTimeout(resolve, timeoutMs); })]);
       clearTimeout(deadline);
     } else { await closing; await waitForRunningTasks(); }
+    await closingTasks;
     checkpointTaskDatabase();
     closeTaskDatabase();
   })();
@@ -2795,6 +2879,12 @@ async function handleApi(req, res, pathname, searchParams) {
     if (desktopSession.isDesktopMode() && (apiPathname.startsWith('/api/nova/proxy/') || req.headers['x-nova-api-key'] || searchParams.has('apiKey'))) throw createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','桌面请求请使用连接版本。');
     if (await handleConnections(req,res,apiPathname)) return true;
     if (await handleStorage(req,res,apiPathname,searchParams)) return true;
+    const taskAction = apiPathname.match(/^\/api\/nova\/(?:tasks|plugin-tasks)\/([^/]+)\/(cancel-queued|continue-queued|stop-polling|resume-polling|attach-upstream-id|retry-download)$/);
+    if (taskService && taskAction) {
+      if (req.method !== 'POST') { sendJson(res,405,{code:'TASK_METHOD_NOT_ALLOWED'});return true; }
+      const input=await readJsonBody(req);
+      sendJson(res,200,{task:taskService.action(decodeURIComponent(taskAction[1]),taskAction[2],input)});return true;
+    }
 
     if (req.method === 'GET' && apiPathname === '/api/nova/queue-status') {
       sendJson(res, 200, getQueueStats());
@@ -3543,7 +3633,9 @@ async function handleApi(req, res, pathname, searchParams) {
     sendJson(res, 405, { error: 'Method Not Allowed' });
     return true;
   } catch (error) {
-    if (isHttpError(error)) {
+    if (taskService && error?.notBeforeAt) {
+      sendJson(res,error.statusCode || 409,{code:error.code,error:error.message,notBeforeAt:error.notBeforeAt});
+    } else if (isHttpError(error)) {
       sendHttpError(res, error);
     } else if (error && typeof error.statusCode === 'number') {
       sendJson(res, error.statusCode, { error: normalizeError(error) });
@@ -3618,7 +3710,7 @@ const startServer = () => {
   httpServerRef = httpServer;
 };
 
-module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; }, get connections() { return connectionService; } };
+module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; }, get connections() { return connectionService; }, get tasks() { return taskService; } };
 
 registerShutdownHandlers();
 
@@ -3632,6 +3724,10 @@ async function initializeServer() {
   ensureImageDir();
   if (CDP_ENABLED) ensureCdpDir();
   cleanupExpiredTasks();pluginMedia.cleanupExpired();pluginRegistry.listPlugins();
+  if (desktopSession.isDesktopMode()) {
+    taskService=createTaskService({db,store:workbenchStore,connections:connectionService,resolveAdapter:resolveDesktopTaskAdapter,onChange:id=>{broadcastTask(id);broadcastQueueStatus();}});
+    taskService.recover();
+  }
   lifecycleTimers.add(setInterval(cleanupExpiredTasks,CLEANUP_INTERVAL_MS).unref());
   lifecycleTimers.add(setInterval(()=>pluginMedia.cleanupExpired(),CLEANUP_INTERVAL_MS).unref());
   lifecycleTimers.add(setInterval(cleanupRateLimitBuckets,CLEANUP_INTERVAL_MS).unref());

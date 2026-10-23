@@ -1,0 +1,7 @@
+[
+  {
+    "method": "POST",
+    "path": "/v1/images/generations",
+    "authorized": true
+  }
+]

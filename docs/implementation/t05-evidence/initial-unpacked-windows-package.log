@@ -1,0 +1,17 @@
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  • skipped dependencies rebuild  reason=npmRebuild is set to false
+  • packaging       platform=win32 arch=x64 electron=43.4.0 appOutDir=release-t05\win-unpacked
+  ⨯ connect ETIMEDOUT 20.205.243.166:443  failedTask=build stackTrace=RequestError: connect ETIMEDOUT 20.205.243.166:443
+    at ClientRequest.<anonymous> (E:\Learn\AI\nova-image-studio\node_modules\got\dist\source\core\index.js:970:111)
+    at Object.onceWrapper (node:events:623:26)
+    at ClientRequest.emit (node:events:520:35)
+    at ClientRequest.origin.emit (E:\Learn\AI\nova-image-studio\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+    at emitErrorEvent (node:_http_client:108:11)
+    at TLSSocket.socketErrorListener (node:_http_client:575:5)
+    at TLSSocket.emit (node:events:508:28)
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at processTicksAndRejections (node:internal/process/task_queues:90:21)
+    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1645:16)

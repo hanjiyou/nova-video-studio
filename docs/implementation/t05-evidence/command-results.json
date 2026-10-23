@@ -1,0 +1,180 @@
+[
+  {
+    "name": "backend-regression-initial",
+    "command": "node --test --test-concurrency=1",
+    "cwd": "backend",
+    "exitCode": 1,
+    "log": "initial-backend-regression.log",
+    "note": "261 pass, 1 v3-specific migration test assumption"
+  },
+  {
+    "name": "backend-regression",
+    "command": "node --test --test-concurrency=1",
+    "cwd": "backend",
+    "exitCode": 0,
+    "log": "backend-regression.log",
+    "tests": 262,
+    "note": "Before final focused auth/admission refinements; final source validated by tasks-targeted"
+  },
+  {
+    "name": "tasks-targeted-final",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-tasks.test.js backend/test/workbench-task-adapter.test.js backend/test/workbench-tasks-http.test.js backend/test/workbench-connections-http.test.js backend/test/workbench-storage-http.test.js backend/test/desktop-boundary.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "tasks-targeted.log",
+    "tests": 72
+  },
+  {
+    "name": "frontend-regression",
+    "command": "npm run test:run",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-regression.log",
+    "tests": 690
+  },
+  {
+    "name": "frontend-targeted-final",
+    "command": "npm run test:run -- src/lib/__tests__/connection-client.test.ts src/lib/__tests__/workbench-task-client.test.ts",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-targeted.log",
+    "tests": 14
+  },
+  {
+    "name": "frontend-build-initial",
+    "command": "npm run build",
+    "cwd": "frontend",
+    "exitCode": 1,
+    "log": "initial-frontend-build.log"
+  },
+  {
+    "name": "frontend-build",
+    "command": "npm run build",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "frontend-full-typecheck",
+    "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false",
+    "cwd": "frontend",
+    "exitCode": 2,
+    "log": "frontend-full-typecheck.log",
+    "note": "Identical to T04 baseline: 60 existing diagnostics; no new diagnostics"
+  },
+  {
+    "name": "backend-lint",
+    "command": "node node_modules/eslint/bin/eslint.js server.js tasks storage/migrations.js storage/store.js test/workbench-tasks.test.js test/workbench-tasks-http.test.js test/workbench-task-adapter.test.js test/workbench-connections-http.test.js test/workbench-storage-http.test.js test/workbench-connections.test.js test/desktop-boundary.test.js",
+    "cwd": "backend",
+    "exitCode": 0,
+    "log": "backend-lint.log"
+  },
+  {
+    "name": "frontend-lint",
+    "command": "node node_modules/eslint/bin/eslint.js src/lib/connection-client.ts src/lib/ccode-task-client.ts src/lib/plugin-task-client.ts src/lib/workbench-task-client.ts src/lib/__tests__/connection-client.test.ts src/lib/__tests__/workbench-task-client.test.ts src/components/canvas/canvas-video-generation-service.ts",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "native-tasks",
+    "command": "node scripts/verify-desktop-tasks.cjs temp/t05-native-final",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "native-tasks.log",
+    "checks": 19
+  },
+  {
+    "name": "unpacked-package-initial",
+    "command": "node node_modules/electron-builder/cli.js --win --dir --config electron-builder.yml --config.directories.output=release-t05",
+    "cwd": ".",
+    "exitCode": 1,
+    "log": "initial-unpacked-windows-package.log",
+    "note": "Electron distribution download ETIMEDOUT"
+  },
+  {
+    "name": "unpacked-package-final",
+    "command": "node node_modules/electron-builder/cli.js --win --dir --config electron-builder.yml --config.directories.output=release-t05 --config.electronDist=node_modules/electron/dist",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "unpacked-windows-package.log"
+  },
+  {
+    "name": "packaged-smoke-final",
+    "command": "node scripts/verify-desktop-package.cjs \"release-t05/win-unpacked/Nova Image Studio.exe\" override temp/t05-packaged-final-v3 --storage --connections",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "packaged-smoke.log",
+    "checks": 18
+  },
+  {
+    "name": "package-audit-final",
+    "command": "node scripts/verify-t05-package-audit.cjs",
+    "cwd": ".",
+    "exitCode": 0,
+    "evidence": "package-audit.json"
+  },
+  {
+    "name": "review-image-boundary-reproduction",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-image-boundary.test.js",
+    "cwd": ".",
+    "exitCode": 1,
+    "log": "review-image-boundary-before.log",
+    "tests": 10,
+    "passed": 4,
+    "failed": 6
+  },
+  {
+    "name": "review-image-boundary-fix-initial",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-image-boundary.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-image-boundary-after.log",
+    "tests": 10
+  },
+  {
+    "name": "review-image-boundary-final-affected",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-image-boundary.test.js backend/test/workbench-tasks.test.js backend/test/workbench-task-adapter.test.js backend/test/workbench-tasks-http.test.js backend/test/workbench-connections-http.test.js backend/test/workbench-storage-http.test.js backend/test/desktop-boundary.test.js backend/test/image-stream.integration.test.js backend/test/gemini-aspect.test.js backend/test/gpt-image-edits-multi-ref.test.js backend/test/grok-image.test.js backend/test/alibaba-dashscope.test.js backend/test/doubao.test.js backend/test/antigravity-gemini-edits-multi-ref.test.js backend/test/server-errors.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-image-boundary-targeted.log",
+    "tests": 115
+  },
+  {
+    "name": "review-image-boundary-lint",
+    "command": "node node_modules/eslint/bin/eslint.js server.js test/workbench-image-boundary.test.js",
+    "cwd": "backend",
+    "exitCode": 0,
+    "log": "review-image-boundary-lint.log"
+  },
+  {
+    "name": "review-image-boundary-package",
+    "command": "node node_modules/electron-builder/cli.js --win --dir --config electron-builder.yml --config.directories.output=release-t05 --config.electronDist=node_modules/electron/dist",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-image-boundary-package.log"
+  },
+  {
+    "name": "review-image-boundary-native",
+    "command": "node scripts/verify-desktop-tasks.cjs temp/t05-native-review-image-boundary",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-image-boundary-native.log",
+    "checks": 19
+  },
+  {
+    "name": "review-image-boundary-packaged-smoke",
+    "command": "node scripts/verify-desktop-package.cjs \"release-t05/win-unpacked/Nova Image Studio.exe\" override temp/t05-packaged-review-image-boundary --storage --connections",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-image-boundary-packaged-smoke.log",
+    "checks": 18
+  },
+  {
+    "name": "review-image-boundary-package-audit",
+    "command": "node scripts/verify-t05-package-audit.cjs",
+    "cwd": ".",
+    "exitCode": 0,
+    "evidence": "package-audit.json"
+  }
+]

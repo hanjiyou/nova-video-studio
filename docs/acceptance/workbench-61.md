@@ -2,6 +2,8 @@
 
 日期：2026-10-23。T00–T03已由主会话验收，T04连接基础也已由主会话验收并明确批准提交推送。61项产品条目没有任何一项因此自动标为完整验收通过。主会话新增编码Key错误回显审查已复现、修复并通过实际exe回归，见[T04记录](../implementation/T04-连接凭据与能力配置.md)。
 
+T05 任务基础已由主会话审核通过并明确批准提交推送，见[审核证据](../implementation/t05-evidence/approval-review.json)：本地去重、保守占位与恢复/API基础，以及 Gemini 错误/正文超时修复已接受；没有新增完整产品验收通过。T08 下载/签名 URL、完整 UI、真实线路及 NSIS 发布仍待后续阶段。
+
 机器可读来源：[workbench-61.json](workbench-61.json)。证据只证明所述基础设施/API部分；完整UI、真实线路及安装发布仍依赖后续阶段。桌面栏区分原生开发态、unpacked运行包和NSIS，不提升证据等级。
 
 | 编号 | 功能 | 关联任务 | 验收要求 | 状态 | 离线证据 | 真实线路证据 | 桌面与打包证据 |
@@ -19,7 +21,7 @@
 | I04 | 图片尺寸 | T04、T06、T11 | 不把任意输入直接作为已支持规格 | 待开始 | — | — | — |
 | I05 | 图片质量 | T04、T06、T11 | 提交参数与选择一致；未知枚举不默认开放 | 待开始 | — | — | — |
 | I06 | 参考图片（可选） | T03、T06、T11、T15 | 无图片走文生图；有图片走已验证编辑适配器；不能忽略图片后继续文生图 | 进行中 | [证据](../implementation/t03-evidence/storage-targeted.log) | — | [证据](../implementation/t03-evidence/native-storage-phase-1.json)、[证据](../implementation/t03-evidence/native-storage-phase-2.json)、[证据](../implementation/t03-evidence/packaged-evidence.json) |
-| I07 | 生成图片 | T05、T11 | 连点不会造成重复提交；失败有明确操作入口 | 待开始 | — | — | — |
+| I07 | 生成图片 | T05、T11 | 连点不会造成重复提交；失败有明确操作入口 | 进行中 | [T05基础](../implementation/t05-evidence/tasks-targeted.log) | — | [原生API](../implementation/t05-evidence/native-tasks-phase-1.json)、[重启](../implementation/t05-evidence/native-tasks-phase-2.json) |
 | I08 | 生成结果 | T08、T11 | 展示实际输出；大图适配容器，可点击放大和还原 | 待开始 | — | — | — |
 | I09 | 已完成标签 | T08、T11 | HTTP 200 或空结果不能显示已完成 | 待开始 | — | — | — |
 | I10 | 保存图片 | T02、T08、T11 | 可选择路径，重名时确认覆盖；取消对话框不报错 | 进行中 | — | — | [证据](../implementation/t02-evidence/native-boundary-evidence.json)、[证据](../implementation/t02-evidence/installed-system-evidence.json) |
@@ -36,13 +38,13 @@
 | V07 | 当前使用张数与说明 | T12 | 明确双图参考不等于首尾帧锁定 | 待开始 | — | — | — |
 | V08 | 剧情描述 | T12 | 不擅自修改用户台词；可提示六秒内容过多，但不阻断正常输入 | 待开始 | — | — | — |
 | V09 | 时长、比例、清晰度 | T04、T07、T12 | 六秒型号锁定时长；未验证的规格不伪装为可用 | 待开始 | — | — | — |
-| V10 | 生成视频 | T05、T07、T12 | 一个本地任务最多发起一次自动创建请求 | 待开始 | — | — | — |
+| V10 | 生成视频 | T05、T07、T12 | 一个本地任务最多发起一次自动创建请求 | 进行中 | [T05基础](../implementation/t05-evidence/tasks-targeted.log) | — | — |
 | V11 | 视频预览 | T08、T12、T16 | 打包后的应用中可播放真实样本，时长读取媒体元数据 | 待开始 | — | — | — |
 | V12 | 保存视频 | T02、T08、T12 | 不触发重新生成；下载失败与另存失败分开处理 | 进行中 | — | — | [证据](../implementation/t02-evidence/native-boundary-evidence.json)、[证据](../implementation/t02-evidence/installed-system-evidence.json) |
 | V13 | 打开目录 | T02、T08、T12 | 未下载时显示对应状态，不打开不存在的文件 | 进行中 | — | — | [证据](../implementation/t02-evidence/native-boundary-evidence.json)、[证据](../implementation/t02-evidence/installed-system-evidence.json) |
 | V14 | 复用参数 | T12、T13 | 不直接提交；重新检查当前模型能力和图片存在性 | 待开始 | — | — | — |
-| V15 | 最近任务卡片 | T05、T12 | 点击可查看详情；无真实进度时只显示状态和已用时间 | 待开始 | — | — | — |
-| V16 | 自动保存任务与结果 | T05、T08、T12 | 强制退出后可恢复已持久化的任务与文件状态 | 待开始 | — | — | — |
+| V15 | 最近任务卡片 | T05、T12 | 点击可查看详情；无真实进度时只显示状态和已用时间 | 进行中 | [T05基础](../implementation/t05-evidence/tasks-targeted.log) | — | — |
+| V16 | 自动保存任务与结果 | T05、T08、T12 | 强制退出后可恢复已持久化的任务与文件状态 | 进行中 | [T05基础](../implementation/t05-evidence/tasks-targeted.log) | — | [原生API](../implementation/t05-evidence/native-tasks-phase-1.json)、[重启](../implementation/t05-evidence/native-tasks-phase-2.json) |
 | L01 | 作品列表 | T03、T13 | 网格缩略图，图片/视频分类，按日期排序，分页或虚拟列表 | 进行中 | [证据](../implementation/t03-evidence/storage-targeted.log) | — | [证据](../implementation/t03-evidence/native-storage-phase-1.json)、[证据](../implementation/t03-evidence/native-storage-phase-2.json)、[证据](../implementation/t03-evidence/packaged-evidence.json) |
 | L02 | 搜索筛选 | T13 | 按提示词、模型、状态查找；区分无结果和空库 | 待开始 | — | — | — |
 | L03 | 详情 | T03、T13 | 输入图片、完整提示词、参数、时间、任务 ID、输出路径、脱敏错误 | 进行中 | [证据](../implementation/t03-evidence/storage-targeted.log) | — | [证据](../implementation/t03-evidence/native-storage-phase-1.json)、[证据](../implementation/t03-evidence/native-storage-phase-2.json)、[证据](../implementation/t03-evidence/packaged-evidence.json) |
@@ -64,6 +66,6 @@
 | O07 | 未配置工作台 | T03、T09、T10 | 草稿/素材可编辑，生成按钮导向配置，预览显示真实空态 | 进行中 | [证据](../implementation/t03-evidence/storage-targeted.log) | — | [证据](../implementation/t03-evidence/native-storage-phase-1.json)、[证据](../implementation/t03-evidence/native-storage-phase-2.json)、[证据](../implementation/t03-evidence/packaged-evidence.json) |
 | O08 | 配置后的返回 | T09、T10 | 返回原模式且草稿完整，不自动提交原来的生成意图 | 待开始 | — | — | — |
 | O09 | 未验证与离线状态 | T04、T10 | 不显示假绿色连接状态，本地作品可正常浏览 | 进行中 | [证据](../implementation/t04-evidence/storage-connections-targeted.log) | — | [证据](../implementation/t04-evidence/native-connections-phase-1.json)、[证据](../implementation/t04-evidence/native-connections-phase-2.json)、[证据](../implementation/t04-evidence/packaged-evidence.json) |
-| O10 | 更新/清除凭据 | T04、T05、T10 | 影响范围明确，旧任务和作品不丢失，不跨供应商误查 | 进行中 | [证据](../implementation/t04-evidence/storage-connections-targeted.log) | — | [证据](../implementation/t04-evidence/native-connections-phase-1.json)、[证据](../implementation/t04-evidence/native-connections-phase-2.json)、[证据](../implementation/t04-evidence/packaged-evidence.json) |
+| O10 | 更新/清除凭据 | T04、T05、T10 | 影响范围明确，旧任务和作品不丢失，不跨供应商误查 | 进行中 |[证据](../implementation/t04-evidence/storage-connections-targeted.log)、[T05基础](../implementation/t05-evidence/tasks-targeted.log)| — | [证据](../implementation/t04-evidence/native-connections-phase-1.json)、[证据](../implementation/t04-evidence/native-connections-phase-2.json)、[证据](../implementation/t04-evidence/packaged-evidence.json) |
 | O11 | 检查竞态处理 | T04、T10 | 测试中修改地址/Key 后，旧结果不标记新配置验证成功 | 进行中 | [证据](../implementation/t04-evidence/storage-connections-targeted.log) | — | [证据](../implementation/t04-evidence/native-connections-phase-1.json)、[证据](../implementation/t04-evidence/native-connections-phase-2.json)、[证据](../implementation/t04-evidence/packaged-evidence.json) |
 | O12 | 引导恢复与键盘操作 | T09、T10、T14 | 中途退出可恢复正确步骤，Tab/Enter/Esc 行为明确且不会误提交生成 | 待开始 | — | — | — |

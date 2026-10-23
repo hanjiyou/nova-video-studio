@@ -170,7 +170,7 @@ test('actual backend protects HTTP and WS including no-Origin clients and never 
   const upstreamPort = await listen(upstream);
   const connection=await saveConnection({baseUrl:'http://127.0.0.1:'+upstreamPort,apiKey:FIXTURE_TOKEN});
   t.after(() => close(upstream));
-  const created = await fetch(origin + '/api/nova/tasks', { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId:connection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic', model: 'gpt-image-1', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
+  const created = await fetch(origin + '/api/nova/tasks', { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ localRequestId:require('node:crypto').randomUUID(), connectionVersionId:connection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic', model: 'gpt-image-1', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
   assert.equal(created.status, 202);
   const { taskId } = await created.json();
   const task = await until(async () => { const value = await (await fetch(origin + '/api/nova/tasks/' + taskId, { headers })).json(); return ['completed', 'failed'].includes(value.status) ? value : null; });

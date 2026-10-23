@@ -1,3 +1,4 @@
+import type { WorkbenchTaskState, DurableTaskFields } from '@/lib/workbench-task-client';
 import { desktopTaskPayload, isDesktopConnectionMode } from '@/lib/connection-client';
 import type { AspectRatio, OutputSize } from '@/lib/gemini-config';
 import type { GptImageBackground, GptImageQuality, GptImageStyle } from '@/lib/model-capabilities';
@@ -32,9 +33,10 @@ const TASK_REQUEST_TIMEOUT = 30000;
 const CREATE_TASK_TIMEOUT = 60000;
 
 export type NovaTaskMode = 'text-to-image' | 'image-to-image';
-export type NovaTaskStatus = 'queued' | '排队中' | 'processing' | 'polling_paused' | 'completed' | 'failed' | 'expired';
+export type NovaTaskStatus = WorkbenchTaskState | 'queued' | '排队中' | 'processing' | 'polling_paused' | 'completed' | 'failed' | 'expired';
 
 export interface CreateNovaTaskInput {
+  localRequestId?: string;
   connectionVersionId?: string;
   apiKey?: string;
   baseUrl?: string;
@@ -53,7 +55,7 @@ export interface CreateNovaTaskInput {
   images: ImageReference[];
 }
 
-export interface NovaTaskResponse {
+export interface NovaTaskResponse extends DurableTaskFields {
   id: string;
   status: NovaTaskStatus;
   mode?: NovaTaskMode;

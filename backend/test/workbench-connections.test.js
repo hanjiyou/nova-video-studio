@@ -219,14 +219,14 @@ test('v3 additive upgrade preserves v2 history and creates a consistent pre-v3 b
     t.after(() => { db.close(); assert.ok(path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); });
     await migrateDatabase({ db, dbPath, migrations: MIGRATIONS.slice(0, 2) });
     const old = db.prepare('SELECT version,checksum FROM schema_migrations').all();
-    const upgrade = await migrateDatabase({ db, dbPath });
+    const upgrade = await migrateDatabase({ db, dbPath, migrations:MIGRATIONS.slice(0,3) });
     assert.deepEqual(upgrade.applied, [3]);
     assert.deepEqual(db.prepare('SELECT version,checksum FROM schema_migrations WHERE version<=2').all(), old);
     const backup = new Database(upgrade.backupFile, { readonly: true });
     assert.equal(backup.prepare("SELECT 1 FROM sqlite_master WHERE name='credential_entries'").get(), undefined);
     assert.equal(backup.pragma('quick_check', { simple: true }), 'ok');
     backup.close();
-    assert.deepEqual((await migrateDatabase({ db, dbPath })).applied, []);
+    assert.deepEqual((await migrateDatabase({ db, dbPath, migrations:MIGRATIONS.slice(0,3) })).applied, []);
 });
 test('version-bound legacy plugin uses exact original host, one /v1 suffix and manual redirects for submit/poll', async (t) => {
     const executor = require('../plugin-runtime/executor');

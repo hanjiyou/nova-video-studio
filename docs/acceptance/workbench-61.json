@@ -283,13 +283,18 @@
         "T05",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t05-evidence/tasks-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t05-evidence/native-tasks-phase-1.json",
+          "../implementation/t05-evidence/native-tasks-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
     },
     {
       "id": "I08",
@@ -608,13 +613,15 @@
         "T07",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t05-evidence/tasks-targeted.log"
+        ],
         "realService": [],
         "desktop": []
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
     },
     {
       "id": "V11",
@@ -702,13 +709,15 @@
         "T05",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t05-evidence/tasks-targeted.log"
+        ],
         "realService": [],
         "desktop": []
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
     },
     {
       "id": "V16",
@@ -720,13 +729,18 @@
         "T08",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t05-evidence/tasks-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t05-evidence/native-tasks-phase-1.json",
+          "../implementation/t05-evidence/native-tasks-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
     },
     {
       "id": "L01",
@@ -1180,7 +1194,8 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t04-evidence/storage-connections-targeted.log"
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/t05-evidence/tasks-targeted.log"
         ],
         "realService": [],
         "desktop": [
@@ -1189,7 +1204,7 @@
           "../implementation/t04-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
     },
     {
       "id": "O11",

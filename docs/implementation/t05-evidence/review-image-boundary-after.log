@@ -1,0 +1,20 @@
+✔ actual Web Gemini 400 preserves its upstream error and consumes the response body exactly once (264.2268ms)
+✔ actual Web Gemini 401 preserves its upstream error and consumes the response body exactly once (213.8839ms)
+✔ actual Web Gemini 403 preserves its upstream error and consumes the response body exactly once (217.4046ms)
+✔ actual Web Gemini 429 preserves its upstream error and consumes the response body exactly once (202.0896ms)
+✔ actual desktop image 400 reads once, retains safe rejection/auth classification and never repeats POST (262.7241ms)
+✔ actual desktop image 401 reads once, retains safe rejection/auth classification and never repeats POST (252.5992ms)
+✔ actual desktop image 403 reads once, retains safe rejection/auth classification and never repeats POST (279.9436ms)
+✔ actual desktop image 429 reads once, retains safe rejection/auth classification and never repeats POST (279.8722ms)
+✔ actual desktop JSON headers followed by a hanging body time out as submission_unknown without a second POST (450.9877ms)
+ℹ {"headersToBodyAbortMs":173,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+✔ actual desktop SSE headers followed by a hanging body time out as submission_unknown without a second POST (452.758ms)
+ℹ {"headersToBodyAbortMs":177,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+ℹ tests 10
+ℹ suites 0
+ℹ pass 10
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2939.2196

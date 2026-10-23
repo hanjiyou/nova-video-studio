@@ -5,6 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const http = require('node:http');
 const test = require('node:test');
+const {randomUUID}=require('node:crypto');
 const Database = require('better-sqlite3');
 const { start } = require('./support/desktop-http-runtime.cjs');
 const { PRESET_MODELS } = require('../connections/capabilities');
@@ -43,7 +44,7 @@ async function upstream() {
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     return { baseUrl: 'http://127.0.0.1:' + server.address().port + '/v1', calls, release() { held.splice(0).forEach(fn => fn()); }, async close() { held.splice(0).forEach(fn => fn()); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); } };
 }
-const payload = connectionVersionId => ({ connectionVersionId, mode: 'text-to-image', model: 'gpt-image-2', prompt: '中文\n"完整台词"', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] });
+const payload = connectionVersionId => ({ localRequestId:randomUUID(), connectionVersionId, mode: 'text-to-image', model: 'gpt-image-2', prompt: '中文\n"完整台词"', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] });
 const post = (runtime, route, body) => runtime.request(route, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 const task = async (runtime, id) => (await runtime.request('/api/nova/tasks/' + id)).json();
 function cleanup(directory) { assert.ok(path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); }
@@ -79,7 +80,7 @@ test('actual HTTP model GET/cache and queued tasks use immutable version A after
     const queued = await post(runtime, '/api/nova/tasks', payload(first.connectionVersionId));
     assert.equal(queued.status, 202);
     const queuedId = (await queued.json()).taskId;
-    assert.equal((await task(runtime, queuedId)).status, '排队中');
+    assert.equal((await task(runtime, queuedId)).status, 'local_queued');
     const next = await runtime.saveConnection({ connectionId: first.connectionId, expectedVersionId: first.connectionVersionId, baseUrl: b.baseUrl, apiKey: keyB, defaultImageModel: 'exact-selected-model' });
     a.release();
     await until(async () => (await task(runtime, queuedId)).status === 'failed');
@@ -160,7 +161,7 @@ test('actual image result URL containing the protected credential is rejected be
     const created = await post(runtime, '/api/nova/tasks', payload(connection.connectionVersionId));
     assert.equal(created.status, 202);
     const id = (await created.json()).taskId;
-    const failed = await until(async () => { const row = await task(runtime, id); return row.status === 'failed' ? row : null; });
+    const failed = await until(async () => { const row = await task(runtime, id); return row.status === 'download_failed' ? row : null; });
     assert.equal(downloads, 0);
     assert.equal(JSON.stringify(failed).includes(key), false);
     assert.ok(failed.error.includes('连接凭据'));

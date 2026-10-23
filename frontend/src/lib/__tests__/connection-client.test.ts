@@ -22,8 +22,8 @@ describe('desktop credentials and connections',()=>{
     expect(getPluginCredential(plugin).apiKey).toBe('');expect(get).not.toHaveBeenCalled();setPluginCredential('fixture',{apiKey:'new-secret'});expect(set).not.toHaveBeenCalled();expect(()=>saveRegistry(registry)).toThrow('受信连接接口');expect(set).not.toHaveBeenCalled();
   });
   it('strips caller credentials and honors an explicit task connection version without fallback',async()=>{
-    desktop();vi.stubGlobal('fetch',vi.fn(async()=>Response.json({connection})));expect(await desktopTaskPayload({apiKey:'never-http',baseUrl:'https://forged.invalid',protocol:'google',model:'exact-model'})).toEqual({model:'exact-model',connectionVersionId:connection.connectionVersionId});
-    vi.mocked(fetch).mockClear();expect(await desktopTaskPayload({connectionVersionId:'explicit-old-version',apiKey:'never-http'})).toEqual({connectionVersionId:'explicit-old-version'});expect(fetch).not.toHaveBeenCalled();
+    desktop();vi.stubGlobal('fetch',vi.fn(async()=>Response.json({connection})));expect(await desktopTaskPayload({apiKey:'never-http',baseUrl:'https://forged.invalid',protocol:'google',model:'exact-model'})).toEqual({model:'exact-model',connectionVersionId:connection.connectionVersionId,localRequestId:expect.any(String)});
+    vi.mocked(fetch).mockClear();expect(await desktopTaskPayload({connectionVersionId:'explicit-old-version',apiKey:'never-http'})).toEqual({connectionVersionId:'explicit-old-version',localRequestId:expect.any(String)});expect(fetch).not.toHaveBeenCalled();
   });
   it('rejects missing/decryption-unavailable connections before task POST',async()=>{
     desktop();for(const current of [null,{...connection,hasCredential:false,credentialState:'missing'},{...connection,credentialState:'unavailable'}]){vi.stubGlobal('fetch',vi.fn(async()=>Response.json({connection:current})));await expect(desktopTaskPayload({model:'exact-model'})).rejects.toThrow('凭据');expect(fetch).toHaveBeenCalledTimes(1);}

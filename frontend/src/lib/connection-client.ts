@@ -1,4 +1,5 @@
 'use client';
+import { generateUUID } from '@/lib/uuid';
 export interface ConnectionSummary {
   connectionId: string;
   connectionVersionId: string;
@@ -73,14 +74,28 @@ export async function selectConnection(input: ConnectionVersionInput): Promise<C
   if (!result?.ok || !result.connection) throw new Error(result?.code || 'CONNECTION_SERVICE_NOT_READY');
   return result.connection;
 }
-/** Image and plugin/video clients share this one connection/version path. */
+const desktopIntents = new WeakMap<object, Promise<{localRequestId: string; connectionVersionId: string}>>();
+/** Image and plugin/video clients share a stable local intent and immutable connection.
+ * Reuse the input object or supply localRequestId when explicitly retrying a lost local ACK.
+ * This local identifier is never an upstream idempotency guarantee.
+ */
 export async function desktopTaskPayload<T extends object>(input: T): Promise<Omit<T, 'apiKey' | 'baseUrl' | 'protocol'>> {
   const payload = {...input} as Record<string, unknown>;
   delete payload.apiKey; delete payload.baseUrl; delete payload.protocol; delete payload.credentialRef;
-  if (!payload['connectionVersionId']) {
-    const connection = await getCurrentConnection();
-    if (!connection?.hasCredential || connection.credentialState !== 'ready') throw new Error('请先保存可用的连接凭据。');
-    payload['connectionVersionId'] = connection.connectionVersionId;
+  let intent = desktopIntents.get(input);
+  if (!intent) {
+    intent = (async () => {
+      const localRequestId = typeof payload['localRequestId'] === 'string' ? payload['localRequestId'] : generateUUID();
+      if (typeof payload['connectionVersionId'] === 'string') return { localRequestId, connectionVersionId: payload['connectionVersionId'] };
+      const connection = await getCurrentConnection();
+      if (!connection?.hasCredential || connection.credentialState !== 'ready') throw new Error('请先保存可用的连接凭据。');
+      return { localRequestId, connectionVersionId: connection.connectionVersionId };
+    })();
+    desktopIntents.set(input, intent);
+    void intent.catch(() => desktopIntents.delete(input));
   }
+  const fixed = await intent;
+  payload['localRequestId'] ??= fixed.localRequestId;
+  payload['connectionVersionId'] ??= fixed.connectionVersionId;
   return payload as Omit<T, 'apiKey' | 'baseUrl' | 'protocol'>;
 }

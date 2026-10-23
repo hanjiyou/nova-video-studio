@@ -1,0 +1,93 @@
+✔ desktop boundary fails closed for no-Origin clients, hostile sources, wrong host and revoked sessions (1.0365ms)
+✔ session injection requires the actual main frame and strips caller headers on all other requests (0.8305ms)
+✔ narrow IPC accepts only the main frame and opaque selections/asset IDs (4.9695ms)
+✔ data policy precedence and bounded loopback port selection (11.7736ms)
+✔ production network policy sends exactly one generation POST: accepted (26.5354ms)
+✔ production network policy sends exactly one generation POST: timeout (43.0354ms)
+✔ production network policy sends exactly one generation POST: after_accept (3.63ms)
+✔ production network policy sends exactly one generation POST: mid_body (27.4836ms)
+✔ production network policy sends exactly one generation POST: http429 (3.3835ms)
+✔ production network policy sends exactly one generation POST: http503 (4.2109ms)
+✔ production network policy sends exactly one generation POST: redirect307 (3.8077ms)
+✔ GET fallback is bounded, respects Retry-After and cancellation; internal redirects stay manual (1.8117ms)
+✔ system mode uses one configured transport and abortPending cancels in-flight creation (0.6215ms)
+✔ actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST (304.2686ms)
+✔ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (536.803ms)
+✔ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (219.0989ms)
+✔ actual image result URL containing the protected credential is rejected before any download or history disclosure (216.1579ms)
+✔ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (220.999ms)
+ℹ {"case":"fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (231.8679ms)
+ℹ {"case":"twice fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (217.5163ms)
+ℹ {"case":"fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (233.2109ms)
+ℹ {"case":"twice fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (195.236ms)
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (203.3034ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (660.281ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (705.6645ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (476.9799ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+✔ desktop plugin POST 400 is single-attempt, with explicit rejection only for complete 4xx (19.2508ms)
+✔ desktop plugin POST 429 is single-attempt, with explicit rejection only for complete 4xx (0.6031ms)
+✔ desktop plugin POST 503 is single-attempt, with explicit rejection only for complete 4xx (0.4606ms)
+✔ usable task ID from an error HTTP response is retained rather than triggering another POST (0.3948ms)
+✔ poll only GETs an encoded opaque ID at the frozen origin and preserves raw unknown status without inventing failure (0.7469ms)
+✔ 401 response metadata survives JSON and never becomes a remote task failure (1.5656ms)
+✔ 401 response metadata survives HTML and never becomes a remote task failure (0.6925ms)
+✔ driver POST-style queries and attempts to leave the frozen origin are rejected before fetch (0.3824ms)
+✔ percent-encoded key echoes are rejected before IDs, unknown states or result URLs escape parsing (0.7992ms)
+✔ remote completed without usable candidates remains remote completed for the download boundary, never local completed (0.72ms)
+✔ a safe accepted ID is persisted before a later credential-contaminated field is rejected (0.3255ms)
+✔ actual desktop HTTP persists dispatch, deduplicates a lost ACK, survives forced exit with no ID, and never automatically POSTs the waiting queue (661.1965ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual process exits after upstream ID persistence and during GET recover only the original GET, with immutable connection and conservative pause reservation (945.7693ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 401 pauses, preserves ID, blocks queued POST and does not become remote failure (521.6267ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 429 with long Retry-After pauses, preserves ID, blocks queued POST and does not become remote failure (483.4744ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET unknown status pauses, preserves ID, blocks queued POST and does not become remote failure (470.1551ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual remote completion persists a download job and candidate but exposes neither a remote URL nor a completed local work (556.1772ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ enqueue commits snapshot and dispatch_started before exactly one POST; ID is committed before GET (37.9257ms)
+✔ localRequestId is durable, case-insensitive, object-key independent; replay after revoked credential returns original and changed snapshot conflicts (29.6359ms)
+✔ queued cancellation races preflight safely and never dispatches cancelled intent (22.7522ms)
+✔ restart of never-dispatched queue requires explicit continue; cancel is available before dispatch (27.1438ms)
+✔ uncertain submit network never retries POST and keeps single generation reservation across restart (25.3318ms)
+✔ uncertain submit 503 never retries POST and keeps single generation reservation across restart (24.6597ms)
+✔ uncertain submit empty-id never retries POST and keeps single generation reservation across restart (25.445ms)
+✔ complete explicit POST rejection permits queue progress; POST 429 never follows Retry-After (26.4421ms)
+✔ restart after dispatch and before ID becomes submission_unknown; an existing ID resumes GET only (23.534ms)
+✔ stop polling retains reservation, ignores late GET, survives restart, and resume uses original ID only (25.1335ms)
+✔ attach upstream ID requires an unknown task, validates opaque ID, persists it, and does no POST or GET until explicit resume (29.8273ms)
+✔ GET 401 pauses without treating remote as failed or releasing the reservation (24.0762ms)
+✔ GET 403 pauses without treating remote as failed or releasing the reservation (26.3903ms)
+✔ cleared original credential pauses before GET, retains ID/snapshot, and cannot silently select a new version (29.0552ms)
+✔ unrecognized remote state preserves safe raw status and pauses; no false failure/completion (25.9298ms)
+✔ GET transient retry count is bounded and persists across restarts; no POST retry (27.029ms)
+✔ GET Retry-After beyond cap is never truncated, persists notBeforeAt, and rejects early resume (27.6452ms)
+✔ short Retry-After controls next GET and successful status clears failure budget (28.3982ms)
+✔ Retry-After numeric/date parsing and invalid values (0.2322ms)
+✔ remote completion queues downloads independently, releases generation and never claims local completed without a verifier (27.6707ms)
+✔ inline output is a managed unverified candidate, never an exposed base64 result or local completion (31.1118ms)
+✔ query-bearing or credential-bearing candidate URL is not saved/exported; failure cannot generate again (26.951ms)
+✔ download interruption recovers only the download queue, with no submit or poll (26.8505ms)
+✔ download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed (27.7792ms)
+✔ schema v3 to v4 keeps historical SQL checksums, committed WAL rows and a consistent rollback backup (48.7265ms)
+✔ GET failure count limit pauses after five automatic retries even with a larger elapsed-time budget (28.9733ms)
+✔ dispatch persistence failure stops scheduling before any adapter POST and keeps the durable queued snapshot (19.7633ms)
+✔ an ID callback is persisted before later adapter parsing fails; only GET recovery remains available (25.4021ms)
+✔ complete POST authentication rejection is classified for reauthentication, never as a remote generation failure (21.4653ms)
+ℹ tests 72
+ℹ suites 0
+ℹ pass 72
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 9476.6718

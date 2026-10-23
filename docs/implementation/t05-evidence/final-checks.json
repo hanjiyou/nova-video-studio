@@ -1,0 +1,65 @@
+{
+  "checkedAt": "2026-10-23T11:56:34.803062+00:00",
+  "phase": "approved pre-commit verification",
+  "head": "02a32103b2baee5c493b7d836b7bfd42386164e7",
+  "branch": "dev",
+  "stagedFiles": 72,
+  "gitDiffCheck": {
+    "sourceAndDocumentation": "passed",
+    "command": "git diff --cached --check -- . :(exclude,glob)docs/implementation/t05-evidence/*.log",
+    "fullStagedCheck": "13 whitespace diagnostics confined to 5 original test logs; retained unchanged to preserve raw evidence",
+    "rawLogWarnings": [
+      "docs/implementation/t05-evidence/frontend-build.log:31: new blank line at EOF.",
+      "docs/implementation/t05-evidence/frontend-regression.log:164: new blank line at EOF.",
+      "docs/implementation/t05-evidence/frontend-targeted.log:15: new blank line at EOF.",
+      "docs/implementation/t05-evidence/initial-backend-regression.log:294: trailing whitespace.",
+      "docs/implementation/t05-evidence/initial-backend-regression.log:299: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:25: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:27: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:43: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:45: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:61: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:63: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:79: trailing whitespace.",
+      "docs/implementation/t05-evidence/review-image-boundary-before.log:81: trailing whitespace."
+    ],
+    "rawLogsModifiedForWhitespace": false
+  },
+  "requirementCount": 61,
+  "requirementDefinitionsUnchanged": true,
+  "productItemsPromotedToAccepted": 0,
+  "taskCards": 17,
+  "nativeScriptSyntax": "passed",
+  "productionSourceUnchangedSinceReviewedManifest": true,
+  "sourceFilesVerified": 25,
+  "oldT04AppAsarSha256": "82ffa8753100be7a76c4e8bb75a0bbdf62bde1e8ce6588d66b8d285e0833e914",
+  "reviewFixes": [
+    "Gemini responseText TDZ removed",
+    "Image request deadline covers body consumption and parsing"
+  ],
+  "reviewAffectedTests": {
+    "tests": 115,
+    "passed": 115,
+    "failed": 0,
+    "skipped": 0,
+    "evidence": "review-image-boundary-targeted.log"
+  },
+  "parentIndependentTests": {
+    "tests": 57,
+    "passed": 57,
+    "failed": 0,
+    "skipped": 0,
+    "attribution": "Explicit parent-session report in approval-review.json; raw parent log not included."
+  },
+  "nativeReviewChecks": 19,
+  "packagedReviewChecks": 18,
+  "currentPackage": {
+    "appAsarSha256": "9f40b8d7aa19e43b85ca69bc8854d2fa017bd95c8b5b7ea553fd827b2f63c034",
+    "exeSha256": "1b72776b552a6b0f580a0e252c3d238c4a7dad2cc8afc0e0aaba1feb9a8384a8",
+    "sourceModulesVerified": 9,
+    "testRootsExcluded": true,
+    "historicalMigrationSqlUnchanged": true
+  },
+  "state": "T05 accepted; commit/push origin/dev explicitly authorized; no B1",
+  "gitDeliveryRecord": "temp/t05-git-delivery.json (local ignored evidence recorded after commit/push)"
+}

@@ -1,0 +1,19 @@
+{
+  "phase": 1,
+  "platform": "win32",
+  "checks": {
+    "real Windows OS encryption available": true,
+    "T05 task service is live in actual desktop main": true,
+    "actual narrow IPC encrypts synthetic task credential": true,
+    "renderer creates durable task without a raw key in HTTP": true,
+    "dispatch boundary is durable before held POST finishes": true,
+    "one generation reservation queues the next intent": true,
+    "queued cancellation uses actual renderer API": true,
+    "same localRequestId returns the same task": true
+  },
+  "startedAt": "2026-10-23T11:10:16.237Z",
+  "scope": "Actual Electron source runtime; loopback synthetic image POST only; no product UI acceptance",
+  "origin": "http://127.0.0.1:55610",
+  "status": "passed",
+  "finishedAt": "2026-10-23T11:10:17.232Z"
+}

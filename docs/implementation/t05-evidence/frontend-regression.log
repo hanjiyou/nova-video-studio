@@ -1,0 +1,164 @@
+
+> nova-image-frontend@3.4.0 test:run
+> vitest run
+
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/upload-image-cache.test.ts (7 tests) 32ms
+ ✓ src/lib/__tests__/backup-config-only.test.ts (7 tests) 18ms
+ ✓ src/lib/__tests__/image-downloader.test.ts (6 tests) 19ms
+ ✓ src/lib/__tests__/scroll-lock.test.ts (4 tests) 168ms
+ ✓ src/lib/__tests__/slice-crop.test.ts (5 tests) 16ms
+ ✓ src/lib/__tests__/slice-history.test.ts (21 tests) 36ms
+ ✓ src/lib/__tests__/workspace-task-service.test.ts (4 tests) 21ms
+ ✓ src/lib/__tests__/web-agent-replica-files.test.ts (21 tests) 24ms
+ ✓ src/lib/__tests__/slice-image-response.test.ts (10 tests) 23ms
+ ✓ src/lib/__tests__/agent-chat-client.test.ts (57 tests) 149ms
+ ✓ src/lib/__tests__/agent-context-store.test.ts (14 tests) 611ms
+ ✓ src/lib/__tests__/gemini-layout-contract.test.ts (6 tests) 17ms
+ ✓ src/lib/__tests__/workbench-task-client.test.ts (8 tests) 25ms
+ ✓ src/lib/__tests__/provider-registry.test.ts (14 tests) 22ms
+ ✓ src/lib/__tests__/canvas-video-stores.test.ts (13 tests) 17ms
+ ✓ src/lib/__tests__/connection-client.test.ts (6 tests) 27ms
+ ✓ src/lib/__tests__/slice-vectorize.test.ts (18 tests) 13ms
+ ✓ src/components/canvas/utils/__tests__/canvas-layout.test.ts (3 tests) 42ms
+ ✓ src/lib/__tests__/slice-repair.test.ts (14 tests) 16ms
+ ✓ src/lib/__tests__/agent-cdp-tools.test.ts (12 tests) 17ms
+ ✓ src/components/canvas/components/__tests__/canvas-node-generation.test.ts (6 tests) 10ms
+ ✓ src/lib/__tests__/web-agent-vfs.test.ts (29 tests) 14ms
+ ✓ src/components/__tests__/ServiceWorkerManager.test.tsx (3 tests) 54ms
+ ✓ src/lib/__tests__/web-agent-partial-json.test.ts (15 tests) 14ms
+ ✓ src/lib/__tests__/slice-decomposition-parse.test.ts (6 tests) 8ms
+ ✓ src/lib/__tests__/protocol-layout-contracts.test.ts (7 tests) 16ms
+ ✓ src/lib/__tests__/seedream-output-size.test.ts (7 tests) 15ms
+ ✓ src/lib/__tests__/slice-keyboard.test.ts (18 tests) 13ms
+ ✓ src/lib/__tests__/provider-models-client.test.ts (2 tests) 14ms
+ ✓ src/lib/__tests__/agent-sessions.test.ts (10 tests) 13ms
+ ✓ src/lib/__tests__/web-agent-tools.test.ts (20 tests) 15ms
+ ✓ src/lib/__tests__/slice-geometry.test.ts (34 tests) 14ms
+ ✓ src/lib/__tests__/agent-product-key.test.ts (6 tests) 14ms
+ ✓ src/components/canvas/__tests__/canvas-generation-service.test.ts (2 tests) 14ms
+ ✓ src/lib/__tests__/canvas-video-generation-service.test.ts (10 tests) 5051ms
+   ✓ pollCanvasVideoTask > 进行中 → 完成：回调进度并返回视频产物（完成后 ack）  2513ms
+   ✓ pollCanvasVideoTask > 本机队列的「排队中」归一化为 queued  2517ms
+ ✓ src/lib/__tests__/plugin-schema.test.ts (24 tests) 16ms
+ ✓ src/lib/__tests__/slice-reference-assets.test.ts (13 tests) 12ms
+ ✓ src/components/canvas/stores/__tests__/use-canvas-store.test.ts (4 tests) 13ms
+ ✓ src/lib/__tests__/antigravity-gemini-preset.test.ts (4 tests) 11ms
+ ✓ src/lib/__tests__/job-store-limit.test.ts (2 tests) 10ms
+ ✓ src/lib/__tests__/slice-inpaint.test.ts (24 tests) 12ms
+ ✓ src/lib/__tests__/slice-process-state.test.ts (18 tests) 11ms
+ ✓ src/lib/__tests__/gpt-image-ratio-fallback.test.ts (6 tests) 12ms
+ ✓ src/lib/__tests__/task-failure.test.ts (14 tests) 7ms
+ ✓ src/lib/__tests__/agent-auto-continue.test.ts (3 tests) 9ms
+ ✓ src/components/workspace/__tests__/WorkspaceModeTabs.test.tsx (3 tests) 1058ms
+   ✓ WorkspaceModeTabs > renders all default mode tabs and supports wide mode  925ms
+ ✓ src/lib/__tests__/agent-product-scope-migration.test.ts (2 tests) 10ms
+ ✓ src/components/agent/__tests__/AgentImageSessionBinding.test.tsx (3 tests) 577ms
+   ✓ Agent image UI session binding > uses the active session when opening a gallery preview and its actions  451ms
+ ✓ src/components/canvas/lib/__tests__/canvas-prompt-routes.test.ts (5 tests) 8ms
+ ✓ src/lib/__tests__/slice-db.test.ts (3 tests) 8ms
+ ✓ src/components/agent/__tests__/AgentProposalCard.test.tsx (4 tests) 1018ms
+   ✓ AgentProposalCard > 生成提案自动勾选所属商品的全部图片，并隐藏其他商品图片  654ms
+stderr | src/components/agent/__tests__/AgentChatWorkspace.header.test.tsx > AgentChatWorkspace Header > 在 Agent 标题左侧渲染侧边栏触发按钮并支持点击
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+ ✓ src/components/agent/__tests__/AgentChatWorkspace.header.test.tsx (1 test) 625ms
+   ✓ AgentChatWorkspace Header > 在 Agent 标题左侧渲染侧边栏触发按钮并支持点击  622ms
+ ✓ src/components/canvas/lib/__tests__/canvas-storage-gc.test.ts (2 tests) 8ms
+ ✓ src/lib/__tests__/image-actions.agent-session.test.ts (1 test) 7ms
+ ✓ src/components/canvas/lib/__tests__/media-storage.test.ts (2 tests) 8ms
+ ✓ src/lib/__tests__/slice-transparency.test.ts (9 tests) 7ms
+ ✓ src/lib/__tests__/canvas-node-progress.test.ts (8 tests) 50ms
+ ✓ src/lib/__tests__/web-agent-context.test.ts (7 tests) 6ms
+ ✓ src/lib/__tests__/server-gpt-image-params.test.ts (5 tests) 6ms
+ ✓ src/lib/__tests__/agent-prompt-strip.test.ts (3 tests) 7ms
+stderr | src/hooks/__tests__/useAgentChat.test.tsx > useAgentChat session binding > disables Workspace send and upload controls before session restoration completes
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+ ✓ src/components/canvas/utils/__tests__/canvas-resource-references.test.ts (1 test) 4ms
+ ✓ src/lib/__tests__/agent-system-instructions.test.ts (7 tests) 5ms
+ ✓ src/components/__tests__/TextToImageForm.test.tsx (8 tests) 1481ms
+   ✓ TextToImageForm > renders the form with placeholder text  419ms
+ ✓ src/components/agent/__tests__/SessionSwitcher.test.tsx (11 tests) 2390ms
+   ✓ SessionSwitcher sidebar > always renders the session list with a prominent create button instead of a hidden dropdown  584ms
+   ✓ SessionSwitcher sidebar > disables sidebar actions while a session operation is busy  332ms
+ ✓ src/components/canvas/utils/__tests__/canvas-clipboard.test.ts (1 test) 4ms
+ ✓ src/lib/__tests__/desktop-cdp-defaults.test.ts (2 tests) 6ms
+stderr | src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx > WorkspaceShell Agent sessions > never initializes Agent sessions or mounts Agent when desktop disables it
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\plugin\PluginWorkbench.tsx:94:10
+}
+
+ ✓ src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx (3 tests) 612ms
+   ✓ WorkspaceShell Agent sessions > never initializes Agent sessions or mounts Agent when desktop disables it  320ms
+ ✓ src/components/canvas/components/__tests__/canvas-video-slots.test.ts (6 tests) 6ms
+stderr | src/components/canvas/__tests__/CanvasEditor.connections.test.tsx > CanvasEditor connections > deletes the selected connection with the Delete key
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+stderr | src/components/canvas/__tests__/CanvasEditor.routes.test.tsx > CanvasEditor prompt routes > lists complete routes and persists the selected route on the config
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+ ✓ src/hooks/__tests__/useAgentChat.test.tsx (27 tests) 3286ms
+   ✓ useAgentChat session binding > disables Workspace send and upload controls before session restoration completes  447ms
+   ✓ useAgentChat session binding > shows reedit for a failed background task without generated images  465ms
+ ✓ src/components/canvas/__tests__/CanvasEditor.connections.test.tsx (11 tests) 3079ms
+   ✓ CanvasEditor connections > deletes the selected connection with the Delete key  492ms
+   ✓ CanvasEditor connections > deletes the selected connection from the toolbar  372ms
+   ✓ CanvasEditor connections > aligns selected nodes from the arrange menu  445ms
+   ✓ CanvasEditor connections > box-selects nodes by default when dragging the blank canvas  337ms
+ ✓ src/components/canvas/__tests__/CanvasEditor.routes.test.tsx (18 tests) 6063ms
+   ✓ CanvasEditor prompt routes > lists complete routes and persists the selected route on the config  970ms
+   ✓ CanvasEditor prompt routes > undoes a prompt route selection  660ms
+   ✓ CanvasEditor prompt routes > undoes a burst of text input as one edit  307ms
+   ✓ CanvasEditor prompt routes > undoes an inline node rename as one edit  329ms
+   ✓ CanvasEditor prompt routes > generates from a selected route when the config supplement is empty  416ms
+   ✓ CanvasEditor prompt routes > keeps a completed remote result visible while local caching is pending  397ms
+   ✓ CanvasEditor prompt routes > preflights and submits multiple selected config nodes  603ms
+   ✓ CanvasEditor prompt routes > undoes a Markdown display-mode change  354ms
+   ✓ CanvasEditor prompt routes > changes canvas display options from one settings menu  320ms
+
+ Test Files  71 passed (71)
+      Tests  690 passed (690)
+   Start at  19:06:17
+   Duration  20.15s (transform 12.55s, setup 14.21s, collect 104.53s, tests 27.04s, environment 112.96s, prepare 14.91s)
+

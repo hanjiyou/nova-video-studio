@@ -1,0 +1,37 @@
+
+> nova-image-frontend@3.4.0 build
+> next build --webpack
+
+▲ Next.js 16.2.6 (webpack)
+
+  Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker is disabled, please call following code in componentDidMount callback or useEffect hook
+> [PWA]   window.workbox.register()
+> [PWA] Service worker: E:\Learn\AI\nova-image-studio\frontend\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+Failed to compile.
+
+./src/lib/connection-client.ts
+Error:   x The "use client" directive must be placed before other expressions. Move it to the top of the file to resolve this issue.
+   ,-[E:\Learn\AI\nova-image-studio\frontend\src\lib\connection-client.ts:2:1]
+ 1 | import { generateUUID } from '@/lib/uuid';
+ 2 | 'use client';
+   : ^^^^^^^^^^^^^
+ 3 | export interface ConnectionSummary {
+ 4 |   connectionId: string;
+ 4 |   connectionVersionId: string;
+   `----
+
+Import trace for requested module:
+./src/lib/connection-client.ts
+./src/lib/plugin-task-client.ts
+./src/components/plugin/PluginHistoryList.tsx
+./src/components/workspace/WorkspaceShell.tsx
+./src/app/page.tsx
+
+
+> Build failed because of webpack errors

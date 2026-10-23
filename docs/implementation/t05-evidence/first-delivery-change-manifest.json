@@ -1,0 +1,287 @@
+{
+  "baseHead": "02a32103b2baee5c493b7d836b7bfd42386164e7",
+  "branch": "dev",
+  "state": "uncommitted, unstaged, awaiting primary review",
+  "files": [
+    {
+      "path": "backend/server.js",
+      "bytes": 160291,
+      "sha256": "b6d19a13e6f1367c0826e9deebcdec0d4abca6e1e7b82399a585ca2a7ccc8b07"
+    },
+    {
+      "path": "backend/storage/migrations.js",
+      "bytes": 13743,
+      "sha256": "eb5ee3e8a64b89de0c1c1f4b0cd2f6872de25c59b37c8870e745e026641e0f6c"
+    },
+    {
+      "path": "backend/storage/store.js",
+      "bytes": 24594,
+      "sha256": "67767c552c9d47233474af2fdd00f79067dd445709038da7de2106c1d93a9297"
+    },
+    {
+      "path": "backend/tasks/plugin-adapter.js",
+      "bytes": 8261,
+      "sha256": "d7e7142e509697d9c94163ed0f7e76c12d77d379701dc52721bffa674d105e25"
+    },
+    {
+      "path": "backend/tasks/service.js",
+      "bytes": 30823,
+      "sha256": "64d107790c2e07291ec76469ee1b3dfc54234b8430234dac1b787218e46aad38"
+    },
+    {
+      "path": "backend/test/desktop-boundary.test.js",
+      "bytes": 14850,
+      "sha256": "e003ae4171c58686f7a50ce3a141bf8ba72c91968751389055242062b3d3fb3b"
+    },
+    {
+      "path": "backend/test/support/desktop-http-runtime.cjs",
+      "bytes": 6340,
+      "sha256": "1cdba30a9b3104ff26b507d1374b820d8305ac110d675c4c8909e3f56a590811"
+    },
+    {
+      "path": "backend/test/workbench-connections-http.test.js",
+      "bytes": 18468,
+      "sha256": "13817b070c4ea609c23027d1664668a85b08cef552d78467db751d6933ed6e36"
+    },
+    {
+      "path": "backend/test/workbench-connections.test.js",
+      "bytes": 25339,
+      "sha256": "3be2415a36df092d349e2deb942e3e1f1dcf43dea2f01bc19b349bd99e853915"
+    },
+    {
+      "path": "backend/test/workbench-storage-http.test.js",
+      "bytes": 18312,
+      "sha256": "a847c803ff648bfe06c9c4a82fe2ad2bf12bdae9aa88c4f9e0ed2ae86e62ff8c"
+    },
+    {
+      "path": "backend/test/workbench-task-adapter.test.js",
+      "bytes": 4837,
+      "sha256": "09f0133a8a7af5d1f90896fffc8150ebcd3b973a54a178dc124099749e774c55"
+    },
+    {
+      "path": "backend/test/workbench-tasks-http.test.js",
+      "bytes": 11247,
+      "sha256": "e017f060fbd78606b24d7bdb6f9940c0c37daf8d9a7459dea260f11be699ab2c"
+    },
+    {
+      "path": "backend/test/workbench-tasks.test.js",
+      "bytes": 22878,
+      "sha256": "f8c5e6cfcfe6c3c38adb88c02920bf2e9170c709159fb428bb194156aff7c40b"
+    },
+    {
+      "path": "docs/Nova-Studio改造分析与实施拆解.md",
+      "bytes": 25514,
+      "sha256": "8669cf899a951b890ade3d0ea81eecaa42abf0e3eff5c74250e6aff1b462d25d"
+    },
+    {
+      "path": "docs/Nova-Studio落地任务清单.md",
+      "bytes": 22110,
+      "sha256": "3d2d7e1a5490627270b91afde7e2defa34af222d4fdaa0ba83017b1c8cbdfdf7"
+    },
+    {
+      "path": "docs/acceptance/workbench-61.json",
+      "bytes": 50650,
+      "sha256": "9521ad805d57364694795688ef006bbbef33a8b6d59487f8972d3919a103f79c"
+    },
+    {
+      "path": "docs/acceptance/workbench-61.md",
+      "bytes": 17928,
+      "sha256": "0a1464fa9e2f65babb14c8b020ad28b2196037c7305c86819b7c0d1d7e45ecd0"
+    },
+    {
+      "path": "docs/connections-v1.md",
+      "bytes": 7310,
+      "sha256": "91ab724b5266188b4ba287a88a167e645718b7784c4000df9599603c78e0ca80"
+    },
+    {
+      "path": "docs/contracts/workbench-v1.md",
+      "bytes": 13532,
+      "sha256": "13e993b01fe4c54c23f57f878eab5462ea8279d877b6c856b5aea7d59411ff12"
+    },
+    {
+      "path": "docs/implementation/T05-任务状态机与重启恢复.md",
+      "bytes": 10074,
+      "sha256": "9cb854f6878f060aea949770247a5ffd178c53b67ef77b2bc530169e8ee53991"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/backend-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/backend-regression.log",
+      "bytes": 27358,
+      "sha256": "1b44753b7426d1139722b13fd5ce0337a5277efb8e41608a71ab601b79face12"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/command-results.json",
+      "bytes": 4372,
+      "sha256": "e23cfc3d79ef37013639a47d6c7b91978093f90a3ceca140a46cea91835f4e5a"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/final-checks.json",
+      "bytes": 306,
+      "sha256": "7097805ad9933d164062009aad4ccc7d4242dbb8e60f21dd2104197413308e8d"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/frontend-build.log",
+      "bytes": 925,
+      "sha256": "b50d0faddf4ac7f0ed1719b93314654bd2115be27f5a8434ff4847a3e31e952b"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/frontend-full-typecheck.log",
+      "bytes": 9854,
+      "sha256": "ac7d535d0c8606c7780be30ec795c3b86164e5c60c4070fe0547708613d5d05b"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/frontend-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/frontend-regression.log",
+      "bytes": 12249,
+      "sha256": "0859e6b89417d808993be263044efd5f5b61250b98cb817900e5de6b4f4dcfcd"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/frontend-targeted.log",
+      "bytes": 533,
+      "sha256": "35b2059b3123e6398b44eed3b3f96b42f3c23dddcc4aca659040f0c98164fa6d"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/initial-backend-regression.log",
+      "bytes": 28122,
+      "sha256": "198d76880ad44bbe280b764cb9af583166eccf0b79950a4b2dcc5c9dbb7a8ae3"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/initial-frontend-build.log",
+      "bytes": 1245,
+      "sha256": "befb8be189f176b1dc6b2f78a7bd01c2b93aa114d01a790939029d7d13f9e298"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/initial-observations.json",
+      "bytes": 1545,
+      "sha256": "43eb70562a43f2ef3abc5172ad626aa8a58de6622680d5faed63932e68e9e8b5"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/initial-unpacked-windows-package.log",
+      "bytes": 1303,
+      "sha256": "c3248df3044f7a931b8afea3a3b029963114e34532c7f9d08f9ebbdeb2799553"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/native-tasks-phase-1.json",
+      "bytes": 802,
+      "sha256": "4a400e9651bf5e4ef1dda6380e8c35c9f42d13803aa88fb76f86751d373319e3"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/native-tasks-phase-2.json",
+      "bytes": 1029,
+      "sha256": "b034a0d2c0ef7cd214b4166275337788921bec3aeda055ee4a70d73e23b3d516"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/native-tasks-requests.json",
+      "bytes": 95,
+      "sha256": "1004302d2a0336f4360f41ff8ab96ed63a273c1fe6e215ab4862b2647198aed0"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/native-tasks.log",
+      "bytes": 1647,
+      "sha256": "f41114e77d009dee120b3ec609b5d99d77f312d73bc8dcd1995b1f14075cc72f"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/package-audit.json",
+      "bytes": 3804,
+      "sha256": "9e2a6092a0abaa6223c2a610aed8107c0916750f5fee6541aaa484497fdf642f"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/packaged-evidence.json",
+      "bytes": 1743,
+      "sha256": "e87bd6f0344c8a149a05d66525abede51bb147020bfbd79b44976ac76b43fafc"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/packaged-smoke.log",
+      "bytes": 1799,
+      "sha256": "9690eb07521708ffa65468b15f6158d0ab69d5cd298ef26eb7d3586380468abc"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/tasks-targeted.log",
+      "bytes": 10582,
+      "sha256": "42fd549d10b73bdec54138dee04fa8cf4d7f691e018d968b5703ec0363625e1c"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/typecheck-baseline-comparison.json",
+      "bytes": 216,
+      "sha256": "a3c91b53f6b716e9a02cd1dc9a844ce0a3da6d341ad201e97860e1db6e453722"
+    },
+    {
+      "path": "docs/implementation/t05-evidence/unpacked-windows-package.log",
+      "bytes": 1115,
+      "sha256": "017c0d22c0e96d75dee8dc7c1fe7f4cfb12e9636540f5bad60ffcf5f5e8d9af3"
+    },
+    {
+      "path": "docs/storage-v1.md",
+      "bytes": 7514,
+      "sha256": "cee014c7baec4219849b85143c90a5750643cc579da890bafebafa3111d2607c"
+    },
+    {
+      "path": "docs/tasks-v1.md",
+      "bytes": 8002,
+      "sha256": "5b746316256ca741e7a0e776c7cc53f2dea8b740c9b47957fa798cd7029cfa4b"
+    },
+    {
+      "path": "electron-builder.yml",
+      "bytes": 2029,
+      "sha256": "60f07368097c1a145e26d669cf86395a6f8301ec0b6ce9e0d4685446a162b905"
+    },
+    {
+      "path": "frontend/src/components/canvas/canvas-video-generation-service.ts",
+      "bytes": 12623,
+      "sha256": "3e4fe122f267f2a83dc50d727625d92dc765f8b2932679b6cce4418ca4eef1b8"
+    },
+    {
+      "path": "frontend/src/lib/__tests__/connection-client.test.ts",
+      "bytes": 6285,
+      "sha256": "811905e82ba6afd809362642478f9e0630e3c69723ad71009cb3472da37c69c3"
+    },
+    {
+      "path": "frontend/src/lib/__tests__/workbench-task-client.test.ts",
+      "bytes": 4589,
+      "sha256": "e0539e21e0c8413ec39f46e12fa26c481043e0005887a75a977dc288b0a70174"
+    },
+    {
+      "path": "frontend/src/lib/ccode-task-client.ts",
+      "bytes": 12423,
+      "sha256": "c98b8f51b770e3e42a3184d58462d5eb36d8ef1e6f078ae557e0231fb25cf2b3"
+    },
+    {
+      "path": "frontend/src/lib/connection-client.ts",
+      "bytes": 5570,
+      "sha256": "87f86c4c931a87ad1bf90ee3c8d890f8b328f3dc2ec723aa2232eedae4bf1aa6"
+    },
+    {
+      "path": "frontend/src/lib/plugin-task-client.ts",
+      "bytes": 8256,
+      "sha256": "d6265ef0262ae57bd0fa90d7ed3fa53f283c86c03ef1f3fa5d26a2f69c8d7a95"
+    },
+    {
+      "path": "frontend/src/lib/workbench-task-client.ts",
+      "bytes": 3493,
+      "sha256": "590cef24065e568de2519b9d7461c68efc4532ea2894353dc13642a92c97ebe8"
+    },
+    {
+      "path": "scripts/electron-tasks-test-entry.cjs",
+      "bytes": 6400,
+      "sha256": "6cc1cc2d0eca2b378ea0e66f40580b50de71c577af510fcbdfe7f4e48816d055"
+    },
+    {
+      "path": "scripts/verify-desktop-tasks.cjs",
+      "bytes": 3260,
+      "sha256": "75fd5d31e76a088932ee22346c7417d5a2f73d4a2068d87424512a7cbe8f8cfc"
+    },
+    {
+      "path": "scripts/verify-t05-package-audit.cjs",
+      "bytes": 2824,
+      "sha256": "8bdc31fc3819d9b72a6765540cb5963f891a2182b2365f1b6abf87a3c17ef1c3"
+    }
+  ]
+}

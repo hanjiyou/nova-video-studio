@@ -1,0 +1,6 @@
+
+[network] undici Agent 已配置: TCP keepalive=15s, timeout=30min
+[image-storage] 图片存储目录: E:\Learn\AI\nova-image-studio\temp\t00-baseline\dev-first\data\nova-images
+[cdp] 商品素材存储目录: E:\Learn\AI\nova-image-studio\temp\t00-baseline\dev-first\data\cdp-products
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+Nova Studio server ready on http://localhost:51012

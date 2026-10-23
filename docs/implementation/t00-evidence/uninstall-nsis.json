@@ -1,0 +1,7 @@
+{
+  "databaseSnapshot": "temp/t00-baseline/installed-first/nova-tasks.sqlite",
+  "completedAt": "2026-10-23T14:22:40.5562799+08:00",
+  "exitCode": 0,
+  "testExecutableRemoved": true,
+  "remainingNovaInstallEntries": 0
+}

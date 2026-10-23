@@ -1,0 +1,49 @@
+{
+  "sourceCommit": "b8cd44cc083a0429f8df6a7c9fc5b935b7ae0731",
+  "nativeAddon": {
+    "installedPackageSha256": "e21e5efd71fba66578e95b62554d9028064a80dafd7221bf8a8ef155de8d240a",
+    "packagedPath": "E:\\Learn\\AI\\nova-image-studio\\release\\win-unpacked\\resources\\app.asar.unpacked\\node_modules\\better-sqlite3\\prebuilds\\win32-x64.node",
+    "packagedSha256": "e21e5efd71fba66578e95b62554d9028064a80dafd7221bf8a8ef155de8d240a",
+    "package": "better-sqlite3@13.0.3"
+  },
+  "branch": "dev",
+  "exitCodes": {
+    "developmentSmoke": 0,
+    "installedSmoke": 0,
+    "frontendBuild": 0,
+    "frontendTests": 0,
+    "backendNpmCi": 0,
+    "testUninstall": 0,
+    "frontendNpmCi": 0,
+    "nsisBuild": 0,
+    "nsisInstall": 0,
+    "rootNpmCi": 0,
+    "backendTests": 0
+  },
+  "completedAt": "2026-10-23T14:24:35.8564513+08:00",
+  "electronDownload": {
+    "zipPath": "C:\\Users\\Administrator\\AppData\\Local\\electron\\Cache\\d4f166ee3d4505ff7241d42867b8e9ae3e6abf1edb9d14c962556b01a114f158\\electron-v43.4.0-win32-x64.zip",
+    "sha256": "ef0709cfa719739acce73de6f9b684304baf38c6454376638a70d34a7cecffe0",
+    "mirrorInstallExitCode": 0,
+    "officialError": "github.com:443 connection timed out; UND_ERR_CONNECT_TIMEOUT",
+    "expectedSha256": "ef0709cfa719739acce73de6f9b684304baf38c6454376638a70d34a7cecffe0",
+    "officialDownloadExitCode": 1,
+    "version": "43.4.0",
+    "mirror": "https://npmmirror.com/mirrors/electron/"
+  },
+  "planningCommit": "20c9730",
+  "installer": {
+    "signature": "NotSigned",
+    "bytes": 111430694,
+    "sha256": "18c97098f41bd7f4ad81cdfe2d59382e02e7ad7511436558434536c1c09fc25b",
+    "path": "E:\\Learn\\AI\\nova-image-studio\\release\\Nova Image Studio-3.4.0-win-x64.exe"
+  },
+  "environment": {
+    "npm": "11.9.0",
+    "osRelease": "Microsoft Windows NT 10.0.22631.0",
+    "powershell": "7.6.7",
+    "git": "git version 2.42.0.windows.2",
+    "architecture": "x64",
+    "node": "v24.14.0"
+  }
+}

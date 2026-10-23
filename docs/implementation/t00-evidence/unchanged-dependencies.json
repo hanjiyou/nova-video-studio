@@ -1,0 +1,47 @@
+{
+  "comparison": "Normalize CRLF to LF, matching Git text checkout semantics",
+  "files": [
+    {
+      "file": "package.json",
+      "workingFileSha256": "2ec1a8035c385c289f9b60a1d863ca1bcee5a80c96462346e9996cf705e763de",
+      "workingLfSha256": "92873bac42699264d6f8a9d44b6405e6b37b50e98c8ec49ef533470470465d51",
+      "originalLfSha256": "92873bac42699264d6f8a9d44b6405e6b37b50e98c8ec49ef533470470465d51",
+      "unchangedAfterGitLineEndingNormalization": true
+    },
+    {
+      "file": "package-lock.json",
+      "workingFileSha256": "c7a8d6caa0f7bdd2823ca1e77cb0a5f529d2e8c6edebab9110c1529bccb5c97c",
+      "workingLfSha256": "429a165cec41d5260934d978d3d884a66b6e0ae3c279eba2f96fe764dd95c325",
+      "originalLfSha256": "429a165cec41d5260934d978d3d884a66b6e0ae3c279eba2f96fe764dd95c325",
+      "unchangedAfterGitLineEndingNormalization": true
+    },
+    {
+      "file": "frontend/package.json",
+      "workingFileSha256": "396ba1566211df11b3cf2c9256c7e33fc7f0134dca1935f2861fdbab9661790f",
+      "workingLfSha256": "735413682e1550aad3df1cd46f7e8d497e8d5d358cfd9d1468bad71291804f30",
+      "originalLfSha256": "735413682e1550aad3df1cd46f7e8d497e8d5d358cfd9d1468bad71291804f30",
+      "unchangedAfterGitLineEndingNormalization": true
+    },
+    {
+      "file": "frontend/package-lock.json",
+      "workingFileSha256": "c053f2acc59e4a5d169d865fcc86399c9712d768de4a408a8ba0293d12981bbd",
+      "workingLfSha256": "a195413e9ebd6704a6e3d0184df706cfe26fee08e788e01f17455e6e010608a2",
+      "originalLfSha256": "a195413e9ebd6704a6e3d0184df706cfe26fee08e788e01f17455e6e010608a2",
+      "unchangedAfterGitLineEndingNormalization": true
+    },
+    {
+      "file": "backend/package.json",
+      "workingFileSha256": "6b42a12c10aa541b4d7499ec69eebd6d2a47cb05d2f73d7be4ba9bb8a8d46f38",
+      "workingLfSha256": "1beeaccd8e260d9fd6eb1d8eed5f7bb40cdf19f460ae77be968006751c827ba9",
+      "originalLfSha256": "1beeaccd8e260d9fd6eb1d8eed5f7bb40cdf19f460ae77be968006751c827ba9",
+      "unchangedAfterGitLineEndingNormalization": true
+    },
+    {
+      "file": "backend/package-lock.json",
+      "workingFileSha256": "f50fe3aaf2a37a5a07144a7c046a45c1ae8a905811ac6c358227ae5f08836b3c",
+      "workingLfSha256": "e8893ec9f44448c22cb8041f2ead4b0f93cf861ae6e4c30a821bef8f0c5a112d",
+      "originalLfSha256": "e8893ec9f44448c22cb8041f2ead4b0f93cf861ae6e4c30a821bef8f0c5a112d",
+      "unchangedAfterGitLineEndingNormalization": true
+    }
+  ]
+}

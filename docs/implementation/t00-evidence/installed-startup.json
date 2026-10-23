@@ -1,0 +1,106 @@
+{
+  "startedAt": "2026-10-23T06:21:39.437Z",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t00-baseline\\installed-中文 路径\\Nova Image Studio.exe",
+  "outputDir": "E:\\Learn\\AI\\nova-image-studio\\temp\\t00-baseline\\installed-first",
+  "packaged": true,
+  "dataPolicy": "original installed default",
+  "providerRequests": "none; only local config/queue/DOM inspection",
+  "backendUrl": "http://127.0.0.1:51881",
+  "pid": 50944,
+  "config": {
+    "promptGalleryMode": "2",
+    "promptGalleryPasswordEnabled": false
+  },
+  "queueStatus": {
+    "concurrencyLimit": 50,
+    "configuredConcurrency": 50,
+    "processingCount": 0,
+    "queuedCount": 0,
+    "pendingCount": 0,
+    "maxQueueSize": 200,
+    "remainingQueueSlots": 200,
+    "displayConcurrency": 0,
+    "displayQueued": 0,
+    "acceptingNewTasks": true,
+    "rateLimitWindowMs": 60000,
+    "rateLimitMaxRequestsPerIp": 20,
+    "rateLimitMaxRequestsPerApiKey": 20,
+    "retryAfterSeconds": 30
+  },
+  "renderer": {
+    "readyState": "complete",
+    "title": "Nova Studio - AI 视频/图像生成器",
+    "url": "http://127.0.0.1:51881/",
+    "loaderPresent": false,
+    "text": "Nova Studio\n\n批量 API 图像生成器\n\n并发 0\n排队 0 (最大200)\n状态 开启\n随机图片\n跟随系统\n宽屏\n设置\nAgent\n会话\n1\n新建会话\n默认会话\nAgent\n清理上下文\n此对话包含的图片\n清空重开\n\n和我聊聊你想画什么，或上传图片让我帮你修改。\n\n我会判断你的意图，并在生成前请你确认。\n\n​\n上传图片\n图片素材\n提示词素材\n存提示词\n浏览器\n意图识别\nON",
+    "desktopVersions": {
+      "acorn": "8.16.0",
+      "ada": "3.4.4",
+      "amaro": "1.1.9",
+      "ares": "1.34.6",
+      "brotli": "1.2.0",
+      "cldr": "48.0",
+      "icu": "78.2",
+      "llhttp": "9.4.3",
+      "merve": "1.2.2",
+      "modules": "148",
+      "napi": "10",
+      "nbytes": "0.1.4",
+      "ncrypto": "0.0.1",
+      "nghttp2": "1.69.0",
+      "nghttp3": "",
+      "ngtcp2": "",
+      "node": "24.18.1",
+      "openssl": "0.0.0",
+      "simdjson": "4.6.4",
+      "simdutf": "7.7.0",
+      "sqlite": "3.53.1",
+      "tz": "2025c",
+      "undici": "7.29.0",
+      "unicode": "17.0",
+      "uv": "1.52.1",
+      "uvwasi": "0.0.23",
+      "v8": "15.0.245.28-electron.0",
+      "zlib": "1.3.2.1-motley",
+      "zstd": "1.6.0",
+      "electron": "43.4.0",
+      "chrome": "150.0.7871.224"
+    },
+    "requireType": "undefined",
+    "processType": "undefined"
+  },
+  "rendererExceptions": [],
+  "closeResponse": "CDP socket closed",
+  "childExit": {
+    "code": 0,
+    "signal": null
+  },
+  "database": {
+    "path": "E:\\Learn\\AI\\nova-image-studio\\temp\\t00-baseline\\installed-中文 路径\\data\\nova-tasks.sqlite",
+    "bytes": 53248,
+    "quickCheck": [
+      {
+        "quick_check": "ok"
+      }
+    ],
+    "sqliteVersion": {
+      "version": "3.53.4"
+    },
+    "tables": [
+      {
+        "name": "plugin_media"
+      },
+      {
+        "name": "sqlite_sequence"
+      },
+      {
+        "name": "task_items"
+      },
+      {
+        "name": "tasks"
+      }
+    ]
+  },
+  "status": "passed",
+  "finishedAt": "2026-10-23T06:21:41.731Z"
+}

@@ -1,0 +1,53 @@
+
+> nova-image@3.4.0 electron:dist:win
+> npm run build && electron-builder --win --config electron-builder.yml
+
+
+> nova-image@3.4.0 build
+> cd frontend && npm run build
+
+
+> nova-image-frontend@3.4.0 build
+> next build --webpack
+
+▲ Next.js 16.2.6 (webpack)
+
+  Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker with: E:\Learn\AI\nova-image-studio\frontend\node_modules\next-pwa\register.js
+> [PWA] Service worker: E:\Learn\AI\nova-image-studio\frontend\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+✓ Compiled successfully in 5.6s
+  Running TypeScript ...
+  Finished TypeScript in 13.8s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 813ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  • skipped dependencies rebuild  reason=npmRebuild is set to false
+  • packaging       platform=win32 arch=x64 electron=43.4.0 appOutDir=release\win-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=E:\Learn\AI\nova-image-studio\release\win-unpacked
+  • searching for node modules  pm=npm searchDir=E:\Learn\AI\nova-image-studio
+  • updating asar integrity executable resource  executablePath=release\win-unpacked\Nova Image Studio.exe
+  • executable resource editing and code signing skipped — signAndEditExecutable is false. To skip only code signing while keeping icon and metadata applied, use signExecutable: false instead.  exe=release\win-unpacked\Nova Image Studio.exe
+  • building        target=nsis file=release\Nova Image Studio-3.4.0-win-x64.exe archs=x64 oneClick=false perMachine=false
+  • default Electron icon is used  reason=application icon is not set
+  • signing with signtool.exe  path=release\Nova Image Studio-3.4.0-win-x64.__uninstaller.exe
+  • signing with signtool.exe  path=release\Nova Image Studio-3.4.0-win-x64.exe
+  • building block map  blockMapFile=release\Nova Image Studio-3.4.0-win-x64.exe.blockmap

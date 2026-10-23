@@ -7,6 +7,7 @@ const path = require('path');
 const next = process.env.NODE_ENV !== 'production' ? require('next') : null;
 const Database = require('better-sqlite3');
 const { WebSocketServer } = require('ws');
+const desktopSession = require('./desktop-session');
 const { CdpError, getCdpStatus, listPageTargets, evaluateInPage, capturePageScreenshot, fetchResourceInPage, openTarget, normalizeCdpHost } = require('./cdp');
 const { TAOBAO_EXTRACT_EXPRESSION } = require('./taobao-extract');
 const { buildDoubaoImagesUrl, resolveDoubaoImageSize, buildDoubaoImagePayload, DEFAULT_ARK_BASE_URL } = require('./doubao');
@@ -150,6 +151,9 @@ const STATIC_DIR = path.join(__dirname, '..', 'frontend', 'out');
 const IMAGE_DIR = process.env.NOVA_IMAGE_DIR || path.join(__dirname, 'nova-images');
 // CDP 功能为启动级开关：默认关闭，显式置 true 时才提供 /api/nova/cdp/*。
 const CDP_ENABLED = String(process.env.NOVA_CDP_ENABLED ?? 'false').toLowerCase() === 'true';
+const AGENT_ENABLED = !desktopSession.isDesktopMode() || process.env.NOVA_AGENT_ENABLED === 'true';
+const lifecycleTimers = new Set();
+const activeRequestControllers = new Set();
 const CDP_DIR = process.env.NOVA_CDP_DIR || path.join(path.dirname(IMAGE_DIR), 'cdp-products');
 const taskRefImages = new Map();
 
@@ -184,7 +188,7 @@ function cleanupOldCdpImages() {
 
     if (toDelete.length > 0) {
       for (const p of toDelete) {
-        try { fs.unlinkSync(p); } catch {}
+        try { fs.unlinkSync(p); } catch { /* best-effort legacy file cleanup */ }
       }
       console.log(`✓ CDP 图片清理：删除 ${toDelete.length} 张旧图（保留最近 7 天或最多 100 张）`);
     }
@@ -194,8 +198,10 @@ function cleanupOldCdpImages() {
 }
 
 // 启动时清理一次，之后每小时清理一次
-cleanupOldCdpImages();
-setInterval(cleanupOldCdpImages, 60 * 60 * 1000);
+if (CDP_ENABLED) {
+  cleanupOldCdpImages();
+  lifecycleTimers.add(setInterval(cleanupOldCdpImages, 60 * 60 * 1000));
+}
 
 const app = IS_DEV ? next({ dev: IS_DEV, hostname: HOSTNAME, port: PORT, dir: path.join(__dirname, '..', 'frontend') }) : null;
 const handle = app ? app.getRequestHandler() : null;
@@ -322,7 +328,7 @@ function readCdpRuntimeConfig() {
   }
   try {
     // 用户用记事本/PowerShell 手工编辑可能带入 UTF-8 BOM，先剥离再解析
-    const parsed = JSON.parse(fs.readFileSync(CDP_RUNTIME_CONFIG_PATH, 'utf8').replace(/^﻿/, ''));
+    const parsed = JSON.parse(fs.readFileSync(CDP_RUNTIME_CONFIG_PATH, 'utf8').replace(/^\uFEFF/, ''));
     const config = parsed && typeof parsed === 'object' ? parsed : {};
     cdpRuntimeConfigCache = config;
     cdpRuntimeConfigCacheTime = now;
@@ -752,7 +758,7 @@ function purgeCdpProductFiles(files) {
         fs.unlinkSync(filePath);
         deleted += 1;
       }
-    } catch {}
+    } catch { /* best-effort legacy file cleanup */ }
   }
   return deleted;
 }
@@ -1765,11 +1771,13 @@ try {
 
 async function fetchWithTimeout(url, init) {
   const controller = new AbortController();
+  activeRequestControllers.add(controller);
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     return await fetch(url, { ...init, signal: controller.signal });
   } finally {
     clearTimeout(timeout);
+    activeRequestControllers.delete(controller);
   }
 }
 
@@ -1789,7 +1797,7 @@ async function generateNovaImage(apiKey, request) {
         partialImages: IMAGE_STREAM_PARTIAL_IMAGES,
       });
     } catch (error) {
-      if (!isImageStreamUnsupportedError(error)) throw error;
+      if (desktopSession.isDesktopMode() || !isImageStreamUnsupportedError(error)) throw error;
       console.warn('[image-stream] 上游不支持图片流式参数，回退非流式请求');
       return requestGptImage(apiKey, request, resolvedSize, { baseUrl });
     }
@@ -2580,7 +2588,7 @@ function setupWebSocketServer() {
     });
   });
 
-  setInterval(() => {
+  const heartbeatTimer = setInterval(() => {
     for (const ws of wss.clients) {
       if (ws.readyState !== ws.OPEN) continue;
       const state = wsAlive.get(ws);
@@ -2595,6 +2603,7 @@ function setupWebSocketServer() {
       try { ws.ping(); } catch { /* ignore */ }
     }
   }, WS_HEARTBEAT_INTERVAL_MS).unref();
+  lifecycleTimers.add(heartbeatTimer);
 
   return wss;
 }
@@ -2651,38 +2660,32 @@ function closeTaskDatabase() {
   }
 }
 
+async function shutdown({ drain = true, timeoutMs = 2000 } = {}) {
+  if (shutdownPromise) return shutdownPromise;
+  isShuttingDown = true;
+  shutdownPromise = (async () => {
+    for (const timer of lifecycleTimers) clearInterval(timer);
+    lifecycleTimers.clear();
+    if (queueBroadcastTimer) clearTimeout(queueBroadcastTimer);
+    if (!drain) for (const controller of activeRequestControllers) controller.abort();
+    const closing = Promise.allSettled([closeHttpServer(httpServerRef), closeWebSocketServer(wsServerRef)]);
+    if (!drain) {
+      httpServerRef?.closeAllConnections?.();
+      const timer = setTimeout(() => { for (const ws of wsServerRef?.clients || []) ws.terminate(); }, 100);
+      await closing;
+      clearTimeout(timer);
+      let deadline;
+      await Promise.race([waitForRunningTasks(), new Promise(resolve => { deadline = setTimeout(resolve, timeoutMs); })]);
+      clearTimeout(deadline);
+    } else { await closing; await waitForRunningTasks(); }
+    checkpointTaskDatabase();
+    closeTaskDatabase();
+  })();
+  return shutdownPromise;
+}
 function registerShutdownHandlers() {
-  const handleShutdownSignal = signal => {
-    if (shutdownPromise) return shutdownPromise;
-
-    shutdownPromise = (async () => {
-      isShuttingDown = true;
-      console.log(`[shutdown] 收到 ${signal}，开始优雅退出`);
-
-      await Promise.allSettled([
-        closeHttpServer(httpServerRef),
-        closeWebSocketServer(wsServerRef),
-      ]);
-
-      await waitForRunningTasks();
-      checkpointTaskDatabase();
-      closeTaskDatabase();
-      process.exit(0);
-    })().catch(error => {
-      console.error('[shutdown] 优雅退出失败', error);
-      closeTaskDatabase();
-      process.exit(1);
-    });
-
-    return shutdownPromise;
-  };
-
-  process.on('SIGTERM', () => {
-    void handleShutdownSignal('SIGTERM');
-  });
-
-  process.on('SIGINT', () => {
-    void handleShutdownSignal('SIGINT');
+  for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => {
+    void shutdown({ drain: !desktopSession.isDesktopMode() }).then(() => process.exit(0)).catch(() => process.exit(1));
   });
 }
 
@@ -2880,6 +2883,7 @@ async function handleApi(req, res, pathname, searchParams) {
 
     // ===== 文本 AI 代理（流式 + 非流式，多文本协议） =====
     if (req.method === 'POST' && apiPathname === '/api/nova/proxy/text') {
+      if (!AGENT_ENABLED) { sendJson(res, 403, { code: 'AGENT_DISABLED', error: '桌面版默认关闭文本 Agent 服务。' }); return true; }
       try {
         const body = await readJsonBody(req);
         const { protocol, baseUrl, apiKey, model, stream, requestBody } = body;
@@ -3460,19 +3464,26 @@ async function handleApi(req, res, pathname, searchParams) {
 
 initDatabase();
 ensureImageDir();
-ensureCdpDir();
+if (CDP_ENABLED) ensureCdpDir();
 cleanupExpiredTasks();
 pluginMedia.cleanupExpired();
 // 启动时把插件扫一遍：加载成功/失败都会打日志，管理员放错文件时立刻能看到
 pluginRegistry.listPlugins();
-setInterval(cleanupExpiredTasks, CLEANUP_INTERVAL_MS).unref();
-setInterval(() => pluginMedia.cleanupExpired(), CLEANUP_INTERVAL_MS).unref();
-setInterval(cleanupRateLimitBuckets, CLEANUP_INTERVAL_MS).unref();
+lifecycleTimers.add(setInterval(cleanupExpiredTasks, CLEANUP_INTERVAL_MS).unref());
+lifecycleTimers.add(setInterval(() => pluginMedia.cleanupExpired(), CLEANUP_INTERVAL_MS).unref());
+lifecycleTimers.add(setInterval(cleanupRateLimitBuckets, CLEANUP_INTERVAL_MS).unref());
 
+let resolveReady;
+let rejectReady;
+const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
+ready.catch(() => {});
 const startServer = () => {
   const wss = setupWebSocketServer();
   const httpServer = http.createServer(async (req, res) => {
-    const parsedUrl = new URL(req.url || '/', `http://${req.headers.host || `${HOSTNAME}:${PORT}`}`);
+    let parsedUrl;
+    try { parsedUrl = new URL(req.url || '/', 'http://127.0.0.1'); } catch { res.writeHead(400); res.end(); return; }
+    const authorization = desktopSession.authorizeDesktopRequest(req, { sensitive: parsedUrl.pathname.startsWith('/api/') || !['GET', 'HEAD'].includes(req.method) });
+    if (!authorization.ok) { sendJson(res, authorization.status, { code: authorization.code, error: 'Desktop session required' }); return; }
     if (parsedUrl.pathname?.startsWith('/api/nova/')) {
       const handled = await handleApi(req, res, parsedUrl.pathname, parsedUrl.searchParams);
       if (handled || res.headersSent || res.writableEnded) return;
@@ -3498,6 +3509,8 @@ const startServer = () => {
       socket.destroy();
       return;
     }
+    const authorization = desktopSession.authorizeDesktopRequest(req, { websocket: true });
+    if (!authorization.ok) { socket.end('HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n'); return; }
     if (pathname === '/api/nova/ws') {
       wss.handleUpgrade(req, socket, head, ws => wss.emit('connection', ws, req));
       return;
@@ -3509,7 +3522,9 @@ const startServer = () => {
     socket.destroy();
   });
 
+  httpServer.once('error', rejectReady);
   httpServer.listen(PORT, HOSTNAME, () => {
+    resolveReady();
     const localUrl = `http://localhost:${PORT}`;
     const listenUrl = `http://${HOSTNAME}:${PORT}`;
     console.log(`Nova Studio server ready on ${localUrl}`);
@@ -3522,7 +3537,7 @@ const startServer = () => {
   httpServerRef = httpServer;
 };
 
-module.exports = { isLoopbackAddress };
+module.exports = { isLoopbackAddress, ready, shutdown };
 
 registerShutdownHandlers();
 

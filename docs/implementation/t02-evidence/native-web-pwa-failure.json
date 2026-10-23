@@ -1,0 +1,34 @@
+{
+  "startedAt": "2026-10-23T07:18:02.333Z",
+  "providerRequests": "none",
+  "checks": {
+    "default Agent and browser automation disabled": true,
+    "no Agent tab mounted": true,
+    "image workbench selected": true,
+    "Node globals absent": true,
+    "real renderer HTTP authorized": true,
+    "renderer cannot forge session authority": true,
+    "real renderer WS authorized": true,
+    "unauthenticated HTTP denied": true,
+    "session captured only in test main": true,
+    "session absent from renderer bridge/storage/cookies": true,
+    "session absent from process argv/env": true,
+    "runtime info uses narrow IPC": true,
+    "renderer paths rejected by asset IPC": true,
+    "valid asset explicitly not ready before T03/T08": true,
+    "desktop has no registered service worker": true,
+    "desktop service worker registration blocked": true,
+    "worker cannot access backend session": true,
+    "iframe cannot access backend session": true,
+    "other webContents cannot access backend session": true,
+    "Web default Agent retained": true
+  },
+  "workerStatus": -2,
+  "cspViolations": [
+    "worker-src"
+  ],
+  "iframeStatus": 0,
+  "status": "failed",
+  "error": "Error: Timed out\n    at until (E:\\Learn\\AI\\nova-image-studio\\scripts\\electron-boundary-test-entry.cjs:21:224)\n    at async run (E:\\Learn\\AI\\nova-image-studio\\scripts\\electron-boundary-test-entry.cjs:63:3)",
+  "finishedAt": "2026-10-23T07:18:23.828Z"
+}

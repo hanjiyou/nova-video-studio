@@ -1,0 +1,7 @@
+{
+  "TimeCreated": "2026-10-23T15:25:15.4345802+08:00",
+  "Id": 1000,
+  "ProviderName": "Application Error",
+  "LevelDisplayName": "错误",
+  "Message": "错误应用程序名称: Nova Image Studio-3.4.0-win-x64.exe，版本: 3.4.0.0，时间戳: 0x5c157f86\r\n错误模块名称: ntdll.dll，版本: 10.0.22621.6060，时间戳: 0x4009274b\r\n异常代码: 0xc0000409\r\n错误偏移量: 0x000d47da\r\n错误进程 ID: 0x0xF2EC\r\n错误应用程序启动时间: 0x0x1DD62BF9D945B3D\r\n错误应用程序路径: E:\\Learn\\AI\\nova-image-studio\\release-t02\\Nova Image Studio-3.4.0-win-x64.exe\r\n错误模块路径: C:\\Windows\\SYSTEM32\\ntdll.dll\r\n报告 ID: f69159f6-48cb-42ff-b39b-dab109da8abe\r\n错误程序包全名: OpenAI.Codex_26.1016.6573.0_x64__2p2nqsd0c76g0\r\n错误程序包相对应用程序 ID: App"
+}

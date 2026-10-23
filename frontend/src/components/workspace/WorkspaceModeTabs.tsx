@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 
 interface WorkspaceModeTabsProps {
   wideMode?: boolean;
+  agentEnabled?: boolean;
   showPromptGallery?: boolean;
 }
 
@@ -24,9 +25,10 @@ const tabs = [
 
 const galleryTab = { value: 'prompt-gallery', icon: LibraryBig, label: '提示词广场' } as const;
 
-export function WorkspaceModeTabs({ wideMode = false, showPromptGallery = false }: WorkspaceModeTabsProps) {
-  const gridCols = showPromptGallery ? 'sm:grid-cols-9' : 'sm:grid-cols-8';
-  const allTabs = showPromptGallery ? [...tabs, galleryTab] : tabs;
+export function WorkspaceModeTabs({ wideMode = false, showPromptGallery = false, agentEnabled = true }: WorkspaceModeTabsProps) {
+  const visibleTabs = tabs.filter(tab => tab.value !== 'agent' || agentEnabled);
+  const allTabs = showPromptGallery ? [...visibleTabs, galleryTab] : visibleTabs;
+  const gridCols = allTabs.length === 9 ? 'sm:grid-cols-9' : allTabs.length === 8 ? 'sm:grid-cols-8' : 'sm:grid-cols-7';
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [isCompact, setIsCompact] = useState(false);

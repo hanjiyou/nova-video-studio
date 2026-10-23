@@ -1,0 +1,30 @@
+{
+  "firstInstall": {
+    "code": -1073740791,
+    "windowsException": "0xc0000409",
+    "module": "ntdll.dll",
+    "filesCopied": true,
+    "installedStartup": "passed"
+  },
+  "firstUninstall": {
+    "exe": "E:\\Learn\\AI\\nova-image-studio\\temp\\t02-installed\\Uninstall Nova Image Studio.exe",
+    "args": [
+      "/S"
+    ],
+    "code": 0,
+    "signal": null,
+    "finishedAt": "2026-10-23T07:29:08.991Z"
+  },
+  "executableRemoved": true,
+  "retryInstall": {
+    "exe": "E:\\Learn\\AI\\nova-image-studio\\release-t02\\Nova Image Studio-3.4.0-win-x64.exe",
+    "args": [
+      "/S",
+      "/D=E:\\Learn\\AI\\nova-image-studio\\temp\\t02-installed"
+    ],
+    "code": 0,
+    "signal": null,
+    "finishedAt": "2026-10-23T07:29:21.637Z"
+  },
+  "retryExecutablePresent": true
+}

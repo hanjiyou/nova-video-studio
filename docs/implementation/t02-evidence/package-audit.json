@@ -1,0 +1,29 @@
+{
+  "artifact": "E:\\Learn\\AI\\nova-image-studio\\release-t02\\Nova Image Studio-3.4.0-win-x64.exe",
+  "bytes": 111434065,
+  "sha256": "bdb3260aa53b20898822639cfa42f1836d7598e74e4ea1abfae276c5da526b0b",
+  "archive": "E:\\Learn\\AI\\nova-image-studio\\release-t02\\win-unpacked\\resources\\app.asar",
+  "requiredModulesPresent": [
+    "/backend/desktop-session.js",
+    "/desktop/main.cjs",
+    "/desktop/preload.cjs",
+    "/desktop/runtime.cjs",
+    "/desktop/network.cjs",
+    "/desktop/session-policy.cjs",
+    "/desktop/ipc.cjs"
+  ],
+  "testHarnessesShipped": false,
+  "testsShipped": false,
+  "package": {
+    "name": "nova-image",
+    "version": "3.4.0",
+    "private": true,
+    "description": "Nova Studio - AI 视频/图像生成工作台",
+    "main": "desktop/main.cjs",
+    "dependencies": {
+      "better-sqlite3": "^13.0.3",
+      "undici": "^8.2.0",
+      "ws": "^8.20.0"
+    }
+  }
+}

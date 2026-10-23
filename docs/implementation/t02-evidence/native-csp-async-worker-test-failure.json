@@ -1,0 +1,26 @@
+{
+  "startedAt": "2026-10-23T07:16:59.907Z",
+  "providerRequests": "none",
+  "checks": {
+    "default Agent and browser automation disabled": true,
+    "no Agent tab mounted": true,
+    "image workbench selected": true,
+    "Node globals absent": true,
+    "real renderer HTTP authorized": true,
+    "renderer cannot forge session authority": true,
+    "real renderer WS authorized": true,
+    "unauthenticated HTTP denied": true,
+    "session captured only in test main": true,
+    "session absent from renderer bridge/storage/cookies": true,
+    "session absent from process argv/env": true,
+    "runtime info uses narrow IPC": true,
+    "renderer paths rejected by asset IPC": true,
+    "valid asset explicitly not ready before T03/T08": true,
+    "desktop has no registered service worker": true,
+    "desktop service worker registration blocked": true
+  },
+  "workerStatus": -1,
+  "status": "failed",
+  "error": "AssertionError [ERR_ASSERTION]: worker cannot access backend session\n    at check (E:\\Learn\\AI\\nova-image-studio\\scripts\\electron-boundary-test-entry.cjs:20:41)\n    at run (E:\\Learn\\AI\\nova-image-studio\\scripts\\electron-boundary-test-entry.cjs:48:3)",
+  "finishedAt": "2026-10-23T07:17:04.750Z"
+}

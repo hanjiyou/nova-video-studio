@@ -1,6 +1,10 @@
-// 桌面壳 preload：只向渲染进程暴露版本信息，不开放任何 Node 能力
-const { contextBridge } = require('electron');
-
+'use strict';
+const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('novaDesktop', {
   versions: process.versions,
+  features: Object.freeze({ agent: process.argv.includes('--nova-agent-enabled=true'), browserAutomation: process.argv.includes('--nova-cdp-enabled=true'), serviceWorker: false }),
+  getRuntimeInfo: () => ipcRenderer.invoke('nova:runtime-info'),
+  chooseOutputDirectory: () => ipcRenderer.invoke('nova:choose-output-directory'),
+  saveAssetCopy: assetId => ipcRenderer.invoke('nova:save-asset-copy', assetId),
+  revealAsset: assetId => ipcRenderer.invoke('nova:reveal-asset', assetId),
 });

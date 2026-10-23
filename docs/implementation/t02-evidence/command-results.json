@@ -1,0 +1,122 @@
+[
+  {
+    "name": "backend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test"
+    ],
+    "startedAt": "2026-10-23T07:25:15.665Z",
+    "finishedAt": "2026-10-23T07:25:39.043Z",
+    "exitCode": 0,
+    "log": "backend-regression.log"
+  },
+  {
+    "name": "frontend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--reporter=dot"
+    ],
+    "startedAt": "2026-10-23T07:25:15.683Z",
+    "finishedAt": "2026-10-23T07:25:45.512Z",
+    "exitCode": 0,
+    "log": "frontend-regression.log"
+  },
+  {
+    "name": "backend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/eslint/bin/eslint.js",
+      "server.js",
+      "desktop-session.js",
+      "test/desktop-boundary.test.js"
+    ],
+    "startedAt": "2026-10-23T07:25:15.694Z",
+    "finishedAt": "2026-10-23T07:25:19.428Z",
+    "exitCode": 0,
+    "log": "backend-lint.log"
+  },
+  {
+    "name": "frontend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/ServiceWorkerManager.tsx",
+      "src/components/workspace/WorkspaceModeTabs.tsx",
+      "src/components/workspace/WorkspaceShell.tsx",
+      "src/hooks/useDesktopFeatures.ts",
+      "src/types/nova-desktop.d.ts",
+      "src/lib/__tests__/desktop-cdp-defaults.test.ts",
+      "src/components/__tests__/ServiceWorkerManager.test.tsx",
+      "src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx",
+      "next.config.ts"
+    ],
+    "startedAt": "2026-10-23T07:25:15.706Z",
+    "finishedAt": "2026-10-23T07:25:38.118Z",
+    "exitCode": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "frontend-build",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "exitCode": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "windows-package",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "node_modules/electron-builder/cli.js",
+      "--win",
+      "--x64",
+      "--config",
+      "temp/electron-builder-t02.yml"
+    ],
+    "exitCode": 0,
+    "log": "packaging.log",
+    "config": "packaging-config.yml"
+  },
+  {
+    "name": "native-boundary",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-boundary.cjs",
+      "temp/t02-native-release-evidence"
+    ],
+    "exitCode": 0,
+    "evidence": "native-boundary-evidence.json"
+  },
+  {
+    "name": "installed-system",
+    "exitCode": 0,
+    "evidence": "installed-system-evidence.json"
+  },
+  {
+    "name": "installed-override",
+    "exitCode": 0,
+    "evidence": "installed-override-evidence.json"
+  },
+  {
+    "name": "installed-portable",
+    "exitCode": 0,
+    "evidence": "installed-portable-evidence.json"
+  },
+  {
+    "name": "installed-reinstall",
+    "exitCode": 0,
+    "evidence": "installed-reinstall-evidence.json"
+  }
+]

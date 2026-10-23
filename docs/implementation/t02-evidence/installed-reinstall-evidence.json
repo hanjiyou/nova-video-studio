@@ -1,0 +1,39 @@
+{
+  "startedAt": "2026-10-23T07:30:22.398Z",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t02-installed\\Nova Image Studio.exe",
+  "mode": "override",
+  "providerRequests": "none",
+  "checks": {
+    "expected storage mode": true,
+    "desktop defaults disabled": true,
+    "main renderer HTTP authorized": true,
+    "unauthenticated API rejected": true,
+    "main renderer WS authorized": true,
+    "desktop PWA not registered": true,
+    "Node globals unavailable": true,
+    "explicit data policy honored": true,
+    "clean desktop exit": true
+  },
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "dataDirectory": "E:\\Learn\\AI\\nova-image-studio\\temp\\t02-package-reinstall\\data",
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "databaseQuickCheck": [
+    {
+      "quick_check": "ok"
+    }
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-23T07:30:28.847Z"
+}

@@ -30,13 +30,14 @@ function extractChromeLaunchArgs(source: string): string {
 }
 
 describe('desktop CDP default launch contract', () => {
-  it('defaults NOVA_CDP_LAUNCH_ENABLED to true whenever desktop CDP is on by default', () => {
+  it('disables desktop Agent, CDP and browser launch unless explicitly enabled', () => {
     const prepareBackendEnv = extractFunction(desktopSource, 'prepareBackendEnv');
     const cdpEnabledDefault = envNullishDefault(prepareBackendEnv, 'NOVA_CDP_ENABLED');
     const launchEnabledDefault = envNullishDefault(prepareBackendEnv, 'NOVA_CDP_LAUNCH_ENABLED');
 
-    expect(cdpEnabledDefault).toBe('true');
-    expect(launchEnabledDefault).toBe('true');
+    expect(cdpEnabledDefault).toBe('false');
+    expect(envNullishDefault(prepareBackendEnv, 'NOVA_AGENT_ENABLED')).toBe('false');
+    expect(launchEnabledDefault).toBe('false');
   });
 
   it('binds launched Chrome remote debugging to loopback 127.0.0.1', () => {

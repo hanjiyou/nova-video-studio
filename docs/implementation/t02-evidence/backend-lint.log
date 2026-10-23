@@ -1,0 +1,2 @@
+Command: C:\Program Files\nodejs\node.exe node_modules/eslint/bin/eslint.js server.js desktop-session.js test/desktop-boundary.test.js
+CWD: E:\Learn\AI\nova-image-studio\backend

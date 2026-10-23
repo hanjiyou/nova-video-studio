@@ -16,6 +16,7 @@ import { SliceWorkspace } from '@/components/slice/SliceWorkspace';
 import { PromptGallery } from '@/components/PromptGallery';
 import { SettingsModal, type SettingsTab } from '@/components/SettingsModal';
 import { MissingApiKeyDialog } from '@/components/MissingApiKeyDialog';
+import { useDesktopFeatures } from '@/hooks/useDesktopFeatures';
 import { useQueueStatus } from '@/hooks/useQueueStatus';
 import { useWideMode } from '@/hooks/useWideMode';
 import { useServerTaskPolling } from '@/hooks/useServerTaskPolling';
@@ -53,6 +54,7 @@ import { getActiveAgentSessionId, setActiveAgentSessionId } from '@/lib/agent-se
 import { setAgentSession } from '@/lib/agent-context-store';
 
 export function WorkspaceShell() {
+  const agentEnabled = useDesktopFeatures()?.agent ?? null;
   const queueStatus = useQueueStatus();
   const { wideMode, toggleWideMode } = useWideMode();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -64,7 +66,8 @@ export function WorkspaceShell() {
   }, []);
   const [missingApiKeyDialogOpen, setMissingApiKeyDialogOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'image-generation' | 'video-generation' | 'agent' | 'canvas' | 'image-to-slice' | 'assets' | 'reverse-prompt' | 'gif' | 'prompt-gallery'>('agent');
+  const [selectedTab, setActiveTab] = useState<'image-generation' | 'video-generation' | 'agent' | 'canvas' | 'image-to-slice' | 'assets' | 'reverse-prompt' | 'gif' | 'prompt-gallery'>('agent');
+  const activeTab = agentEnabled === false && selectedTab === 'agent' ? 'image-generation' : selectedTab;
   const [videoInitialJob, setVideoInitialJob] = useState<PluginJob | null>(null);
   const [generationHistoryFilter, setGenerationHistoryFilter] = useState<GenerationHistoryFilter>('all');
   const [generationClearScope, setGenerationClearScope] = useState<HistoryClearScope | null>(null);
@@ -76,6 +79,7 @@ export function WorkspaceShell() {
   const [agentSidebarOpen, setAgentSidebarOpen] = useState(false);
 
   useEffect(() => {
+    if (agentEnabled !== true) return;
     let cancelled = false;
     const sessionId = getActiveAgentSessionId();
 
@@ -86,7 +90,7 @@ export function WorkspaceShell() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [agentEnabled]);
 
   const handleAgentSessionChange = useCallback(async (sessionId: string) => {
     if (!sessionId || sessionId === activeSessionId) return;
@@ -274,7 +278,7 @@ export function WorkspaceShell() {
 
           <Tabs
             value={activeTab}
-            onValueChange={value => setActiveTab(value as typeof activeTab)}
+            onValueChange={value => { if (value !== 'agent' || agentEnabled === true) setActiveTab(value as typeof activeTab); }}
             orientation={wideMode ? 'vertical' : 'horizontal'}
             className={cn(
               wideMode
@@ -304,7 +308,7 @@ export function WorkspaceShell() {
                 </button>
               )}
               <div className={cn(wideMode ? 'flex flex-col py-4 flex-1' : 'flex flex-col py-1')}>
-                <WorkspaceModeTabs wideMode={wideMode} showPromptGallery={promptGallery.showPromptGallery} />
+                <WorkspaceModeTabs agentEnabled={agentEnabled !== false} wideMode={wideMode} showPromptGallery={promptGallery.showPromptGallery} />
               </div>
 
               {wideMode && (
@@ -427,7 +431,7 @@ export function WorkspaceShell() {
                 keepMounted
                 className={cn('flex-1 flex flex-col min-h-0', wideMode && 'xl:flex xl:min-h-0 xl:flex-1 xl:flex-col')}
               >
-                {activeSessionId && (
+                {agentEnabled === true && activeSessionId && (
                   <div className="flex min-h-0 flex-1 gap-3">
                     <SessionSwitcher
                       activeSessionId={activeSessionId}
@@ -436,14 +440,14 @@ export function WorkspaceShell() {
                       onMobileOpenChange={setAgentSidebarOpen}
                     />
                     <div className="flex min-w-0 flex-1 flex-col">
-                      <AgentChatWorkspace
+                      {agentEnabled && <AgentChatWorkspace
                         key={activeSessionId}
                         activeSessionId={activeSessionId}
                         wideMode={wideMode}
                         disabled={!workspace.hasApiKey}
                         onConfigureApiKey={() => openSettings()}
                         onToggleSidebar={() => setAgentSidebarOpen(prev => !prev)}
-                      />
+                      />}
                     </div>
                   </div>
                 )}

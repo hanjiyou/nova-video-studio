@@ -1,0 +1,90 @@
+Command: C:\Program Files\nodejs\node.exe node_modules/vitest/vitest.mjs run --reporter=dot
+CWD: E:\Learn\AI\nova-image-studio\frontend
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+·······································································································································································································································································································································stderr | src/components/agent/__tests__/AgentChatWorkspace.header.test.tsx > AgentChatWorkspace Header > 在 Agent 标题左侧渲染侧边栏触发按钮并支持点击
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+·································stderr | src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx > WorkspaceShell Agent sessions > never initializes Agent sessions or mounts Agent when desktop disables it
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\plugin\PluginWorkbench.tsx:94:10
+}
+
+stderr | src/hooks/__tests__/useAgentChat.test.tsx > useAgentChat session binding > disables Workspace send and upload controls before session restoration completes
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+···········································································································································································································stderr | src/components/canvas/__tests__/CanvasEditor.connections.test.tsx > CanvasEditor connections > deletes the selected connection with the Delete key
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+···stderr | src/components/canvas/__tests__/CanvasEditor.routes.test.tsx > CanvasEditor prompt routes > lists complete routes and persists the selected route on the config
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+·······································x······································································
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/__tests__/ServiceWorkerManager.test.tsx > runtime PWA registration > uses Workbox when available and handles a failed registration
+TypeError: Cannot read properties of undefined (reading 'removeEventListener')
+ ❯ src/components/ServiceWorkerManager.tsx:23:31
+     21|
+     22|     return () => {
+     23|       navigator.serviceWorker.removeEventListener('controllerchange', …
+       |                               ^
+     24|     };
+     25|   }, []);
+ ❯ Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:26001:13
+ ❯ runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ ❯ commitHookEffectListUnmount node_modules/react-dom/cjs/react-dom-client.development.js:13316:17
+ ❯ commitHookPassiveUnmountEffects node_modules/react-dom/cjs/react-dom-client.development.js:13347:11
+ ❯ commitPassiveUnmountEffectsInsideOfDeletedTree_begin node_modules/react-dom/cjs/react-dom-client.development.js:16264:13
+ ❯ recursivelyTraversePassiveUnmountEffects node_modules/react-dom/cjs/react-dom-client.development.js:16085:13
+ ❯ commitPassiveUnmountOnFiber node_modules/react-dom/cjs/react-dom-client.development.js:16127:11
+ ❯ flushPassiveEffects node_modules/react-dom/cjs/react-dom-client.development.js:18428:9
+ ❯ flushPendingEffects node_modules/react-dom/cjs/react-dom-client.development.js:18358:14
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 68 passed (69)
+      Tests  1 failed | 675 passed (676)
+   Start at  15:21:47
+   Duration  27.17s (transform 37.26s, setup 24.63s, collect 80.64s, tests 44.64s, environment 180.70s, prepare 20.92s)

@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { WorkspaceShell } from '../WorkspaceShell';
 
 const sessionApi = vi.hoisted(() => ({
@@ -109,6 +109,16 @@ function deferred<T>() {
 }
 
 describe('WorkspaceShell Agent sessions', () => {
+  afterEach(() => { Reflect.deleteProperty(window, 'novaDesktop'); });
+  it('never initializes Agent sessions or mounts Agent when desktop disables it', async () => {
+    Object.defineProperty(window, 'novaDesktop', { configurable: true, value: { features: { agent: false } } });
+    render(<WorkspaceShell />);
+    await act(async () => {});
+    expect(sessionApi.getActiveAgentSessionId).not.toHaveBeenCalled();
+    expect(contextStore.setAgentSession).not.toHaveBeenCalled();
+    expect(screen.queryByText(/agent-workspace/)).not.toBeInTheDocument();
+    expect(mounts.count).toBe(0);
+  });
   beforeEach(() => {
     vi.clearAllMocks();
     mounts.count = 0;

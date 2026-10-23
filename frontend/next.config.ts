@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
 export default withPWA({
   dest: "public",
   disable: dev,
-  register: true,
+  // Registration is runtime-selected: Web keeps PWA, desktop uses its trusted main-frame session.
+  register: false,
   skipWaiting: true,
 })(nextConfig);

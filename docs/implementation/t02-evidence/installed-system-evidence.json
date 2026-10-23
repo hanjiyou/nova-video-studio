@@ -1,0 +1,40 @@
+{
+  "startedAt": "2026-10-23T07:27:14.212Z",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t02-installed\\Nova Image Studio.exe",
+  "mode": "system",
+  "providerRequests": "none",
+  "checks": {
+    "expected storage mode": true,
+    "desktop defaults disabled": true,
+    "main renderer HTTP authorized": true,
+    "unauthenticated API rejected": true,
+    "main renderer WS authorized": true,
+    "desktop PWA not registered": true,
+    "Node globals unavailable": true,
+    "database under fresh system userData": true,
+    "no executable adjacent data directory": true,
+    "clean desktop exit": true
+  },
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "system",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "dataDirectory": "C:\\Users\\Administrator\\AppData\\Roaming\\nova-image",
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "databaseQuickCheck": [
+    {
+      "quick_check": "ok"
+    }
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-23T07:27:21.812Z"
+}

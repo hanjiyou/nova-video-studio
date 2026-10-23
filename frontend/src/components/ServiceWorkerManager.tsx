@@ -8,7 +8,9 @@ import { useEffect } from 'react';
  */
 export function ServiceWorkerManager() {
   useEffect(() => {
-    if (!('serviceWorker' in navigator)) return;
+    if (!('serviceWorker' in navigator) || window.novaDesktop) return;
+    const browser = window as Window & { workbox?: { register: () => Promise<unknown> } };
+    void (browser.workbox ? browser.workbox.register() : navigator.serviceWorker.register('/sw.js')).catch(() => { /* Web PWA failure must not block the workspace. */ });
 
     const handleControllerChange = () => {
       // 新 SW 接管后立即刷新，确保页面使用最新的 JS 包

@@ -1,0 +1,8 @@
+{
+  "completedAt": "2026-10-23T15:32:23.3453513+08:00",
+  "systemProfileRetained": "C:\\Users\\Administrator\\AppData\\Roaming\\nova-image",
+  "testExecutableRemoved": true,
+  "reason": "Recursive removal rejected by automatic approval review; preserved profile as safe alternative.",
+  "uninstallExitCode": 0,
+  "preservedDatabaseSnapshot": "temp/t02-package-system/nova-tasks.sqlite"
+}

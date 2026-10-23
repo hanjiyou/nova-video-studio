@@ -1,0 +1,9 @@
+  • electron-builder  version=26.15.3 os=10.0.22631
+  ⨯ ENOENT: no such file or directory, open 'E:\Learn\AI\nova-image-studio\.directories.output=release-t02'  failedTask=build stackTrace=Error: ENOENT: no such file or directory, open 'E:\Learn\AI\nova-image-studio\.directories.output=release-t02'
+    at open (node:internal/fs/promises:637:25)
+    at Object.readFile (node:internal/fs/promises:1269:14)
+    at readConfig (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\util\config\load.ts:19:16)
+    at getConfig (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\util\config\config.ts:43:34)
+    at Packager.validateConfig (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\packager.ts:367:27)
+    at Packager.build (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\packager.ts:398:5)
+    at executeFinally (E:\Learn\AI\nova-image-studio\node_modules\builder-util\src\promise.ts:12:14)

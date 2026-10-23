@@ -1,0 +1,2 @@
+Command: C:\Program Files\nodejs\node.exe node_modules/eslint/bin/eslint.js src/components/ServiceWorkerManager.tsx src/components/workspace/WorkspaceModeTabs.tsx src/components/workspace/WorkspaceShell.tsx src/hooks/useDesktopFeatures.ts src/types/nova-desktop.d.ts src/lib/__tests__/desktop-cdp-defaults.test.ts src/components/__tests__/ServiceWorkerManager.test.tsx src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx next.config.ts
+CWD: E:\Learn\AI\nova-image-studio\frontend

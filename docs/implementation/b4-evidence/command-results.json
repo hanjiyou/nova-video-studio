@@ -1,0 +1,408 @@
+[
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-b3.test.js"
+    ],
+    "startedAt": "2026-10-23T15:48:59.710Z",
+    "finishedAt": "2026-10-23T15:49:12.799Z",
+    "exitCode": 1,
+    "error": null
+  },
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-b3.test.js"
+    ],
+    "startedAt": "2026-10-23T15:51:47.858Z",
+    "finishedAt": "2026-10-23T15:51:59.622Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "frontend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "src/lib/__tests__/workbench-task-client.test.ts"
+    ],
+    "startedAt": "2026-10-23T15:51:59.625Z",
+    "finishedAt": "2026-10-23T15:52:03.692Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/workbench",
+      "src/hooks/useWorkbenchDrafts.ts",
+      "src/hooks/useWorkbenchTasks.ts",
+      "src/lib/workbench-client.ts",
+      "src/lib/workbench-generation.ts",
+      "src/lib/workbench-task-client.ts"
+    ],
+    "startedAt": "2026-10-23T15:52:03.692Z",
+    "finishedAt": "2026-10-23T15:52:09.456Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/storage/migrations.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-b4.test.js",
+      "scripts/run-b4-checks.cjs",
+      "scripts/electron-b4-test-entry.cjs",
+      "scripts/verify-desktop-b4.cjs"
+    ],
+    "startedAt": "2026-10-23T15:52:09.457Z",
+    "finishedAt": "2026-10-23T15:52:10.290Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "tsc",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false",
+      "--pretty",
+      "false"
+    ],
+    "startedAt": "2026-10-23T15:52:10.290Z",
+    "finishedAt": "2026-10-23T15:52:21.660Z",
+    "exitCode": 2,
+    "error": null
+  },
+  {
+    "name": "build",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T15:52:21.660Z",
+    "finishedAt": "2026-10-23T15:52:54.570Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-b3.test.js"
+    ],
+    "startedAt": "2026-10-23T15:57:59.992Z",
+    "finishedAt": "2026-10-23T15:58:12.370Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "frontend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "src/lib/__tests__/workbench-task-client.test.ts"
+    ],
+    "startedAt": "2026-10-23T15:58:12.373Z",
+    "finishedAt": "2026-10-23T15:58:16.437Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/workbench",
+      "src/hooks/useWorkbenchDrafts.ts",
+      "src/hooks/useWorkbenchTasks.ts",
+      "src/lib/workbench-client.ts",
+      "src/lib/workbench-generation.ts",
+      "src/lib/workbench-task-client.ts"
+    ],
+    "startedAt": "2026-10-23T15:58:16.438Z",
+    "finishedAt": "2026-10-23T15:58:22.245Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/storage/migrations.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-b4.test.js",
+      "scripts/run-b4-checks.cjs",
+      "scripts/electron-b4-test-entry.cjs",
+      "scripts/verify-desktop-b4.cjs"
+    ],
+    "startedAt": "2026-10-23T15:58:22.245Z",
+    "finishedAt": "2026-10-23T15:58:23.112Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "tsc",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false",
+      "--pretty",
+      "false"
+    ],
+    "startedAt": "2026-10-23T15:58:23.113Z",
+    "finishedAt": "2026-10-23T15:58:34.706Z",
+    "exitCode": 2,
+    "error": null
+  },
+  {
+    "name": "build",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T15:58:34.706Z",
+    "finishedAt": "2026-10-23T15:59:08.666Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-b3.test.js"
+    ],
+    "startedAt": "2026-10-23T15:59:35.625Z",
+    "finishedAt": "2026-10-23T15:59:48.554Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/storage/migrations.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-b4.test.js",
+      "scripts/run-b4-checks.cjs",
+      "scripts/electron-b4-test-entry.cjs",
+      "scripts/verify-desktop-b4.cjs"
+    ],
+    "startedAt": "2026-10-23T15:59:48.556Z",
+    "finishedAt": "2026-10-23T15:59:49.395Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "frontend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "src/lib/__tests__/workbench-task-client.test.ts"
+    ],
+    "startedAt": "2026-10-23T16:04:11.171Z",
+    "finishedAt": "2026-10-23T16:04:15.533Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/workbench",
+      "src/hooks/useWorkbenchDrafts.ts",
+      "src/hooks/useWorkbenchTasks.ts",
+      "src/hooks/useWorkbenchPanelHeight.ts",
+      "src/lib/workbench-client.ts",
+      "src/lib/workbench-generation.ts",
+      "src/lib/workbench-task-client.ts"
+    ],
+    "startedAt": "2026-10-23T16:04:15.535Z",
+    "finishedAt": "2026-10-23T16:04:21.305Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/storage/migrations.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-b4.test.js",
+      "scripts/run-b4-checks.cjs",
+      "scripts/electron-b4-test-entry.cjs",
+      "scripts/verify-desktop-b4.cjs"
+    ],
+    "startedAt": "2026-10-23T16:04:21.306Z",
+    "finishedAt": "2026-10-23T16:04:22.295Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "tsc",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false",
+      "--pretty",
+      "false"
+    ],
+    "startedAt": "2026-10-23T16:04:22.295Z",
+    "finishedAt": "2026-10-23T16:04:34.698Z",
+    "exitCode": 2,
+    "error": null
+  },
+  {
+    "name": "build",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T16:04:34.698Z",
+    "finishedAt": "2026-10-23T16:05:09.626Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-b3.test.js"
+    ],
+    "startedAt": "2026-10-23T16:07:32.126Z",
+    "finishedAt": "2026-10-23T16:07:45.895Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/storage/migrations.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-b4.test.js",
+      "scripts/run-b4-checks.cjs",
+      "scripts/electron-b4-test-entry.cjs",
+      "scripts/verify-desktop-b4.cjs"
+    ],
+    "startedAt": "2026-10-23T16:07:45.897Z",
+    "finishedAt": "2026-10-23T16:07:46.823Z",
+    "exitCode": 0,
+    "error": null
+  }
+]

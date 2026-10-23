@@ -1,4 +1,4 @@
-import type { AssetSummary, WorkbenchTaskResponse } from './workbench-task-client';
+import type { AssetSummary, WorkbenchTaskResponse, WorkbenchTaskInput } from './workbench-task-client';
 export const DRAFT_MODES = ['image.text', 'video.text', 'video.single_reference', 'video.dual_reference'] as const;
 export type DraftMode = typeof DRAFT_MODES[number];
 export type WorkbenchPage = 'image' | 'video' | 'library' | 'settings';
@@ -22,7 +22,16 @@ export const getDraft = async (mode: DraftMode) => (await localRead<{ draft: Dra
 export const putDraft = async (draft: Draft) => (await localRead<{ draft: Draft }>('/api/nova/storage/drafts/' + draft.mode, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: draft.prompt, model: draft.model, parameters: draft.parameters, inputAssets: draft.inputAssets.map((asset, position) => ({ assetId: asset.assetId, role: 'reference', position })), expectedRevision: draft.revision }) })).draft;
 export const getSetting = async <T>(key: string) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key)).setting;
 export const putSetting = async <T>(key: string, value: T, expectedRevision: number) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value, expectedRevision }) })).setting;
-export const getLocalHistory = () => localRead<{ items: Array<WorkbenchTaskResponse & { prompt: string; model: string }>; total: number }>('/api/nova/storage/tasks?limit=12');
+export interface HistoryTask extends WorkbenchTaskResponse { prompt: string; model: string; parameters: Record<string, string | number | boolean>; capabilityVersionId?: string; outputDirectoryVersionId?: string; outputRootRef?: string; outputLocation?: string }
+export interface HistoryQuery { limit?: number; offset?: number; kind?: string; search?: string; model?: string; status?: string }
+export const getLocalHistory = (query: HistoryQuery = { limit: 12 }) => localRead<{ items: HistoryTask[]; total: number; unfilteredTotal: number }>('/api/nova/storage/tasks?' + new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, String(value)])));
+export const getHistoryTask = async (id: string) => (await localRead<{ task: HistoryTask }>('/api/nova/storage/tasks/' + encodeURIComponent(id))).task;
+export const removeHistoryTask = (id: string, deleteOutputs: boolean) => localRead<{ removed: boolean; deletedAssets: number; retainedAssets: number }>('/api/nova/storage/tasks/' + encodeURIComponent(id), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deleteOutputs }) });
+export interface SubmissionIntent { localRequestId: string; input: WorkbenchTaskInput; createdAt: string; attemptStartedAt: string | null; taskId: string | null }
+export const prepareSubmission = async (input: WorkbenchTaskInput) => (await localRead<{ input: WorkbenchTaskInput }>('/api/nova/storage/submissions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) })).input;
+export const markSubmissionAttempt = (id: string) => localRead('/api/nova/storage/submissions/' + encodeURIComponent(id) + '/attempt', { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
+export const getSubmissions = async () => (await localRead<{ items: SubmissionIntent[] }>('/api/nova/storage/submissions')).items;
+export const dismissSubmission = (id: string) => localRead('/api/nova/storage/submissions/' + encodeURIComponent(id), { method: 'DELETE' });
 export async function importReference(file: File): Promise<AssetSummary> {
   return (await localRead<{ asset: AssetSummary }>('/api/nova/assets/import', { method: 'POST', headers: { 'content-type': file.type, 'x-nova-filename': encodeURIComponent(file.name) }, body: file })).asset;
 }
@@ -65,6 +74,11 @@ export function localErrorMessage(error: unknown) {
     ASSET_TYPE_INVALID: '参考图支持 PNG、JPEG。', ASSET_SIZE_INVALID: '图片为空或超过应用的 100 MiB 导入限制。',
     CONNECTION_INPUT_INVALID: '连接参数无效，请检查名称、地址与型号。', CONNECTION_MODEL_INVALID: '请输入完整模型名。',
     CONNECTION_SERVICE_NOT_READY: '本机连接服务尚未就绪，请重试。',
+    CAPABILITY_UNVERIFIED: '当前完整模型、模式或规格尚未验证，未提交生成。', INPUT_INVALID: '提示词、模式、规格或参考图不符合要求。',
+    ASSET_MISSING: '本地文件缺失，任务记录仍保留。请重新导入参考图或核对结果。', ASSET_CORRUPT: '本地文件摘要不符，记录已保留。',
+    AUTH_REJECTED: '原连接鉴权失败，请检查连接；旧任务不会改绑新 Key。', TASK_ACTIVE: '任务尚未明确结束，记录和文件均保留。',
+    SUBMISSION_ALREADY_ATTEMPTED: '该意图已尝试提交，请核对本地任务；不会再次发送创建请求。',
+    SAVE_TARGET_CHANGED: '另存目标已变化，未覆盖。请重新另存。', FILE_BUSY: '文件被占用，请关闭占用程序后重试。', DISK_FULL: '磁盘空间不足，请清理后重试。',
   };
   return messages[code] || '本机服务操作失败，请重试。已有记录和文件仍保留。';
 }

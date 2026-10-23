@@ -343,19 +343,31 @@ function createWorkbenchStore({ db, rootDirectory }) {
     function record(task) {
         let request = {};
         try {
-            request = JSON.parse(task.request_json);
+            request = JSON.parse(task.input_snapshot_json || task.request_json);
         }
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
-        return { localTaskId: task.id, status: task.status, mode: task.mode, prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', createdAt: task.created_at, completedAt: task.completed_at,
+        const reserved = ['submitting','submission_unknown','remote_queued','generating','polling_paused'].includes(task.status) && Boolean(task.dispatch_started_at || task.upstream_task_id);
+        const rootRow = db.prepare('SELECT directory FROM storage_roots WHERE id=?').get(task.output_root_ref || outputDirectories.DEFAULT);
+        return { id: task.id, localTaskId: task.id, status: task.status, mode: request.mode || task.mode, prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id, createdAt: task.created_at, completedAt: task.completed_at, expiresAt: null,
             localRequestId: task.local_request_id, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
             outputDirectoryVersionId:task.output_directory_version_id,outputRootRef:task.output_root_ref,
+            outputLocation: rootRow ? path.basename(rootRow.directory) : null,
+            generationReserved: reserved, remoteMayContinue: reserved && ['submission_unknown','polling_paused'].includes(task.status),
             remoteState: task.remote_state, rawStatus: task.raw_status, pauseReason: task.pause_reason, notBeforeAt: task.not_before_at, requiresContinue: Boolean(task.requires_continue),
             taskError: task.task_error_json ? JSON.parse(task.task_error_json) : null, inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
     }
-    function listTasks({ limit = 50, offset = 0 } = {}) {
+    function listTasks({ limit = 50, offset = 0, kind = '', search = '', model = '', status = '' } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0)
             throw fail('INVALID_PAGINATION');
-        return { items: db.prepare('SELECT * FROM tasks ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(limit, offset).map(record), total: db.prepare('SELECT count(*) AS n FROM tasks').get().n };
+        if (!['','image','video'].includes(kind) || [search,model,status].some(value => typeof value !== 'string' || value.length > 512)) throw fail('INVALID_HISTORY_FILTER');
+        const where = ['NOT EXISTS (SELECT 1 FROM workbench_hidden_tasks h WHERE h.task_id=tasks.id)'], args = [];
+        const value = field => `COALESCE(json_extract(CASE WHEN json_valid(input_snapshot_json) THEN input_snapshot_json ELSE '{}' END,'$.${field}'),json_extract(CASE WHEN json_valid(request_json) THEN request_json ELSE '{}' END,'$.${field}'),'')`;
+        if (kind) { where.push(kind === 'image' ? "(mode LIKE 'image.%' OR mode IN ('text-to-image','image-to-image'))" : "(mode LIKE 'video.%' OR mode='plugin')"); }
+        if (search) { where.push(`(instr(lower(${value('prompt')}),lower(?))>0 OR instr(lower(${value('model')}),lower(?))>0)`); args.push(search,search); }
+        if (model) { where.push(value('model')+'=?'); args.push(model); }
+        if (status) { where.push('status=?'); args.push(status); }
+        const clause = ' WHERE '+where.join(' AND ');
+        return { items: db.prepare('SELECT * FROM tasks'+clause+' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(...args,limit,offset).map(record), total: db.prepare('SELECT count(*) AS n FROM tasks'+clause).get(...args).n, unfilteredTotal: db.prepare('SELECT count(*) AS n FROM tasks WHERE '+where[0]).get().n };
     }
     const importFiles = files => { if (!Array.isArray(files) || files.length > 32)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
@@ -376,6 +388,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         },
         getDraft, putDraft, getSetting, putSetting, registerLegacyFile, linkLegacyAsset, legacyAsset, legacyImage, listTasks,
         getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; },
+        ...require('./workbench-library').createWorkbenchLibrary({ db, getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; }, readAsset, trustedPath, row, freeze: snapshot => outputDirectories.freeze(snapshot) }),
         events: id => db.prepare('SELECT id,type,payload_json,created_at FROM task_events WHERE task_id=? ORDER BY id').all(uuid(id)).map(item => ({ id: item.id, type: item.type, payload: JSON.parse(item.payload_json), createdAt: item.created_at })),
         resolveAssetPath: id => { const asset = row(id); if (!asset)
             throw fail('ASSET_NOT_FOUND', '找不到素材。', 404); const file = trustedPath(asset); if (!file)

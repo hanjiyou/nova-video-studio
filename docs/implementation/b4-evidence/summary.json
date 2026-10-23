@@ -1,0 +1,94 @@
+{
+  "batch": "B4=T11+T12+T13",
+  "status": "accepted_B4_offline_implementation_scope",
+  "baseline": "5712eb6b73b39caae84a107bf7ed152f1354766c",
+  "branch": "dev",
+  "recordedAt": "2026-10-23T16:25:51.357Z",
+  "productItems": 61,
+  "taskNumbers": 17,
+  "validation": {
+    "backend": {
+      "passed": 123,
+      "failed": 0,
+      "skipped": 0,
+      "scope": "Historical original B4 run before parent review; latest deletion changes covered by physicalAliasReview targeted 24 tests."
+    },
+    "frontend": {
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "electron": {
+      "passed": 31,
+      "phases": [
+        {
+          "phase": 1,
+          "passed": 18
+        },
+        {
+          "phase": 2,
+          "passed": 13
+        }
+      ]
+    },
+    "scopedLint": "passed",
+    "hostLint": "passed",
+    "productionBuild": "passed",
+    "fullTypecheck": {
+      "status": "existing_diagnostics",
+      "count": 60,
+      "newWorkbenchDiagnostics": 0
+    }
+  },
+  "upstream": {
+    "imagePosts": 1,
+    "videoPosts": 2,
+    "orderedOriginalJpegPngHashes": [
+      "92f4c8106b6749790094b3a0d973acf3c6914c71fbd61c186851ac1696bc4aaa",
+      "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25"
+    ],
+    "noExtraGenerationForResumeReuseDeletionOrDownload": true
+  },
+  "paidRequests": 0,
+  "productionCapabilityUpgrades": 0,
+  "installedPackageCreated": false,
+  "limitations": [
+    "T15 precise flare text/edit/size/quality, both video text and ordinary reference combinations remain unverified",
+    "synthetic image capability is only in isolated native test profile",
+    "full B5/61-item acceptance and T16 packaging not run",
+    "existing NSIS 0xc0000409 and FFmpeg corresponding-source gates remain"
+  ],
+  "evidenceScope": [
+    "Actual Electron UI with real SQLite/safeStorage/media and loopback provider only. Dialogs and reveal target use controlled doubles. Not installed-package/manual-dialog or real supplier acceptance. Synthetic image capability exists only in isolated test profile.",
+    "Actual Electron UI with real SQLite/safeStorage/media and loopback provider only. Dialogs and reveal target use controlled doubles. Not installed-package/manual-dialog or real supplier acceptance. Synthetic image capability exists only in isolated test profile."
+  ],
+  "physicalAliasReview": {
+    "status": "accepted_after_parent_rereview",
+    "evidence": "physical-alias-review.json",
+    "beforeFix": {
+      "passed": 1,
+      "failed": 14
+    },
+    "afterFix": {
+      "passed": 24,
+      "failed": 0,
+      "skipped": 0,
+      "lint": "passed"
+    },
+    "scope": "Canonical managed paths group all existing root/asset aliases; every grouped reference protects the file; no change to import identities/root versions; exclusive physical file deleted once.",
+    "unrelatedChecksRerun": false
+  },
+  "parentReview": {
+    "evidence": "approval-review.json",
+    "backendPassed": 57,
+    "frontendPassed": 30,
+    "failed": 0,
+    "skipped": 0,
+    "commitPushAuthorized": true
+  },
+  "nonBlockingB5Followup": {
+    "screenshot": "04-local-video-playback.png",
+    "issue": "Media dimensions/duration caption is clipped at lower preview edge.",
+    "requiredScope": "Check during B5 window and scaling acceptance; current local screenshots are not comprehensive visual acceptance."
+  }
+}

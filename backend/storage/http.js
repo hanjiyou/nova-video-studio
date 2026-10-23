@@ -10,7 +10,7 @@ function rangeFor(value, size) {
     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start>=size||end<start||!match[1]&&Number(match[2])===0)return false;
     return {start,end};
 }
-function createStorageHttp({ getStore, readRawBody, sendJson }) {
+function createStorageHttp({ getStore, getConnections, readRawBody, sendJson }) {
     const jsonBody = async (req) => {
         try {
             return JSON.parse((await readRawBody(req, 256 * 1024)).toString('utf8'));
@@ -74,8 +74,28 @@ function createStorageHttp({ getStore, readRawBody, sendJson }) {
                 return true;
             }
             if (pathname === '/api/nova/storage/tasks' && req.method === 'GET') {
-                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0) }));
+                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0), ...Object.fromEntries(['kind','search','model','status'].map(key => [key, searchParams.get(key) || ''])) }));
                 return true;
+            }
+            if (pathname === '/api/nova/storage/submissions') {
+                if (req.method === 'GET') sendJson(res, 200, { items: store.submissions() });
+                else if (req.method === 'POST') { const input = await jsonBody(req); if (!input || typeof input !== 'object' || Array.isArray(input)) throw fail('INPUT_INVALID'); const auth = getConnections().getAuth(input.connectionVersionId); sendJson(res, 201, { input: store.prepareSubmission(input, auth, store) }); }
+                else throw fail('STORAGE_METHOD_NOT_ALLOWED');
+                return true;
+            }
+            const submission = pathname.match(/^\/api\/nova\/storage\/submissions\/([^/]+)$/);
+            if (submission && req.method === 'DELETE') { sendJson(res, 200, store.dismissSubmission(submission[1])); return true; }
+            const attempt = pathname.match(/^\/api\/nova\/storage\/submissions\/([^/]+)\/attempt$/);
+            if (attempt && req.method === 'POST') { const input = await jsonBody(req); if (!input || typeof input !== 'object' || Array.isArray(input) || Object.keys(input).length) throw fail('INVALID_STORAGE_INPUT'); sendJson(res, 200, store.markSubmissionAttempt(attempt[1])); return true; }
+            const task = pathname.match(/^\/api\/nova\/storage\/tasks\/([^/]+)$/);
+            if (task && req.method === 'GET') {
+                const result = store.getTask(task[1]); if (!result) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
+                sendJson(res, 200, { task: result }); return true;
+            }
+            if (task && req.method === 'DELETE') {
+                const input = await jsonBody(req);
+                if (!input || Object.keys(input).some(key => key !== 'deleteOutputs')) throw fail('INVALID_STORAGE_INPUT');
+                sendJson(res, 200, store.removeHistory(task[1], input)); return true;
             }
             const events = pathname.match(/^\/api\/nova\/storage\/tasks\/([^/]+)\/events$/);
             if (events && req.method === 'GET') {

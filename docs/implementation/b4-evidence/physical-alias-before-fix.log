@@ -1,0 +1,263 @@
+✖ B4 same directory reselected preserves physical alias held by task-output (73.9843ms)
+✖ B4 same directory reselected preserves physical alias held by task-input (58.029ms)
+✖ B4 same directory reselected preserves physical alias held by draft (60.3081ms)
+✖ B4 same directory reselected preserves physical alias held by download-candidate (68.8508ms)
+✖ B4 same directory reselected preserves physical alias held by submission-intent (62.5563ms)
+✖ B4 same directory reselected preserves physical alias held by legacy-link (64.9954ms)
+✖ B4 default plus explicit same directory preserves physical alias held by task-output (57.7648ms)
+✖ B4 default plus explicit same directory preserves physical alias held by task-input (57.0625ms)
+✖ B4 default plus explicit same directory preserves physical alias held by draft (65.4196ms)
+✖ B4 default plus explicit same directory preserves physical alias held by download-candidate (78.8526ms)
+✖ B4 default plus explicit same directory preserves physical alias held by submission-intent (73.3579ms)
+✖ B4 default plus explicit same directory preserves physical alias held by legacy-link (83.9472ms)
+✖ B4 an alias used as the removed task input also protects the physical file (87.3988ms)
+✖ B4 unreferenced aliases of an exclusive generated file can be cleaned once (80.9184ms)
+✔ B4 identical bytes in a different physical directory do not block exclusive cleanup (101.3863ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 1
+ℹ fail 14
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1181.2411
+
+✖ failing tests:
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by task-output (73.9843ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by task-input (58.029ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by draft (60.3081ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by download-candidate (68.8508ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by submission-intent (62.5563ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 same directory reselected preserves physical alias held by legacy-link (64.9954ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by task-output (57.7648ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by task-input (57.0625ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by draft (65.4196ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by download-candidate (78.8526ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by submission-intent (73.3579ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:45:9
+✖ B4 default plus explicit same directory preserves physical alias held by legacy-link (83.9472ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:55:20)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:66:1
+✖ B4 an alias used as the removed task input also protects the physical file (87.3988ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:71:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at backend\test\workbench-b4-physical-aliases.test.js:75:1
+✖ B4 unreferenced aliases of an exclusive generated file can be cleaned once (80.9184ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  2 !== 1
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4-physical-aliases.test.js:80:12)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

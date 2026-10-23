@@ -213,6 +213,14 @@ ALTER TABLE task_downloads ADD COLUMN refresh_not_before_at TEXT;
 ALTER TABLE task_downloads ADD COLUMN refresh_attempts INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE task_downloads ADD COLUMN refresh_budget_started_at TEXT;
 ` },
+    { version: 6, name: 'workbench-library-and-submission-intents', sql: `
+CREATE TABLE workbench_hidden_tasks (
+ task_id TEXT PRIMARY KEY REFERENCES tasks(id) ON DELETE CASCADE, hidden_at TEXT NOT NULL
+);
+CREATE TABLE workbench_submission_intents (
+ local_request_id TEXT PRIMARY KEY COLLATE NOCASE, input_json TEXT NOT NULL, created_at TEXT NOT NULL, attempt_started_at TEXT
+);
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

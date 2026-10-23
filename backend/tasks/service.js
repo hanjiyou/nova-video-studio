@@ -65,7 +65,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         db.transaction(() => {
             const before = row(id);
             if (!before) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
-            if (TERMINAL.has(before.status) && state !== before.status) throw fail('TASK_ACTION_INVALID', '任务已经结束。', 409);
+            if (TERMINAL.has(before.status) && state !== before.status && !(before.status === 'completed' && state === 'remote_completed' && type === 'missing_result_download_requested')) throw fail('TASK_ACTION_INVALID', '任务已经结束。', 409);
             const allowed = ['upstream_task_id', 'dispatch_started_at', 'remote_state', 'raw_status', 'remote_progress', 'pause_reason', 'not_before_at', 'next_poll_at', 'poll_attempts', 'poll_budget_started_at', 'task_error_json', 'error', 'requires_continue', 'result_sources_json', 'completed_at'];
             if (Object.keys(fields).some(key => !allowed.includes(key))) throw fail('TASK_STATE_INVALID');
             db.prepare('UPDATE tasks SET status=?' + Object.keys(fields).map(key => ',' + key + '=?').join('') + ' WHERE id=?').run(state, ...Object.values(fields), id);
@@ -303,11 +303,12 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (!isQueryableUpstreamTaskId(value) || containsCredential(value, auth.apiKey)) throw fail('INVALID_UPSTREAM_ID');
             update(id, 'polling_paused', { upstream_task_id: value, pause_reason: 'reconciled_id', error: null, task_error_json: null }, 'submission_reconciled');
         } else if (name === 'retry-download') {
-            if (task.status !== 'download_failed') throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
+            const missingResult = task.status === 'completed' && store.taskAssets(id, 'output').some(asset => asset.availability === 'missing');
+            if (task.status !== 'download_failed' && !missingResult) throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
             if (!task.result_sources_json && !task.upstream_task_id) throw fail('RESULT_REFRESH_REQUIRED', '没有可恢复资源；不会重新生成。', 409);
             const job=db.prepare('SELECT refresh_not_before_at FROM task_downloads WHERE task_id=?').get(id);
             if(Date.parse(job?.refresh_not_before_at || '')>now())throw Object.assign(fail('POLL_NOT_BEFORE','尚未到上游允许的刷新时间。',409),{notBeforeAt:job.refresh_not_before_at});
-            update(id, 'remote_completed', { task_error_json: null, error: null }, 'download_retry_requested');
+            update(id, 'remote_completed', { task_error_json: null, error: null, completed_at: null }, missingResult ? 'missing_result_download_requested' : 'download_retry_requested');
             db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at,refresh_attempts=0,refresh_budget_started_at=NULL").run(id,iso(),iso()); background(drainDownloads());
         } else throw fail('TASK_ACTION_INVALID');
         emit(id); return publicTask(row(id));

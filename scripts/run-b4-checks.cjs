@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{spawnSync}=require('node:child_process');
+const root=path.resolve(__dirname,'..'),output=path.join(root,'docs/implementation/b4-evidence'),frontend=path.join(root,'frontend');fs.mkdirSync(output,{recursive:true});
+const checks={
+ backend:{cwd:root,args:['--test','backend/test/workbench-b4.test.js','backend/test/workbench-b4-physical-aliases.test.js','backend/test/workbench-storage.test.js','backend/test/workbench-storage-http.test.js','backend/test/workbench-tasks.test.js','backend/test/workbench-b1-http.test.js','backend/test/workbench-downloads.test.js','backend/test/workbench-b3.test.js']},
+ frontend:{cwd:frontend,args:['node_modules/vitest/vitest.mjs','run','src/components/workbench/__tests__/workbench-b3.test.tsx','src/components/workbench/__tests__/workbench-b4.test.tsx','src/lib/__tests__/workbench-task-client.test.ts']},
+ lint:{cwd:frontend,args:['node_modules/eslint/bin/eslint.js','src/components/workbench','src/hooks/useWorkbenchDrafts.ts','src/hooks/useWorkbenchTasks.ts','src/hooks/useWorkbenchPanelHeight.ts','src/lib/workbench-client.ts','src/lib/workbench-generation.ts','src/lib/workbench-task-client.ts']},
+ hostLint:{cwd:root,args:['backend/node_modules/eslint/bin/eslint.js','--config','scripts/eslint-b2.config.mjs','backend/storage/workbench-library.js','backend/storage/store.js','backend/storage/http.js','backend/storage/migrations.js','backend/tasks/service.js','backend/test/workbench-b4.test.js','backend/test/workbench-b4-physical-aliases.test.js','scripts/run-b4-checks.cjs','scripts/electron-b4-test-entry.cjs','scripts/verify-desktop-b4.cjs']},
+ tsc:{cwd:frontend,args:['node_modules/typescript/bin/tsc','--noEmit','--incremental','false','--pretty','false']},
+ build:{cwd:frontend,args:['node_modules/next/dist/bin/next','build','--webpack']},
+};
+const resultsFile=path.join(output,'command-results.json'),results=fs.existsSync(resultsFile)?JSON.parse(fs.readFileSync(resultsFile,'utf8')):[];
+for(const name of process.argv.slice(2)){const check=checks[name];if(!check)throw Error('Unknown B4 check');const startedAt=new Date().toISOString(),result=spawnSync(process.execPath,check.args,{cwd:check.cwd,env:process.env,encoding:'utf8',windowsHide:true,maxBuffer:32*1024*1024});fs.writeFileSync(path.join(output,name+'.log'),(result.stdout||'')+(result.stderr||''));const record={name,command:process.execPath,...check,startedAt,finishedAt:new Date().toISOString(),exitCode:result.status,error:result.error?.message||null};results.push(record);fs.writeFileSync(resultsFile,JSON.stringify(results,null,2)+'\n');console.log(JSON.stringify(record));if(result.status!==0&&name!=='tsc'){process.exitCode=1;break;}}

@@ -1,0 +1,39 @@
+{
+  "phase": 2,
+  "checks": {
+    "real Windows safeStorage": true,
+    "restart keeps paused reservation and original ordered draft": true,
+    "restart marks undispatched queue for explicit continue": true,
+    "same ID resume reaches fully decoded local video": true,
+    "uncontinued second queued task still has no upstream ID": true,
+    "actual local video plays pauses seeks and changes volume": true,
+    "local video enters native fullscreen": true,
+    "explicit queue continuation creates only its one original task": true,
+    "missing result recovery downloads original content without generation": true,
+    "task snapshot reuse changes only draft and keeps frozen parameters": true,
+    "record removal defaults to keeping all files": true,
+    "default removal hides one record while preserving shared video and durable task": true,
+    "public history excludes key and keeps sixty-one fixture records": true
+  },
+  "scope": "Actual Electron UI with real SQLite/safeStorage/media and loopback provider only. Dialogs and reveal target use controlled doubles. Not installed-package/manual-dialog or real supplier acceptance. Synthetic image capability exists only in isolated test profile.",
+  "lastAction": "click 确认移除记录",
+  "taskStates": [
+    {
+      "id": "353a6b88-7397-46e4-9fc2-57d1d444a158",
+      "state": "completed",
+      "mode": "image.text"
+    },
+    {
+      "id": "8d027077-5b41-4b41-a46c-9968979fa437",
+      "state": "completed",
+      "mode": "video.dual_reference"
+    },
+    {
+      "id": "cd67183f-1619-4aa3-9e32-b36cea51cad6",
+      "state": "completed",
+      "mode": "video.dual_reference"
+    }
+  ],
+  "bodyText": "影像工作台\nNOVA STUDIO\n图片生成\n视频生成\n作品库\n设置\n作品保存在本机\n我的创作服务\n\n你的灵感，在这里成形\n\n作品库\n本地工作空间\n\n最近只读检查通过；模型可见不代表生成模式已验证。\n\n最近检查：2026/10/24 00:07:37\n配置连接\n本机作品与任务\n刷新作品库\n\n图片、视频与任务都保存在本机。共 63 条可见记录。\n\n搜索提示词或模型\n作品类型\n全部类型\n图片\n视频\n任务状态\n全部状态\n本地排队\n提交中\n提交结果待核对\n远端排队\n生成中\n查询已暂停\n等待下载\n下载中\n下载失败\n已保存到本机\n失败\n本地排队已取消\n远端已取消\n\n按选择顺序带入一张或两张 PNG / JPEG 图片。双图不代表首尾帧锁定。\n\n带入单图视频草稿\n\n记录已移出作品库。所有文件仍保留。\n\n没有符合筛选条件的作品\n\n本地任务与作品不会因关闭应用而清除。\n\n准备图片草稿",
+  "status": "passed"
+}

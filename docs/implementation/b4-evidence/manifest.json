@@ -1,0 +1,263 @@
+{
+  "createdAt": "2026-10-23T16:26:58.069Z",
+  "baseline": "5712eb6b73b39caae84a107bf7ed152f1354766c",
+  "branch": "dev",
+  "status": "accepted_B4_offline_implementation_scope",
+  "files": [
+    {
+      "file": "backend/server.js",
+      "byteLength": 159174,
+      "sha256": "dae22c451ab11564b948dd1d61f094e5e06ea6bc53e8d2d334173a28bb54604a"
+    },
+    {
+      "file": "backend/storage/http.js",
+      "byteLength": 7552,
+      "sha256": "703f968cd09e8c4a0afb04f246553c0e5d41614608799e822da1ce21a6405312"
+    },
+    {
+      "file": "backend/storage/migrations.js",
+      "byteLength": 17795,
+      "sha256": "efd6f05c90e2133addf95eefe4974d400fbd0f0301436981c885b9a6274f3709"
+    },
+    {
+      "file": "backend/storage/store.js",
+      "byteLength": 29987,
+      "sha256": "ed5c08ff7cf8bd336972f686706bf3bad38f212c656a332344bc0b75924ecf44"
+    },
+    {
+      "file": "backend/storage/workbench-library.js",
+      "byteLength": 7098,
+      "sha256": "29f50eff4396c28ad470e81c0caaf61913f54c02e6ef7c7ddd0c768c12eea369"
+    },
+    {
+      "file": "backend/tasks/service.js",
+      "byteLength": 36485,
+      "sha256": "2e0ffb862ad6288f86a0ecc27593b27a2ef7d6ce83b767cc93c3c2f44e563a37"
+    },
+    {
+      "file": "backend/test/workbench-b4-physical-aliases.test.js",
+      "byteLength": 6846,
+      "sha256": "a021c7b08037203d9bead0b9a9ce6b192d56d83826271b40b4745539d52fefd0"
+    },
+    {
+      "file": "backend/test/workbench-b4.test.js",
+      "byteLength": 12428,
+      "sha256": "89de757990c291d90bf3bf6c2befc173626703591fc4f2356eedee6d5b8bc6b5"
+    },
+    {
+      "file": "backend/test/workbench-downloads.test.js",
+      "byteLength": 20895,
+      "sha256": "ccac149f975a2db5d9eaf65e2c30bc975757594d74b351791e0c5d41a938906f"
+    },
+    {
+      "file": "backend/test/workbench-tasks.test.js",
+      "byteLength": 25429,
+      "sha256": "ad1ea4678720213a92a68b6bdae45571c657d3e873821aa1cce43ece7e23b4cb"
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "byteLength": 26493,
+      "sha256": "5210c6a14a2fa34729b4343cf8c57ed5cf9515ae84ee1079ded5816608cdd6d9"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "byteLength": 129122,
+      "sha256": "5c470d6f7bbc2b871aed6532c2566df9f9a35009cd75012dc2f856531eddce7d"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "byteLength": 47128,
+      "sha256": "2db91c2767786690550b582a30c100b11574c60bb22ff54736cb8e22070ddd72"
+    },
+    {
+      "file": "docs/implementation/B4-T11-T13-图片视频工作台与作品库.md",
+      "byteLength": 13140,
+      "sha256": "d784ff9d0863b3b2769f5398d792c782076f460aa71deb8542b3408e483cea5c"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/01-image-preview.png",
+      "byteLength": 115564,
+      "sha256": "5b6b8ae37f655c2ef44f3621e6fe0f80947dfa697b8c574490d183ff4510f193"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/02-paused-reservation-and-queue.png",
+      "byteLength": 117380,
+      "sha256": "e151168c90d8a17f5a27fd9c837ea1a2bfb2aab30ce79899d5c2158ac4c545e8"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/03-library-search.png",
+      "byteLength": 85804,
+      "sha256": "1f918eab15110f9c26472f9f8e1fc52d1650e3dd424a723b6b2b37cc5e887f23"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/04-local-video-playback.png",
+      "byteLength": 243906,
+      "sha256": "1bb650ddf44ff240beb1c2c1714c560d7bd200d0242a5779f76d599c2f0f86ed"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/05-missing-result-recovered.png",
+      "byteLength": 111734,
+      "sha256": "433bb94eb5dc6cfa94e926172bb3ab685a5af6d48649d37f10154f7179d509d7"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/06-library-record-removed.png",
+      "byteLength": 85588,
+      "sha256": "fed5e1760153b2fef9a629b95b332cde17eaca978c1ece2b7eeddf44aa78c05d"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/approval-review.json",
+      "byteLength": 2310,
+      "sha256": "4eb1d0b31b540ec843ae2319684f026dbbaf6b5531b79891a5e4429051bf2752"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/backend.log",
+      "byteLength": 14658,
+      "sha256": "c8cf51ac9482361ae8cafefbb8b6587567bc820cf9cc455d8c6880cd06fa29ca"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/build.log",
+      "byteLength": 835,
+      "sha256": "db7ecd6360df85a7db3d70925d1d2ab7633a31563801e49a96dcfa5e1534cab0"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/command-results.json",
+      "byteLength": 12512,
+      "sha256": "4e2c272019fbb9239bb0f81fcc0a3a1cab431c7032108c8e804e31cc2ef2d697"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/frontend.log",
+      "byteLength": 708,
+      "sha256": "19749ed703f5e04929897a0f2ea5b88808ff7c68b1a9f354a7ac8bab12ba3221"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/hostLint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/phase-1.json",
+      "byteLength": 3991,
+      "sha256": "6d4b7b081bbda2246dd05c8212b802b263fd0cb91725d5e31807b8e50a42edfd"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/phase-2.json",
+      "byteLength": 2712,
+      "sha256": "78f40a812ef4e91bc57cf81fffbb650a0a1d5f5f464204007f142f2d47171d23"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/physical-alias-after-fix.log",
+      "byteLength": 2524,
+      "sha256": "59cff6239f380c7f562fa03fa015212c28954d723281d67597238a2df1866a3b"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/physical-alias-before-fix.log",
+      "byteLength": 10785,
+      "sha256": "3a9f3d2e5dde54f4cf391163a1c071615a7b49bf77baf262e0ec0c76c3178389"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/physical-alias-lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/physical-alias-review.json",
+      "byteLength": 1402,
+      "sha256": "4eed8dca37ccc36ae131947370110bbf41d98f5e8ed978b60b746d7f18278d0a"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/requests.json",
+      "byteLength": 2950,
+      "sha256": "0bba2c622919b0b9aafc9d5278ec16421612375a144420e3c18aa1607c901374"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/summary.json",
+      "byteLength": 3346,
+      "sha256": "872a0814ebaedeef0bbc7eef1f6fcce4478c9cda514e91670ec1cc6f67cfb0ac"
+    },
+    {
+      "file": "docs/implementation/b4-evidence/tsc.log",
+      "byteLength": 9854,
+      "sha256": "ac7d535d0c8606c7780be30ec795c3b86164e5c60c4070fe0547708613d5d05b"
+    },
+    {
+      "file": "docs/storage-v1.md",
+      "byteLength": 10478,
+      "sha256": "c42fea53f092d9d8c976af996e3ca42eb6692578e647639e0f516bc82d7cdf1f"
+    },
+    {
+      "file": "docs/tasks-v1.md",
+      "byteLength": 11492,
+      "sha256": "105d26408f29ce2843c382b0dfab69f1db49043559e400de38fede7b95142463"
+    },
+    {
+      "file": "frontend/src/app/globals.css",
+      "byteLength": 35850,
+      "sha256": "22e7c488783b255f440561de38212f94e7faede464a02d69f884dddcd2aaabda"
+    },
+    {
+      "file": "frontend/src/components/workbench/DraftEditor.tsx",
+      "byteLength": 11339,
+      "sha256": "581b754553275fd15062bde7683b05123e1c5d2e397f70601b025694c791a8f2"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchLibrary.tsx",
+      "byteLength": 8135,
+      "sha256": "255a77c355e5d96f37a923e9b3d72ba6fe671964ff29f9fa44c7890700c78858"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchResults.tsx",
+      "byteLength": 12748,
+      "sha256": "5ed2d9076033394dfc04d3ca3410669df9d21082d60528be2f9f7f6beddb6718"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "byteLength": 19814,
+      "sha256": "724d955a6165d807e261d1bb1fcf8c9bd1db5f43a1c94c2a9ae191cf102cd0c8"
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "byteLength": 13294,
+      "sha256": "dbe04ad9abe237cede76ec376b476a88bb82987af5249cb3b2a199b9992d1488"
+    },
+    {
+      "file": "frontend/src/hooks/useWorkbenchPanelHeight.ts",
+      "byteLength": 1058,
+      "sha256": "e727b259a680713a23a1fc4f6d28d7f9d7997761dfc7b12a424158a8f22674a2"
+    },
+    {
+      "file": "frontend/src/hooks/useWorkbenchTasks.ts",
+      "byteLength": 6376,
+      "sha256": "3183a7e179869b95ab0b6385e3da320175cb6138e8b065ce9ce0003267f78b99"
+    },
+    {
+      "file": "frontend/src/lib/workbench-client.ts",
+      "byteLength": 10084,
+      "sha256": "870d0238ebdf10dbed1c81159e6ebbd794104c8e7efb0aa5d8b348a75c7887f0"
+    },
+    {
+      "file": "frontend/src/lib/workbench-generation.ts",
+      "byteLength": 4503,
+      "sha256": "5cfa47d50b9f2a1f90378b2b709b23c1404818e4871e6c1ef50cb19becbe3732"
+    },
+    {
+      "file": "scripts/electron-b4-test-entry.cjs",
+      "byteLength": 18626,
+      "sha256": "290e66a69415c731fc88ead3a1fd5d63b4108b94fa78596f9cae56e758c62d19"
+    },
+    {
+      "file": "scripts/run-b4-checks.cjs",
+      "byteLength": 2723,
+      "sha256": "0488d41d96128be38a9bf6909053b7145b99ada9183593f0336b88b872b12aa3"
+    },
+    {
+      "file": "scripts/verify-desktop-b4.cjs",
+      "byteLength": 5230,
+      "sha256": "bcdbf519c145fdf71f3666d53d03398f42e2da587cb496911cf67925dcd064b9"
+    }
+  ]
+}

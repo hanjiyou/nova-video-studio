@@ -1,0 +1,58 @@
+{
+  "recordedAt": "2026-10-23T16:25:51.347Z",
+  "reviewer": "main conversation",
+  "status": "accepted_B4_offline_implementation_scope",
+  "authorization": {
+    "commit": true,
+    "pushRemote": "origin",
+    "pushBranch": "dev",
+    "force": false,
+    "publish": false,
+    "startB5": false
+  },
+  "independentVerification": {
+    "backend": {
+      "suite": "B4 + physical-aliases + tasks",
+      "passed": 57,
+      "failed": 0,
+      "skipped": 0
+    },
+    "frontend": {
+      "suite": "B3 + B4 + workbench-task-client",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reviewed": [
+      "physical canonical-path aliases and all reference protection",
+      "durable submission intents and recovery",
+      "library search/filter/details and task actions"
+    ],
+    "screenshots": [
+      "04-local-video-playback.png",
+      "03-library-search.png"
+    ],
+    "source": "Explicit parent review message; these independent test counts are reviewer-provided."
+  },
+  "previousReview": {
+    "issue": "Different root_ref/assetId records can share one physical managed path; assetId-only reference checks deleted another task file.",
+    "initialOutcome": "not approved",
+    "reproductionConfirmedByReviewer": true,
+    "fix": "Group all existing asset records by trusted canonical managed path, then protect every grouped reference; retain ambiguous files; exclusive file is removed/counts once.",
+    "regressionEvidence": "physical-alias-review.json",
+    "rereviewOutcome": "accepted"
+  },
+  "nonBlockingB5Followup": {
+    "screenshot": "04-local-video-playback.png",
+    "issue": "Media dimensions/duration caption is clipped at lower preview edge.",
+    "requiredScope": "Check during B5 window and scaling acceptance; current local screenshots are not comprehensive visual acceptance."
+  },
+  "retainedGates": [
+    "No new real-service or production capability verification",
+    "Full tsc retains 60 existing test diagnostics",
+    "NSIS 0xc0000409 unresolved",
+    "FFmpeg GPL corresponding source/build-material delivery required",
+    "T15 requires explicit valid configuration and mode/count/fee authorization"
+  ],
+  "deliveryNote": "Commit/push is authorized after recording this review. Actual local/remote SHA will be verified after push and reported separately."
+}

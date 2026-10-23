@@ -143,7 +143,7 @@ test('schema v3 to current keeps historical SQL checksums, committed WAL rows an
         await migrateDatabase({db,dbPath,migrations:MIGRATIONS.slice(0,3)}); db.pragma('journal_mode=WAL');
         const id=randomUUID(); db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at) VALUES(?,?,?,?,?)').run(id,'processing','plugin','{}','2026-10-23');
         const history=db.prepare('SELECT version,checksum FROM schema_migrations ORDER BY version').all();
-        const upgraded=await migrateDatabase({db,dbPath}); assert.deepEqual(upgraded.applied,[4,5]);
+        const upgraded=await migrateDatabase({db,dbPath}); assert.deepEqual(upgraded.applied,MIGRATIONS.slice(3).map(item=>item.version));
         assert.deepEqual(db.prepare('SELECT version,checksum FROM schema_migrations WHERE version<=3 ORDER BY version').all(),history);
         const backup=new Database(upgraded.backupFile,{readonly:true});try {assert.equal(backup.prepare('SELECT status FROM tasks WHERE id=?').get(id).status,'processing');assert.equal(backup.pragma('quick_check',{simple:true}),'ok');}finally {backup.close();}
         assert.deepEqual(db.pragma('foreign_key_check'),[]);

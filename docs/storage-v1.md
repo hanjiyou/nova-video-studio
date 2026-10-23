@@ -1,5 +1,9 @@
 # 持久存储与资产接口 v1
 
+B4/T11–T13 追加 schema v6（旧迁移 SQL/checksum 保持），接入完整工作台和作品库，本批离线实现范围已由主会话复审接受，见 [B4 实施记录](implementation/B4-T11-T13-图片视频工作台与作品库.md)。历史按提示词/模型关键词、类型、状态分页；GET `/api/nova/storage/tasks/:id` 返回不可变快照详情。DELETE 同一路径只接 `{deleteOutputs:boolean}`，默认隐藏记录、保留去重事实和文件；明确选择清理时仅删除事务内复查后独占、可校验的 generated 输出。输入/草稿/其他任务/下载候选/旧别名引用及用户源文件受保护，非明确终态禁止移除。主审发现的跨 root_ref/assetId 同实体别名已修复：删除时解析全部现存受管文件的规范路径并归并资产别名，再检查该组所有引用；不靠新导入去重掩盖既有别名。同一实体只删/计数一次，独立目录里的相同字节不被错误视为同一文件。无法安全解析时保守保留。
+
+窄提交意图 POST/GET `/api/nova/storage/submissions`、POST `/:localRequestId/attempt`、DELETE `/:localRequestId` 只保存/核对本地冻结输入与发送阶段，不调度或发送供应商请求。创建输入必须与持久意图相同；缺本地回执只读核对，不自动重发。重启不会自行继续未知意图。完整协议见 B4 记录；不把离线 fixture 升为真实能力。
+
 B2/T08 已实现 schema v5、冻结输出目录、生产下载/完整解码与受管发布、Range、assetId另存定位；基础范围已由主会话审核接受并明确批准提交推送，见[B2审核](implementation/b2-evidence/approval-review.json)及[B2媒体契约](b2-media-v1.md)。本页下文保留T03/T05历史阶段说明，不再把“Range/验证待T08”当作当前实现状态。
 
 T05 已以 schema v4 接入持久任务去重、派发/上游ID、查询预算和下载队列，当前任务接口见[任务服务契约](tasks-v1.md)。下文保留 T03 阶段边界；T04的schema v3及实际连接/凭据服务见[连接契约](connections-v1.md)。

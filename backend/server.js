@@ -1205,6 +1205,7 @@ function createDesktopPluginTask(body, req) {
 }
 function createWorkbenchTask(body, req) {
   if (!taskService) throw createHttpError(404,'NOT_FOUND','工作台任务需要桌面宿主。');
+  workbenchStore.validateSubmissionInput(body);
   const plugin=pluginRegistry.getPlugin('opensosen-video');
   const snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable');
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
@@ -2892,7 +2893,7 @@ function ackTask(res, taskId) {
   sendJson(res, 200, { ok: true });
 }
 
-const handleStorage = createStorageHttp({getStore:()=>workbenchStore,readRawBody,sendJson});
+const handleStorage = createStorageHttp({getStore:()=>workbenchStore,getConnections:()=>connectionService,readRawBody,sendJson});
 const handleConnections = createConnectionHttp({getService:()=>connectionService,readJsonBody,sendJson});
 async function handleApi(req, res, pathname, searchParams) {
   try {

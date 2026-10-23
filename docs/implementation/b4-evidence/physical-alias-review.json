@@ -1,0 +1,50 @@
+{
+  "scope": "Targeted parent-review reproduction, no UI or supplier requests",
+  "beforeFix": {
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test",
+      "backend/test/workbench-b4-physical-aliases.test.js"
+    ],
+    "exitCode": 1,
+    "passed": 1,
+    "failed": 14,
+    "log": "physical-alias-before-fix.log"
+  },
+  "afterFix": {
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "--test",
+      "backend/test/workbench-b4-physical-aliases.test.js",
+      "backend/test/workbench-b4.test.js"
+    ],
+    "startedAt": "2026-10-23T16:19:41.604Z",
+    "finishedAt": "2026-10-23T16:19:42.954Z",
+    "exitCode": 0,
+    "log": "physical-alias-after-fix.log",
+    "passed": 24,
+    "failed": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "command": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/workbench-library.js",
+      "backend/test/workbench-b4-physical-aliases.test.js",
+      "scripts/run-b4-checks.cjs"
+    ],
+    "startedAt": "2026-10-23T16:19:42.955Z",
+    "finishedAt": "2026-10-23T16:19:43.636Z",
+    "exitCode": 0,
+    "log": "physical-alias-lint.log"
+  },
+  "parentRereview": {
+    "status": "accepted",
+    "evidence": "approval-review.json",
+    "independentBackendPassed": 57,
+    "independentFrontendPassed": 30
+  }
+}

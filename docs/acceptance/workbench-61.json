@@ -1,7 +1,7 @@
 {
   "version": 1,
   "baseline": "视频工作台功能规划-拆解-方案.md v1.2 / 61 items",
-  "updatedAt": "2026-10-23",
+  "updatedAt": "2026-10-24",
   "statusLabels": {
     "not_started": "待开始",
     "in_progress": "进行中",
@@ -45,7 +45,10 @@
           "../implementation/t03-evidence/storage-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -53,10 +56,13 @@
           "../implementation/t03-evidence/native-storage-phase-2.json",
           "../implementation/t03-evidence/packaged-evidence.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "G03",
@@ -66,13 +72,21 @@
       "implementationTasks": [
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "G04",
@@ -142,15 +156,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "G07",
@@ -166,15 +186,21 @@
         "offline": [
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。 非阻断视觉待办留B5：04-local-video-playback.png预览下沿的媒体尺寸/时长说明有裁切，需窗口/缩放针对验收。"
     },
     {
       "id": "I01",
@@ -190,16 +216,22 @@
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
-          "../implementation/t04-evidence/packaged-evidence.json"
+          "../implementation/t04-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 精确 flare 文生候选保留型号，不自动换型号；精确上游成功仍待 T15。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 精确 flare 文生候选保留型号，不自动换型号；精确上游成功仍待 T15。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I02",
@@ -217,7 +249,10 @@
           "../implementation/b1-evidence/b1-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -225,10 +260,13 @@
           "../implementation/t03-evidence/native-storage-phase-2.json",
           "../implementation/t03-evidence/packaged-evidence.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 flare 候选离线保留中文、换行和引号；图片完整 UI 与真实发送仍待后续。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 flare 候选离线保留中文、换行和引号；图片完整 UI 与真实发送仍待后续。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I03",
@@ -239,13 +277,21 @@
         "T06",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I04",
@@ -260,12 +306,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 缺精确证据的尺寸参数明确拒绝，支持的图片规格仍待 T15，不把任意输入当能力。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 缺精确证据的尺寸参数明确拒绝，支持的图片规格仍待 T15，不把任意输入当能力。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I05",
@@ -280,12 +333,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 未开放未知质量枚举；质量组合与实际界面仍待 T15/T11。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 未开放未知质量枚举；质量组合与实际界面仍待 T15/T11。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I06",
@@ -305,7 +365,10 @@
           "../implementation/b1-evidence/b1-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -313,10 +376,13 @@
           "../implementation/t03-evidence/native-storage-phase-2.json",
           "../implementation/t03-evidence/packaged-evidence.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 参考编辑有独立 CAPABILITY_UNVERIFIED 边界，不猜字段、不退回文生；真实编辑协议仍待 T15。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 参考编辑有独立 CAPABILITY_UNVERIFIED 边界，不猜字段、不退回文生；真实编辑协议仍待 T15。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I07",
@@ -330,15 +396,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t05-evidence/tasks-targeted.log"
+          "../implementation/t05-evidence/tasks-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t05-evidence/native-tasks-phase-1.json",
-          "../implementation/t05-evidence/native-tasks-phase-2.json"
+          "../implementation/t05-evidence/native-tasks-phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I08",
@@ -352,15 +424,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I09",
@@ -375,15 +453,21 @@
       "evidence": {
         "offline": [
           "../implementation/b1-evidence/b1-targeted.log",
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 合成图片空输出/坏结果被拒绝；候选不是本地完成，T08/T11 保存与界面仍未完成。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 合成图片空输出/坏结果被拒绝；候选不是本地完成，T08/T11 保存与界面仍未完成。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I10",
@@ -398,17 +482,23 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
           "../implementation/t02-evidence/installed-system-evidence.json",
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I11",
@@ -423,17 +513,23 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
           "../implementation/t02-evidence/installed-system-evidence.json",
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I12",
@@ -444,13 +540,21 @@
         "T11",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I13",
@@ -464,15 +568,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "I14",
@@ -483,13 +593,21 @@
         "T11",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V01",
@@ -506,17 +624,23 @@
           "../implementation/b1-evidence/b1-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 在宿主校验文生0图、单图1图、双图2图；未验证模式明确阻止派发，完整模式页面待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 在宿主校验文生0图、单图1图、双图2图；未验证模式明确阻止派发，完整模式页面待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V02",
@@ -532,7 +656,10 @@
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -540,10 +667,13 @@
           "../implementation/t04-evidence/native-connections-phase-2.json",
           "../implementation/t04-evidence/packaged-evidence.json",
           "../implementation/b1-evidence/native-b1-phase-1.json",
-          "../implementation/b1-evidence/native-b1-phase-2.json"
+          "../implementation/b1-evidence/native-b1-phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 保留两个精确 Grok 型号，不静默换模型；未验证组合不因模型可见而开放。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 保留两个精确 Grok 型号，不静默换模型；未验证组合不因模型可见而开放。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V03",
@@ -560,7 +690,10 @@
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -568,10 +701,13 @@
           "../implementation/t04-evidence/native-connections-phase-2.json",
           "../implementation/t04-evidence/packaged-evidence.json",
           "../implementation/b1-evidence/native-b1-phase-1.json",
-          "../implementation/b1-evidence/native-b1-phase-2.json"
+          "../implementation/b1-evidence/native-b1-phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 仅按原服务/型号/模式匹配历史1.5双图协议；没有新增真实生成验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 仅按原服务/型号/模式匹配历史1.5双图协议；没有新增真实生成验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V04",
@@ -589,7 +725,10 @@
           "../implementation/t03-evidence/storage-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -597,10 +736,13 @@
           "../implementation/t03-evidence/native-storage-phase-2.json",
           "../implementation/t03-evidence/packaged-evidence.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V05",
@@ -617,17 +759,23 @@
           "../implementation/b1-evidence/b1-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 已核对冻结快照、数据库和 multipart 原文件顺序；拖拽排序/预览序号 UI 待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 已核对冻结快照、数据库和 multipart 原文件顺序；拖拽排序/预览序号 UI 待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V06",
@@ -644,7 +792,10 @@
           "../implementation/t03-evidence/storage-targeted.log",
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -652,10 +803,13 @@
           "../implementation/t03-evidence/native-storage-phase-2.json",
           "../implementation/t03-evidence/packaged-evidence.json",
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V07",
@@ -670,15 +824,21 @@
         "offline": [
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V08",
@@ -693,15 +853,21 @@
         "offline": [
           "../implementation/b3-evidence/backend.log",
           "../implementation/b3-evidence/frontend.log",
-          "../implementation/b3-evidence/approval-review.json"
+          "../implementation/b3-evidence/approval-review.json",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b3-evidence/phase-1.json",
-          "../implementation/b3-evidence/phase-2.json"
+          "../implementation/b3-evidence/phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V09",
@@ -716,15 +882,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
-          "../implementation/b1-evidence/native-b1-phase-2.json"
+          "../implementation/b1-evidence/native-b1-phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 历史参考图路径仅6秒/1280×720，其他规格和文生协议不猜测；完整控件待 T12。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 历史参考图路径仅6秒/1280×720，其他规格和文生协议不猜测；完整控件待 T12。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V10",
@@ -741,15 +913,21 @@
         "offline": [
           "../implementation/t05-evidence/tasks-targeted.log",
           "../implementation/b1-evidence/b1-targeted.log",
-          "../implementation/b1-evidence/review-dot-id-targeted.log"
+          "../implementation/b1-evidence/review-dot-id-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
-          "../implementation/b1-evidence/native-b1-phase-2.json"
+          "../implementation/b1-evidence/native-b1-phase-2.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 生产适配器+本地HTTP/原生验证每意图一次POST，已有ID只GET；产品生成按钮待 T12。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 生产适配器+本地HTTP/原生验证每意图一次POST，已有ID只GET；产品生成按钮待 T12。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V11",
@@ -764,15 +942,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。 非阻断视觉待办留B5：04-local-video-playback.png预览下沿的媒体尺寸/时长说明有裁切，需窗口/缩放针对验收。"
     },
     {
       "id": "V12",
@@ -787,17 +971,23 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
           "../implementation/t02-evidence/installed-system-evidence.json",
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V13",
@@ -812,17 +1002,23 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
           "../implementation/t02-evidence/installed-system-evidence.json",
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V14",
@@ -833,13 +1029,21 @@
         "T12",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V15",
@@ -853,12 +1057,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t05-evidence/tasks-targeted.log"
+          "../implementation/t05-evidence/tasks-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "V16",
@@ -876,7 +1087,10 @@
           "../implementation/t05-evidence/tasks-targeted.log",
           "../implementation/b1-evidence/b1-targeted.log",
           "../implementation/b1-evidence/review-dot-id-targeted.log",
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
@@ -885,10 +1099,13 @@
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L01",
@@ -902,16 +1119,22 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t03-evidence/storage-targeted.log"
+          "../implementation/t03-evidence/storage-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t03-evidence/native-storage-phase-1.json",
           "../implementation/t03-evidence/native-storage-phase-2.json",
-          "../implementation/t03-evidence/packaged-evidence.json"
+          "../implementation/t03-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L02",
@@ -921,13 +1144,21 @@
       "implementationTasks": [
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L03",
@@ -941,16 +1172,22 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t03-evidence/storage-targeted.log"
+          "../implementation/t03-evidence/storage-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t03-evidence/native-storage-phase-1.json",
           "../implementation/t03-evidence/native-storage-phase-2.json",
-          "../implementation/t03-evidence/packaged-evidence.json"
+          "../implementation/t03-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L04",
@@ -960,13 +1197,21 @@
       "implementationTasks": [
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L05",
@@ -980,16 +1225,23 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t03-evidence/storage-targeted.log"
+          "../implementation/t03-evidence/storage-targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/physical-alias-after-fix.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t03-evidence/native-storage-phase-1.json",
           "../implementation/t03-evidence/native-storage-phase-2.json",
-          "../implementation/t03-evidence/packaged-evidence.json"
+          "../implementation/t03-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 主审复现不同root_ref/assetId指向同一实体文件后的误删，已按全部受管资产可信规范路径归组，并核对整组任务/输入/草稿/候选/意图/旧别名引用。修复前15项14失败，修复后新增15项和原B4共24/24通过，scoped lint通过，仍待复审、未提交；不把此前123项当作本次重新运行。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "L06",
@@ -1003,15 +1255,21 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b2-evidence/targeted.log"
+          "../implementation/b2-evidence/targeted.log",
+          "../implementation/b4-evidence/backend.log",
+          "../implementation/b4-evidence/frontend.log",
+          "../implementation/b4-evidence/approval-review.json"
         ],
         "realService": [],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
-          "../implementation/b2-evidence/packaged-evidence.json"
+          "../implementation/b2-evidence/packaged-evidence.json",
+          "../implementation/b4-evidence/phase-1.json",
+          "../implementation/b4-evidence/phase-2.json",
+          "../implementation/b4-evidence/approval-review.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。"
     },
     {
       "id": "S01",

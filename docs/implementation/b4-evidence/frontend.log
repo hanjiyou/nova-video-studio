@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/workbench-task-client.test.ts (10 tests) 21ms
+ ✓ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests) 1379ms
+   ✓ skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation  629ms
+ ✓ src/components/workbench/__tests__/workbench-b4.test.tsx (9 tests) 1553ms
+   ✓ library pages all 61 records and preserves selection order across pages without generation  842ms
+
+ Test Files  3 passed (3)
+      Tests  30 passed (30)
+   Start at  00:04:11
+   Duration  3.56s (transform 333ms, setup 364ms, collect 893ms, tests 2.95s, environment 2.27s, prepare 593ms)
+

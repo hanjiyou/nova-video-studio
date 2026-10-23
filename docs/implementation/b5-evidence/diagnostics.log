@@ -1,0 +1,19 @@
+✔ B5 diagnostics uses positive projection: no key, encoded key, ciphertext, prompt, path, URL, raw response or image bytes (43.1089ms)
+✔ B5 diagnostics includes hidden history and bounds large exports with accurate omissions (146.155ms)
+✔ B5 unexpected model/parameter/error/status strings become safe classifications rather than echoed text (36.2275ms)
+✔ B5 export writes a user selected JSON atomically and returns only counts, never target paths or content (42.5385ms)
+✔ B5 export cancellation is normal and does not collect or write diagnostics (34.5661ms)
+✔ B5 export protects application data, custom output directories and existing managed bytes (43.4485ms)
+✔ B5 export rechecks target after collection, preserving a changed target and cleaning temporary file (38.7863ms)
+✔ B5 export serializes dialogs and fails safely for an unavailable save directory (30.7501ms)
+✔ B5 diagnostic IPC rejects hostile frames, all caller arguments and returns no arbitrary diagnostic read API (30.403ms)
+✔ B5 a missing old output volume does not prevent exporting useful diagnostics elsewhere (33.4095ms)
+✔ B5 selecting a volume root also protects its descendants despite its trailing separator (26.8557ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 632.0951

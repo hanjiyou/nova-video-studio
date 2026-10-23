@@ -387,6 +387,12 @@ function createWorkbenchStore({ db, rootDirectory }) {
             return importBuffer(bytes, { mimeType: metadata.mimeType, sourceKind: 'generated', rootRef, validation: metadata });
         },
         getDraft, putDraft, getSetting, putSetting, registerLegacyFile, linkLegacyAsset, legacyAsset, legacyImage, listTasks,
+        createDiagnostics: runtime => require('./diagnostics').createDiagnostics(db, runtime),
+        allowDiagnosticDestination: destination => {
+            const normalized = path.resolve(destination).toLowerCase();
+            const roots = [path.dirname(db.name), root, ...db.prepare('SELECT directory FROM storage_roots').all().map(item => item.directory)];
+            return roots.every(directory => { let canonical;try {canonical=fs.realpathSync.native(directory);} catch(error) {if(!['ENOENT','ENOTDIR'].includes(error.code))throw error;canonical=path.resolve(directory);} const protectedRoot=canonical.toLowerCase(),relative=path.relative(protectedRoot,normalized);return relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative); });
+        },
         getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; },
         ...require('./workbench-library').createWorkbenchLibrary({ db, getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; }, readAsset, trustedPath, row, freeze: snapshot => outputDirectories.freeze(snapshot) }),
         events: id => db.prepare('SELECT id,type,payload_json,created_at FROM task_events WHERE task_id=? ORDER BY id').all(uuid(id)).map(item => ({ id: item.id, type: item.type, payload: JSON.parse(item.payload_json), createdAt: item.created_at })),

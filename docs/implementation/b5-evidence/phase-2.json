@@ -1,0 +1,247 @@
+{
+  "phase": 2,
+  "layout": [
+    {
+      "page": "video",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1440,
+      "innerHeight": 900
+    },
+    {
+      "page": "image",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1440,
+      "innerHeight": 900
+    },
+    {
+      "page": "video",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1.25,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1152,
+      "innerHeight": 720
+    },
+    {
+      "page": "image",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1.25,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1152,
+      "innerHeight": 720
+    },
+    {
+      "page": "video",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1.5,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 960,
+      "innerHeight": 600
+    },
+    {
+      "page": "image",
+      "width": 1440,
+      "height": 900,
+      "zoom": 1.5,
+      "contentSize": [
+        1440,
+        900
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 960,
+      "innerHeight": 600
+    },
+    {
+      "page": "video",
+      "width": 1280,
+      "height": 800,
+      "zoom": 1.25,
+      "contentSize": [
+        1280,
+        800
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1024,
+      "innerHeight": 640
+    },
+    {
+      "page": "image",
+      "width": 1280,
+      "height": 800,
+      "zoom": 1.25,
+      "contentSize": [
+        1280,
+        800
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 1024,
+      "innerHeight": 640
+    },
+    {
+      "page": "video",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1.5,
+      "contentSize": [
+        1024,
+        768
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 682,
+      "innerHeight": 512
+    },
+    {
+      "page": "image",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1.5,
+      "contentSize": [
+        1024,
+        768
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 682,
+      "innerHeight": 512
+    },
+    {
+      "page": "library",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1.5,
+      "contentSize": [
+        1024,
+        768
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 682,
+      "innerHeight": 512
+    },
+    {
+      "page": "settings",
+      "width": 1024,
+      "height": 768,
+      "zoom": 1.5,
+      "contentSize": [
+        1024,
+        768
+      ],
+      "horizontalOverflow": false,
+      "outside": [],
+      "unreachable": [],
+      "innerWidth": 682,
+      "innerHeight": 512
+    }
+  ],
+  "checks": {
+    "real Windows safeStorage": true,
+    "restart keeps paused reservation and original ordered draft": true,
+    "restart marks undispatched queue for explicit continue": true,
+    "same ID resume reaches fully decoded local video": true,
+    "uncontinued second queued task still has no upstream ID": true,
+    "actual local video plays pauses seeks and changes volume": true,
+    "local video enters native fullscreen": true,
+    "video horizontal layout 1440x900 1": true,
+    "media metadata caption fully visible 1440 1": true,
+    "image horizontal layout 1440x900 1": true,
+    "video horizontal layout 1440x900 1.25": true,
+    "media metadata caption fully visible 1440 1.25": true,
+    "image horizontal layout 1440x900 1.25": true,
+    "video horizontal layout 1440x900 1.5": true,
+    "media metadata caption fully visible 1440 1.5": true,
+    "image horizontal layout 1440x900 1.5": true,
+    "video horizontal layout 1280x800 1.25": true,
+    "media metadata caption fully visible 1280 1.25": true,
+    "image horizontal layout 1280x800 1.25": true,
+    "video horizontal layout 1024x768 1.5": true,
+    "media metadata caption fully visible 1024 1.5": true,
+    "image horizontal layout 1024x768 1.5": true,
+    "native Enter edits video text without generating": true,
+    "native Shift Tab enters dialog last control": true,
+    "native Tab wraps inside modal": true,
+    "native Escape closes details without generation": true,
+    "library horizontal layout 1024x768 1.5": true,
+    "settings horizontal layout 1024x768 1.5": true,
+    "actual preload diagnostic cancel writes nothing": true,
+    "diagnostic IPC prevents overwriting live SQLite": true,
+    "actual UI exports sixty-four redacted task summaries": true,
+    "actual export excludes synthetic key paths remote origin and signed URLs": true,
+    "native title frame minimize maximize restore": true,
+    "explicit queue continuation creates only its one original task": true,
+    "missing result recovery downloads original content without generation": true,
+    "task snapshot reuse changes only draft and keeps frozen parameters": true,
+    "record removal defaults to keeping all files": true,
+    "default removal hides one record while preserving shared video and durable task": true,
+    "public history excludes key and keeps sixty-one fixture records": true
+  },
+  "scope": "Actual Electron UI with real SQLite/safeStorage/media and loopback provider only. Dialogs and reveal target use controlled doubles. Not installed-package/manual-dialog or real supplier acceptance. Synthetic image capability exists only in isolated test profile.",
+  "lastAction": "click 确认移除记录",
+  "taskStates": [
+    {
+      "id": "1d60aa83-260f-4a0a-8502-0482ef0e86d1",
+      "state": "completed",
+      "mode": "image.text"
+    },
+    {
+      "id": "5d03ea83-1259-40b8-a080-0678af739055",
+      "state": "completed",
+      "mode": "video.dual_reference"
+    },
+    {
+      "id": "6328e487-8c68-404e-8036-21e04c67b3a1",
+      "state": "completed",
+      "mode": "video.dual_reference"
+    }
+  ],
+  "bodyText": "影像工作台\nNOVA STUDIO\n图片生成\n视频生成\n作品库\n设置\n作品保存在本机\n我的创作服务\n\n你的灵感，在这里成形\n\n作品库\n本地工作空间\n\n最近只读检查通过；模型可见不代表生成模式已验证。\n\n最近检查：2026/10/24 00:46:37\n配置连接\n本机作品与任务\n刷新作品库\n\n图片、视频与任务都保存在本机。共 63 条可见记录。\n\n搜索提示词或模型\n作品类型\n全部类型\n图片\n视频\n任务状态\n全部状态\n本地排队\n提交中\n提交结果待核对\n远端排队\n生成中\n查询已暂停\n等待下载\n下载中\n下载失败\n已保存到本机\n失败\n本地排队已取消\n远端已取消\n\n按选择顺序带入一张或两张 PNG / JPEG 图片。双图不代表首尾帧锁定。\n\n带入单图视频草稿\n\n记录已移出作品库。所有文件仍保留。\n\n没有符合筛选条件的作品\n\n本地任务与作品不会因关闭应用而清除。\n\n准备图片草稿",
+  "status": "passed"
+}

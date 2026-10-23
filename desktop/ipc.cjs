@@ -65,6 +65,8 @@ function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtime
     const assets=service.importFiles(result.filePaths);
     return {ok:true,cancelled:false,assets};
   });
+  const diagnosticActions=require('./diagnostic-actions.cjs').createDiagnosticActions({getStore:getAssetService,dialog,getWindow,runtimeInfo});
+  register('nova:export-diagnostics', (...args) => args.length ? {ok:false,code:'INVALID_ARGUMENT'} : diagnosticActions.export());
   const assetActions=createAssetActions({getStore:getAssetService,dialog,shell,getWindow});
   for (const channel of ['nova:save-asset-copy', 'nova:reveal-asset']) register(channel, (...args) => {
     if (args.length !== 1 || typeof args[0] !== 'string' || !UUID.test(args[0])) return { ok: false, code: 'INVALID_ASSET_ID' };

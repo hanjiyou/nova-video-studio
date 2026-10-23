@@ -1,0 +1,106 @@
+{
+  "batch": "B5/T14",
+  "status": "accepted_offline_scope_commit_push_authorized",
+  "baselineCommit": "db3a03d1e1c555ec673a9d71755437002d8f9600",
+  "createdAt": "2026-10-23T16:54:10.354563+00:00",
+  "requirements": {
+    "unchangedIdentities": 61,
+    "taskIdsPreserved": 17,
+    "offlinePassedDisposition": 39,
+    "realServicePendingDisposition": 16,
+    "releasePendingDisposition": 6,
+    "knownUnfixedOfflineFailures": 0,
+    "notFinalProductAcceptance": true
+  },
+  "checks": {
+    "combinedBackend": {
+      "passed": 252,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "backend.log",
+      "note": "Includes original 9 diagnostic cases; later only affected diagnostic cases rerun."
+    },
+    "finalDiagnostics": {
+      "passed": 11,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "diagnostics.log"
+    },
+    "frontend": {
+      "passed": 41,
+      "failed": 0,
+      "evidence": "frontend.log"
+    },
+    "nativeElectron": {
+      "passed": 57,
+      "phaseChecks": [
+        18,
+        39
+      ],
+      "evidence": [
+        "phase-1.json",
+        "phase-2.json"
+      ],
+      "command": "node scripts/verify-desktop-b5.cjs",
+      "exitCode": 0
+    },
+    "contracts": {
+      "passed": 5,
+      "evidence": "contracts.log"
+    },
+    "frontendLint": 0,
+    "hostLint": 0,
+    "productionBuild": 0,
+    "fullTsc": {
+      "exitCode": 2,
+      "existingDiagnostics": 60,
+      "identicalToB4": true
+    },
+    "fullDirectoryLint": "not rerun; known preexisting baseline issues"
+  },
+  "network": {
+    "imagePosts": 1,
+    "videoPosts": 2,
+    "orderedOriginalJpegPngHashes": [
+      "92f4c8106b6749790094b3a0d973acf3c6914c71fbd61c186851ac1696bc4aaa",
+      "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25"
+    ],
+    "noExtraGenerationForResumeReuseDeletionOrDownload": true
+  },
+  "realKeyRead": false,
+  "realSupplierCalls": 0,
+  "productionCapabilityChanges": false,
+  "newPackageBuilt": false,
+  "nativeTestDoubles": [
+    "OS file/directory/save dialog targets",
+    "shell reveal target",
+    "loopback supplier fetch/download origin",
+    "synthetic image capability only in isolated test database"
+  ],
+  "screenshots": {
+    "count": 17,
+    "reviewed": true,
+    "checks": "captions completely within media/viewport; enabled controls scroll to visible hit targets, horizontal layout, keyboard focus and actual playback"
+  },
+  "reuse": [
+    "B3 original four-phase onboarding/safeStorage evidence",
+    "T05 native forced termination and unknown submit recovery",
+    "B2 native download recovery and Windows FileShare.None save lock",
+    "B4 original physical-alias red/green and parent review"
+  ],
+  "retainedGates": [
+    "T15 valid configuration and explicit mode/count/cost authorization",
+    "T16 native install/new package/system dialogs and playback",
+    "NSIS initial 0xc0000409 unresolved",
+    "FFmpeg GPL corresponding source/link libraries/build materials"
+  ],
+  "limitations": [
+    "Diagnostic export caps latest 1000 tasks including hidden; older tasks counted as omitted.",
+    "Prompt text, upstream ID and arbitrary free strings omitted intentionally.",
+    "Save destination must be outside app data and managed output roots.",
+    "Actual Electron source runtime; no new packaged/manual OS dialog acceptance."
+  ],
+  "parentReview": "approval-review.json",
+  "gitResult": "This is the approved precommit evidence snapshot. Final delivery SHA/remote/tracking/HEAD and workspace verification are reported after execution.",
+  "rawLogWhitespace": "raw-log-whitespace.json"
+}

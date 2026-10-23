@@ -1,0 +1,61 @@
+{
+  "scope": "loopback/synthetic, prior evidence reused only for unchanged code paths",
+  "cases": [
+    {
+      "phase": "连接",
+      "scenarios": "401/403、列表不支持/无效、离线、429、取消/编辑/较新操作、清除/保存竞态",
+      "tests": "backend/test/workbench-b3.test.js; backend/test/workbench-connections.test.js",
+      "evidence": "backend.log；复用 b3-evidence/phase-1～4.json",
+      "expected": "先只读，失败不保存候选凭据、不生成；旧连接版本不变。",
+      "status": "passed"
+    },
+    {
+      "phase": "提交",
+      "scenarios": "JSON/multipart 400/401/403/429/5xx、超时、headers 后正文挂起、中断、ACK 丢失",
+      "tests": "backend/test/desktop-boundary.test.js; backend/test/workbench-b1-http.test.js; backend/test/workbench-tasks-http.test.js; frontend/src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "evidence": "backend.log；frontend.log；phase-1.json；requests.json",
+      "expected": "一次 POST；不明转 submission_unknown、保留唯一生成占位；本地回执只读核对。",
+      "status": "passed"
+    },
+    {
+      "phase": "轮询",
+      "scenarios": "原 ID GET 的 401/403、未知状态、临时断网、Retry-After/预算、停止/恢复、原凭据撤销",
+      "tests": "backend/test/workbench-b1-http.test.js; backend/test/workbench-tasks.test.js",
+      "evidence": "backend.log；phase-1.json；phase-2.json",
+      "expected": "同一 ID，暂停保留 ID/占位；新 Key 不改绑，长 Retry-After 不截短抢查。",
+      "status": "passed"
+    },
+    {
+      "phase": "下载",
+      "scenarios": "JSON 伪 MP4、截断图片/视频、短长度、断流、超预算、鉴权/过期、签名丢失/同 ID 刷新、事务失败、ENOSPC",
+      "tests": "backend/test/workbench-downloads.test.js; backend/test/workbench-downloads-http.test.js",
+      "evidence": "backend.log；phase-2.json；复用 b2-evidence/windows-file-lock.json",
+      "expected": "失败不 completed；重试/刷新只读或下载，不增加创建次数，原连接/目录冻结。",
+      "status": "passed"
+    },
+    {
+      "phase": "退出/重启",
+      "scenarios": "未派发、无 ID 已派发、有 ID、暂停占位、已下载与缺失、临时签名/无 ID",
+      "tests": "backend/test/workbench-tasks.test.js; backend/test/workbench-b1-http.test.js; backend/test/workbench-downloads.test.js",
+      "evidence": "backend.log；本批实际 Electron 两阶段；复用 t05-evidence/native-tasks-phase-2.json 和 b2-evidence/native-phase-2.json",
+      "expected": "未派发等待继续；未知不重 POST；有 ID 只 GET；下载可恢复且不重生成。",
+      "status": "passed"
+    },
+    {
+      "phase": "素材与移除",
+      "scenarios": "共享输入、草稿、任务输出、下载候选、意图、旧别名、同根多 assetId、独占删除",
+      "tests": "backend/test/workbench-b4-physical-aliases.test.js; backend/test/workbench-b4.test.js",
+      "evidence": "backend.log；phase-2.json；复用 b4-evidence/physical-alias-review.json",
+      "expected": "按可信 realpath 归并别名，保护全部引用；隐藏保留任务和去重事实。",
+      "status": "passed"
+    },
+    {
+      "phase": "诊断",
+      "scenarios": "原文/百分号 Key、URL/路径/原始响应污染、未知自由串、1000 上限、隐藏记录、取消/重入/目标变更、旧卷失效",
+      "tests": "backend/test/workbench-b5-diagnostics.test.js",
+      "evidence": "diagnostics.log；phase-2.json；diagnostic-export.json",
+      "expected": "白名单投影，固定安全分类；无 Key/密文/签名 URL/原始敏感响应/路径/媒体字节。",
+      "status": "passed"
+    }
+  ]
+}

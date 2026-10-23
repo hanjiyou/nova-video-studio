@@ -11,6 +11,7 @@ contextBridge.exposeInMainWorld('novaDesktop', {
   cancelConnectionValidation: input => ipcRenderer.invoke('nova:cancel-connection-validation', input),
   completeWorkbenchSetup: input => ipcRenderer.invoke('nova:complete-workbench-setup', input),
   checkOutputDirectory: () => ipcRenderer.invoke('nova:check-output-directory'),
+  exportDiagnostics: () => ipcRenderer.invoke('nova:export-diagnostics'),
   getRuntimeInfo: () => ipcRenderer.invoke('nova:runtime-info'),
   chooseOutputDirectory: () => ipcRenderer.invoke('nova:choose-output-directory'),
   getOutputDirectory: () => ipcRenderer.invoke('nova:output-directory'),

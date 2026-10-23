@@ -1,0 +1,45 @@
+{
+  "phase": 1,
+  "layout": [],
+  "checks": {
+    "real Windows safeStorage": true,
+    "production image capability stays blocked before fixture insertion": true,
+    "image double click produced one durable task and local verified output": true,
+    "actual image opens enlarged preview": true,
+    "save dialog cancellation preserves completed task": true,
+    "reveal resolves the actual managed result file": true,
+    "generation action remains inside viewport after status banner": true,
+    "image preview explicitly contains original aspect ratio": true,
+    "image to video only creates a same-asset single-reference draft": true,
+    "drag order persists exact original JPEG/PNG and copied source survives movement": true,
+    "ordinary dual-reference combination never silently substitutes or submits": true,
+    "dual click enqueues one video with frozen ordered inputs": true,
+    "stop query preserves single generation reservation and honest notice": true,
+    "later video remains queued behind paused remote task": true,
+    "actual library traverses all more-than-fifty history records": true,
+    "library selection confirms before replacing target draft and never generates": true,
+    "video modes retain separate ordered drafts": true,
+    "public history excludes key and keeps sixty-one fixture records": true
+  },
+  "scope": "Actual Electron UI with real SQLite/safeStorage/media and loopback provider only. Dialogs and reveal target use controlled doubles. Not installed-package/manual-dialog or real supplier acceptance. Synthetic image capability exists only in isolated test profile.",
+  "lastAction": "click 双图参考",
+  "taskStates": [
+    {
+      "id": "1d60aa83-260f-4a0a-8502-0482ef0e86d1",
+      "state": "completed",
+      "mode": "image.text"
+    },
+    {
+      "id": "5d03ea83-1259-40b8-a080-0678af739055",
+      "state": "polling_paused",
+      "mode": "video.dual_reference"
+    },
+    {
+      "id": "6328e487-8c68-404e-8036-21e04c67b3a1",
+      "state": "local_queued",
+      "mode": "video.dual_reference"
+    }
+  ],
+  "bodyText": "影像工作台\nNOVA STUDIO\n图片生成\n视频生成\n作品库\n设置\n作品保存在本机\n我的创作服务\n\n你的灵感，在这里成形\n\n视频生成\n本地工作空间\n\n最近只读检查通过；模型可见不代表生成模式已验证。\n\n最近检查：2026/10/24 00:46:37\n配置连接\n\n已创建可编辑草稿，请核对后明确点击生成。未自动提交。\n\n任务已保存到本机并加入队列。不会自动再次创建。\n\n文生视频\n单图生视频\n双图参考\n独立草稿 · 自动保存\n创作参数\n草稿已保存到本机\n生成模型\ngrok-imagine-video-1.5-6s\ngrok-imagine-video-6s\ngpt-image-2.5-flare\n\n当前服务、完整型号和模式有协议证据；本应用真实生成验收仍待完成。\n\n参考图片\n2 / 2\n1\n\nreference-single.jpg\n\n2\n\nasset\n\n从作品库选图\n\n导入即复制到本机素材目录。移除只改变草稿引用。双图是有序参考，不代表首尾帧锁定。\n\n剧情描述\n\n9 字\n\n6 秒 · 固定\n16:9\n1280 × 720\n当前能力记录的固定规格\n\n点击后加入本地队列；派发会调用配置的生成服务，可能产生费用。\n\n生成视频\n\n此草稿已提交。再次创建会产生新的生成任务，可能再次计费。\n\n准备以相同草稿新建任务\n视频预览\n本地排队\n本地排队\n\n已用 0 秒。本地完成需等待文件下载与完整解码。\n\ngrok-imagine-video-1.5-6s · 已用 0 秒\n\n查看任务详情\n另存副本\n打开结果目录\n最近视频任务\n查看作品库\n本地排队\n\n第二个本地排队视频\n\ngrok-imagine-video-1.5-6s · 已用 0 秒\n任务详情\n查询已暂停\n\n六秒合成视频 他说：“你好”\n\ngrok-imagine-video-1.5-6s · 已用 1 秒\n任务详情\n\n远端可能仍在生成或计费，后续排队等待明确终态。停止查询不代表取消或退款。",
+  "status": "passed"
+}

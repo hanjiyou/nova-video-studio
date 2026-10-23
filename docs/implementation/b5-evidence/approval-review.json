@@ -1,0 +1,58 @@
+{
+  "batch": "B5/T14",
+  "reviewer": "parent_session",
+  "reviewedAt": "2026-10-23T16:59:47.162593+00:00",
+  "status": "accepted_offline_scope",
+  "authorizationSource": "Parent session explicitly approved recording this review, committing only B5 files, and a normal push to origin/dev.",
+  "authorizedActions": [
+    "record review",
+    "commit B5 files",
+    "normal push origin/dev"
+  ],
+  "reviewScope": [
+    "diagnostic positive projection and privacy exclusions",
+    "no-argument trusted-frame IPC",
+    "protected target, exclusive temporary write and atomic replacement",
+    "media caption clipping CSS fix",
+    "61-item ledger and evidence boundaries"
+  ],
+  "independentChecks": {
+    "backendDiagnosticsAndPhysicalAliases": {
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0
+    },
+    "frontendB5": {
+      "passed": 5,
+      "failed": 0,
+      "skipped": 0
+    },
+    "ledger": {
+      "requirementFieldsUnchanged": 61,
+      "taskIdsPreserved": 17,
+      "newRealServiceEvidence": 0,
+      "offline": 39,
+      "realPending": 16,
+      "releasePending": 6
+    },
+    "visual": "Parent inspected 1024x768 at 150% video screenshot; media dimensions/duration are fully visible."
+  },
+  "implementationEvidenceRetained": {
+    "nativeElectronPassed": 57,
+    "scope": "Agent-run actual Electron source runtime; controlled OS-dialog/reveal targets and loopback provider, not independent parent-native or packaged/manual acceptance."
+  },
+  "limitations": [
+    "61 items are not final-product acceptance",
+    "full tsc retains 60 preexisting diagnostics",
+    "T15 requires valid user configuration and explicit charged-test mode/count/cost authorization",
+    "T16 installation/new package/manual system interaction gate remains",
+    "NSIS initial 0xc0000409 unresolved",
+    "FFmpeg GPL corresponding-source/build materials gate remains"
+  ],
+  "prohibitedActions": [
+    "start T15/T16",
+    "main branch changes",
+    "force push",
+    "publish/release"
+  ]
+}

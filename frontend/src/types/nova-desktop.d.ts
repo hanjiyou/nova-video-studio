@@ -13,6 +13,7 @@ declare global {
       cancelConnectionValidation: (input: { operationId: string }) => Promise<{ok: boolean; cancelled?: boolean; code?: string}>;
       completeWorkbenchSetup: (input: ConnectionVersionInput & {defaultImageModel: string; defaultVideoModel: string; expectedOnboardingRevision?: number}) => Promise<ConnectionResult & {onboarding?: import('@/lib/workbench-client').Setting<import('@/lib/workbench-client').OnboardingPreferences>}>;
       checkOutputDirectory: () => Promise<{ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string}>;
+      exportDiagnostics: () => Promise<{ok:boolean;cancelled?:boolean;code?:string;exportedTasks?:number;omittedTasks?:number}>;
       getRuntimeInfo: () => Promise<{ ok: boolean; version?: string; storageMode?: 'system' | 'portable' | 'override'; code?: string }>;
       chooseOutputDirectory: () => Promise<{ ok: boolean; cancelled?: boolean; selectionId?: string; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;
       getOutputDirectory: () => Promise<{ ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;

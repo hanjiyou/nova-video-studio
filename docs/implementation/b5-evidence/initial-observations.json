@@ -1,0 +1,31 @@
+{
+  "scope": "Observed during this B5 implementation before final corrections; no real provider traffic",
+  "diagnosticsFirstRun": {
+    "exitCode": 1,
+    "passed": 7,
+    "failed": 2,
+    "failures": [
+      {
+        "test": "positive projection privacy fixture",
+        "observed": "IMMUTABLE_TASK_INPUTS while binding an input after immutable snapshot",
+        "resolution": "Fixture binds output for metadata privacy check; production immutability unchanged."
+      },
+      {
+        "test": "application data/custom output protection",
+        "observed": "Expected DIAGNOSTIC_TARGET_PROTECTED, got FILE_BUSY",
+        "resolution": "Canonicalize Windows short/long protected directories before containment check."
+      }
+    ]
+  },
+  "hostLintFirstRun": {
+    "exitCode": 1,
+    "errors": 2,
+    "rule": "no-useless-escape",
+    "resolution": "Use unambiguous test selector."
+  },
+  "furtherTargetedCases": [
+    "Missing old output root must not block export elsewhere.",
+    "Volume root containment must handle trailing separator."
+  ],
+  "finalEvidence": "diagnostics.log: 11/11; hostLint.log: exit 0"
+}

@@ -1,0 +1,122 @@
+{
+  "scope": "loopback synthetic only; isolated test image capability does not upgrade production evidence",
+  "assertions": {
+    "imagePosts": 1,
+    "videoPosts": 2,
+    "orderedOriginalJpegPngHashes": [
+      "92f4c8106b6749790094b3a0d973acf3c6914c71fbd61c186851ac1696bc4aaa",
+      "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25"
+    ],
+    "noExtraGenerationForResumeReuseDeletionOrDownload": true
+  },
+  "calls": [
+    {
+      "phase": 1,
+      "method": "GET",
+      "path": "/v1/models"
+    },
+    {
+      "phase": 1,
+      "method": "POST",
+      "path": "/v1/images/generations",
+      "input": {
+        "model": "gpt-image-2.5-flare",
+        "prompt": "本地合成图片链路\n“保留原文”",
+        "n": 1
+      }
+    },
+    {
+      "phase": 1,
+      "method": "POST",
+      "path": "/v1/videos",
+      "parts": [
+        {
+          "name": "model",
+          "value": "grok-imagine-video-1.5-6s"
+        },
+        {
+          "name": "prompt",
+          "value": "六秒合成视频\r\n他说：“你好”"
+        },
+        {
+          "name": "seconds",
+          "value": "6"
+        },
+        {
+          "name": "size",
+          "value": "1280x720"
+        },
+        {
+          "name": "input_reference",
+          "mimeType": "image/jpeg",
+          "sha256": "92f4c8106b6749790094b3a0d973acf3c6914c71fbd61c186851ac1696bc4aaa"
+        },
+        {
+          "name": "input_reference",
+          "mimeType": "image/png",
+          "sha256": "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25"
+        }
+      ],
+      "taskId": "b5-video-1"
+    },
+    {
+      "phase": 2,
+      "method": "GET",
+      "path": "/v1/videos/b5-video-1"
+    },
+    {
+      "phase": 2,
+      "method": "GET",
+      "path": "/v1/videos/b5-video-1/content"
+    },
+    {
+      "phase": 2,
+      "method": "POST",
+      "path": "/v1/videos",
+      "parts": [
+        {
+          "name": "model",
+          "value": "grok-imagine-video-1.5-6s"
+        },
+        {
+          "name": "prompt",
+          "value": "第二个本地排队视频"
+        },
+        {
+          "name": "seconds",
+          "value": "6"
+        },
+        {
+          "name": "size",
+          "value": "1280x720"
+        },
+        {
+          "name": "input_reference",
+          "mimeType": "image/jpeg",
+          "sha256": "92f4c8106b6749790094b3a0d973acf3c6914c71fbd61c186851ac1696bc4aaa"
+        },
+        {
+          "name": "input_reference",
+          "mimeType": "image/png",
+          "sha256": "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25"
+        }
+      ],
+      "taskId": "b5-video-2"
+    },
+    {
+      "phase": 2,
+      "method": "GET",
+      "path": "/v1/videos/b5-video-2"
+    },
+    {
+      "phase": 2,
+      "method": "GET",
+      "path": "/v1/videos/b5-video-2/content"
+    },
+    {
+      "phase": 2,
+      "method": "GET",
+      "path": "/v1/videos/b5-video-1/content"
+    }
+  ]
+}

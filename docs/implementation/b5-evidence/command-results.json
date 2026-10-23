@@ -1,0 +1,258 @@
+[
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "backend/test/desktop-boundary.test.js",
+      "backend/test/workbench-contracts.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-connections.test.js",
+      "backend/test/workbench-connections-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-tasks-http.test.js",
+      "backend/test/workbench-image-boundary.test.js",
+      "backend/test/workbench-b1-adapters.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-upstream-id.test.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-downloads-http.test.js",
+      "backend/test/workbench-b3.test.js",
+      "backend/test/workbench-b4.test.js",
+      "backend/test/workbench-b4-physical-aliases.test.js"
+    ],
+    "startedAt": "2026-10-23T16:39:28.276Z",
+    "finishedAt": "2026-10-23T16:39:42.694Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "frontend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "src/components/workbench/__tests__/workbench-b5.test.tsx",
+      "src/lib/__tests__/workbench-task-client.test.ts",
+      "src/lib/__tests__/connection-client.test.ts"
+    ],
+    "startedAt": "2026-10-23T16:39:42.696Z",
+    "finishedAt": "2026-10-23T16:39:47.185Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/workbench",
+      "src/hooks/useWorkbenchDrafts.ts",
+      "src/hooks/useWorkbenchTasks.ts",
+      "src/hooks/useWorkbenchPanelHeight.ts",
+      "src/lib/workbench-client.ts",
+      "src/lib/workbench-generation.ts",
+      "src/lib/workbench-task-client.ts"
+    ],
+    "startedAt": "2026-10-23T16:39:47.186Z",
+    "finishedAt": "2026-10-23T16:39:53.808Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "tsc",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false",
+      "--pretty",
+      "false"
+    ],
+    "startedAt": "2026-10-23T16:39:53.808Z",
+    "finishedAt": "2026-10-23T16:40:07.948Z",
+    "exitCode": 2,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/diagnostics.js",
+      "backend/storage/store.js",
+      "desktop/diagnostic-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/preload.cjs",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "scripts/run-b5-checks.cjs",
+      "scripts/electron-b5-test-entry.cjs",
+      "scripts/verify-desktop-b5.cjs"
+    ],
+    "startedAt": "2026-10-23T16:40:51.963Z",
+    "finishedAt": "2026-10-23T16:40:52.842Z",
+    "exitCode": 1,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/diagnostics.js",
+      "backend/storage/store.js",
+      "desktop/diagnostic-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/preload.cjs",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "scripts/run-b5-checks.cjs",
+      "scripts/electron-b5-test-entry.cjs",
+      "scripts/verify-desktop-b5.cjs"
+    ],
+    "startedAt": "2026-10-23T16:41:32.942Z",
+    "finishedAt": "2026-10-23T16:41:33.467Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "build",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T16:41:33.469Z",
+    "finishedAt": "2026-10-23T16:41:55.440Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "diagnostics",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b5-diagnostics.test.js"
+    ],
+    "startedAt": "2026-10-23T16:44:49.531Z",
+    "finishedAt": "2026-10-23T16:44:50.429Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/diagnostics.js",
+      "backend/storage/store.js",
+      "desktop/diagnostic-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/preload.cjs",
+      "desktop/main.cjs",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "scripts/run-b5-checks.cjs",
+      "scripts/electron-b5-test-entry.cjs",
+      "scripts/verify-desktop-b5.cjs"
+    ],
+    "startedAt": "2026-10-23T16:44:50.433Z",
+    "finishedAt": "2026-10-23T16:44:51.353Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/diagnostics.js",
+      "backend/storage/store.js",
+      "desktop/diagnostic-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/preload.cjs",
+      "desktop/main.cjs",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "scripts/run-b5-checks.cjs",
+      "scripts/electron-b5-test-entry.cjs",
+      "scripts/verify-desktop-b5.cjs"
+    ],
+    "startedAt": "2026-10-23T16:46:36.025Z",
+    "finishedAt": "2026-10-23T16:46:36.904Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "contracts",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-contracts.test.js"
+    ],
+    "startedAt": "2026-10-23T16:51:31.904Z",
+    "finishedAt": "2026-10-23T16:51:32.021Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "diagnostics",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-b5-diagnostics.test.js"
+    ],
+    "startedAt": "2026-10-23T16:52:48.042Z",
+    "finishedAt": "2026-10-23T16:52:48.732Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "hostLint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/storage/diagnostics.js",
+      "backend/storage/store.js",
+      "desktop/diagnostic-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/preload.cjs",
+      "desktop/main.cjs",
+      "backend/test/workbench-b5-diagnostics.test.js",
+      "scripts/run-b5-checks.cjs",
+      "scripts/electron-b5-test-entry.cjs",
+      "scripts/verify-desktop-b5.cjs",
+      "scripts/verify-b5-acceptance.cjs"
+    ],
+    "startedAt": "2026-10-23T16:52:48.733Z",
+    "finishedAt": "2026-10-23T16:52:49.285Z",
+    "exitCode": 0,
+    "error": null
+  }
+]

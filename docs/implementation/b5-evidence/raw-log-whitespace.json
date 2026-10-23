@@ -1,0 +1,11 @@
+{
+  "fullStagedDiffCheck": {
+    "exitCode": 2,
+    "output": "docs/implementation/b5-evidence/build.log:27: new blank line at EOF.\ndocs/implementation/b5-evidence/frontend.log:16: new blank line at EOF.\n"
+  },
+  "sourceAndDocumentStagedDiffCheck": {
+    "exitCode": 0,
+    "excluded": "Original evidence *.log files"
+  },
+  "note": "Preserve actual build/Vitest output. Only their final blank lines are reported; no source/document whitespace failures."
+}

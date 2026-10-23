@@ -77,7 +77,7 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: require('../package.json').version, storageMode: dataPolicy.mode, features }) });
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready;

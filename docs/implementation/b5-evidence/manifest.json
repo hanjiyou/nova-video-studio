@@ -1,0 +1,302 @@
+{
+  "baselineCommit": "db3a03d1e1c555ec673a9d71755437002d8f9600",
+  "status": "accepted_offline_scope_commit_push_authorized",
+  "excludedSelf": true,
+  "files": [
+    {
+      "path": "backend/storage/diagnostics.js",
+      "bytes": 5612,
+      "sha256": "7e39ddd2cf1c7d87213a185d3e092ccb39c71cd95dcce64ad0e59abd619dd6d5"
+    },
+    {
+      "path": "backend/storage/store.js",
+      "bytes": 30774,
+      "sha256": "45c5b4cafd5c9a756b48d76827a24a98c204865d8b8d549def6a8b4987d4f5b5"
+    },
+    {
+      "path": "backend/test/workbench-b5-diagnostics.test.js",
+      "bytes": 9798,
+      "sha256": "afde234a80fac753d0821eef339e77290c31c54c04b748839b4ae226cd28abc6"
+    },
+    {
+      "path": "desktop/diagnostic-actions.cjs",
+      "bytes": 2490,
+      "sha256": "0f8bfabe6a5a0b8313762070524b13b234bae80753c7ee7080531db2604e13a5"
+    },
+    {
+      "path": "desktop/ipc.cjs",
+      "bytes": 5593,
+      "sha256": "9e9fbffc7073bb1373d62152b1fcfbada320a1f476bb87374b39718a584b73a5"
+    },
+    {
+      "path": "desktop/main.cjs",
+      "bytes": 6742,
+      "sha256": "6b2c38bc868533d756efcfc5c381e56cccd77b98e871280a89ac3e9b1fac8028"
+    },
+    {
+      "path": "desktop/preload.cjs",
+      "bytes": 1535,
+      "sha256": "707b98862c405418d561872bf170563f78cb462dde56ed9ceb0feda868258895"
+    },
+    {
+      "path": "docs/Nova-Studio落地任务清单.md",
+      "bytes": 27242,
+      "sha256": "ce8f8a15e42e9a3988705a264700ab7c711078f20b10b7dbb11e06b965cd6bdd"
+    },
+    {
+      "path": "docs/acceptance/T15-真实线路验收前置清单.md",
+      "bytes": 2654,
+      "sha256": "b31b14d290e8b001fbffca669f3419ba3bc6b4ea37612ac7eb8c68b8958dd6ab"
+    },
+    {
+      "path": "docs/acceptance/workbench-61.json",
+      "bytes": 213239,
+      "sha256": "42557388850a9f45869be7166770fde2f4c9c7c8238787c5a540480cd440e8af"
+    },
+    {
+      "path": "docs/acceptance/workbench-61.md",
+      "bytes": 14175,
+      "sha256": "b7a0a08edb5d7a530fd8f274d4137ce67dcc457ee6033ab990b133416a06adca"
+    },
+    {
+      "path": "docs/diagnostics-v1.md",
+      "bytes": 2453,
+      "sha256": "bdc59771d8cdceb678f208566a6c6b03b06564bea8d4fb89e306156401cb0848"
+    },
+    {
+      "path": "docs/implementation/B5-T14-诊断与离线完整验收.md",
+      "bytes": 10139,
+      "sha256": "87bd86634205eb80423efc877972f9e868b47ec7ac7704ec0d4116cdfc58343d"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/01-image-preview.png",
+      "bytes": 108428,
+      "sha256": "dd7740aeb76ac36da3e40e72a50692938a566df53a6f2bf7ef81cf43480af17e"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/02-paused-reservation-and-queue.png",
+      "bytes": 117472,
+      "sha256": "6053d7c25c8a9ecc9a04225af39a9195f0d932705ba22b2d3a88e8dad5a8ae9c"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/03-library-search.png",
+      "bytes": 85895,
+      "sha256": "4f60af730054411c18991eb39487e79a79e656450dabdaa601064a2557e9bd1a"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/04-local-video-playback.png",
+      "bytes": 242357,
+      "sha256": "254147c0431bdaf000fa69f51eebce7569156442da3efcd6658e95f9b923b3c5"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/05-missing-result-recovered.png",
+      "bytes": 117051,
+      "sha256": "e53a8d57bea74b6405b64852feaccf1e1e8a42a9147817742a431d46faf4e814"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/06-library-record-removed.png",
+      "bytes": 85211,
+      "sha256": "9c59e630a3de06cef5bcc2f9f67a4a312ee56c514ef75e7b559b06203ec2524a"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/approval-review.json",
+      "bytes": 2048,
+      "sha256": "0eb63c50a17188243203d046ca9da8b2bcb0a27fabd42d1d4bd4798ea371646c"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/backend.log",
+      "bytes": 32117,
+      "sha256": "e8ee22246cf39df21a81f7bbb65a8c2168ff049483adc92a33b46eae439502be"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/build.log",
+      "bytes": 834,
+      "sha256": "91472c871e4bcad70893193e1682e96db20859639cea44e84a6f17c25583e8e5"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/command-results.json",
+      "bytes": 8094,
+      "sha256": "e1885146212dbd430cd2825d31bcc8b7ce89e1fa6e46bb11e67865322a535427"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/contracts.log",
+      "bytes": 638,
+      "sha256": "6c5c994fa300dd1bd952873639bbec65296840b4eb7b80ef7945457d32ab74bd"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/diagnostic-export-saved.png",
+      "bytes": 188895,
+      "sha256": "65794b903d98119a70beb1b35310d20e5e5f2cf60f0a4f75c8fe03c7a522b072"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/diagnostic-export.json",
+      "bytes": 80978,
+      "sha256": "8e7216a10dff6344876a547ddcaca2506ff39415556c3dae7c1b14f717a7cb8c"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/diagnostics.log",
+      "bytes": 1334,
+      "sha256": "37ba00169868fbc93717fef99eedccccb16f1f4a59e38a8210f7ebff6064c2a2"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/fault-matrix.json",
+      "bytes": 3814,
+      "sha256": "283359ccb6f8e2496f47c4e0115826b2d564b04ff97b6a26a78b72a67e7be34b"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/frontend.log",
+      "bytes": 850,
+      "sha256": "bfad3a1065894f5f111dfdf61a022061b9d0b8372385307e7d515e3b2b860bc1"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/hostLint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/initial-observations.json",
+      "bytes": 1151,
+      "sha256": "048d44e77d5f56cb47490ef17cc47cb916b6d0f1441c753c52dd034e9db47681"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-diagnostics-1024-1.5.png",
+      "bytes": 182348,
+      "sha256": "6cb3965b2caad326430d08d99b67bc742eac98b75b06b103ca1e628cd5d2f0f4"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-dialog-1024-1.5.png",
+      "bytes": 55171,
+      "sha256": "5ec9c5fb71b92b58b2c8f19e50f2ce39c05c506ee57b7a8f1828fe26109f83b1"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-image-1024-1.5.png",
+      "bytes": 110677,
+      "sha256": "dfe118ecb44a3a255ee6c0a2cc78ef457bc5b2e2ea25bcdd18aedc3fdacf37be"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-image-1440-1.5.png",
+      "bytes": 167275,
+      "sha256": "30c1332af98db4ca36c9d4761243e777f4ec7223a5d377b265e2f8111b1a0408"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-library-1024-1.5.png",
+      "bytes": 85570,
+      "sha256": "d12cb1c9ee4c6f8502acc1fb75f1d524a2925f03e41727f5396879c1d1184b5d"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-video-1024-1.5.png",
+      "bytes": 200303,
+      "sha256": "4f8296c9cc3fe9bad913d666cbfa889f21e1083af7509e5527438edd74654451"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-video-1280-1.25.png",
+      "bytes": 194414,
+      "sha256": "b8f4d01b7d0b398fbebfbc87194dae01d91eef2d541b9e509890ba6af8e307b7"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-video-1440-1.25.png",
+      "bytes": 257654,
+      "sha256": "2c923d5ee5c25e00fe67926ba7f49deca432404084d0cdef12b317ec14902fbe"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-video-1440-1.5.png",
+      "bytes": 217285,
+      "sha256": "8486abc0e3f78253b6f259d41229f4681ff648d8ea68fd5dafa89b6438855032"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/layout-video-1440-1.png",
+      "bytes": 258407,
+      "sha256": "ff0227306be4d71ae2db2e909ad6b61c413b014ce4d6203ce8644424f6237db3"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/ledger-validation.log",
+      "bytes": 204,
+      "sha256": "8ffedcaf56627b6bca7d296f5080a731725412b5bf19b10c3574f199a6804652"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/phase-1.json",
+      "bytes": 4007,
+      "sha256": "63f10b49c0b56b293b06e6f16aa45b4f8317ce87ff3d9aa4796c6027679f5383"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/phase-2.json",
+      "bytes": 7628,
+      "sha256": "12d4650ade211416923484c6bddb04646d7b1cfc1df8cc01854d5a748eecdce2"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/raw-log-whitespace.json",
+      "bytes": 470,
+      "sha256": "1785238f85093ec046ddfa6d38d51b358d3284f0216cf003e33a7dcf21a78d5d"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/requests.json",
+      "bytes": 2950,
+      "sha256": "69b47396707f6cfb7e79771f240b5399e214fb636dec80230c41ac660cfdc8c8"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/summary.json",
+      "bytes": 3672,
+      "sha256": "dd53bec1cff136685af8370d9dda84007d7c965a67a6b1e57aa8e73773eef432"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/tsc.log",
+      "bytes": 9854,
+      "sha256": "ac7d535d0c8606c7780be30ec795c3b86164e5c60c4070fe0547708613d5d05b"
+    },
+    {
+      "path": "docs/implementation/b5-evidence/typecheck-baseline-comparison.json",
+      "bytes": 212,
+      "sha256": "465cd036c01f53abc4865f58d7a51e6d5c7c9460c7d52a2ce7be3aecf9483bd8"
+    },
+    {
+      "path": "frontend/src/app/globals.css",
+      "bytes": 36199,
+      "sha256": "c1685c8a4e5b311160a0f3160bcb6c864c27c7f54ef9265ed7c1df44b383e28d"
+    },
+    {
+      "path": "frontend/src/components/workbench/DiagnosticsExport.tsx",
+      "bytes": 1597,
+      "sha256": "7506f5874d727ca684a60c1377d0bd452100b85a3ed3fd95e91c7fc38267d8fa"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "bytes": 20013,
+      "sha256": "fb02b0a1436b9c80bf8125e7a6a9c7bc5e439ee40e9aef4c482d21ffc1c10d00"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-b5.test.tsx",
+      "bytes": 2610,
+      "sha256": "9e98aebb857d502b5eef59223b9fc225a59d022aa9ff5b32d0b901fa577874e9"
+    },
+    {
+      "path": "frontend/src/types/nova-desktop.d.ts",
+      "bytes": 2799,
+      "sha256": "125ed2634d2dc660c8795ba9663a9423825f3726b2864e131a50b829aec84a5d"
+    },
+    {
+      "path": "scripts/electron-b5-test-entry.cjs",
+      "bytes": 25304,
+      "sha256": "82f81e41c0061c2f50ccde9eaefbf6df7b6c6e90aa8d1b9ae18d862d69a66ef8"
+    },
+    {
+      "path": "scripts/run-b5-checks.cjs",
+      "bytes": 3141,
+      "sha256": "3fdd297d6e16b4ba407b6e845553a2d80671458e6ee84f7f4daa16ca8b9e4a6a"
+    },
+    {
+      "path": "scripts/verify-b5-acceptance.cjs",
+      "bytes": 1713,
+      "sha256": "2807c7efc8de10a9dd379487d1624021dddf5a2d078c5aa8b53cb46161bb7bb7"
+    },
+    {
+      "path": "scripts/verify-desktop-b5.cjs",
+      "bytes": 5284,
+      "sha256": "cf716e87d584aa59a0ecf71b9916cc40aa44984dc61564a98fbc54de3aad3637"
+    }
+  ]
+}

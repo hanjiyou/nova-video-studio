@@ -1,0 +1,13 @@
+✔ acceptance ledger covers exactly the 61 baseline IDs with owners and separate evidence channels (4.1421ms)
+✔ historical fixtures have provenance and synthetic replacements, not private raw media or live URLs (4.1186ms)
+✔ observed provider response types/envelopes stay distinct from a successful local asset (1.8771ms)
+✔ known rejected formats preserve the original error nesting without broad capability claims (0.638ms)
+✔ text protocols and unobserved provider guarantees remain explicitly unverified (0.6283ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.5194

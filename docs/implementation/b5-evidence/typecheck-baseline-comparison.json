@@ -1,0 +1,9 @@
+{
+  "baseline": "../b4-evidence/tsc.log",
+  "current": "tsc.log",
+  "baselineDiagnostics": 60,
+  "currentDiagnostics": 60,
+  "identicalDiagnosticLines": true,
+  "b5FileDiagnostics": 0,
+  "exitCode": 2
+}

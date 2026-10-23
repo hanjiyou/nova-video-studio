@@ -1,0 +1,174 @@
+[
+  {
+    "name": "frontend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--reporter=dot"
+    ],
+    "startedAt": "2026-10-23T08:19:19.459Z",
+    "finishedAt": "2026-10-23T08:19:56.233Z",
+    "exitCode": 0,
+    "log": "frontend-regression.log"
+  },
+  {
+    "name": "frontend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "src/types/nova-desktop.d.ts"
+    ],
+    "startedAt": "2026-10-23T08:19:19.479Z",
+    "finishedAt": "2026-10-23T08:19:41.227Z",
+    "exitCode": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "frontend-build",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T08:19:19.489Z",
+    "finishedAt": "2026-10-23T08:20:15.938Z",
+    "exitCode": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "storage-targeted",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "test/workbench-storage.test.js",
+      "test/workbench-storage-http.test.js",
+      "test/desktop-boundary.test.js"
+    ],
+    "startedAt": "2026-10-23T08:42:13.840Z",
+    "finishedAt": "2026-10-23T08:42:18.693Z",
+    "exitCode": 0,
+    "log": "storage-targeted.log"
+  },
+  {
+    "name": "backend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test"
+    ],
+    "startedAt": "2026-10-23T08:42:13.856Z",
+    "finishedAt": "2026-10-23T08:42:28.571Z",
+    "exitCode": 0,
+    "log": "backend-regression.log"
+  },
+  {
+    "name": "backend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "server.js",
+      "plugin-runtime/media.js",
+      "storage/migrations.js",
+      "storage/store.js",
+      "storage/http.js",
+      "test/workbench-storage.test.js",
+      "test/workbench-storage-http.test.js"
+    ],
+    "startedAt": "2026-10-23T08:42:13.865Z",
+    "finishedAt": "2026-10-23T08:42:18.428Z",
+    "exitCode": 0,
+    "log": "backend-lint.log"
+  },
+  {
+    "name": "native-storage-port-conflict",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-storage.cjs",
+      "temp/t03-native-storage-reviewed"
+    ],
+    "startedAt": "2026-10-23T08:42:13.875Z",
+    "finishedAt": "2026-10-23T08:42:18.666Z",
+    "exitCode": 1,
+    "log": "native-storage-port-conflict.log"
+  },
+  {
+    "name": "native-boundary",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-boundary.cjs",
+      "temp/t03-native-boundary-reviewed"
+    ],
+    "startedAt": "2026-10-23T08:42:13.883Z",
+    "finishedAt": "2026-10-23T08:42:18.887Z",
+    "exitCode": 0,
+    "log": "native-boundary.log"
+  },
+  {
+    "name": "native-storage",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-storage.cjs",
+      "temp/t03-native-storage-reviewed-final"
+    ],
+    "startedAt": "2026-10-23T08:43:05.209Z",
+    "finishedAt": "2026-10-23T08:43:08.382Z",
+    "exitCode": 0,
+    "log": "native-storage.log"
+  },
+  {
+    "name": "unpacked-windows-package",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "node_modules/electron-builder/cli.js",
+      "--win",
+      "--x64",
+      "--dir",
+      "--config",
+      "temp/electron-builder-t03.yml"
+    ],
+    "startedAt": "2026-10-23T08:43:30.141Z",
+    "finishedAt": "2026-10-23T08:43:43.626Z",
+    "exitCode": 0,
+    "log": "packaging.log"
+  },
+  {
+    "name": "packaged-storage",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-package.cjs",
+      "release-t03/win-unpacked/Nova Image Studio.exe",
+      "override",
+      "temp/t03-packaged-storage-reviewed",
+      "--storage"
+    ],
+    "startedAt": "2026-10-23T08:43:43.627Z",
+    "finishedAt": "2026-10-23T08:43:50.426Z",
+    "exitCode": 0,
+    "log": "packaged-startup.log"
+  },
+  {
+    "name": "contract-ledger",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "--test",
+      "backend/test/workbench-contracts.test.js"
+    ],
+    "startedAt": "2026-10-23T08:46:18.777Z",
+    "finishedAt": "2026-10-23T08:46:19.016Z",
+    "exitCode": 0,
+    "log": "contract-ledger.log"
+  }
+]

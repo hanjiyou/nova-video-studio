@@ -3,7 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo }) {
+function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, getAssetService = () => null }) {
   const selections = new Map();
   const channels = [];
   function register(channel, handler) {
@@ -27,6 +27,15 @@ function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo })
     if (selections.size >= 16) selections.delete(selections.keys().next().value);
     selections.set(selectionId, directory);
     return { ok: true, cancelled: false, selectionId, displayName: path.basename(directory) };
+  });
+  register('nova:import-reference-assets', async (...args)=>{
+    if(args.length)return {ok:false,code:'INVALID_ARGUMENT'};
+    const service=getAssetService();if(!service)return {ok:false,code:'ASSET_SERVICE_NOT_READY'};
+    const result=await dialog.showOpenDialog(getWindow(),{properties:['openFile','multiSelections'],filters:[{name:'参考图片',extensions:['png','jpg','jpeg']}]});
+    if(result.canceled)return {ok:true,cancelled:true,assets:[]};
+    if(result.filePaths.length>32)return {ok:false,code:'TOO_MANY_ASSETS'};
+    const assets=service.importFiles(result.filePaths);
+    return {ok:true,cancelled:false,assets};
   });
   for (const channel of ['nova:save-asset-copy', 'nova:reveal-asset']) register(channel, (...args) => {
     if (args.length !== 1 || typeof args[0] !== 'string' || !UUID.test(args[0])) return { ok: false, code: 'INVALID_ASSET_ID' };

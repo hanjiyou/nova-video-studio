@@ -1,0 +1,69 @@
+{
+  "startedAt": "2026-10-23T08:42:14.279Z",
+  "providerRequests": "none",
+  "checks": {
+    "storage cleanup scoped to app origin and worker caches": true,
+    "unrelated origin CacheStorage survives startup cleanup": true,
+    "app origin worker cache removed": true,
+    "app localStorage preserved": true,
+    "occupied startup port resolved without collision": true,
+    "no default remote debugging listener configured": true,
+    "default Agent and browser automation disabled": true,
+    "no Agent tab mounted": true,
+    "image workbench selected": true,
+    "Node globals absent": true,
+    "real renderer HTTP authorized": true,
+    "renderer cannot forge session authority": true,
+    "real renderer WS authorized": true,
+    "unauthenticated HTTP denied": true,
+    "session captured only in test main": true,
+    "session absent from renderer bridge/storage/cookies": true,
+    "session absent from process argv/env": true,
+    "runtime info uses narrow IPC": true,
+    "renderer paths rejected by asset IPC": true,
+    "valid asset explicitly not ready before T03/T08": true,
+    "desktop CSP covers original and reloaded document": true,
+    "real HTTP and WS remain authorized after reload": true,
+    "desktop has no registered service worker": true,
+    "desktop service worker registration blocked": true,
+    "worker cannot access backend session": true,
+    "iframe cannot access backend session": true,
+    "other webContents cannot access backend session": true,
+    "Web default Agent retained": true,
+    "Web PWA registration retained": true,
+    "remote requests and redirect never receive local session": true,
+    "observed actual WS session header": true,
+    "same profile second instance exits before backend opens": true,
+    "primary backend still healthy": true,
+    "no renderer exceptions or hydration errors": true
+  },
+  "backendOrigin": "http://127.0.0.1:56059",
+  "workerStatus": -2,
+  "cspViolations": [
+    "worker-src",
+    "frame-src"
+  ],
+  "iframeStatus": 0,
+  "authorizedRequestKinds": [
+    "image",
+    "stylesheet",
+    "script",
+    "xhr",
+    "webSocket",
+    "mainFrame"
+  ],
+  "defaultCdpConfig": "{\"promptGalleryMode\":\"2\",\"promptGalleryPasswordEnabled\":false}",
+  "errors": [],
+  "status": "passed",
+  "finishedAt": "2026-10-23T08:42:18.359Z",
+  "databaseQuickCheck": [
+    {
+      "quick_check": "ok"
+    }
+  ],
+  "cleanExit": {
+    "code": 0,
+    "signal": null
+  },
+  "occupiedPort": 56058
+}

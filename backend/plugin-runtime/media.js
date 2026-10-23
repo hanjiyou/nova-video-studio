@@ -54,7 +54,7 @@ const MEDIA_URL_PREFIX = '/api/nova/plugin-media/';
 /**
  * @param {object} deps 宿主注入的依赖，避免这个模块反过来 require server.js
  */
-function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError, getClientIp, normalizeBaseUrl }) {
+function createMediaStore({ db, retainHistory = false, getAssetService = () => null, getRuntimeEnv, parseIntegerEnv, createHttpError, getClientIp, normalizeBaseUrl }) {
   const MEDIA_DIR = process.env.NOVA_PLUGIN_MEDIA_DIR
     || path.join(__dirname, '..', 'data', 'plugin-media');
   const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000;
@@ -171,6 +171,15 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
    * 并且不再参与去重复用——避免删掉任务 A 时连带删掉任务 B 还在用的文件。
    */
   function bindToTask(taskId, urls) {
+    const assetService=getAssetService();
+    if(retainHistory && assetService) {
+      const ordered=(urls || []).map(extractFileName).filter(Boolean).map(fileName=>{
+        const existing=assetService.legacyAsset('plugin-media',fileName);
+        return existing || assetService.registerLegacyFile('plugin-media',fileName,path.join(MEDIA_DIR,fileName),CONTENT_TYPE_BY_EXT[path.extname(fileName).slice(1)]);
+      });
+      assetService.bindTaskAssets(taskId,ordered.map((asset,position)=>({assetId:asset.assetId,position,role:'reference'})));
+      return ordered.length;
+    }
     const fileNames = [...new Set((urls || []).map(extractFileName).filter(Boolean))];
     if (fileNames.length === 0) return 0;
     const stmt = db.prepare('UPDATE plugin_media SET task_id = ? WHERE file_name = ? AND task_id IS NULL');
@@ -183,6 +192,7 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
 
   /** 任务清理即素材清理。 */
   function deleteTaskMedia(taskId) {
+    if(retainHistory)return {total:0,success:0,failed:0,retained:true};
     let rows;
     try {
       rows = db.prepare('SELECT file_name FROM plugin_media WHERE task_id = ?').all(taskId);
@@ -208,6 +218,7 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
   }
 
   function cleanupExpired() {
+    if(retainHistory)return;
     try {
       if (!fs.existsSync(MEDIA_DIR)) return;
       const ttlMs = getTtlMs();
@@ -269,6 +280,17 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
       throw createHttpError(400, 'EMPTY_MEDIA', '素材内容为空');
     }
 
+    const assetService=getAssetService();
+    if(retainHistory && assetService) {
+      return db.transaction(()=>{
+        const fileName=randomUUID()+'.'+ext;
+        const asset=assetService.importBuffer(buffer,{mimeType,displayName:fileName,sourceKind:'imported'});
+        assetService.linkLegacyAsset('plugin-media',fileName,asset.assetId);
+        db.prepare('INSERT INTO plugin_media(file_name,hash,kind,bytes,task_id,created_at) VALUES(?,?,?,?,NULL,?)')
+          .run(fileName,createHash('md5').update(buffer).digest('hex'),kind,buffer.length,new Date().toISOString());
+        return {url:`${baseUrl}${MEDIA_URL_PREFIX}${fileName}`,bytes:buffer.length,assetId:asset.assetId};
+      })();
+    }
     ensureDir();
 
     // 去重键带上 IP：同一用户重复选同一个文件时复用，不同用户上传同一文件各存一份。
@@ -291,7 +313,8 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
       `).run(fileName, hash, kind, buffer.length, new Date().toISOString());
     }
 
-    return { url: `${baseUrl}${MEDIA_URL_PREFIX}${fileName}`, bytes: buffer.length };
+    const asset=getAssetService()?.registerLegacyFile('plugin-media',fileName,path.join(MEDIA_DIR,fileName),mimeType);
+    return { url: `${baseUrl}${MEDIA_URL_PREFIX}${fileName}`, bytes: buffer.length, ...(asset?{assetId:asset.assetId}:{}) };
   }
 
   /** 回读素材文件。上游要匿名拉取，所以调用方不鉴权。 */
@@ -302,6 +325,9 @@ function createMediaStore({ db, getRuntimeEnv, parseIntegerEnv, createHttpError,
       res.end(JSON.stringify({ error: 'Invalid file name' }));
       return;
     }
+    const assetService=getAssetService();
+    const asset=assetService?.legacyAsset('plugin-media',safeName);
+    if(asset){const stored=assetService.readAsset(asset.assetId);res.writeHead(200,{'Content-Type':asset.mimeType,'Content-Length':stored.bytes.length,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});res.end(stored.bytes);return;}
     const filePath = path.join(MEDIA_DIR, safeName);
     if (!fs.existsSync(filePath)) {
       res.writeHead(404, { 'Content-Type': 'application/json; charset=utf-8' });

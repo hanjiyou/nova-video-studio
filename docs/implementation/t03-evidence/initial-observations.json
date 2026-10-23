@@ -1,0 +1,40 @@
+[
+  {
+    "phase": "Initial storage unit test",
+    "failure": "Windows temporary symlink fixture cleanup returned ENOTEMPTY after the security assertion passed.",
+    "handling": "Unlink the owned test symlink explicitly, retry only the freshly-created temporary test directory; final test passes without skips."
+  },
+  {
+    "phase": "Initial integration test helper shutdown",
+    "failure": "A Node child forced process.exit after server shutdown once returned 3221226505 (0xc0000409).",
+    "handling": "Test helper now closes undici dispatcher, disconnects IPC, and allows natural process exit. Subsequent integration and real Electron clean-exit checks pass. Root cause of the native exit is not established; this is not proof that the separate T02 NSIS crash is resolved."
+  },
+  {
+    "phase": "Initial added integration assertion",
+    "failure": "SQL string quoting syntax error in the test was corrected before execution."
+  },
+  {
+    "phase": "Initial lint",
+    "failure": "Control-character literal regex in display-name sanitizer was rejected by no-control-regex.",
+    "handling": "Use Unicode control-character category removal; final lint passes."
+  },
+  {
+    "phase": "Package source audit",
+    "failure": "asar.extractFile on Windows required platform-native path separators.",
+    "handling": "Correct audit lookup; packaged startup and byte-for-byte source comparison both pass."
+  },
+  {
+    "phase": "Review regression test authoring",
+    "failure": "The first run of the added forgery test used the wrong asset primary-key column in its assertion; no production assertion was weakened.",
+    "handling": "Corrected test queries to assets.id, the managed assets/ directory and the existing missing=404/corrupt=409 contract. The final real HTTP regression passes."
+  },
+  {
+    "phase": "Post-review concurrent native verification",
+    "failure": "Actual Electron startup returned EADDRINUSE and exit 1 while independent local-service checks were running concurrently.",
+    "rawLogs": [
+      "native-storage-port-conflict.log",
+      "native-storage-port-conflict-stderr.log"
+    ],
+    "handling": "Kept original failed evidence, waited for all checks to finish, then reran native storage sequentially with a fresh profile; 8 first-start and 9 changed-port restart checks passed with strict exit 0."
+  }
+]

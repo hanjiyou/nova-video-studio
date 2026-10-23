@@ -31,6 +31,7 @@ function prepareBackendEnv(port) {
   process.env.NOVA_IMAGE_DIR = path.join(dataPolicy.directory, 'nova-images');
   process.env.NOVA_CDP_DIR = path.join(dataPolicy.directory, 'cdp-products');
   process.env.NOVA_PLUGIN_MEDIA_DIR = path.join(dataPolicy.directory, 'plugin-media');
+  process.env.NOVA_STORAGE_DIR = path.join(dataPolicy.directory, 'storage');
   process.env.NOVA_CDP_ENABLED ??= 'false';
   process.env.NOVA_CDP_LAUNCH_ENABLED ??= 'false';
   process.env.NOVA_AGENT_ENABLED ??= 'false';
@@ -69,7 +70,7 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, getWindow: () => mainWindow, policy, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
   backend = require('../backend/server');
   await backend.ready;
   const response = await fetch(origin + '/api/nova/config', { headers: { [SESSION_HEADER]: token }, signal: AbortSignal.timeout(30000) });

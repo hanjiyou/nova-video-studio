@@ -1,6 +1,6 @@
 # 桌面运行边界
 
-T02 提供 Electron 运行与会话边界。Web 部署继续使用现有服务入口；后续凭据、任务恢复和资产持久化分别在 T04、T05、T03/T08 接入。
+T02 提供 Electron 运行与会话边界，T03 接入持久资产/草稿存储。Web 部署继续使用现有服务入口；后续凭据、任务恢复和资产持久化分别在 T04、T05、T03/T08 接入。
 
 ## 数据和进程
 
@@ -28,6 +28,7 @@ window.novaDesktop 只暴露公开 versions/features 与以下操作，每个 IP
 
 | 方法 | 返回/限制 |
 | --- | --- |
+| importReferenceAssets() | T03：宿主选择PNG/JPEG并复制为受管资产，只返回摘要；无任意路径参数 |
 | getRuntimeInfo() | 版本、存储策略名称、功能开关；无实际路径/会话 |
 | chooseOutputDirectory() | 系统目录选择框，取消状态或不透明 selectionId 和目录显示名；宿主 realpath 与写探针验证 |
 | saveAssetCopy(assetId) | 仅 UUID；当前明确返回 ASSET_SERVICE_NOT_READY |

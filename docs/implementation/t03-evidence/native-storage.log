@@ -1,0 +1,49 @@
+Command: node scripts/verify-desktop-storage.cjs temp/t03-native-storage-reviewed-final
+CWD: E:\Learn\AI\nova-image-studio
+{
+  "startedAt": "2026-10-23T08:43:05.452Z",
+  "phase": 1,
+  "providerRequests": "none",
+  "checks": {
+    "native IPC imports selected PNG/JPEG": true,
+    "asset DTO contains no source paths": true,
+    "actual renderer saves ordered draft": true,
+    "renderer saves persistent setting": true,
+    "other webContents cannot invoke import IPC": true,
+    "managed bytes survive source move image image/png": true,
+    "managed bytes survive source move image image/jpeg": true,
+    "schema upgrades once without extra restart backup": true
+  },
+  "origin": "http://127.0.0.1:51422",
+  "assetIds": [
+    "2a4ca4ff-4e26-4f39-8cc1-b39e05d9192e",
+    "833d9123-f11c-4646-af80-18202c8d4096"
+  ],
+  "schemaBackups": 1,
+  "status": "passed",
+  "finishedAt": "2026-10-23T08:43:06.743Z"
+}
+{
+  "startedAt": "2026-10-23T08:43:07.133Z",
+  "phase": 2,
+  "providerRequests": "none",
+  "checks": {
+    "restart uses a different origin": true,
+    "Chinese/newline draft survives native restart": true,
+    "input order survives changed port": true,
+    "persistent setting survives changed port": true,
+    "expired legacy TTL cannot erase desktop history": true,
+    "ACK retains task and shared assets": true,
+    "managed bytes survive source move image image/png": true,
+    "managed bytes survive source move image image/jpeg": true,
+    "schema upgrades once without extra restart backup": true
+  },
+  "origin": "http://127.0.0.1:64863",
+  "assetIds": [
+    "2a4ca4ff-4e26-4f39-8cc1-b39e05d9192e",
+    "833d9123-f11c-4646-af80-18202c8d4096"
+  ],
+  "schemaBackups": 1,
+  "status": "passed",
+  "finishedAt": "2026-10-23T08:43:08.105Z"
+}

@@ -11,6 +11,7 @@ files:
   # 后端新增生产依赖时必须同步加入根 package.json dependencies。
   - backend/server.js
   - backend/desktop-session.js
+  - backend/storage/**
   - backend/cdp.js
   - backend/taobao-extract.js
   - backend/doubao.js

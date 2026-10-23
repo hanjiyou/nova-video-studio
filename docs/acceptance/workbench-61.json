@@ -19,13 +19,16 @@
         "T02",
         "T16"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "G02",
@@ -36,13 +39,19 @@
         "T03",
         "T09"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "G03",
@@ -155,13 +164,19 @@
         "T03",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "I03",
@@ -227,13 +242,19 @@
         "T11",
         "T15"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "I07",
@@ -296,13 +317,16 @@
         "T08",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "I11",
@@ -314,13 +338,16 @@
         "T08",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "I12",
@@ -437,13 +464,19 @@
         "T12",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "V05",
@@ -471,13 +504,19 @@
         "T03",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "V07",
@@ -575,13 +614,16 @@
         "T08",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "V13",
@@ -593,13 +635,16 @@
         "T08",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "V14",
@@ -662,13 +707,19 @@
         "T03",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L02",
@@ -695,13 +746,19 @@
         "T03",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L04",
@@ -728,13 +785,19 @@
         "T03",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L06",
@@ -831,13 +894,16 @@
         "T08",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "S06",
@@ -952,13 +1018,16 @@
         "T08",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
         "offline": [],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t02-evidence/native-boundary-evidence.json",
+          "../implementation/t02-evidence/installed-system-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
     },
     {
       "id": "O07",
@@ -970,13 +1039,19 @@
         "T09",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t03-evidence/storage-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t03-evidence/native-storage-phase-1.json",
+          "../implementation/t03-evidence/native-storage-phase-2.json",
+          "../implementation/t03-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "O08",

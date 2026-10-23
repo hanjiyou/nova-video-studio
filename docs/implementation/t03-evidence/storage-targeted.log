@@ -1,0 +1,51 @@
+Command: node --test test/workbench-storage.test.js test/workbench-storage-http.test.js test/desktop-boundary.test.js
+CWD: E:\Learn\AI\nova-image-studio\backend
+✔ desktop boundary fails closed for no-Origin clients, hostile sources, wrong host and revoked sessions (2.3795ms)
+✔ session injection requires the actual main frame and strips caller headers on all other requests (2.1296ms)
+✔ narrow IPC accepts only the main frame and opaque selections/asset IDs (15.8833ms)
+✔ data policy precedence and bounded loopback port selection (32.9879ms)
+✔ production network policy sends exactly one generation POST: accepted (191.9234ms)
+✔ production network policy sends exactly one generation POST: timeout (102.8774ms)
+✔ production network policy sends exactly one generation POST: after_accept (16.2374ms)
+✔ production network policy sends exactly one generation POST: mid_body (68.5849ms)
+✔ production network policy sends exactly one generation POST: http429 (15.4631ms)
+✔ production network policy sends exactly one generation POST: http503 (17.5223ms)
+✔ production network policy sends exactly one generation POST: redirect307 (112.9928ms)
+✔ GET fallback is bounded, respects Retry-After and cancellation; internal redirects stay manual (8.943ms)
+✔ system mode uses one configured transport and abortPending cancels in-flight creation (1.6668ms)
+✔ actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST (1492.2769ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (3043.0755ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (951.738ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (569.2926ms)
+✔ schema versions apply once, backup is independently readable, unchanged restart makes no new backup (78.4587ms)
+✔ upgrade preserves existing custom-app rows/status/TTL and consistent backup includes committed WAL data (103.2254ms)
+✔ failed multi-step upgrade rolls all DDL/data/history back and leaves consistent pre-upgrade backup (104.3632ms)
+✔ unknown/corrupted migration history fails closed without creating a new backup (56.832ms)
+✔ existing unknown database schema is not cleared or overwritten on upgrade failure (186.7787ms)
+✔ native file import copies exact JPEG/PNG bytes and survives moving the selected source (472.3695ms)
+✔ content-addressed assets reuse one identity and preserve original bytes and reference order (193.4931ms)
+✔ unknown object-file collisions are preserved and failed publication creates no asset row (391.153ms)
+✔ missing media retains metadata, task associations and draft references (81.5671ms)
+✔ tampered media is rejected by digest without deleting metadata or content (171.536ms)
+✔ asset IDs cannot resolve traversal paths even when a database path is corrupted (184.1236ms)
+✔ symlinked managed file cannot disclose a file outside the managed root (69.2199ms)
+✔ drafts are independent per mode, preserve Chinese/newlines and swap/remove only references (113.9874ms)
+✔ stale draft revisions and invalid asset lists roll back without partial writes (86.845ms)
+✔ task snapshot and connection versions remain immutable when draft/current connection changes (79.8599ms)
+✔ failed/deleted task never deletes a shared input or another draft/task reference (83.5986ms)
+✔ settings and events are durable, ordered, revisioned, and reject credential/path fields (83.4297ms)
+✔ history pagination preserves more than fifty records and does not include raw request secrets/paths (86.2594ms)
+✔ desktop plugin media retention protects shared files during failure/TTL cleanup; Web policy remains explicit (64.9775ms)
+✔ backup failure prevents every schema/data update and preserves the blocked destination (50.6617ms)
+✔ unrelated existing SQLite file is rejected before schema or backup writes (59.2019ms)
+✔ batch file selection is transactional for metadata and never removes either selected source (147.4591ms)
+✔ current generated output route is backed by an asset ID and survives removing its compatibility file (57.5675ms)
+✔ import IPC accepts no renderer paths, rejects untrusted senders before dialog, and returns opaque assets (50.002ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4737.2362

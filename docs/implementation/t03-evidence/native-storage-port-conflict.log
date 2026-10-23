@@ -1,0 +1,16 @@
+Command: node scripts/verify-desktop-storage.cjs temp/t03-native-storage-reviewed
+CWD: E:\Learn\AI\nova-image-studio
+AssertionError [ERR_ASSERTION]: Electron clean exit
+
+1 !== 0
+
+    at phase (E:\Learn\AI\nova-image-studio\scripts\verify-desktop-storage.cjs:34:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async E:\Learn\AI\nova-image-studio\scripts\verify-desktop-storage.cjs:42:16 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

@@ -1,0 +1,2 @@
+Command: node node_modules/eslint/bin/eslint.js src/types/nova-desktop.d.ts
+CWD: E:\Learn\AI\nova-image-studio\frontend

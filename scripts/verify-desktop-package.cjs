@@ -44,6 +44,18 @@ async function connect(url){const socket=new WebSocket(url);await new Promise((r
  check('main renderer WS authorized',await evaluate('new Promise(resolve=>{const ws=new WebSocket(location.origin.replace("http:","ws:")+"/api/nova/ws");const timer=setTimeout(()=>{ws.close();resolve(false)},3000);ws.onopen=()=>{clearTimeout(timer);ws.close();resolve(true)};ws.onerror=()=>{clearTimeout(timer);resolve(false)}})'));
  check('desktop PWA not registered',await evaluate('navigator.serviceWorker.getRegistrations().then(r=>r.length===0)'));
  check('Node globals unavailable',await evaluate('typeof process === "undefined" && typeof require === "undefined"'));
+ if(process.argv.includes('--storage')) {
+   const bytes=[...fs.readFileSync(path.join(__dirname,'../backend/test/fixtures/workbench-v1/reference-a.png'))];
+   const imported=await evaluate('fetch("/api/nova/assets/import",{method:"POST",headers:{"content-type":"image/png"},body:new Uint8Array('+JSON.stringify(bytes)+')}).then(r=>r.json())');
+   check('packaged managed asset import',Boolean(imported.asset?.assetId) && imported.asset.validationState==='unverified');
+   const dto={prompt:'打包后的中文\n"原文"',model:'fixture',parameters:{duration:6},inputAssets:[{assetId:imported.asset.assetId,position:0,role:'reference'}],expectedRevision:0};
+   const saved=await evaluate('fetch("/api/nova/storage/drafts/video.single_reference",{method:"PUT",headers:{"content-type":"application/json"},body:'+JSON.stringify(JSON.stringify(dto))+'}).then(r=>r.json())');
+   check('packaged persistent draft',saved.draft?.prompt===dto.prompt && saved.draft?.inputAssets[0].assetId===imported.asset.assetId);
+   const hash=await evaluate('fetch('+JSON.stringify(imported.asset.previewUrl)+').then(r=>r.arrayBuffer()).then(b=>crypto.subtle.digest("SHA-256",b)).then(b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""))');
+   check('packaged managed asset bytes match digest',hash===imported.asset.sha256);
+   evidence.storageAssetId=imported.asset.assetId;
+ }
+
  if(mode==='system'){const created=candidates.filter(candidate=>fs.existsSync(path.join(candidate,'nova-tasks.sqlite')));check('database under fresh system userData',created.length===1);evidence.dataDirectory=created[0];check('no executable adjacent data directory',!fs.existsSync(path.join(path.dirname(executable),'data')))}else{evidence.dataDirectory=data;check('explicit data policy honored',fs.existsSync(path.join(data,'nova-tasks.sqlite')))}
  await client.call('Browser.close').catch(()=>{});
  await new Promise((resolve,reject)=>{if(exit)return resolve();const timer=setTimeout(()=>reject(new Error('Desktop did not quit')),8000);child.once('exit',()=>{clearTimeout(timer);resolve()})});

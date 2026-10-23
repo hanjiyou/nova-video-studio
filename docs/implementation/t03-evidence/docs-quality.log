@@ -1,0 +1,16 @@
+{
+  "checkedDocuments": [
+    "docs/Nova-Studio落地任务清单.md",
+    "docs/acceptance/workbench-61.md",
+    "docs/contracts/workbench-v1.md",
+    "docs/desktop-runtime.md",
+    "docs/implementation/T02-桌面生命周期与网络边界.md",
+    "docs/implementation/T03-持久存储与资产基础.md",
+    "docs/storage-v1.md"
+  ],
+  "localLinksChecked": 102,
+  "ledgerEntries": 61,
+  "acceptedProductEntries": 0,
+  "realServiceEvidenceEntries": 0,
+  "status": "passed"
+}

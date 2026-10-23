@@ -8,6 +8,10 @@ const next = process.env.NODE_ENV !== 'production' ? require('next') : null;
 const Database = require('better-sqlite3');
 const { WebSocketServer } = require('ws');
 const desktopSession = require('./desktop-session');
+const { migrateDatabase } = require('./storage/migrations');
+const { createWorkbenchStore } = require('./storage/store');
+const { createStorageHttp } = require('./storage/http');
+let workbenchStore = null;
 const { CdpError, getCdpStatus, listPageTargets, evaluateInPage, capturePageScreenshot, fetchResourceInPage, openTarget, normalizeCdpHost } = require('./cdp');
 const { TAOBAO_EXTRACT_EXPRESSION } = require('./taobao-extract');
 const { buildDoubaoImagesUrl, resolveDoubaoImageSize, buildDoubaoImagePayload, DEFAULT_ARK_BASE_URL } = require('./doubao');
@@ -504,6 +508,8 @@ function hashApiKey(apiKey) {
  */
 const pluginMedia = createMediaStore({
   db,
+  retainHistory: desktopSession.isDesktopMode(),
+  getAssetService: () => workbenchStore,
   getRuntimeEnv,
   parseIntegerEnv,
   createHttpError,
@@ -773,6 +779,13 @@ function saveImageToDisk(taskId, itemIndex, subIndex, imageBuffer, mimeType) {
   const ext = getImageExtension(mimeType);
   const fileName = `${taskId}-${itemIndex}-${subIndex}.${ext}`;
   const filePath = path.join(IMAGE_DIR, fileName);
+  if (workbenchStore) {
+    const asset=db.transaction(()=>{
+      const stored=workbenchStore.importBuffer(imageBuffer,{mimeType,displayName:fileName,sourceKind:'generated'});
+      return workbenchStore.linkLegacyAsset('image',fileName,stored.assetId);
+    })();
+    return {filePath:workbenchStore.resolveAssetPath(asset.assetId),httpUrl:`/api/nova/images/${taskId}/${itemIndex}`};
+  }
   fs.writeFileSync(filePath, imageBuffer);
   return { filePath, httpUrl: `/api/nova/images/${taskId}/${itemIndex}` };
 }
@@ -811,6 +824,7 @@ function deleteImageFile(filePath, _taskId) {
 }
 
 function deleteTaskImageFiles(taskId) {
+  if (desktopSession.isDesktopMode()) return { total: 0, success: 0, notFound: 0, failed: 0, retained: true };
   const files = getTaskImageFiles(taskId);
   let successCount = 0;
   let notFoundCount = 0;
@@ -862,6 +876,7 @@ function initDatabase() {
 
   // 插件素材表（plugin_media）与任务表同库，任务清理即素材清理
   pluginMedia.initSchema();
+  if (desktopSession.isDesktopMode()) return; // Persist history; recovery policy belongs to T05.
 
   const now = new Date().toISOString();
   db.prepare('UPDATE tasks SET status = ? WHERE status = ?').run(TASK_STATUS.QUEUED, TASK_STATUS.LEGACY_QUEUED);
@@ -1094,6 +1109,15 @@ function validateCreatePayload(body) {
 }
 
 function createTask(body, req) {
+  if (workbenchStore && body?.inputAssets !== undefined) {
+    if (!Array.isArray(body.inputAssets) || body.inputAssets.length > 32 || (body.images?.length > 0)) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材引用无效。');
+    body.images = body.inputAssets.map((item,index) => {
+      if (item.position !== index || item.role !== 'reference') throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材顺序无效。');
+      const {bytes,asset}=workbenchStore.readAsset(item.assetId);
+      if (asset.kind !== 'image') throw createHttpError(400,'ASSET_TYPE_INVALID','参考素材必须是图片。');
+      return {data:bytes.toString('base64'),mimeType:asset.mimeType,assetId:asset.assetId};
+    });
+  }
   validateCreatePayload(body);
   const limitConfig = getLimitConfig();
   if (isShuttingDown || isRejectNewTasksEnabled()) {
@@ -1122,6 +1146,12 @@ function createTask(body, req) {
     images: body.images.map(img => ({ mimeType: img.mimeType })),
   };
   const tx = db.transaction(() => {
+    const inputAssets = workbenchStore ? body.images.map((image,position) => {
+      // Identity follows the exact bytes sent upstream, never a client-supplied assetId.
+      const asset = workbenchStore.importBuffer(Buffer.from(image.data,'base64'),{mimeType:image.mimeType || 'image/png',displayName:'reference-'+(position+1)});
+      return {assetId:asset.assetId,role:'reference',position};
+    }) : [];
+    if (workbenchStore) requestForDb.inputAssets=inputAssets;
     db.prepare(`
       INSERT INTO tasks (id, status, mode, request_json, created_at)
       VALUES (?, ?, ?, ?, ?)
@@ -1133,6 +1163,11 @@ function createTask(body, req) {
     for (let index = 0; index < body.parallelCount; index++) {
       insertItem.run(taskId, index, TASK_STATUS.QUEUED, now);
     }
+    if (workbenchStore) workbenchStore.setTaskSnapshot(taskId,{
+      contractVersion:1,mode:body.images.length?'image.reference':'image.text',model:body.model,prompt:body.prompt,
+      parameters:Object.fromEntries(['outputSize','customSize','aspectRatio','temperature','gptImageQuality','gptImageStyle','gptImageBackground','parallelCount'].filter(key=>body[key]!==undefined).map(key=>[key,body[key]])),
+      inputAssets,adapterId:'legacy-image',adapterVersion:'3.4.0'
+    });
   });
   tx();
 
@@ -2097,20 +2132,17 @@ function createPluginTask(body, req) {
     baseUrl,
   };
 
-  db.prepare(`
-    INSERT INTO tasks (id, status, mode, request_json, created_at, expires_at)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(
-    taskId,
-    TASK_STATUS.QUEUED,
-    'plugin',
-    JSON.stringify(requestForDb),
-    now,
-    new Date(Date.now() + TASK_TTL_MS).toISOString(),
-  );
-
-  // 素材绑定到任务：此后随任务一起清理，也不再参与去重复用
-  pluginMedia.bindToTask(taskId, normalized.mediaUrls);
+  db.transaction(()=>{
+    db.prepare(`INSERT INTO tasks (id,status,mode,request_json,created_at,expires_at) VALUES(?,?,?,?,?,?)`)
+      .run(taskId,TASK_STATUS.QUEUED,'plugin',JSON.stringify(requestForDb),now,new Date(Date.now()+TASK_TTL_MS).toISOString());
+    pluginMedia.bindToTask(taskId,normalized.mediaUrls);
+    if(workbenchStore)workbenchStore.setTaskSnapshot(taskId,{
+      contractVersion:1,mode:'legacy.plugin',model:normalized.model,prompt:typeof normalized.fields.prompt==='string'?normalized.fields.prompt:'',
+      parameters:{facets:normalized.facets,fields:normalized.fields},
+      inputAssets:workbenchStore.taskAssets(taskId).map((asset,position)=>({assetId:asset.assetId,position,role:'reference'})),
+      adapterId:'plugin:'+plugin.id,adapterVersion:plugin.manifest.version
+    });
+  })();
 
   // apiKey 只留在内存里，从不入库
   apiKeys.set(taskId, body.apiKey);
@@ -2369,7 +2401,7 @@ async function getPluginTaskForClient(taskId) {
 
 function serializeTask(task) {
   if (!task) return null;
-  if (task.expires_at && Date.parse(task.expires_at) <= Date.now()) {
+  if (!desktopSession.isDesktopMode() && task.expires_at && Date.parse(task.expires_at) <= Date.now()) {
     return { id: task.id, status: 'expired', error: '该任务已超出取回时间' };
   }
   const result = task.result_json ? JSON.parse(task.result_json) : undefined;
@@ -2386,7 +2418,7 @@ function serializeTask(task) {
     warning: task.warning,
     createdAt: task.created_at,
     completedAt: task.completed_at,
-    expiresAt: task.expires_at,
+    expiresAt: desktopSession.isDesktopMode() ? null : task.expires_at,
     ...(pluginMeta || {}),
     ...(typeof live?.progress === 'number' ? { progress: live.progress } : {}),
     ...(live?.upstreamStatus ? { upstreamStatus: live.upstreamStatus } : {}),
@@ -2419,6 +2451,7 @@ function deleteTask(taskId) {
 }
 
 function cleanupExpiredTasks() {
+  if (desktopSession.isDesktopMode()) return;
   const ids = db.prepare('SELECT id FROM tasks WHERE expires_at IS NOT NULL AND expires_at <= ?').all(new Date().toISOString());
   let successCount = 0;
   let failCount = 0;
@@ -2694,6 +2727,10 @@ function registerShutdownHandlers() {
  * 内置任务与插件任务共用同一段逻辑。
  */
 function ackTask(res, taskId) {
+  if (workbenchStore) {
+    if (db.prepare('SELECT 1 FROM tasks WHERE id=?').get(taskId) && !db.prepare("SELECT 1 FROM task_events WHERE task_id=? AND type='acknowledged'").get(taskId)) workbenchStore.appendTaskEvent(taskId,'acknowledged');
+    sendJson(res,200,{ok:true});return;
+  }
   const ACK_GRACE_MS = 120 * 1000;
   const existing = db.prepare('SELECT id FROM tasks WHERE id = ?').get(taskId);
   if (existing) {
@@ -2704,9 +2741,11 @@ function ackTask(res, taskId) {
   sendJson(res, 200, { ok: true });
 }
 
+const handleStorage = createStorageHttp({getStore:()=>workbenchStore,readRawBody,sendJson});
 async function handleApi(req, res, pathname, searchParams) {
   try {
     const apiPathname = pathname.replace(/\/+$/, '');
+    if (await handleStorage(req,res,apiPathname,searchParams)) return true;
 
     if (req.method === 'GET' && apiPathname === '/api/nova/queue-status') {
       sendJson(res, 200, getQueueStats());
@@ -2782,6 +2821,10 @@ async function handleApi(req, res, pathname, searchParams) {
 
     const imageMatch = apiPathname.match(/^\/api\/nova\/images\/([^/]+)\/(\d+)$/);
     if (req.method === 'GET' && imageMatch) {
+      if (workbenchStore) {
+        const asset=workbenchStore.legacyImage(imageMatch[1],Number(imageMatch[2]));
+        if (asset) {const stored=workbenchStore.readAsset(asset.assetId);res.writeHead(200,{'Content-Type':asset.mimeType,'Content-Length':stored.bytes.length,'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});res.end(stored.bytes);return true;}
+      }
       const taskId = imageMatch[1];
       const index = Number(imageMatch[2]);
       if (!/^[a-zA-Z0-9-]+$/.test(taskId)) {
@@ -3462,17 +3505,6 @@ async function handleApi(req, res, pathname, searchParams) {
   }
 }
 
-initDatabase();
-ensureImageDir();
-if (CDP_ENABLED) ensureCdpDir();
-cleanupExpiredTasks();
-pluginMedia.cleanupExpired();
-// 启动时把插件扫一遍：加载成功/失败都会打日志，管理员放错文件时立刻能看到
-pluginRegistry.listPlugins();
-lifecycleTimers.add(setInterval(cleanupExpiredTasks, CLEANUP_INTERVAL_MS).unref());
-lifecycleTimers.add(setInterval(() => pluginMedia.cleanupExpired(), CLEANUP_INTERVAL_MS).unref());
-lifecycleTimers.add(setInterval(cleanupRateLimitBuckets, CLEANUP_INTERVAL_MS).unref());
-
 let resolveReady;
 let rejectReady;
 const ready = new Promise((resolve, reject) => { resolveReady = resolve; rejectReady = reject; });
@@ -3537,12 +3569,23 @@ const startServer = () => {
   httpServerRef = httpServer;
 };
 
-module.exports = { isLoopbackAddress, ready, shutdown };
+module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; } };
 
 registerShutdownHandlers();
 
-if (IS_DEV) {
-  app.prepare().then(startServer);
-} else {
+async function initializeServer() {
+  if (desktopSession.isDesktopMode()) {
+    await migrateDatabase({db,dbPath:DB_PATH});
+    workbenchStore=createWorkbenchStore({db,rootDirectory:process.env.NOVA_STORAGE_DIR || path.join(path.dirname(DB_PATH),'storage')});
+  }
+  initDatabase();
+  ensureImageDir();
+  if (CDP_ENABLED) ensureCdpDir();
+  cleanupExpiredTasks();pluginMedia.cleanupExpired();pluginRegistry.listPlugins();
+  lifecycleTimers.add(setInterval(cleanupExpiredTasks,CLEANUP_INTERVAL_MS).unref());
+  lifecycleTimers.add(setInterval(()=>pluginMedia.cleanupExpired(),CLEANUP_INTERVAL_MS).unref());
+  lifecycleTimers.add(setInterval(cleanupRateLimitBuckets,CLEANUP_INTERVAL_MS).unref());
+  if (IS_DEV) await app.prepare();
   startServer();
 }
+void initializeServer().catch(error=>{rejectReady(error);console.error('Nova storage/server initialization failed:',error.code || 'INITIALIZATION_FAILED');void shutdown({drain:false}).catch(()=>{});});

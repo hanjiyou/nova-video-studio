@@ -1,0 +1,47 @@
+{
+  "archive": "release-t03/win-unpacked/resources/app.asar",
+  "asarSha256": "d1774f9db740d6dc2d235c49530aeb9f27e9f2d38000b995a22b15a2348c8b32",
+  "executable": "release-t03/win-unpacked/Nova Image Studio.exe",
+  "executableSha256": "42dc26dbf8606df8799fbe760690acddb9faecdc66d28d5cddf46dc73a5e1673",
+  "requiredModulesMatchSource": [
+    "backend/server.js",
+    "backend/plugin-runtime/media.js",
+    "backend/storage/migrations.js",
+    "backend/storage/store.js",
+    "backend/storage/http.js",
+    "backend/desktop-session.js",
+    "desktop/main.cjs",
+    "desktop/preload.cjs",
+    "desktop/ipc.cjs"
+  ],
+  "testScriptsShipped": false,
+  "backendTestsShipped": false,
+  "inspection": {
+    "quickCheck": [
+      {
+        "quick_check": "ok"
+      }
+    ],
+    "foreignKeyCheck": [],
+    "schemaVersions": [
+      {
+        "version": 1
+      },
+      {
+        "version": 2
+      }
+    ],
+    "assetCount": 1,
+    "draftCount": 1
+  },
+  "historicalInstallers": [
+    {
+      "file": "release/Nova Image Studio-3.4.0-win-x64.exe",
+      "sha256": "18c97098f41bd7f4ad81cdfe2d59382e02e7ad7511436558434536c1c09fc25b"
+    },
+    {
+      "file": "release-t02/Nova Image Studio-3.4.0-win-x64.exe",
+      "sha256": "bdb3260aa53b20898822639cfa42f1836d7598e74e4ea1abfae276c5da526b0b"
+    }
+  ]
+}

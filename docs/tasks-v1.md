@@ -61,3 +61,15 @@ remote_completed 与下载任务在同一 SQLite 事务登记。生成与下载�
 下载 worker 只在验证过的受管资产存在并返回证明后，才可绑定输出和 completed。T05 用本地替身测试该门槛和下载失败重试，不实现 .part、媒体解码、Range、CDN 重定向或实际重下载；这些在 B2/T08 继续，需补端到端下载恢复。T06/T07 新适配器也必须延续单次 POST、onAccepted 早持久化、原连接和有界 GET 规则。
 
 schema v4 是追加迁移；v1–v3 SQL 与 checksum 不变，仍执行升级前一致 SQLite 备份、完整事务和失败回滚。未对 APPDATA/nova-image 做清理，测试均为新建隔离目录。
+
+## B1 适配接入说明
+
+上文保留 T05 原始阶段边界。B1 新增桌面 POST /api/nova/workbench/tasks，精确连接/能力版本、参数、模式和有序 assetId 随快照冻结；继续使用本页全部去重、派发、onAccepted、恢复、GET 预算与单生成占位规则。flare 文生为仅离线的候选，参考编辑、两个视频文生等缺证据组合在 POST 前返回 CAPABILITY_UNVERIFIED；1.5 单/双参考按历史 multipart 接入。新接口及旧入口保护见 [B1 接口](b1-adapters-v1.md)。
+
+视频完成给 B2 的候选使用同 ID、同服务源 /content；不保存返回的临时 CDN URL。图片适配器允许瞬时 URL/inline 结果源，签名 URL 的瞬时交接及无 ID 同步结果恢复仍待 B2；本批不实现或宣称下载/媒体闭环。remote_completed 仍只登记下载队列，没有本地验证文件就不 completed。
+
+## B1 审核修复：上游 ID 的纯点段
+
+统一 upstream-id 边界用于接收ID、手动补ID、原ID查询、恢复与 content 描述。当前单路径段协议拒绝仅为 . 或 .. 的 ID；encodeURIComponent 不编码点，%2E 也会被 WHATWG 当点段规范化，因此不以改成 %2E 绕过。正常含点、斜杠、百分号和中文的 opaque ID 保留原值，仅在 URL 中编码一次。空值、控制字符、过长及无法编码的孤立 UTF-16 代理项也不接受；这是客户端可查询表示约束，不宣称供应商的ID规则。
+
+新收到不可查询ID时保持 submission_unknown、派发标记与生成占位，不自动POST或GET；补入非法ID返回 INVALID_UPSTREAM_ID，不改ID/事件、不请求上游。既有持久不可查询ID在恢复/直接查询时暂停，保留原ID和占位，resume被拒绝；不清空、改写或换任务绕过占位。声明式插件查询及其content fallback使用相同编码/检查。详见[B1审核修复](implementation/B1-T06-T07-图片视频适配.md)。

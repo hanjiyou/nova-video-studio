@@ -1,0 +1,29 @@
+{
+  "evidenceKind": "synthetic_offline_only",
+  "sourceId": "C01",
+  "notes": [
+    "Synthetic PNG and reserved URLs; not a recorded flare response or live upstream verification."
+  ],
+  "inline": {
+    "data": [
+      {
+        "b64_json": "iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAIAAAD91JpzAAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAEklEQVR4nGP4L8L1X4SLAUIBACMOBHVOO5eIAAAAAElFTkSuQmCC"
+      }
+    ]
+  },
+  "url": {
+    "data": [
+      {
+        "url": "https://cdn.fixture.invalid/image.png?signature=synthetic"
+      }
+    ]
+  },
+  "empty": {
+    "data": []
+  },
+  "error": {
+    "error": {
+      "message": "synthetic rejection"
+    }
+  }
+}

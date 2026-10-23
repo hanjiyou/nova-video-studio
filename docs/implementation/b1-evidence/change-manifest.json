@@ -1,0 +1,563 @@
+{
+  "createdAt": "2026-10-23T13:05:04.226Z",
+  "baselineHead": "86d38656c03c4c75bd86d697607cf5fe245528e1",
+  "stage": "B1 T06+T07",
+  "status": "approved for commit and normal push origin/dev; pre-staging manifest",
+  "selfExcluded": true,
+  "files": [
+    {
+      "file": ".gitignore",
+      "bytes": 1917,
+      "sha256": "fb6896043e8c78a690eeb7c2bbd2e7b28dd771210803fdc589cb0abff82a192d",
+      "status": "modified"
+    },
+    {
+      "file": "backend/plugin-runtime/executor.js",
+      "bytes": 16457,
+      "sha256": "da9ff1fa1adca378efe6e4a0aca699bf16e9e0a88634013e8f89a580f069c3d7",
+      "status": "modified"
+    },
+    {
+      "file": "backend/plugin-runtime/request-body.js",
+      "bytes": 3410,
+      "sha256": "c4cac5c8911e03e0ea72c2a71d76c1327c96ac1599475909290f9045cf99de63",
+      "status": "added"
+    },
+    {
+      "file": "backend/plugin-runtime/upstream-id.js",
+      "bytes": 907,
+      "sha256": "b626c47cc24bfb37015ca84f47b8bac12aa9d71852a88c8651c0e174fc41e822",
+      "status": "added"
+    },
+    {
+      "file": "backend/plugins/opensosen-video/README.md",
+      "bytes": 1465,
+      "sha256": "fe9106b8d6889550c26459b1772fc9e65ec2745812e333e5c552483f8a9dcca0",
+      "status": "added"
+    },
+    {
+      "file": "backend/plugins/opensosen-video/index.js",
+      "bytes": 4353,
+      "sha256": "30a174abd03ca6a195fd0ee0916c7ba40bc0a3390b6d905b401204b22aadc2f7",
+      "status": "added"
+    },
+    {
+      "file": "backend/plugins/opensosen-video/manifest.json",
+      "bytes": 1284,
+      "sha256": "0273086a117434591a725254d5ae47bbd8c3ee334b95e1275e514f69eed5428d",
+      "status": "added"
+    },
+    {
+      "file": "backend/plugins/opensosen-video/ui.schema.json",
+      "bytes": 2803,
+      "sha256": "d5cf7cde87fefd0f416faca8f2462bb6c6a89a43c4fefdca94c05c040f0cff9f",
+      "status": "added"
+    },
+    {
+      "file": "backend/server.js",
+      "bytes": 158921,
+      "sha256": "f3ae5f3e94ae3ed751bd9d8b175b50963b922c1f00dfc820a9b35c568c488d6d",
+      "status": "modified"
+    },
+    {
+      "file": "backend/tasks/flare-image-adapter.js",
+      "bytes": 5136,
+      "sha256": "d205978fe1a18fd10c299d5ceb239593188eb12cd6a0034b78282933ea43ef1b",
+      "status": "added"
+    },
+    {
+      "file": "backend/tasks/plugin-adapter.js",
+      "bytes": 9272,
+      "sha256": "5f11af837bdd64a0e5549dcb21b41f1a7e2f2416a3725ac7678c85e6d0661030",
+      "status": "modified"
+    },
+    {
+      "file": "backend/tasks/service.js",
+      "bytes": 31170,
+      "sha256": "04e44ee9dae2873c0c0dfe1228428a37a06160b1506670d812ff0d438c0ab3ac",
+      "status": "modified"
+    },
+    {
+      "file": "backend/tasks/workbench-input.js",
+      "bytes": 4663,
+      "sha256": "a89b321b800a8a6e433d39043c4fa60d47fbcd739f1054723bc116b221decea8",
+      "status": "added"
+    },
+    {
+      "file": "backend/test/fixtures/b1/flare-responses.json",
+      "bytes": 630,
+      "sha256": "3725772cc4a35be9f49ccf824ec28472e537152ae86e52a739ccdd080e714c51",
+      "status": "added"
+    },
+    {
+      "file": "backend/test/fixtures/workbench-v1/evidence-index.json",
+      "bytes": 6215,
+      "sha256": "6e2dba978def948aa2e32587c7ce9e35e483609db23da14d8dd4c351969d7618",
+      "status": "modified"
+    },
+    {
+      "file": "backend/test/support/desktop-http-runtime.cjs",
+      "bytes": 9004,
+      "sha256": "d16c066ded614c27a42819448fa9cd0a2a3b3c2a6c86aaf2192d8a64f75bcba0",
+      "status": "modified"
+    },
+    {
+      "file": "backend/test/workbench-b1-adapters.test.js",
+      "bytes": 14041,
+      "sha256": "6c694a99cc862f171803cf7438d04fbb5a9ab4b56747a161152c424c050788a2",
+      "status": "added"
+    },
+    {
+      "file": "backend/test/workbench-b1-http.test.js",
+      "bytes": 17785,
+      "sha256": "7eddc9e39fc7de241eef3edd5ec3a20cf9f31a5190759eb2faea76127f0cb0d9",
+      "status": "added"
+    },
+    {
+      "file": "backend/test/workbench-tasks.test.js",
+      "bytes": 25384,
+      "sha256": "fe6ec8ce0e0462040bae2e8dc361ed74d98998bef5b249a072739fb1856df370",
+      "status": "modified"
+    },
+    {
+      "file": "backend/test/workbench-upstream-id.test.js",
+      "bytes": 4942,
+      "sha256": "0b4c5b851350ce08bec192d42dce4f39099e4c459f743649c2bed9ed0c86bcec",
+      "status": "added"
+    },
+    {
+      "file": "docs/Nova-Studio改造分析与实施拆解.md",
+      "bytes": 25930,
+      "sha256": "4069cb14b5d46b5a4e0fa5f0217a2f780563e94079cf682f03956f0759b93afe",
+      "status": "modified"
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "bytes": 23499,
+      "sha256": "17be337cc88a6f4b996350224d3dce4aa2bffb2bb390ce898b47574241caec68",
+      "status": "modified"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "bytes": 53189,
+      "sha256": "29733d0abb9d6a575d99b23ae70cc9ca0cab7e9bc7cf048f6107ace54a1900f3",
+      "status": "modified"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "bytes": 20281,
+      "sha256": "a6c3a516e995edf680d8ebabf1ec81202d56dd64b7013def1d2a96030893b739",
+      "status": "modified"
+    },
+    {
+      "file": "docs/b1-adapters-v1.md",
+      "bytes": 7863,
+      "sha256": "d4dd621f58d1d03d7fe937093634748c522cb0040e4962bec3162ddff06324d4",
+      "status": "added"
+    },
+    {
+      "file": "docs/connections-v1.md",
+      "bytes": 7829,
+      "sha256": "d7058c18baf8cf4e3413fb0d862a132d583f944c124077f1dcf08038bd1b6261",
+      "status": "modified"
+    },
+    {
+      "file": "docs/contracts/opensosen-evidence-v1.md",
+      "bytes": 6512,
+      "sha256": "7a67084ca3f7253a0acda6b650085c4174d672fc50e3670bd1103f27180da2b9",
+      "status": "modified"
+    },
+    {
+      "file": "docs/contracts/workbench-v1.md",
+      "bytes": 13487,
+      "sha256": "04de381ed1788cfbd711036db8e1e8c4f87b42ba53d26c96b4ff3a9c6ae35129",
+      "status": "modified"
+    },
+    {
+      "file": "docs/implementation/B1-T06-T07-图片视频适配.md",
+      "bytes": 16867,
+      "sha256": "5038b852322eadb620c143f34f138bb1a2a1e0fdc490c0b4068f9d991f282415",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/approval-review.json",
+      "bytes": 3142,
+      "sha256": "95182a0ba879cd7ac0452f8e9f6b61e6328be28a1770c2b304d1e2dbcd6d226b",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/b1-targeted.log",
+      "bytes": 11730,
+      "sha256": "7b55fed202065c43306d5ae2a5ae6f61a54761cd37d5dbe3f2509f0394c403f5",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/backend-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/backend-regression.log",
+      "bytes": 33900,
+      "sha256": "fa5b367d516d2d8457beb7b717e0df1f4eb7990f5f9783bfb622d985bad42340",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/command-results.json",
+      "bytes": 6589,
+      "sha256": "dc8433fbff2b37dd942f7f2e988d25e52885b6f79794a96dd2278a5cd1aba81f",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/final-boundaries.log",
+      "bytes": 3908,
+      "sha256": "ef05a275930114b01d092729cdd0004f24ed86e22cbb928940a72722275d2a41",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/final-checks.json",
+      "bytes": 6011,
+      "sha256": "de49f3ee52cc7e5990b81eae9e2a3fa46c5d0365e2121c0fd9e03f07ae14f987",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/final-http.log",
+      "bytes": 1746,
+      "sha256": "d22ec1f4269f42b0c02b84fa70143f26a4a4ec32a88a44e3af340d5961997762",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/frontend-build.log",
+      "bytes": 924,
+      "sha256": "0dd7293fb7a72420d4de8dce7bed10d99df4b396f50f9e8458ef560a481bfec3",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/frontend-full-typecheck.log",
+      "bytes": 9854,
+      "sha256": "ac7d535d0c8606c7780be30ec795c3b86164e5c60c4070fe0547708613d5d05b",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/frontend-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/frontend-targeted.log",
+      "bytes": 535,
+      "sha256": "0f466f9161d8e37f3d599f7406f2e12d3c87ffc18dbf14b09f3a382fd0ce8ed6",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/full-directory-lint-observation.log",
+      "bytes": 2238,
+      "sha256": "74bc07159059017d288d6aa941a9d13caf16652904cdca0f59ed8c67afd29143",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-b1-http.log",
+      "bytes": 2538,
+      "sha256": "88cbd980ac4e2e809ea0135f7aa36d9a9202906f63c16b647e161a8d9f243f31",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-backend-lint.log",
+      "bytes": 403,
+      "sha256": "e6f9d64ab1ba76b4b46e9cc0a2469d3609cffcf77ce1e562ee37442a849a19aa",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-full-directory-lint.log",
+      "bytes": 2882,
+      "sha256": "18f4b10db065beb2b7e497932b838e80b675011d2c9ae01a90031f0e835a1499",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-native-b1-stderr.log",
+      "bytes": 163,
+      "sha256": "9677063b6a90b2aa0a61e082bffa3c4aa4a9ae85983382899676df778101e898",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-native-b1-stdout.log",
+      "bytes": 444,
+      "sha256": "7e4e0e0e2d6361774db145aee32fc4234f8fc3b15e6e67c91a24b9683dd14db1",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-native-b1.log",
+      "bytes": 465,
+      "sha256": "88cfcc90b03a72d0887b6e6a8d76a1403795c347e085cd28bd7faeae8442f02f",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-observations.json",
+      "bytes": 1864,
+      "sha256": "0e5e56f2de1421e05d39f2dc5c9e68027ced5a4b209788645ce37abf68eda6ea",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/lint-baseline-comparison.json",
+      "bytes": 4358,
+      "sha256": "018fb3d8276f8c39135a915cfab8fab377bdc19fe127db6c31b697da48d059a0",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-b1-phase-1.json",
+      "bytes": 834,
+      "sha256": "7d5ed7a0b55f07ce5775f6407ec57b2933915d68568b82aac2b03bf31c1cc280",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-b1-phase-2.json",
+      "bytes": 717,
+      "sha256": "21fa9cf3104ff76d16d8b46e24007ca5287f9d7d96c0588523e8aa33862767b3",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-b1-requests.json",
+      "bytes": 242,
+      "sha256": "97b2044feb746ee7cec6cf668e2a0e0f648af8ad134128e2042791f74a7fcf47",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-b1.log",
+      "bytes": 1389,
+      "sha256": "8275e5eeb447318edf0f3f6007657e6729999c6a10c6b1493439b6ddff188592",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-legacy-phase-1.json",
+      "bytes": 802,
+      "sha256": "19d03b786ebe1fc4f4dd12249f2116c11293fe77890a9c0f0287c85924007d40",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-legacy-phase-2.json",
+      "bytes": 1029,
+      "sha256": "7d5de84178c401d617f9c691bbafb361c86e7e72d863b6be9553aec4d9272333",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-legacy-requests.json",
+      "bytes": 95,
+      "sha256": "1004302d2a0336f4360f41ff8ab96ed63a273c1fe6e215ab4862b2647198aed0",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/native-legacy-tasks.log",
+      "bytes": 1647,
+      "sha256": "b000115063ed3eb16e427d15d6d42e24cf35a1becdf12578e4a8b414a4e6583e",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/package-audit.json",
+      "bytes": 6262,
+      "sha256": "b89dd16c23f198820d62c3593abc1d10c14c99aa7f4ace8eef1aed8fa61a2a94",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/package-audit.log",
+      "bytes": 241,
+      "sha256": "1e55a689b8971d9f112e8424d8207a91a00e7ba9c4fafd25444f969188d8190d",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/packaged-evidence.json",
+      "bytes": 2055,
+      "sha256": "69151a113698d27392ced99f87d342236321d9d97a8519fd23b4bbe80b1e4079",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/packaged-smoke-b1.log",
+      "bytes": 2111,
+      "sha256": "a3be372eda62960d5275f4ad1c2275c8a023404ed171bbe8f03735a9ecc534c9",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/packaged-smoke-final.log",
+      "bytes": 2111,
+      "sha256": "becfde3756c070dfbb7b0e9504ae57764b1f29de472d217e8c5ef7119dd3e0f9",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/packaged-smoke.log",
+      "bytes": 1794,
+      "sha256": "e0aad1ad4a96618409ff0720048ed36ef3f34cbcd0619f4a22b349a7cf8607d5",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/plugin-verify.log",
+      "bytes": 549,
+      "sha256": "eeae746936ca643879faada3a46b044c3460a9fa676bfde19df4815fa1a78c33",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/pre-review-final-checks.json",
+      "bytes": 4806,
+      "sha256": "e5ba0f53ef7db9599d8a1109d1018e425f8bafb4b4774a1151fefc19f6c52523",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/pre-review-package-audit.json",
+      "bytes": 5988,
+      "sha256": "642b45f5740a62f5a2b7396380f46f6ccbe07ef9a42c2ae5d610220f1c5277a4",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/pre-review-packaged-evidence.json",
+      "bytes": 2050,
+      "sha256": "7b727494dc224ce13a544f4e2dab37c4a413e14071aaf77c28fdc23e72596963",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/raw-log-whitespace.json",
+      "bytes": 1275,
+      "sha256": "b24a72a370c06781619bf2bdf07d085e2f4b6dc6cad6cc2df2ebd0a2d63c9aa4",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-before.json",
+      "bytes": 399,
+      "sha256": "87ca35c3f7b86d984ac6cbb2b48407138540af326d5d7f22021dd886ce7def91",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-native-phase-1.json",
+      "bytes": 834,
+      "sha256": "6dd18a6a2199b29c5ba426d93c3e0edbc96dee10a9046b9675d04dbf95311dc4",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-native-phase-2.json",
+      "bytes": 717,
+      "sha256": "c01f2443a75086352086aef40c73e5a42a74122c75d4f79e56910d47dfadcb86",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-native-requests.json",
+      "bytes": 242,
+      "sha256": "97b2044feb746ee7cec6cf668e2a0e0f648af8ad134128e2042791f74a7fcf47",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-native.log",
+      "bytes": 1389,
+      "sha256": "f2180585443d0d21e7f3c1625480194c51c4207232db40df989b8fc3f9e8551c",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-package-audit.log",
+      "bytes": 241,
+      "sha256": "e491a777737c35f5fd0f8be86ce1459fa8be2dc97751e5546189705a2e8133ba",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-package.log",
+      "bytes": 1111,
+      "sha256": "a6b78fcfe87a861bb877fc354c91b7832cd4ebc1cf2df5e3f39e5c0942931c98",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-packaged.log",
+      "bytes": 2116,
+      "sha256": "0a4aafd15755fc7ff5b1a4a043d3bed67552371773c00d5b6a72a683f85e352a",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-summary.json",
+      "bytes": 1935,
+      "sha256": "fe9a9e480c99b5b23fbc09541dbfd002a794e91936a5af55f128a748020d7648",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/review-dot-id-targeted.log",
+      "bytes": 14491,
+      "sha256": "4915ded1a991c15e18bc36a8a39cd710bd2269be1a4f46f129f3a6a8b7c9c05f",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/syntax-checks.json",
+      "bytes": 501,
+      "sha256": "da983b4230573335cc27b5055526e52f8671821b0c689b68e2a7be4f3ccdfb5e",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/typecheck-baseline-comparison.json",
+      "bytes": 206,
+      "sha256": "94bbf0da6d1a3d5f9953cab8ace1deb9d7e4ce2f56d1274edc73c0adde8c84eb",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/unpacked-package-final.log",
+      "bytes": 1111,
+      "sha256": "a6b78fcfe87a861bb877fc354c91b7832cd4ebc1cf2df5e3f39e5c0942931c98",
+      "status": "added"
+    },
+    {
+      "file": "docs/implementation/b1-evidence/unpacked-package.log",
+      "bytes": 1111,
+      "sha256": "a6b78fcfe87a861bb877fc354c91b7832cd4ebc1cf2df5e3f39e5c0942931c98",
+      "status": "added"
+    },
+    {
+      "file": "docs/tasks-v1.md",
+      "bytes": 10424,
+      "sha256": "f38c2263ce45c3035ae5cbdb4422f963bcb45a9c332168eb32bd0e71c564d609",
+      "status": "modified"
+    },
+    {
+      "file": "frontend/src/lib/__tests__/workbench-task-client.test.ts",
+      "bytes": 6430,
+      "sha256": "fef138a87439e674c40b6d54a9258db7b3bd16a8023e77fa66c42560fd4de2ca",
+      "status": "modified"
+    },
+    {
+      "file": "frontend/src/lib/workbench-task-client.ts",
+      "bytes": 4552,
+      "sha256": "6c6303ac1e71c14ae07db40c28d24c5b334412eff5c9f9795567d00d26f25247",
+      "status": "modified"
+    },
+    {
+      "file": "scripts/electron-b1-test-entry.cjs",
+      "bytes": 7121,
+      "sha256": "902ca0960fb830ec9720c6176b186a8941feb6d6796d9cfac2ca3cae5c4155bf",
+      "status": "added"
+    },
+    {
+      "file": "scripts/electron-tasks-test-entry.cjs",
+      "bytes": 6391,
+      "sha256": "bc9b4ab98908a7966280bdd07b91afe3a07c20024c1aa60b4985dc926557296c",
+      "status": "modified"
+    },
+    {
+      "file": "scripts/verify-b1-package-audit.cjs",
+      "bytes": 3176,
+      "sha256": "cbc8bbb76f922b2ef95fe372050457a455ea51aa8b847b8caa8629201ed5d91f",
+      "status": "added"
+    },
+    {
+      "file": "scripts/verify-desktop-b1.cjs",
+      "bytes": 4385,
+      "sha256": "6dee8c9d4c63dad1f0ec8e94dc394a3093ba8125f8a50f10931ced49bb7a598b",
+      "status": "added"
+    },
+    {
+      "file": "scripts/verify-desktop-package.cjs",
+      "bytes": 16656,
+      "sha256": "da312dcc0be9a957ed60386a2b5aaf23a47606dcc6e9586bfbbb70c084c9ede3",
+      "status": "modified"
+    }
+  ],
+  "trackedNumstat": "2\t0\t.gitignore\n12\t11\tbackend/plugin-runtime/executor.js\n26\t1\tbackend/server.js\n23\t18\tbackend/tasks/plugin-adapter.js\n13\t7\tbackend/tasks/service.js\n48\t1\tbackend/test/fixtures/workbench-v1/evidence-index.json\n13\t2\tbackend/test/support/desktop-http-runtime.cjs\n24\t0\tbackend/test/workbench-tasks.test.js\n4\t0\t\"docs/Nova-Studio\\346\\224\\271\\351\\200\\240\\345\\210\\206\\346\\236\\220\\344\\270\\216\\345\\256\\236\\346\\226\\275\\346\\213\\206\\350\\247\\243.md\"\n5\t1\t\"docs/Nova-Studio\\350\\220\\275\\345\\234\\260\\344\\273\\273\\345\\212\\241\\346\\270\\205\\345\\215\\225.md\"\n78\t39\tdocs/acceptance/workbench-61.json\n15\t13\tdocs/acceptance/workbench-61.md\n4\t0\tdocs/connections-v1.md\n14\t0\tdocs/contracts/opensosen-evidence-v1.md\n1\t1\tdocs/contracts/workbench-v1.md\n12\t0\tdocs/tasks-v1.md\n17\t1\tfrontend/src/lib/__tests__/workbench-task-client.test.ts\n20\t0\tfrontend/src/lib/workbench-task-client.ts\n1\t1\tscripts/electron-tasks-test-entry.cjs\n13\t0\tscripts/verify-desktop-package.cjs\n",
+  "fileCount": 92
+}

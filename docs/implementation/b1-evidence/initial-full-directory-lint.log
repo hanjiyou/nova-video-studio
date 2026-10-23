@@ -1,0 +1,41 @@
+
+> nova-image-backend@3.4.0 lint
+> eslint --no-warn-ignored
+
+
+E:\Learn\AI\nova-image-studio\backend\plugin-runtime\registry.js
+  28:7  error  'REQUIRED_FILES' is assigned a value but never used  no-unused-vars
+
+E:\Learn\AI\nova-image-studio\backend\test\script-plugin.test.js
+  6:23  error  'submitTask' is assigned a value but never used  no-unused-vars
+  6:35  error  'pollTask' is assigned a value but never used    no-unused-vars
+
+E:\Learn\AI\nova-image-studio\backend\test\support\desktop-http-runtime.cjs
+   11:122  error  'Buffer' is not defined                                         no-undef
+   12:158  error  'Buffer' is not defined                                         no-undef
+   14:54   error  'Buffer' is not defined                                         no-undef
+   18:5    error  'process' is not defined                                        no-undef
+   26:43   error  'URL' is not defined                                            no-undef
+   28:64   error  'URL' is not defined                                            no-undef
+   28:150  error  'URL' is not defined                                            no-undef
+   31:43   error  'URL' is not defined                                            no-undef
+   33:64   error  'URL' is not defined                                            no-undef
+   33:157  error  'URL' is not defined                                            no-undef
+   50:48   error  'URL' is not defined                                            no-undef
+   58:17   error  'process' is not defined                                        no-undef
+   63:17   error  'process' is not defined                                        no-undef
+   65:57   error  'process' is not defined                                        no-undef
+   67:17   error  'process' is not defined                                        no-undef
+   72:13   error  'process' is not defined                                        no-undef
+   77:34   error  '__dirname' is not defined                                      no-undef
+   78:25   error  'process' is not defined                                        no-undef
+   78:142  error  'process' is not defined                                        no-undef
+   88:9    error  'clearTimeout' is not defined                                   no-undef
+   91:104  error  'setTimeout' is not defined                                     no-undef
+   97:9    error  There is no `cause` attached to the symptom error being thrown  preserve-caught-error
+  100:80   error  'fetch' is not defined                                          no-undef
+  111:68   error  'setTimeout' is not defined                                     no-undef
+  111:179  error  'clearTimeout' is not defined                                   no-undef
+
+✖ 28 problems (28 errors, 0 warnings)
+

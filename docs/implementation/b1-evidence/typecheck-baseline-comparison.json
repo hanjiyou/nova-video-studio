@@ -1,0 +1,10 @@
+{
+  "baseline": "T05 frontend-full-typecheck.log",
+  "baselineCount": 60,
+  "currentCount": 60,
+  "identical": true,
+  "added": [],
+  "removed": [],
+  "currentExitCode": 2,
+  "productionBuildExitCode": 0
+}

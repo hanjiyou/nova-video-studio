@@ -1,0 +1,26 @@
+[
+  {
+    "exitCode": 0,
+    "file": "scripts/electron-b1-test-entry.cjs"
+  },
+  {
+    "exitCode": 0,
+    "file": "scripts/verify-desktop-b1.cjs"
+  },
+  {
+    "exitCode": 0,
+    "file": "scripts/verify-b1-package-audit.cjs"
+  },
+  {
+    "exitCode": 0,
+    "file": "scripts/electron-tasks-test-entry.cjs"
+  },
+  {
+    "exitCode": 0,
+    "file": "scripts/verify-desktop-package.cjs"
+  },
+  {
+    "exitCode": 0,
+    "file": "backend/test/support/desktop-http-runtime.cjs"
+  }
+]

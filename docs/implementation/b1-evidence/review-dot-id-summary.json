@@ -1,0 +1,52 @@
+{
+  "review": {
+    "attribution": "Direct main-session message; not an independently saved raw review log",
+    "independentTestsPassed": 39,
+    "reviewedFirstAppAsarSha256": "910b108953461c3413f5e97a0aad935ad1eb58071bb73b28db1f810cdfdab081",
+    "approval": false,
+    "finding": "Pure dot opaque IDs normalize to collection/parent URL paths."
+  },
+  "fix": {
+    "strategy": "Reject only pure . and .. as non-queryable URL path segments; retain ordinary dotted/slash/percent/Chinese opaque IDs.",
+    "boundaries": [
+      "task acceptance",
+      "attach-upstream-id",
+      "resume",
+      "poll",
+      "recovery",
+      "OpenSosen query/content",
+      "desktop declarative query/content fallback",
+      "shared declarative executor query/content fallback"
+    ],
+    "unknownSubmissionKeepsReservation": true,
+    "existingInvalidIdPausesWithoutRebinding": true,
+    "noAutomaticPostRetry": true,
+    "invalidAttachNetworkCalls": 0
+  },
+  "verification": {
+    "targeted": {
+      "passed": 130,
+      "total": 130,
+      "skipped": 0,
+      "exitCode": 0
+    },
+    "lintExitCode": 0,
+    "nativeChecks": 18,
+    "nativeExitCode": 0,
+    "packageExitCode": 0,
+    "packagedChecks": 23,
+    "packagedExitCode": 0,
+    "packagedSourceFiles": 17,
+    "appAsarSha256": "b4c847de86655257d67cb267a021591972b6c7efd387fbb86547977bba51359f",
+    "exeSha256": "685669d12621c1233ef9855542ead9cfe97984b1912233460c38d1769727c569"
+  },
+  "status": "Final parent-session re-review accepted; commit and normal push origin/dev authorized. Pre-commit record; actual Git result follows in ignored temp/b1-git-delivery.json. B2 not started.",
+  "finalApproval": {
+    "source": "approval-review.json",
+    "scope": "B1 offline implementation foundation",
+    "parentIndependentTestsPassed": 47,
+    "skipped": 0,
+    "appAsarSha256": "b4c847de86655257d67cb267a021591972b6c7efd387fbb86547977bba51359f",
+    "commitAndPushAuthorized": true
+  }
+}

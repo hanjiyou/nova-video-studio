@@ -91,6 +91,19 @@ async function connect(url){const socket=new WebSocket(url);await new Promise((r
      }
      check('packaged exactly two synthetic image POSTs',requests.filter(item=>item.method==='POST').length===2 && requests.filter(item=>item.method==='POST').every(item=>item.path==='/v1/images/generations' && item.authorized));
    }
+   if(process.argv.includes('--b1')) {
+     const plugins=await evaluate('fetch("/api/nova/plugins").then(r=>r.json())');
+     check('packaged B1 plugin includes exact Grok models',JSON.stringify(plugins.plugins.find(item=>item.id==='opensosen-video')?.models.map(item=>item.id))===JSON.stringify(['grok-imagine-video-6s','grok-imagine-video-1.5-6s']));
+     for(const [mode,model,parameters]of[['image.text','gpt-image-2.5-flare',{}],['video.text','grok-imagine-video-1.5-6s',{seconds:6,size:'1280x720'}]]) {
+       const body={localRequestId:require('node:crypto').randomUUID(),connectionVersionId:connection.connectionVersionId,capabilityVersionId:checked.capabilities.find(item=>item.mode===mode&&item.model===model).capabilityVersionId,mode,model,prompt:'打包后的B1能力闸门',parameters,inputAssets:[]};
+       const response=await evaluate('fetch("/api/nova/workbench/tasks",{method:"POST",headers:{"content-type":"application/json"},body:'+JSON.stringify(JSON.stringify(body))+'}).then(async r=>({status:r.status,body:await r.json()}))');
+       check('packaged canonical '+mode+' remains unverified',response.status===400&&response.body.code==='CAPABILITY_UNVERIFIED');
+     }
+     const legacy={localRequestId:require('node:crypto').randomUUID(),connectionVersionId:connection.connectionVersionId,mode:'text-to-image',model:'gpt-image-2.5-flare',prompt:'合成边界',parallelCount:1,images:[]};
+     const blocked=await evaluate('fetch("/api/nova/tasks",{method:"POST",headers:{"content-type":"application/json"},body:'+JSON.stringify(JSON.stringify(legacy))+'}).then(async r=>({status:r.status,body:await r.json()}))');
+     check('packaged flare cannot bypass new protocol boundary',blocked.status===400&&blocked.body.code==='WORKBENCH_INPUT_REQUIRED');
+     check('packaged B1 evidence gates send no provider POST',requests.length===1&&requests[0].method==='GET');
+   }
    const cleared=await evaluate('window.novaDesktop.clearConnectionCredential('+JSON.stringify({connectionId:connection.connectionId,expectedVersionId:connection.connectionVersionId})+')');
    check('packaged actual IPC clears credentials',cleared.ok && !cleared.connection.hasCredential);
    evidence.connectionChecks=requests;

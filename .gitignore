@@ -36,6 +36,8 @@ backend/ccode-images/
 # backend/plugins/ 即可，这条规则保证工作副本不会因此变脏。
 backend/plugins/*
 !backend/plugins/ccode-h3/
+# 工作台 B1 的内置 OpenSosen 协议随应用源码审查/分发。
+!backend/plugins/opensosen-video/
 # IDE/Editor configs
 .arts/
 .claude/

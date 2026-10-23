@@ -1,0 +1,147 @@
+{
+  "archive": "E:\\Learn\\AI\\nova-image-studio\\release-b1\\win-unpacked\\resources\\app.asar",
+  "appAsarSha256": "b4c847de86655257d67cb267a021591972b6c7efd387fbb86547977bba51359f",
+  "exeSha256": "685669d12621c1233ef9855542ead9cfe97984b1912233460c38d1769727c569",
+  "modules": [
+    {
+      "file": "backend/server.js",
+      "sourceSha256": "f3ae5f3e94ae3ed751bd9d8b175b50963b922c1f00dfc820a9b35c568c488d6d",
+      "packagedSha256": "f3ae5f3e94ae3ed751bd9d8b175b50963b922c1f00dfc820a9b35c568c488d6d",
+      "identical": true
+    },
+    {
+      "file": "backend/tasks/service.js",
+      "sourceSha256": "04e44ee9dae2873c0c0dfe1228428a37a06160b1506670d812ff0d438c0ab3ac",
+      "packagedSha256": "04e44ee9dae2873c0c0dfe1228428a37a06160b1506670d812ff0d438c0ab3ac",
+      "identical": true
+    },
+    {
+      "file": "backend/tasks/plugin-adapter.js",
+      "sourceSha256": "5f11af837bdd64a0e5549dcb21b41f1a7e2f2416a3725ac7678c85e6d0661030",
+      "packagedSha256": "5f11af837bdd64a0e5549dcb21b41f1a7e2f2416a3725ac7678c85e6d0661030",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/migrations.js",
+      "sourceSha256": "eb5ee3e8a64b89de0c1c1f4b0cd2f6872de25c59b37c8870e745e026641e0f6c",
+      "packagedSha256": "eb5ee3e8a64b89de0c1c1f4b0cd2f6872de25c59b37c8870e745e026641e0f6c",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/store.js",
+      "sourceSha256": "67767c552c9d47233474af2fdd00f79067dd445709038da7de2106c1d93a9297",
+      "packagedSha256": "67767c552c9d47233474af2fdd00f79067dd445709038da7de2106c1d93a9297",
+      "identical": true
+    },
+    {
+      "file": "backend/connections/redaction.js",
+      "sourceSha256": "731028ab4a7991d37a8f3eaf466404b0dc0814397e2eabb3686658cdfb33ef53",
+      "packagedSha256": "731028ab4a7991d37a8f3eaf466404b0dc0814397e2eabb3686658cdfb33ef53",
+      "identical": true
+    },
+    {
+      "file": "backend/connections/service.js",
+      "sourceSha256": "20ad4966a626d72ada5322aca81bd1bb398bd49074de65143fc08a5341ebfec6",
+      "packagedSha256": "20ad4966a626d72ada5322aca81bd1bb398bd49074de65143fc08a5341ebfec6",
+      "identical": true
+    },
+    {
+      "file": "desktop/main.cjs",
+      "sourceSha256": "f00aee541fd2be3cb8b70dd0e1784713f288a371131ddf813f1185e497b269bc",
+      "packagedSha256": "f00aee541fd2be3cb8b70dd0e1784713f288a371131ddf813f1185e497b269bc",
+      "identical": true
+    },
+    {
+      "file": "desktop/preload.cjs",
+      "sourceSha256": "3155d91e10985b78c5794887588ef444359a39d8138c51cbf2e78068ed5df971",
+      "packagedSha256": "3155d91e10985b78c5794887588ef444359a39d8138c51cbf2e78068ed5df971",
+      "identical": true
+    },
+    {
+      "file": "backend/plugin-runtime/request-body.js",
+      "sourceSha256": "c4cac5c8911e03e0ea72c2a71d76c1327c96ac1599475909290f9045cf99de63",
+      "packagedSha256": "c4cac5c8911e03e0ea72c2a71d76c1327c96ac1599475909290f9045cf99de63",
+      "identical": true
+    },
+    {
+      "file": "backend/plugin-runtime/upstream-id.js",
+      "sourceSha256": "b626c47cc24bfb37015ca84f47b8bac12aa9d71852a88c8651c0e174fc41e822",
+      "packagedSha256": "b626c47cc24bfb37015ca84f47b8bac12aa9d71852a88c8651c0e174fc41e822",
+      "identical": true
+    },
+    {
+      "file": "backend/plugin-runtime/executor.js",
+      "sourceSha256": "da9ff1fa1adca378efe6e4a0aca699bf16e9e0a88634013e8f89a580f069c3d7",
+      "packagedSha256": "da9ff1fa1adca378efe6e4a0aca699bf16e9e0a88634013e8f89a580f069c3d7",
+      "identical": true
+    },
+    {
+      "file": "backend/tasks/flare-image-adapter.js",
+      "sourceSha256": "d205978fe1a18fd10c299d5ceb239593188eb12cd6a0034b78282933ea43ef1b",
+      "packagedSha256": "d205978fe1a18fd10c299d5ceb239593188eb12cd6a0034b78282933ea43ef1b",
+      "identical": true
+    },
+    {
+      "file": "backend/tasks/workbench-input.js",
+      "sourceSha256": "a89b321b800a8a6e433d39043c4fa60d47fbcd739f1054723bc116b221decea8",
+      "packagedSha256": "a89b321b800a8a6e433d39043c4fa60d47fbcd739f1054723bc116b221decea8",
+      "identical": true
+    },
+    {
+      "file": "backend/plugins/opensosen-video/index.js",
+      "sourceSha256": "30a174abd03ca6a195fd0ee0916c7ba40bc0a3390b6d905b401204b22aadc2f7",
+      "packagedSha256": "30a174abd03ca6a195fd0ee0916c7ba40bc0a3390b6d905b401204b22aadc2f7",
+      "identical": true
+    },
+    {
+      "file": "backend/plugins/opensosen-video/manifest.json",
+      "sourceSha256": "0273086a117434591a725254d5ae47bbd8c3ee334b95e1275e514f69eed5428d",
+      "packagedSha256": "0273086a117434591a725254d5ae47bbd8c3ee334b95e1275e514f69eed5428d",
+      "identical": true
+    },
+    {
+      "file": "backend/plugins/opensosen-video/ui.schema.json",
+      "sourceSha256": "d5cf7cde87fefd0f416faca8f2462bb6c6a89a43c4fefdca94c05c040f0cff9f",
+      "packagedSha256": "d5cf7cde87fefd0f416faca8f2462bb6c6a89a43c4fefdca94c05c040f0cff9f",
+      "identical": true
+    }
+  ],
+  "excluded": [
+    {
+      "prefix": "/backend/test/",
+      "absent": true
+    },
+    {
+      "prefix": "/scripts/",
+      "absent": true
+    }
+  ],
+  "historicalMigrationSql": [
+    {
+      "name": "BASE_SCHEMA",
+      "baselineSqlSha256": "64593c5018c5825b3f5d6fa6bd23f2028df60fb476a87b2e5025ab05c955563a",
+      "runtimeSqlSha256": "64593c5018c5825b3f5d6fa6bd23f2028df60fb476a87b2e5025ab05c955563a",
+      "identical": true
+    },
+    {
+      "name": "DURABLE_SCHEMA",
+      "baselineSqlSha256": "df634e04b0959b15a81b6a1b51bd4ec5fc9978a6a917c5f489c0579ffd3b112c",
+      "runtimeSqlSha256": "df634e04b0959b15a81b6a1b51bd4ec5fc9978a6a917c5f489c0579ffd3b112c",
+      "identical": true
+    },
+    {
+      "name": "CONNECTION_SCHEMA",
+      "baselineSqlSha256": "8b1ff8d3ff5812db2c0f1cda52757d0647266b368f63920dae0129491c507c55",
+      "runtimeSqlSha256": "8b1ff8d3ff5812db2c0f1cda52757d0647266b368f63920dae0129491c507c55",
+      "identical": true
+    },
+    {
+      "name": "TASK_SCHEMA",
+      "baselineSqlSha256": "85e28957d4d41c9b32096a2d65c98fc887e58cb652045a6d3f94ef1aee932dc4",
+      "runtimeSqlSha256": "85e28957d4d41c9b32096a2d65c98fc887e58cb652045a6d3f94ef1aee932dc4",
+      "identical": true
+    }
+  ],
+  "comparisonNote": "Migration strings compare runtime SQL; JavaScript normalizes CRLF source lines to LF.",
+  "scope": "Unpacked source equality and test exclusion; no NSIS installation/publication"
+}

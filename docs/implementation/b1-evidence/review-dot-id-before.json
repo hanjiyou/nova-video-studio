@@ -1,0 +1,17 @@
+{
+  "kind": "offline_direct_reproduction_before_fix",
+  "networkCalls": 0,
+  "observations": [
+    {
+      "id": ".",
+      "query": "/v1/videos/",
+      "content": "/v1/videos/content"
+    },
+    {
+      "id": "..",
+      "query": "/v1/",
+      "content": "/v1/content"
+    }
+  ],
+  "problem": "encodeURIComponent leaves pure dots; WHATWG normalizes the path away from the intended opaque task."
+}

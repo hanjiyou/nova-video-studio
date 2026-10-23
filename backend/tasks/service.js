@@ -3,13 +3,13 @@ const { randomUUID } = require('node:crypto');
 const { UUID, fail } = require('../storage/store');
 const uuid = value => { if (typeof value !== 'string' || !UUID.test(value)) throw fail('INVALID_ID'); return value; };
 const { containsCredential } = require('../connections/redaction');
+const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
 const TERMINAL = new Set(['completed', 'failed', 'local_cancelled', 'remote_cancelled']);
 const REMOTE_ACTIVE = new Set(['remote_queued', 'generating']);
 const RESERVING = new Set(['submitting', 'submission_unknown', 'remote_queued', 'generating', 'polling_paused']);
 const STATES = new Set(['local_queued', ...RESERVING, 'remote_completed', 'downloading', 'download_failed', ...TERMINAL]);
 const DEFAULT_POLICY = Object.freeze({ intervalMs: 20000, maxDelayMs: 120000, maxRetries: 5, budgetMs: 600000 });
 const canonical = value => JSON.stringify(sort(value));
-const hasControl = value => [...value].some(char => char.codePointAt(0)<32 || char.codePointAt(0)===127);
 function sort(value) {
     if (Array.isArray(value)) return value.map(sort);
     if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().filter(k => value[k] !== undefined).map(k => [k, sort(value[k])]));
@@ -36,11 +36,12 @@ const MESSAGES = {
     DOWNLOAD_FAILED: '结果尚未保存为经过验证的本地文件。',
     DOWNLOAD_EXPIRED: '结果地址不可持久保存，需要从原任务刷新。',
     INPUT_INVALID: '任务预检失败，尚未派发。',
+    CAPABILITY_UNVERIFIED: '当前组合缺少成功协议证据，尚未派发。',
     ADAPTER_UNAVAILABLE: '原适配器版本不可用，任务已暂停。',
 };
 function errorDto(code, phase, task, extra = {}) {
     return { code, phase, message: MESSAGES[code] || '任务已暂停，请检查详情。', retryAction: ({
-        SUBMISSION_UNKNOWN: 'reconcile_submission', REMOTE_REJECTED: 'edit_input', INPUT_INVALID: 'edit_input',
+        SUBMISSION_UNKNOWN: 'reconcile_submission', REMOTE_REJECTED: 'edit_input', INPUT_INVALID: 'edit_input', CAPABILITY_UNVERIFIED: 'edit_input',
         AUTH_REJECTED: 'reauthenticate', CREDENTIAL_REQUIRED: 'reauthenticate', CREDENTIAL_UNAVAILABLE: 'reauthenticate',
         POLL_TRANSIENT: 'retry_poll', RATE_LIMITED: 'retry_poll', REMOTE_STATUS_UNKNOWN: 'retry_poll',
         DOWNLOAD_FAILED: 'retry_download', DOWNLOAD_EXPIRED: 'retry_download',
@@ -155,15 +156,15 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             auth = connections.getAuth(task.connection_version_id); chosen = adapter(task);
             if (chosen.preflight) await chosen.preflight(task, JSON.parse(task.input_snapshot_json), auth);
         } catch (error) {
-            const code = ['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE', 'ADAPTER_UNAVAILABLE'].includes(error.code) ? error.code : 'INPUT_INVALID';
-            setError(id, code === 'INPUT_INVALID' ? 'failed' : 'polling_paused', code, code.startsWith('CREDENTIAL_') ? 'credential' : 'validation', { pause_reason: code, requires_continue: 1 }, { transmission: 'not_dispatched' });
+            const code = ['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE', 'ADAPTER_UNAVAILABLE', 'CAPABILITY_UNVERIFIED'].includes(error.code) ? error.code : 'INPUT_INVALID';
+            setError(id, ['INPUT_INVALID', 'CAPABILITY_UNVERIFIED'].includes(code) ? 'failed' : 'polling_paused', code, code.startsWith('CREDENTIAL_') ? 'credential' : 'validation', { pause_reason: code, requires_continue: 1 }, { transmission: 'not_dispatched' });
             return;
         }
         if (closed || row(id).status !== 'local_queued') return;
         // Commit the dispatch boundary BEFORE invoking any adapter network operation.
         update(id, 'submitting', { dispatch_started_at: iso(), requires_continue: 0, error: null, task_error_json: null }, 'dispatch_started');
         const accept = upstreamId => {
-            if (typeof upstreamId !== 'string' || !upstreamId.trim() || upstreamId.length>1024 || containsCredential(upstreamId,auth.apiKey) || hasControl(upstreamId)) throw fail('SUBMISSION_UNKNOWN');
+            if (!isQueryableUpstreamTaskId(upstreamId) || containsCredential(upstreamId,auth.apiKey)) throw fail('SUBMISSION_UNKNOWN');
             const current=row(id);
             if (current.upstream_task_id) {if(current.upstream_task_id!==upstreamId)throw fail('SUBMISSION_UNKNOWN');return;}
             update(id, 'remote_queued', { upstream_task_id: upstreamId, remote_state: 'queued', next_poll_at: iso(now() + rules.intervalMs) }, 'upstream_accepted');
@@ -211,6 +212,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const status = error.httpStatus;
         if ([401, 403].includes(status)) { pause(id, 'auth_rejected', 'AUTH_REJECTED'); return; }
         if (['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE'].includes(error.code)) { pause(id, error.code.toLowerCase(), error.code, {}, 'credential'); return; }
+        if (error.code === 'INVALID_UPSTREAM_ID') { pause(id, 'upstream_id_unqueryable', 'REMOTE_STATUS_UNKNOWN'); return; }
         if (error.code === 'ADAPTER_UNAVAILABLE') { pause(id, 'adapter_unavailable', error.code); return; }
         if (error.code === 'REMOTE_STATUS_UNKNOWN' || (status && status !== 429 && status < 500)) { pause(id, 'unrecognized_response', 'REMOTE_STATUS_UNKNOWN'); return; }
         const attempt = task.poll_attempts + 1, started = task.poll_budget_started_at ? Date.parse(task.poll_budget_started_at) : now();
@@ -230,6 +232,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (closed || inFlight.has(id)) return;
         let task = row(id);
         if (!task || !REMOTE_ACTIVE.has(task.status) || !task.upstream_task_id) return;
+        if (!isQueryableUpstreamTaskId(task.upstream_task_id)) { pause(id, 'upstream_id_unqueryable', 'REMOTE_STATUS_UNKNOWN'); return; }
         const due = Math.max(Date.parse(task.not_before_at || '') || 0, Date.parse(task.next_poll_at || '') || 0);
         if (due > now()) { schedule(id, due); return; }
         const promise = (async () => {
@@ -275,6 +278,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             pause(id, 'user_stopped');
         } else if (name === 'resume-polling') {
             if (task.status !== 'polling_paused' || !task.upstream_task_id) throw fail('TASK_ACTION_INVALID', '只有保留上游标识的暂停任务可以恢复查询。', 409);
+            if (!isQueryableUpstreamTaskId(task.upstream_task_id)) throw fail('INVALID_UPSTREAM_ID', '原上游标识无法安全查询，任务保持暂停。', 409);
             if (inFlight.has(id)) throw fail('TASK_QUERY_BUSY', '原查询尚未结束，请稍后恢复。', 409);
             const earliest = Date.parse(task.not_before_at || '') || 0;
             if (earliest > now()) throw Object.assign(fail('POLL_NOT_BEFORE', '尚未到上游允许的查询时间。', 409), { notBeforeAt: task.not_before_at });
@@ -283,7 +287,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         } else if (name === 'attach-upstream-id') {
             if (task.status !== 'submission_unknown' || task.upstream_task_id) throw fail('TASK_ACTION_INVALID', '该任务不需要补充上游标识。', 409);
             const auth = connections.getAuth(task.connection_version_id), value = input.upstreamTaskId;
-            if (typeof value !== 'string' || !value.trim() || value.length > 1024 || hasControl(value) || containsCredential(value, auth.apiKey)) throw fail('INVALID_UPSTREAM_ID');
+            if (!isQueryableUpstreamTaskId(value) || containsCredential(value, auth.apiKey)) throw fail('INVALID_UPSTREAM_ID');
             update(id, 'polling_paused', { upstream_task_id: value, pause_reason: 'reconciled_id', error: null, task_error_json: null }, 'submission_reconciled');
         } else if (name === 'retry-download') {
             if (task.status !== 'download_failed') throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
@@ -341,7 +345,9 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                 if (task.status === 'polling_paused') continue;
                 const legacy = JSON.parse(task.request_json || '{}');
                 const id = task.upstream_task_id || (typeof legacy.upstreamTaskId === 'string' ? legacy.upstreamTaskId : null);
-                if (id) {
+                if (id && !isQueryableUpstreamTaskId(id)) {
+                    setError(task.id, 'polling_paused', 'REMOTE_STATUS_UNKNOWN', 'poll', { pause_reason: 'upstream_id_unqueryable', upstream_task_id: id, next_poll_at: null });
+                } else if (id) {
                     update(task.id, 'remote_queued', { upstream_task_id: id, remote_state: 'queued', next_poll_at: task.next_poll_at || iso(), requires_continue: 0 }, 'recovery_poll_only');
                 } else setError(task.id, 'submission_unknown', 'SUBMISSION_UNKNOWN', 'submit', { pause_reason: 'restart_after_dispatch', dispatch_started_at: task.dispatch_started_at || task.created_at }, { transmission: 'may_have_reached_upstream' });
             }

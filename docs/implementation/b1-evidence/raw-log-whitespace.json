@@ -1,0 +1,43 @@
+{
+  "scope": "Raw tool outputs preserved. New/changed non-log source/docs separately checked; inherited Markdown hard breaks retained.",
+  "findings": [
+    {
+      "file": "docs/implementation/b1-evidence/frontend-build.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    },
+    {
+      "file": "docs/implementation/b1-evidence/frontend-targeted.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    },
+    {
+      "file": "docs/implementation/b1-evidence/full-directory-lint-observation.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-b1-http.log",
+      "trailingWhitespaceLines": [
+        28,
+        30
+      ],
+      "blankLinesAtEof": false
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-backend-lint.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-full-directory-lint.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    },
+    {
+      "file": "docs/implementation/b1-evidence/initial-native-b1-stderr.log",
+      "trailingWhitespaceLines": [],
+      "blankLinesAtEof": true
+    }
+  ]
+}

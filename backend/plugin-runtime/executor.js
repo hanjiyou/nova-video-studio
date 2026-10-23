@@ -11,6 +11,8 @@ const { resolveTemplate } = require('./template');
 const { classifyStatus, extractProgress, normalizeResult, extractError, pickFirstString } = require('./extract');
 const { isHostAllowed } = require('./registry');
 const { containsCredential } = require('../connections/redaction');
+const { buildRequestInit } = require('./request-body');
+const { encodeUpstreamTaskId } = require('./upstream-id');
 
 const DEFAULT_SUBMIT_TIMEOUT_MS = 90 * 1000;
 const DEFAULT_POLL_TIMEOUT_MS = 15 * 1000;
@@ -70,7 +72,7 @@ function normalizeBaseUrl(url) {
 /**
  * 构造模板上下文。apiKey 只在这里出现一次，日志与入库都不会带上它。
  */
-function buildContext({ plugin, baseUrl, apiKey, model, facets, fields, media, upstreamTaskId, publicBaseUrl, connectionVersionId }) {
+function buildContext({ plugin, baseUrl, apiKey, model, facets, fields, media, upstreamTaskId, publicBaseUrl, connectionVersionId, mode, parameters, inputAssets, readAsset }) {
   let resolvedBase=normalizeBaseUrl(baseUrl || (plugin.manifest.credential.defaultBaseUrl || ''));
   // Legacy declarative templates own their /v1 suffix; the connection stores a canonical /v1 base.
   if (connectionVersionId && !plugin.driver && resolvedBase.endsWith('/v1') && plugin.provider?.submit?.url?.startsWith('{{baseUrl}}/v1/')) resolvedBase=resolvedBase.slice(0,-3);
@@ -86,6 +88,10 @@ function buildContext({ plugin, baseUrl, apiKey, model, facets, fields, media, u
     publicBaseUrl: normalizeBaseUrl(publicBaseUrl || ''),
     pluginId: plugin.id,
     pluginVersion: plugin.manifest.version,
+    ...(mode === undefined ? {} : { mode }),
+    ...(parameters === undefined ? {} : { parameters }),
+    ...(inputAssets === undefined ? {} : { inputAssets }),
+    ...(readAsset === undefined ? {} : { readAsset }),
   };
 }
 
@@ -171,13 +177,7 @@ async function submitTask(plugin, context) {
     for (const [key, value] of Object.entries(req.headers || {})) {
       headers[key] = String(value);
     }
-    const init = { method, headers, ...(context.connectionVersionId?{redirect:'manual'}:{}) };
-    if (method !== 'GET' && method !== 'HEAD' && req.body !== undefined) {
-      init.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
-      if (!Object.keys(headers).some(key => key.toLowerCase() === 'content-type')) {
-        headers['Content-Type'] = 'application/json';
-      }
-    }
+    const init = buildRequestInit({ ...req, method, headers }, context, context.readAsset);
 
     const response = await fetchWithTimeout(url, init, timeoutMs);
     const text = await response.text();
@@ -247,7 +247,7 @@ async function submitTask(plugin, context) {
   const pollSpec = plugin.provider.poll;
   const status = classifyStatus(payload, pollSpec.status, `${plugin.id}/submit`);
   if (status.state === 'completed') {
-    const immediateContext = { ...context, upstreamTaskId };
+    const immediateContext = { ...context, upstreamTaskId: encodeUpstreamTaskId(upstreamTaskId) };
     const normalized = normalizeResult(payload, pollSpec.result, immediateContext, resolveTemplate);
     if (normalized.assets.length > 0) {
       result.immediate = { state: 'completed', assets: normalized.assets };
@@ -274,7 +274,7 @@ function normalizePollResponse(plugin, payload, context) {
   const progress = extractProgress(payload, spec.progress);
 
   if (status.state === 'completed') {
-    const normalized = normalizeResult(payload, spec.result, context, resolveTemplate);
+    const normalized = normalizeResult(payload, spec.result, { ...context, upstreamTaskId: encodeUpstreamTaskId(context.upstreamTaskId) }, resolveTemplate);
     if (normalized.assets.length === 0) {
       return { state: 'failed', progress: 100, error: '上游报告完成但没有返回可用的产物地址' };
     }
@@ -300,6 +300,7 @@ function normalizePollResponse(plugin, payload, context) {
  * 只有 provider 申报的 fatalHttpStatus（通常 400/401/403）才认定任务已经死了。
  */
 async function pollTask(plugin, context) {
+  const encodedId = encodeUpstreamTaskId(context.upstreamTaskId);
   if (plugin.driver) {
     if (typeof plugin.driver.buildQuery !== 'function') {
       throw new PluginRequestError(`插件 ${plugin.id} 未实现 buildQuery 方法`, { fatal: true });
@@ -344,7 +345,7 @@ async function pollTask(plugin, context) {
 
   const spec = plugin.provider.poll;
   const timeoutMs = Number(spec.timeoutMs) || DEFAULT_POLL_TIMEOUT_MS;
-  const { url, init } = resolveRequest(spec, context, plugin, '查询请求');
+  const { url, init } = resolveRequest(spec, { ...context, upstreamTaskId: encodedId }, plugin, '查询请求');
 
   const response = await fetchWithTimeout(url, init, timeoutMs);
   const text = await response.text();

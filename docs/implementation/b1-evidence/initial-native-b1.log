@@ -1,0 +1,14 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at phase (E:\Learn\AI\nova-image-studio\scripts\verify-desktop-b1.cjs:27:184)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async E:\Learn\AI\nova-image-studio\scripts\verify-desktop-b1.cjs:33:77 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

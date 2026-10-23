@@ -1,0 +1,49 @@
+{
+  "initialHttp": {
+    "log": "initial-b1-http.log",
+    "exitCode": 1,
+    "passed": 10,
+    "total": 11,
+    "resolution": "Only corrected expected CREDENTIAL_REQUIRED HTTP status from 400 to established 409; production status was not changed."
+  },
+  "initialTargetedLint": {
+    "log": "initial-backend-lint.log",
+    "exitCode": 1,
+    "diagnostics": 4,
+    "resolution": "Removed unnecessary quote escapes in a test string."
+  },
+  "initialNative": {
+    "logs": [
+      "initial-native-b1.log",
+      "initial-native-b1-stderr.log",
+      "initial-native-b1-stdout.log"
+    ],
+    "exitCode": 1,
+    "resolution": "Test-only mapping now permits the main process exact loopback /api/nova/config readiness request; production network policy unchanged. Initial profile retained."
+  },
+  "fullDirectoryLint": {
+    "initialLog": "initial-full-directory-lint.log",
+    "initialDiagnostics": 28,
+    "finalLog": "full-directory-lint-observation.log",
+    "finalDiagnostics": 21,
+    "baselineComparison": "lint-baseline-comparison.json",
+    "resolution": "Explicit node:url import for the touched host. Full-directory config/unused/preserve-caught-error issues remain; no claim of full lint pass."
+  },
+  "typecheck": {
+    "exitCode": 2,
+    "diagnostics": 60,
+    "baseline": "T05",
+    "identical": true
+  },
+  "packageRevision": {
+    "note": "First package audit covered 15 files; final package also fixes the equivalent explicit UI schema and plugin README. Current audit covers 16 files. Final hashes in package-audit.json supersede earlier logs."
+  },
+  "limits": [
+    "No external paid generation or actual key access",
+    "No T08 download/media/Range implementation",
+    "No complete UI/real-service acceptance",
+    "NSIS 0xc0000409 root cause remains unresolved",
+    "No APPDATA cleanup retry",
+    "No commit/push/main merge/release/B2"
+  ]
+}

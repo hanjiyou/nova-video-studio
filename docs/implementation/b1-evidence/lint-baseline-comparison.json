@@ -1,0 +1,180 @@
+{
+  "scope": "Only touched cjs test host; full-directory lint also retains three errors in untouched registry/script-plugin files.",
+  "baselineRef": "86d38656c03c4c75bd86d697607cf5fe245528e1",
+  "before": {
+    "exitCode": 1,
+    "errorCount": 22,
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'URL' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'URL' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'URL' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'URL' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'__dirname' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'clearTimeout' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'setTimeout' is not defined."
+      },
+      {
+        "ruleId": "preserve-caught-error",
+        "message": "There is no `cause` attached to the symptom error being thrown."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'fetch' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'setTimeout' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'clearTimeout' is not defined."
+      }
+    ]
+  },
+  "after": {
+    "exitCode": 1,
+    "errorCount": 18,
+    "messages": [
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'Buffer' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'__dirname' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'process' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'clearTimeout' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'setTimeout' is not defined."
+      },
+      {
+        "ruleId": "preserve-caught-error",
+        "message": "There is no `cause` attached to the symptom error being thrown."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'fetch' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'setTimeout' is not defined."
+      },
+      {
+        "ruleId": "no-undef",
+        "message": "'clearTimeout' is not defined."
+      }
+    ]
+  },
+  "newDiagnostics": [],
+  "fullDirectoryBaselineCount": 25,
+  "fullDirectoryCurrentCount": 21,
+  "targetedJsLintExitCode": 0
+}

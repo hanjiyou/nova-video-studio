@@ -1,0 +1,19 @@
+{
+  "phase": 1,
+  "platform": "win32",
+  "checks": {
+    "real Windows credential encryption available": true,
+    "durable task service available": true,
+    "narrow IPC saves real safeStorage protected synthetic credential": true,
+    "visibility and mode capability stay independent": true,
+    "renderer imports two original managed files": true,
+    "unverified flare never dispatches": true,
+    "canonical renderer API queues B1 intent": true,
+    "driver ID reaches durable task column": true,
+    "dispatch and ID are committed before quitting": true,
+    "same canonical intent returns original task": true
+  },
+  "scope": "Actual Windows Electron main/preload/IPC; loopback synthetic OpenSosen protocol only; no real generation or complete UI acceptance",
+  "status": "passed",
+  "finishedAt": "2026-10-23T12:20:58.224Z"
+}

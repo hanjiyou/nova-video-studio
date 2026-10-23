@@ -1,0 +1,24 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const cp = require('node:child_process');
+const asar = require('@electron/asar');
+const assert = require('node:assert/strict');
+const root = path.resolve(__dirname, '..');
+const archive = path.resolve(process.argv[2] || path.join(root, 'release-b1/win-unpacked/resources/app.asar'));
+const output = path.resolve(process.argv[3] || path.join(root, 'docs/implementation/b1-evidence/package-audit.json'));
+const hash = value => crypto.createHash('sha256').update(value).digest('hex');
+const entries = asar.listPackage(archive).map(entry => entry.replaceAll('\\', '/'));
+const files = ['backend/server.js', 'backend/tasks/service.js', 'backend/tasks/plugin-adapter.js', 'backend/storage/migrations.js', 'backend/storage/store.js', 'backend/connections/redaction.js', 'backend/connections/service.js', 'desktop/main.cjs', 'desktop/preload.cjs', 'backend/plugin-runtime/request-body.js', 'backend/plugin-runtime/upstream-id.js', 'backend/plugin-runtime/executor.js', 'backend/tasks/flare-image-adapter.js', 'backend/tasks/workbench-input.js', 'backend/plugins/opensosen-video/index.js', 'backend/plugins/opensosen-video/manifest.json', 'backend/plugins/opensosen-video/ui.schema.json'];
+const modules = files.map(file => { const actual = asar.extractFile(archive, file.split('/').join(path.sep)), source = fs.readFileSync(path.join(root, file)); return { file, sourceSha256: hash(source), packagedSha256: hash(actual), identical: actual.equals(source) }; });
+assert.ok(modules.every(item => item.identical));
+const excluded = ['/backend/test/', '/scripts/'].map(prefix => ({ prefix, absent: !entries.some(entry => entry.startsWith(prefix)) })); assert.ok(excluded.every(item => item.absent));
+const previous = cp.execFileSync('git', ['-c', 'safe.directory=' + root.replaceAll('\\', '/'), 'show', 'HEAD:backend/storage/migrations.js'], { cwd: root, encoding: 'utf8' });
+const migrations = require('../backend/storage/migrations').MIGRATIONS;
+const historicalMigrationSql = ['BASE_SCHEMA', 'DURABLE_SCHEMA', 'CONNECTION_SCHEMA', 'TASK_SCHEMA'].map((name, index) => {
+    const before = previous.match(new RegExp('const ' + name + ' = `([\\s\\S]*?)`;'))[1].replaceAll('\r\n', '\n'), current = migrations[index].sql;
+    return { name, baselineSqlSha256: hash(before), runtimeSqlSha256: hash(current), identical: before === current };
+}); assert.ok(historicalMigrationSql.every(item => item.identical));
+const report = { archive, appAsarSha256: hash(fs.readFileSync(archive)), exeSha256: hash(fs.readFileSync(path.resolve(path.dirname(archive), '../Nova Image Studio.exe'))), modules, excluded, historicalMigrationSql, comparisonNote: 'Migration strings compare runtime SQL; JavaScript normalizes CRLF source lines to LF.', scope: 'Unpacked source equality and test exclusion; no NSIS installation/publication' };
+fs.writeFileSync(output, JSON.stringify(report, null, 2) + '\n'); console.log(JSON.stringify({ appAsarSha256: report.appAsarSha256, exeSha256: report.exeSha256, modulesVerified: modules.length, testRootsExcluded: true, historicalSqlUnchanged: true }));

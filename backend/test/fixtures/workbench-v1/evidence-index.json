@@ -48,6 +48,24 @@
       "file": "multi-image-protocol-tests/repeated-input-reference/result.json",
       "kind": "historical_media_and_visual_summary",
       "sha256": "7aa9069652c2d14280afca1faa60a15d940c62ebd83773769ecf13d978a0bb1e"
+    },
+    {
+      "id": "H07",
+      "file": "multi-image-protocol-tests/repeated-input-reference/run.mjs",
+      "kind": "historical_success_client_query_path",
+      "sha256": "235d300daa3f68fb5de75f4c8ebffa0accd4de7d49af1262ca37cbee7618bc83"
+    },
+    {
+      "id": "D02",
+      "file": "Desktop/OpenSosen视频生成接口使用说明.md v1.2",
+      "kind": "historical_summary_updated",
+      "sha256": "bfdd25d53bab8bdc9352b0c4ee8e9b273540459a72d10f77669706e283e46e84"
+    },
+    {
+      "id": "C01",
+      "file": "opensosen-media/server.mjs",
+      "kind": "candidate_client_implementation_not_success_evidence",
+      "sha256": "aae7e3d977c70e584c173d6265fcc813f360c7a37b0637e287f02940e1e0762c"
     }
   ],
   "referenceEvidence": {
@@ -153,5 +171,34 @@
     "Single creation HTTP status not preserved in its raw job; null remains unknown.",
     "Two-reference visual effect comes from historical H03, not mock output.",
     "Synthetic download payload is arbitrary bytes, not a decodable MP4."
-  ]
+  ],
+  "b1ProtocolReview": {
+    "query": {
+      "method": "GET",
+      "path": "/v1/videos/{encodedTaskId}",
+      "sourceIds": [
+        "H02",
+        "H07",
+        "D02"
+      ]
+    },
+    "content": {
+      "method": "GET",
+      "path": "/v1/videos/{encodedTaskId}/content",
+      "sourceIds": [
+        "H01",
+        "H02",
+        "H06",
+        "C01",
+        "D02"
+      ]
+    },
+    "imageCandidate": {
+      "sourceIds": [
+        "C01"
+      ],
+      "evidenceLevel": "unverified",
+      "note": "Client code alone does not establish exact flare route/model success; optional size/quality remain closed."
+    }
+  }
 }

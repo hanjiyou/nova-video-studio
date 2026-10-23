@@ -112,6 +112,8 @@
 
 ### C. 图片适配（P1）
 
+B1 当前实现见 [适配接口](b1-adapters-v1.md)：独立 flare 文生候选仅离线验证，参考编辑有明确未验证边界；尺寸/质量未补证前不开放，最终真实协议验收仍在 T15。不得将本批候选解析通过写为图片需求全部完成。
+
 复用 `ImageGenerationWorkbench.tsx`、`TextToImageForm.tsx`、`ImageToImageForm.tsx`、结果预览；从 `backend/server.js` 的 `createGptImageRequestInit` / `requestGptImage` 抽取服务适配边界。
 
 - 精确保留 flare 型号，先使用非流式最小请求；明确支持后才打开质量、背景、流式等附加参数。
@@ -123,6 +125,8 @@
 验收：本地 fixture 验证参数、中文提示词、base64/URL 响应、空结果、图片字节；真实 flare 文生/编辑需另行做受控联网验收。
 
 ### D. OpenSosen 视频适配（P1）
+
+B1 已按历史 1.5 单/双参考接入有序 multipart 及原 ID GET，保留两个精确型号与三模式数量校验；缺证据的文生/普通 Grok 组合继续待验证。实现与范围见 [B1 记录](implementation/B1-T06-T07-图片视频适配.md)，完整 UI、媒体下载和真实链路验收未提前完成。
 
 建议新增 `backend/plugins/opensosen-video/`，包含 manifest、ui.schema、driver 和 fixtures；扩展 `plugin-runtime/executor.js`、`input.js`、`media.js` 及对应校验/测试。
 

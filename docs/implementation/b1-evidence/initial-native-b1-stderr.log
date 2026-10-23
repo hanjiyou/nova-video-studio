@@ -1,0 +1,7 @@
+Nova Image Studio 启动失败： Expected values to be strictly equal:
++ actual - expected
+
++ 'http://127.0.0.1:60622'
+- 'https://newapi.opensosen.com'
+       ^
+

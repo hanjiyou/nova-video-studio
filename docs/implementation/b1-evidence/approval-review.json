@@ -1,0 +1,65 @@
+{
+  "stage": "B1 T06+T07",
+  "status": "accepted_offline_implementation_foundation",
+  "recordedAt": "2026-10-23T13:04:44.470Z",
+  "approvalSource": "Explicit direct parent-session final re-review approval on 2026-10-23; commit and normal push origin/dev authorized.",
+  "approvalMessage": "B1复审通过，现明确批准本批提交推送。独立复核共享 upstream-id 校验/编码及接收/attach/recover/query/content；独立 upstream-id+B1适配+B1真实HTTP 47/47，0跳过，app.asar SHA b4c847de86655257d67cb267a021591972b6c7efd387fbb86547977bba51359f 一致。接受 B1 离线实现基础范围，未证实协议/真实能力仍留 T15。更新任务清单、B1审核结论、最终清单，仅暂存本批文件，commit、push origin/dev，确认远端SHA及工作区干净。不要开始B2。",
+  "scope": "Offline image candidate adapter and independent reference-edit gate; historical OpenSosen multipart/query foundation, durable task integration, and shared opaque upstream-ID review fix.",
+  "parentIndependentValidation": {
+    "testFiles": [
+      "backend/test/workbench-upstream-id.test.js",
+      "backend/test/workbench-b1-adapters.test.js",
+      "backend/test/workbench-b1-http.test.js"
+    ],
+    "tests": {
+      "passed": 47,
+      "total": 47,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reviewed": [
+      "shared upstream-ID validation/encoding",
+      "acceptance",
+      "attach",
+      "recovery",
+      "query",
+      "content"
+    ],
+    "appAsarSha256": "b4c847de86655257d67cb267a021591972b6c7efd387fbb86547977bba51359f",
+    "rawParentTestLogIncluded": false,
+    "attribution": "Results explicitly reported by the parent session; not presented as implementation-agent raw output."
+  },
+  "implementationValidation": {
+    "finalAffectedTests": {
+      "passed": 130,
+      "total": 130,
+      "failed": 0,
+      "skipped": 0
+    },
+    "lintExitCode": 0,
+    "nativeChecks": 18,
+    "packagedChecks": 23,
+    "packagedSourceFiles": 17,
+    "evidence": "review-dot-id-summary.json"
+  },
+  "retainedLimits": [
+    "Unverified exact flare success/edit protocols, video text-to-video and other model/spec combinations remain T15; evidence levels are unchanged.",
+    "T08 media download/verification and full UI/real-service acceptance remain later batches.",
+    "No complete product item is newly accepted; all 61 original requirements and all 17 task IDs remain.",
+    "Full tsc retains the same 60 pre-existing diagnostics; full-directory lint debt remains and is not reported as passing.",
+    "T16 NSIS 0xc0000409 remains unresolved; unpacked success is not installer acceptance."
+  ],
+  "workflow": [
+    "Stage only manifest-listed B1 files and the manifest.",
+    "Commit B1 and push origin/dev without force.",
+    "Verify remote SHA and clean worktree.",
+    "Write actual delivery result to ignored temp/b1-git-delivery.json after execution.",
+    "Stop; do not start B2."
+  ],
+  "commitAndPushAuthorized": true,
+  "commitOrPushPerformedAtRecordTime": false,
+  "nextBatchStarted": false,
+  "mergeMainAuthorized": false,
+  "forcePushAuthorized": false,
+  "publishAuthorized": false
+}

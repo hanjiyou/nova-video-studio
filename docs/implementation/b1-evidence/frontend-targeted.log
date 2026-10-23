@@ -1,0 +1,15 @@
+
+> nova-image-frontend@3.4.0 test:run
+> vitest run src/lib/__tests__/workbench-task-client.test.ts src/lib/__tests__/connection-client.test.ts
+
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/workbench-task-client.test.ts (10 tests) 16ms
+ ✓ src/lib/__tests__/connection-client.test.ts (6 tests) 13ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  20:16:46
+   Duration  1.20s (transform 140ms, setup 168ms, collect 206ms, tests 29ms, environment 1.04s, prepare 251ms)
+

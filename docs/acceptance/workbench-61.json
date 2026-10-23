@@ -162,7 +162,8 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t04-evidence/storage-connections-targeted.log"
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log"
         ],
         "realService": [],
         "desktop": [
@@ -171,7 +172,7 @@
           "../implementation/t04-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 精确 flare 文生候选保留型号，不自动换型号；精确上游成功仍待 T15。"
     },
     {
       "id": "I02",
@@ -185,7 +186,8 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t03-evidence/storage-targeted.log"
+          "../implementation/t03-evidence/storage-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log"
         ],
         "realService": [],
         "desktop": [
@@ -194,7 +196,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 flare 候选离线保留中文、换行和引号；图片完整 UI 与真实发送仍待后续。"
     },
     {
       "id": "I03",
@@ -223,13 +225,15 @@
         "T06",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
         "desktop": []
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 缺精确证据的尺寸参数明确拒绝，支持的图片规格仍待 T15，不把任意输入当能力。"
     },
     {
       "id": "I05",
@@ -241,13 +245,15 @@
         "T06",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
         "desktop": []
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 未开放未知质量枚举；质量组合与实际界面仍待 T15/T11。"
     },
     {
       "id": "I06",
@@ -263,7 +269,8 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t03-evidence/storage-targeted.log"
+          "../implementation/t03-evidence/storage-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log"
         ],
         "realService": [],
         "desktop": [
@@ -272,7 +279,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。 B1 参考编辑有独立 CAPABILITY_UNVERIFIED 边界，不猜字段、不退回文生；真实编辑协议仍待 T15。"
     },
     {
       "id": "I07",
@@ -322,13 +329,15 @@
         "T08",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
         "desktop": []
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 合成图片空输出/坏结果被拒绝；候选不是本地完成，T08/T11 保存与界面仍未完成。"
     },
     {
       "id": "I10",
@@ -432,13 +441,18 @@
         "T07",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 在宿主校验文生0图、单图1图、双图2图；未验证模式明确阻止派发，完整模式页面待 T12。"
     },
     {
       "id": "V02",
@@ -453,16 +467,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t04-evidence/storage-connections-targeted.log"
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
-          "../implementation/t04-evidence/packaged-evidence.json"
+          "../implementation/t04-evidence/packaged-evidence.json",
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 保留两个精确 Grok 型号，不静默换模型；未验证组合不因模型可见而开放。"
     },
     {
       "id": "V03",
@@ -478,16 +495,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t04-evidence/storage-connections-targeted.log"
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
-          "../implementation/t04-evidence/packaged-evidence.json"
+          "../implementation/t04-evidence/packaged-evidence.json",
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
         ]
       },
-      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。 B1 仅按原服务/型号/模式匹配历史1.5双图协议；没有新增真实生成验收。"
     },
     {
       "id": "V04",
@@ -522,13 +542,18 @@
         "T07",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 已核对冻结快照、数据库和 multipart 原文件顺序；拖拽排序/预览序号 UI 待 T12。"
     },
     {
       "id": "V06",
@@ -595,13 +620,18 @@
         "T07",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b1-evidence/b1-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 历史参考图路径仅6秒/1280×720，其他规格和文生协议不猜测；完整控件待 T12。"
     },
     {
       "id": "V10",
@@ -616,12 +646,17 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t05-evidence/tasks-targeted.log"
+          "../implementation/t05-evidence/tasks-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b1-evidence/review-dot-id-targeted.log"
         ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 生产适配器+本地HTTP/原生验证每意图一次POST，已有ID只GET；产品生成按钮待 T12。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。"
     },
     {
       "id": "V11",
@@ -732,15 +767,19 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/t05-evidence/tasks-targeted.log"
+          "../implementation/t05-evidence/tasks-targeted.log",
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b1-evidence/review-dot-id-targeted.log"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t05-evidence/native-tasks-phase-1.json",
-          "../implementation/t05-evidence/native-tasks-phase-2.json"
+          "../implementation/t05-evidence/native-tasks-phase-2.json",
+          "../implementation/b1-evidence/native-b1-phase-1.json",
+          "../implementation/b1-evidence/native-b1-phase-2.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。"
     },
     {
       "id": "L01",

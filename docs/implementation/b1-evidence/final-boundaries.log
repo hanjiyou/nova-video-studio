@@ -1,0 +1,43 @@
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.0.0（2 个模型）
+✔ new package registers both exact models, with only fixed application controls and ordered references (1.042ms)
+✔ production driver builds 1 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (18.0505ms)
+✔ production driver builds 2 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (1.2888ms)
+✔ grok-imagine-video-1.5-6s / video.text / 0 inputs rejects without guessing a protocol (0.4008ms)
+✔ grok-imagine-video-6s / video.text / 0 inputs rejects without guessing a protocol (0.0693ms)
+✔ grok-imagine-video-6s / video.single_reference / 1 inputs rejects without guessing a protocol (0.0773ms)
+✔ grok-imagine-video-6s / video.dual_reference / 2 inputs rejects without guessing a protocol (0.0474ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 0 inputs rejects without guessing a protocol (0.0351ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 2 inputs rejects without guessing a protocol (0.0572ms)
+✔ grok-imagine-video-1.5-6s / video.dual_reference / 1 inputs rejects without guessing a protocol (0.0929ms)
+✔ grok-imagine-video-1.5-6s / video.text / 1 inputs rejects without guessing a protocol (0.0498ms)
+✔ driver rejects another service, unsupported size/seconds/extra fields and nonconsecutive input order (0.1576ms)
+✔ multipart host rejects paths, MIME spoofing, manual boundary and assets outside frozen input (0.3289ms)
+✔ safe accepted driver ID is exposed before a later parser or credential error; only one POST (2.0308ms)
+✔ new multipart POST 400 remains single attempt and has bounded safe rejection metadata (0.572ms)
+✔ new multipart POST 401 remains single attempt and has bounded safe rejection metadata (1.0601ms)
+✔ new multipart POST 403 remains single attempt and has bounded safe rejection metadata (0.385ms)
+✔ new multipart POST 429 remains single attempt and has bounded safe rejection metadata (0.3533ms)
+✔ new multipart POST 503 remains single attempt and has bounded safe rejection metadata (0.2627ms)
+✔ driver GET encodes one opaque segment, keeps progress, normalizes only observed states and supplies stable authenticated content source (0.7342ms)
+✔ unknown video status is not invented as complete/failure; empty create ID is not accepted (0.1121ms)
+✔ flare candidate is a precise nonstream minimum and preserves prompt without extra size/quality fields (0.1526ms)
+✔ flare reference boundary cannot silently fall back, and candidate production preflight stays gated by evidence (0.118ms)
+✔ flare synthetic URL/base64 outputs normalize into temporary sources; empty, invalid and credential outputs reject (0.3149ms)
+✔ flare synthetic 503 and empty result use exactly one POST and no fallback model (0.4651ms)
+✔ canonical snapshot rejects mode/count mismatch and unknown request/path overrides (0.3174ms)
+✔ shared script executor supports host-only ordered multipart while old JSON remains unchanged (0.7213ms)
+✔ candidate flare deadline covers headers and stalled JSON body, with one POST and one body read (269.279ms)
+✔ acceptance ledger covers exactly the 61 baseline IDs with owners and separate evidence channels (3.2925ms)
+✔ historical fixtures have provenance and synthetic replacements, not private raw media or live URLs (3.2159ms)
+✔ observed provider response types/envelopes stay distinct from a successful local asset (0.7017ms)
+✔ known rejected formats preserve the original error nesting without broad capability claims (0.7229ms)
+✔ text protocols and unobserved provider guarantees remain explicitly unverified (0.8959ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 413.2433

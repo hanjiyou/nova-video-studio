@@ -1,0 +1,9 @@
+
+E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-adapters.test.js
+  119:168  error  Unnecessary escape character: \"  no-useless-escape
+  119:175  error  Unnecessary escape character: \"  no-useless-escape
+  119:178  error  Unnecessary escape character: \"  no-useless-escape
+  119:189  error  Unnecessary escape character: \"  no-useless-escape
+
+✖ 4 problems (4 errors, 0 warnings)
+

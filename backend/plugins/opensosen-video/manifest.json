@@ -1,0 +1,65 @@
+{
+  "apiVersion": 1,
+  "id": "opensosen-video",
+  "name": "OpenSosen 视频",
+  "version": "1.0.0",
+  "kind": "video",
+  "mode": "script",
+  "description": "有序参考图协议。仅1.5单图/双图有历史证据，文生及其他组合待验证。",
+  "outputs": [
+    "video"
+  ],
+  "credential": {
+    "source": "client",
+    "label": "共享连接",
+    "defaultBaseUrl": "https://newapi.opensosen.com/v1"
+  },
+  "permissions": {
+    "hosts": [
+      "newapi.opensosen.com"
+    ]
+  },
+  "media": {
+    "images": {
+      "maxCount": 2
+    }
+  },
+  "runtime": {
+    "submitTimeoutMs": 90000,
+    "pollTimeoutMs": 15000,
+    "pollIntervalMs": 20000
+  },
+  "models": [
+    {
+      "id": "grok-imagine-video-6s",
+      "name": "Grok 6s（能力待验证）"
+    },
+    {
+      "id": "grok-imagine-video-1.5-6s",
+      "name": "Grok 1.5 6s"
+    }
+  ],
+  "features": {
+    "modes": [
+      {
+        "value": "video.text",
+        "label": "文生视频（待验证）"
+      },
+      {
+        "value": "video.single_reference",
+        "label": "单图参考"
+      },
+      {
+        "value": "video.dual_reference",
+        "label": "双图有序参考"
+      }
+    ],
+    "aspectRatios": [
+      "16:9"
+    ],
+    "durations": [
+      6
+    ],
+    "maxPromptLength": 65536
+  }
+}

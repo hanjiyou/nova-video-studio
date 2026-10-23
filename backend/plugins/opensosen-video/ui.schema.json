@@ -1,0 +1,124 @@
+{
+  "apiVersion": 1,
+  "priceQuantityField": "seconds",
+  "layout": {
+    "toolbar": [
+      "$model",
+      "mode",
+      "aspectRatio",
+      "seconds"
+    ],
+    "body": [
+      "images",
+      "prompt"
+    ]
+  },
+  "modelSelector": {
+    "label": "模型选择",
+    "familyLabel": "OpenSosen 视频",
+    "familyDescription": "有序参考图协议。仅1.5单图/双图有历史证据，文生及其他组合待验证。",
+    "facets": [
+      {
+        "key": "targetModel",
+        "label": "模型",
+        "icon": "sparkles",
+        "control": "list",
+        "hideWhenSingle": false
+      }
+    ],
+    "facetOptions": {
+      "targetModel": [
+        {
+          "value": "grok-imagine-video-6s",
+          "label": "Grok 6s（能力待验证）"
+        },
+        {
+          "value": "grok-imagine-video-1.5-6s",
+          "label": "Grok 1.5 6s"
+        }
+      ]
+    },
+    "variants": [
+      {
+        "model": "grok-imagine-video-6s",
+        "targetModel": "grok-imagine-video-6s"
+      },
+      {
+        "model": "grok-imagine-video-1.5-6s",
+        "targetModel": "grok-imagine-video-1.5-6s"
+      }
+    ]
+  },
+  "fields": [
+    {
+      "key": "mode",
+      "type": "select",
+      "label": "生成模式",
+      "icon": "layers",
+      "default": "video.text",
+      "hideWhenSingle": false,
+      "options": [
+        {
+          "value": "video.text",
+          "label": "文生视频（待验证）"
+        },
+        {
+          "value": "video.single_reference",
+          "label": "单图参考"
+        },
+        {
+          "value": "video.dual_reference",
+          "label": "双图有序参考"
+        }
+      ]
+    },
+    {
+      "key": "aspectRatio",
+      "type": "select",
+      "label": "画面比例",
+      "icon": "aspect-ratio",
+      "default": "16:9",
+      "hideWhenSingle": true,
+      "options": [
+        {
+          "value": "16:9",
+          "label": "16:9 横屏",
+          "description": "适合电脑、电视与横版视频"
+        }
+      ]
+    },
+    {
+      "key": "seconds",
+      "type": "select",
+      "label": "视频时长",
+      "icon": "clock",
+      "default": 6,
+      "hideWhenSingle": true,
+      "options": [
+        {
+          "value": 6,
+          "label": "6 秒"
+        }
+      ]
+    },
+    {
+      "key": "images",
+      "type": "media",
+      "kind": "images",
+      "label": "参考图片",
+      "hint": "可拖入垫图辅助构图或人物设定",
+      "style": "chip",
+      "maxCount": 2
+    },
+    {
+      "key": "prompt",
+      "type": "textarea",
+      "label": "画面描述",
+      "placeholder": "详细描述画面主体、动态过程、光影氛围与运镜视角...",
+      "required": true,
+      "requiredHint": "请填写视频画面描述",
+      "maxLength": 65536,
+      "rows": 4
+    }
+  ]
+}

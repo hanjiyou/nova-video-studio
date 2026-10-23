@@ -1,0 +1,14 @@
+[
+  {
+    "method": "POST",
+    "path": "/v1/videos",
+    "authorized": true,
+    "originalOrderedBytes": true,
+    "dispatchCommitted": true
+  },
+  {
+    "method": "GET",
+    "path": "/v1/videos/task_native_b1",
+    "authorized": true
+  }
+]

@@ -170,3 +170,27 @@ test('complete POST authentication rejection is classified for reauthentication,
     const f=await fixture(t,{submit:async()=>{throw Object.assign(new Error('synthetic auth rejection'),{httpStatus:401,transmission:'response_received',definiteRejection:true});}}), id=f.enqueue();
     await until(()=>f.service.get(id).status==='failed');const task=f.service.get(id);assert.equal(task.taskError.code,'AUTH_REJECTED');assert.equal(task.taskError.phase,'credential');assert.equal(task.taskError.retryAction,'reauthenticate');assert.equal(task.taskError.transmission,'response_received');assert.equal(f.submits,1);
 });
+
+for(const invalid of ['.','..'])test('review dot ID '+invalid+' from onAccepted stays unknown/reserved; manual attach has no poll side effects',async t=>{
+    const f=await fixture(t,{submit:async(_task,_snapshot,auth)=>{auth.onAccepted(invalid);return{upstreamTaskId:invalid};}});
+    const id=f.enqueue();await until(()=>f.service.get(id).status==='submission_unknown');
+    assert.equal(f.service.get(id).upstreamTaskId,null);assert.equal(f.service.get(id).generationReserved,true);
+    const next=f.enqueue();await tick();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(next).status,'local_queued');
+    for(const upstreamTaskId of ['.','..'])assert.throws(()=>f.service.action(id,'attach-upstream-id',{upstreamTaskId}),{code:'INVALID_UPSTREAM_ID'});
+    assert.equal(f.polls,0);assert.equal(f.service.get(id).status,'submission_unknown');assert.equal(f.service.get(id).upstreamTaskId,null);
+    await f.restart();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(id).generationReserved,true);
+    const normal='正常/百分号%.版本';f.service.action(id,'attach-upstream-id',{upstreamTaskId:normal});
+    assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.polls,0);
+    f.service.action(id,'resume-polling');await f.service.poll(id);assert.equal(f.polls,1);assert.equal(f.submits,1);
+    assert.equal(f.service.get(id).upstreamTaskId,normal);
+});
+for(const invalid of ['.','..'])test('review persisted old dot ID '+invalid+' pauses on recovery and direct poll without invoking an adapter or freeing the slot',async t=>{
+    const f=await fixture(t),id=f.enqueue();
+    f.db.prepare("UPDATE tasks SET status='remote_queued',dispatch_started_at=?,upstream_task_id=? WHERE id=?").run('2026-10-22T00:00:00Z',invalid,id);
+    await f.restart();assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.service.get(id).upstreamTaskId,invalid);
+    assert.equal(f.service.get(id).generationReserved,true);assert.equal(f.service.get(id).pauseReason,'upstream_id_unqueryable');
+    assert.throws(()=>f.service.action(id,'resume-polling'),{code:'INVALID_UPSTREAM_ID'});
+    f.enqueue();await tick();assert.equal(f.submits,0);assert.equal(f.polls,0);
+    f.db.prepare("UPDATE tasks SET status='remote_queued',next_poll_at=NULL WHERE id=?").run(id);
+    await f.service.poll(id);assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.service.get(id).generationReserved,true);assert.equal(f.polls,0);
+});

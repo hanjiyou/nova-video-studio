@@ -1,0 +1,17 @@
+{
+  "phase": 2,
+  "platform": "win32",
+  "checks": {
+    "real Windows credential encryption available": true,
+    "durable task service available": true,
+    "restart uses a new backend port": true,
+    "restart only queries original persisted ID": true,
+    "remote completion remains pending local download verification": true,
+    "original version decrypts after restart": true,
+    "renderer history/task hide key and raw remote URLs": true,
+    "replay after restart stays deduplicated": true
+  },
+  "scope": "Actual Windows Electron main/preload/IPC; loopback synthetic OpenSosen protocol only; no real generation or complete UI acceptance",
+  "status": "passed",
+  "finishedAt": "2026-10-23T12:20:58.779Z"
+}

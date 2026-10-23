@@ -1,0 +1,21 @@
+✔ actual desktop B1 1 file request freezes original asset order/parameters, one dispatch and download queue only (600.0085ms)
+ℹ {"mode":"video.single_reference","files":1,"postCount":1,"getCount":1,"localState":"remote_completed","download":"waiting"}
+✔ actual desktop B1 2 file request freezes original asset order/parameters, one dispatch and download queue only (562.4552ms)
+ℹ {"mode":"video.dual_reference","files":2,"postCount":1,"getCount":1,"localState":"remote_completed","download":"waiting"}
+✔ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (193.4863ms)
+✔ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (348.6849ms)
+✔ actual B1 disconnect becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (410.6413ms)
+✔ actual B1 stalled-body becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (636.7662ms)
+✔ actual B1 GET 401 retains ID, original credential and conservative occupied slot (468.5026ms)
+✔ actual B1 GET 403 retains ID, original credential and conservative occupied slot (453.1357ms)
+✔ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (469.5556ms)
+✔ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (451.4086ms)
+✔ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (379.7383ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5032.3502

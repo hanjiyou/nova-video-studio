@@ -1,0 +1,194 @@
+[
+  {
+    "name": "initial-b1-http",
+    "command": "node --test backend/test/workbench-b1-http.test.js",
+    "cwd": ".",
+    "exitCode": 1,
+    "tests": 11,
+    "passed": 10,
+    "log": "initial-b1-http.log",
+    "note": "Existing credential-clear status is 409; corrected test expectation only."
+  },
+  {
+    "name": "backend-regression",
+    "command": "node --test --test-concurrency=1 backend/test/*.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "tests": 310,
+    "passed": 310,
+    "skipped": 0,
+    "log": "backend-regression.log"
+  },
+  {
+    "name": "b1-targeted",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-b1-adapters.test.js backend/test/workbench-b1-http.test.js backend/test/workbench-image-boundary.test.js backend/test/workbench-task-adapter.test.js backend/test/workbench-tasks.test.js backend/test/workbench-contracts.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "tests": 95,
+    "passed": 95,
+    "skipped": 0,
+    "log": "b1-targeted.log"
+  },
+  {
+    "name": "final-boundaries",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-b1-adapters.test.js backend/test/workbench-contracts.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "tests": 33,
+    "passed": 33,
+    "skipped": 0,
+    "log": "final-boundaries.log"
+  },
+  {
+    "name": "final-http",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-b1-http.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "tests": 11,
+    "passed": 11,
+    "skipped": 0,
+    "log": "final-http.log"
+  },
+  {
+    "name": "frontend-targeted",
+    "command": "npm run test:run -- src/lib/__tests__/workbench-task-client.test.ts src/lib/__tests__/connection-client.test.ts",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "tests": 16,
+    "passed": 16,
+    "log": "frontend-targeted.log"
+  },
+  {
+    "name": "backend-lint",
+    "command": "node node_modules/eslint/bin/eslint.js server.js tasks plugin-runtime/executor.js plugin-runtime/request-body.js plugins/opensosen-video/index.js test/workbench-b1-adapters.test.js test/workbench-b1-http.test.js",
+    "cwd": "backend",
+    "exitCode": 0,
+    "log": "backend-lint.log"
+  },
+  {
+    "name": "frontend-lint",
+    "command": "node node_modules/eslint/bin/eslint.js src/lib/workbench-task-client.ts src/lib/__tests__/workbench-task-client.test.ts",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "frontend-build",
+    "command": "npm run build",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "full-typecheck",
+    "command": "node node_modules/typescript/bin/tsc --noEmit --pretty false",
+    "cwd": "frontend",
+    "exitCode": 2,
+    "log": "frontend-full-typecheck.log",
+    "note": "Identical 60 existing T05 test diagnostics."
+  },
+  {
+    "name": "full-directory-lint-observation",
+    "command": "npm --prefix backend run lint -- --no-warn-ignored",
+    "cwd": ".",
+    "exitCode": 1,
+    "log": "full-directory-lint-observation.log",
+    "diagnostics": 21,
+    "note": "Touched cjs host baseline 22 -> 18, no new diagnostics; three untouched-file errors remain."
+  },
+  {
+    "name": "plugin-verify",
+    "command": "node backend/plugin-runtime/verify.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "plugin-verify.log",
+    "note": "OpenSosen protocol fixtures directly exercised by B1 adapter/HTTP tests; legacy fixture CLI keeps 7 cases."
+  },
+  {
+    "name": "native-b1",
+    "command": "node scripts/verify-desktop-b1.cjs temp/b1-native-final-v2",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "native-b1.log",
+    "checks": 18
+  },
+  {
+    "name": "native-legacy",
+    "command": "node scripts/verify-desktop-tasks.cjs temp/b1-native-legacy-final",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "native-legacy-tasks.log",
+    "checks": 19
+  },
+  {
+    "name": "unpacked-package",
+    "command": "node node_modules/electron-builder/cli.js --win --dir --config electron-builder.yml --config.directories.output=release-b1 --config.electronDist=node_modules/electron/dist",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "unpacked-package-final.log"
+  },
+  {
+    "name": "package-audit",
+    "command": "node scripts/verify-b1-package-audit.cjs",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "package-audit.log",
+    "files": 16
+  },
+  {
+    "name": "packaged-final",
+    "command": "node scripts/verify-desktop-package.cjs \"release-b1/win-unpacked/Nova Image Studio.exe\" override temp/b1-packaged-final-v3 --storage --connections --b1",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "packaged-smoke-final.log",
+    "checks": 23
+  },
+  {
+    "name": "review-dot-id-targeted",
+    "command": "node --test --test-concurrency=1 backend/test/workbench-upstream-id.test.js backend/test/workbench-tasks.test.js backend/test/workbench-b1-http.test.js backend/test/workbench-task-adapter.test.js backend/test/workbench-connections.test.js backend/test/plugin-runtime.test.js backend/test/script-plugin.test.js",
+    "cwd": ".",
+    "exitCode": 0,
+    "tests": 130,
+    "passed": 130,
+    "skipped": 0,
+    "log": "review-dot-id-targeted.log"
+  },
+  {
+    "name": "review-dot-id-lint",
+    "command": "node node_modules/eslint/bin/eslint.js tasks/service.js tasks/plugin-adapter.js plugin-runtime/executor.js plugin-runtime/upstream-id.js plugins/opensosen-video/index.js test/workbench-upstream-id.test.js test/workbench-tasks.test.js test/workbench-b1-http.test.js",
+    "cwd": "backend",
+    "exitCode": 0,
+    "log": "review-dot-id-lint.log"
+  },
+  {
+    "name": "review-dot-id-native",
+    "command": "node scripts/verify-desktop-b1.cjs temp/b1-native-review-dot-id",
+    "cwd": ".",
+    "exitCode": 0,
+    "checks": 18,
+    "log": "review-dot-id-native.log"
+  },
+  {
+    "name": "review-dot-id-package",
+    "command": "node node_modules/electron-builder/cli.js --win --dir --config electron-builder.yml --config.directories.output=release-b1 --config.electronDist=node_modules/electron/dist",
+    "cwd": ".",
+    "exitCode": 0,
+    "log": "review-dot-id-package.log"
+  },
+  {
+    "name": "review-dot-id-package-audit",
+    "command": "node scripts/verify-b1-package-audit.cjs",
+    "cwd": ".",
+    "exitCode": 0,
+    "files": 17,
+    "log": "review-dot-id-package-audit.log"
+  },
+  {
+    "name": "review-dot-id-packaged",
+    "command": "node scripts/verify-desktop-package.cjs \"release-b1/win-unpacked/Nova Image Studio.exe\" override temp/b1-packaged-review-dot-id --storage --connections --b1",
+    "cwd": ".",
+    "exitCode": 0,
+    "checks": 23,
+    "log": "review-dot-id-packaged.log"
+  }
+]

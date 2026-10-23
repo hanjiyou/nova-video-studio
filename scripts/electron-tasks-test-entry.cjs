@@ -23,7 +23,7 @@ async function run(window) {
     if (phase === 1) {
         const saved = await evaluate('window.novaDesktop.saveConnection(' + JSON.stringify({ baseUrl: process.env.NOVA_TASK_TEST_BASE, apiKey: key }) + ')');
         check('actual narrow IPC encrypts synthetic task credential', saved.ok && saved.connection.credentialState === 'ready'); state.connection = saved.connection;
-        state.payload = { localRequestId: randomUUID(), connectionVersionId: state.connection.connectionVersionId, mode: 'text-to-image', model: 'gpt-image-2.5-flare', prompt: '本地合成验证\n"原句"', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] };
+        state.payload = { localRequestId: randomUUID(), connectionVersionId: state.connection.connectionVersionId, mode: 'text-to-image', model: 'gpt-image-2', prompt: '本地合成验证\n"原句"', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] };
         const first = await post('/api/nova/tasks', state.payload); check('renderer creates durable task without a raw key in HTTP', first.status === 202); state.first = first.body.taskId;
         await until(async () => (await request('/api/nova/tasks/' + state.first)).body.status === 'submitting');
         check('dispatch boundary is durable before held POST finishes', backend.storage.events(state.first).some(event => event.type === 'dispatch_started'));

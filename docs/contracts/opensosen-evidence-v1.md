@@ -42,3 +42,17 @@ H02 历史原图顺序与字节摘要：1号PNG为 1,514,260 bytes / `07c8b97747
 mock 的 JSON 文生传输测试只证明 JSON 捕获可用。它不使文生协议变成已验证，也不证明未来生产适配器不会重试。生产无重复创建行为必须由 T02/T05 接入 mock 后，统计生产路径真实发出的 POST 再验收。
 
 远端 completed 夹具只代表可进入下载阶段；默认下载内容为任意测试字节，并不是可播放MP4。JSON伪MP4、断流、503等是下载故障支撑，T08还须接入真实媒体验证、原子落盘和本地完成逻辑。没有用 mock 成功填写61项产品已验收。
+
+## B1 补充调查与证据版本
+
+2026-10-23 的 B1 精准调查保留原 T01 条目、摘要和能力等级，向机器清单追加：
+
+| ID | 原始来源 | 可确认范围 |
+| --- | --- | --- |
+| H07 | 历史 H02 同目录 run.mjs | 成功任务使用 GET /v1/videos/{encodeURIComponent(taskId)}；配合 H02 查询正文确认端点，不猜 POST 查询 |
+| D02 | 当前桌面说明 v1.2 | v1.1 之后的迁移/下载说明；另存当前 SHA，不覆盖 D01 旧版本摘要 |
+| C01 | 历史 opensosen-media/server.mjs | 客户端候选图片 JSON 最小构造，以及已有任务 /content 下载实现；客户端代码单独不能证明精确 flare 文生/编辑或视频文生成功 |
+
+B1 对 1.5 已归档模式使用原服务 /videos/{id}/content 稳定候选交给 T08，不持久保存返回的 CDN/签名 URL；未执行新下载或新生成来升级证据。原文件 wire MIME 的历史观察仍为 application/octet-stream，离线传输测试的 image/png/jpeg 声明并不构成新的真实供应商 MIME 接受记录。
+
+flare 的 JSON/base64/URL 合成响应放在 backend/test/fixtures/b1，明确 synthetic_offline_only；只证明候选适配和安全分支。两个视频型号文生、flare 参考编辑及尺寸/质量仍未取得精确成功协议。实现边界见 [B1 接口](../b1-adapters-v1.md)，T15 仍须有效配置与明确费用/预算后进行受控真实验证。

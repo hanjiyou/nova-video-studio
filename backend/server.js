@@ -16,6 +16,8 @@ let connectionService = null;
 let taskService = null;
 const { createTaskService } = require('./tasks/service');
 const { createPluginAdapter } = require('./tasks/plugin-adapter');
+const { createFlareImageAdapter } = require('./tasks/flare-image-adapter');
+const workbenchInput = require('./tasks/workbench-input');
 const { createConnectionService } = require('./connections/service');
 const { createConnectionHttp } = require('./connections/http');
 const { createHostVault } = require('./connections/host');
@@ -1177,6 +1179,7 @@ function createDesktopImageTask(body, req) {
   const parameters=Object.fromEntries(['outputSize','customSize','aspectRatio','temperature','gptImageQuality','gptImageStyle','gptImageBackground','parallelCount'].filter(key=>body[key]!==undefined).map(key=>[key,body[key]]));
   const snapshot=desktopSnapshot(body,{mode:body.mode==='image-to-image'?'image.reference':'image.text',model:body.model,prompt:body.prompt,parameters,inputAssets,adapterId:'legacy-image',adapterVersion:'3.4.0'});
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
+  if (body.model==='gpt-image-2.5-flare') throw createHttpError(400,'WORKBENCH_INPUT_REQUIRED','flare任务需要独立工作台适配与能力版本。');
   for (const input of inputAssets) workbenchStore.readAsset(input.assetId);
   const auth=connectionService.getAuth(body.connectionVersionId), checked={...body,...auth};validateCreatePayload(checked);
   if (body.parallelCount!==1 || (body.mode==='image-to-image' && inputAssets.length===0) || (body.mode==='text-to-image' && inputAssets.length)) throw createHttpError(400,'INPUT_INVALID','桌面首版每个任务只支持一个生成占位，参考图必须与模式一致。');
@@ -1185,6 +1188,7 @@ function createDesktopImageTask(body, req) {
 }
 function createDesktopPluginTask(body, req) {
   guardDesktopTaskInput(body);
+  if (body.pluginId==='opensosen-video') throw createHttpError(400,'WORKBENCH_INPUT_REQUIRED','请使用带有能力版本和有序素材ID的工作台任务接口。');
   const plugin=pluginRegistry.getPlugin(body.pluginId);if(!plugin)throw createHttpError(404,'PLUGIN_NOT_FOUND','原插件未安装或加载失败。');
   const normalized=validateAndNormalizeInput(plugin,body);
   for (const field of plugin.uiSchema?.fields || plugin.schema?.fields || []) {if(['text','textarea'].includes(field.type) && Object.hasOwn(normalized.fields,field.key) && typeof body.fields?.[field.key]==='string') normalized.fields[field.key]=body.fields[field.key];}
@@ -1198,8 +1202,24 @@ function createDesktopPluginTask(body, req) {
   const taskId=taskService.enqueue({snapshot,mode:'plugin',request:{mode:'plugin',pluginId:plugin.id,pluginVersion:plugin.manifest.version,model:normalized.model,facets:normalized.facets,fields:normalized.fields,media:normalized.media}});
   return taskId; // enqueue stores the immutable input references in the same transaction
 }
+function createWorkbenchTask(body, req) {
+  if (!taskService) throw createHttpError(404,'NOT_FOUND','工作台任务需要桌面宿主。');
+  const plugin=pluginRegistry.getPlugin('opensosen-video');
+  const snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable');
+  const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
+  const auth=connectionService.getAuth(snapshot.connectionVersionId);
+  workbenchInput.validateInputs(snapshot,auth,workbenchStore);
+  workbenchInput.validateCapability(db,snapshot,auth);
+  if (snapshot.mode.startsWith('video.') && !plugin) throw createHttpError(400,'ADAPTER_UNAVAILABLE','视频适配器不可用。');
+  guardDesktopAdmission({...body,...auth},req);
+  return taskService.enqueue({snapshot,mode:snapshot.mode,request:{mode:snapshot.mode,model:snapshot.model,fields:{prompt:snapshot.prompt},
+    ...(snapshot.mode.startsWith('video.')?{pluginId:plugin.id,pluginVersion:plugin.manifest.version}:{})}});
+}
 function resolveDesktopTaskAdapter(task) {
-  if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=pluginRegistry.getPlugin(request.pluginId);return plugin?createPluginAdapter(plugin):null;}
+  const validateCapability=(snapshot,auth)=>workbenchInput.validateCapability(db,snapshot,auth);
+  if (task.adapter_id==='opensosen-flare-image') return createFlareImageAdapter({validateCapability});
+  if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=pluginRegistry.getPlugin(request.pluginId);return plugin?createPluginAdapter(plugin,
+    plugin.id==='opensosen-video'?{readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id),validateCapability}:{}):null;}
   if (task.adapter_id!=='legacy-image') return null;
   const requestFor=(snapshot,auth)=>({mode:snapshot.mode==='image.reference'?'image-to-image':'text-to-image',model:snapshot.model,prompt:snapshot.prompt,...snapshot.parameters,
     protocol:auth.protocol,baseUrl:normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl),images:snapshot.inputAssets.map(item=>{const {bytes,asset}=workbenchStore.readAsset(item.assetId);return {data:bytes.toString('base64'),mimeType:asset.mimeType};})});
@@ -3549,6 +3569,11 @@ async function handleApi(req, res, pathname, searchParams) {
         sendCdpError(res, error);
       }
       return true;
+    }
+
+    if (req.method === 'POST' && apiPathname === '/api/nova/workbench/tasks') {
+      const taskId=createWorkbenchTask(await readJsonBody(req),req);
+      sendJson(res,202,{taskId});return true;
     }
 
     if (req.method === 'POST' && apiPathname === '/api/nova/tasks') {

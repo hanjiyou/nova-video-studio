@@ -1,0 +1,14 @@
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.0.0（2 个模型）
+✓ ccode-h3@1.0.0 结构校验通过（8 个模型）
+    ✓ 01-standard-768p-text2video
+    ✓ 02-standard-4k-with-reference
+    ✓ 03-first-last-frame
+    ✓ 04-lite-with-images
+    ✓ 05-upstream-failed
+    ✓ 06-upstream-queued
+    ✓ 07-completed-without-url
+✓ opensosen-video@1.0.0 结构校验通过（2 个模型）
+    （没有 fixtures/，跳过契约用例）
+
+全部通过

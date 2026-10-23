@@ -11,7 +11,7 @@
 | credentialRef | 主进程受控凭据库内的 opaque 引用，既不是 Key，也不是可由 UI 任意解引用的文件路径 |
 | localRequestId | UI 在创建一个新任务意图前生成的 UUID；持久化本地唯一约束用于双击/重传去重。同 ID 同快照返回原任务，不同快照返回 LOCAL_REQUEST_CONFLICT；用户明确新建任务才换 ID |
 | localTaskId | 后端持久化生成的 UUID，是库、事件、输入/输出和诊断的主标识；不使用远端 ID 作为主键 |
-| upstreamTaskId | 上游创建后返回的 opaque 非空字符串，可以缺失；必须与 connectionVersionId 一起使用，不能拼接成任意 URL |
+| upstreamTaskId | 上游创建后返回的 opaque 非空字符串，可以缺失；必须可安全表示为单一路径段，纯 . / .. 不接受；必须与 connectionVersionId 一起使用，不能拼接成任意 URL |
 | assetId | 本地 UUID，只指向受管理素材/结果；UI 和插件提交资产引用，不能提交任意磁盘路径 |
 | capabilityVersionId | 每次任务快照引用的能力记录版本，作用域至少包括服务源、完整模型、模式、协议和参数组合 |
 

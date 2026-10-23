@@ -45,3 +45,7 @@ saveConnection接收connectionId?、expectedVersionId?、displayName?、baseUrl?
 能力记录绑定provider、精确baseUrl、完整型号、模式、协议、精确参数和evidenceVersion。仅https://newapi.opensosen.com/v1的1.5单图/双图记录为historically_verified，参数限定6秒、1280x720、multipart、有序重复input_reference和1/2个参考文件，证据H01/H02/H03/H06；applicationVerified仍false。其他服务源不继承这项历史证据。flare文生/编辑、两个视频型号的文生、普通型号参考图及其他组合仍为unverified；没有从mock或模型可见性声称真实生成通过。默认模型选择不代表该模式已经可生成。
 
 T04未调用真实供应商模型接口或付费生成，没有在本阶段验收完整生成、下载或设置UI。使用假Key和loopback进行真实传输；实际公共插件主机只通过fetch替身验证，无网络放宽。
+
+## B1 能力使用边界
+
+B1 新创建必须携带 capabilityVersionId，宿主核对其服务源、provider、精确模型、模式、协议和精确参数，不用模型可见性代替能力证据。当前仍只有原 OpenSosen 1.5 单/双参考保留 historically_verified，所有未验证记录不因离线/原生合成测试而升级。缺证据返回 CAPABILITY_UNVERIFIED，保留原产品需求供 T15 验证；不存在自动换型号或改绑新凭据。新接口见 [B1 适配契约](b1-adapters-v1.md)。

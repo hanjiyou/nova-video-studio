@@ -1,0 +1,41 @@
+✔ actual desktop B1 1 file request freezes original asset order/parameters, one dispatch and download queue only (601.2085ms)
+ℹ {"mode":"video.single_reference","files":1,"postCount":1,"getCount":1,"localState":"remote_completed","download":"waiting"}
+✔ actual desktop B1 2 file request freezes original asset order/parameters, one dispatch and download queue only (575.8147ms)
+ℹ {"mode":"video.dual_reference","files":2,"postCount":1,"getCount":1,"localState":"remote_completed","download":"waiting"}
+✔ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (194.103ms)
+✔ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (346.0065ms)
+✔ actual B1 disconnect becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (408.4185ms)
+✔ actual B1 stalled-body becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (655.1577ms)
+✔ actual B1 GET 401 retains ID, original credential and conservative occupied slot (454.5293ms)
+✔ actual B1 GET 403 retains ID, original credential and conservative occupied slot (454.0925ms)
+✔ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (452.7294ms)
+✔ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (450.8104ms)
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (378.2061ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 10
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5029.876
+
+✖ failing tests:
+
+test at backend\test\workbench-b1-http.test.js:132:1
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (378.2061ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  409 !== 400
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:138:79)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 409,
+    expected: 400,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

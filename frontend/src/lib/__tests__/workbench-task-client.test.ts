@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
 import { desktopTaskPayload } from '@/lib/connection-client';
-import { actOnWorkbenchTask, getWorkbenchTask, WorkbenchTaskActionError } from '@/lib/workbench-task-client';
+import { actOnWorkbenchTask, createWorkbenchTask, getWorkbenchTask, WorkbenchTaskActionError } from '@/lib/workbench-task-client';
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 it('keeps local intent and immutable connection across concurrent sends and a lost ACK', async () => {
   const connection = { connectionVersionId: 'version-A', hasCredential: true, credentialState: 'ready' };
@@ -44,4 +44,20 @@ it('read-only task GET preserves remote_completed and never triggers creation', 
 it('a read failure is classified without generating a replacement', async () => {
   const fetcher = vi.fn(async () => Response.json({ code: 'TASK_NOT_FOUND', error: '找不到任务' }, { status: 404 })); vi.stubGlobal('fetch', fetcher);
   await expect(getWorkbenchTask('missing')).rejects.toBeInstanceOf(WorkbenchTaskActionError); expect(fetcher).toHaveBeenCalledTimes(1);
+});
+
+it('canonical create sends one frozen intent with capability and ordered asset references, without reading current settings', async () => {
+  const input = { localRequestId: 'intent-A', connectionVersionId: 'connection-A', capabilityVersionId: 'capability-A', mode: 'video.dual_reference' as const, model: 'grok-imagine-video-1.5-6s', prompt: '  中文\n“完整台词”  ', parameters: { seconds: 6, size: '1280x720' }, inputAssets: [{ assetId: 'asset-B', position: 0, role: 'reference' as const }, { assetId: 'asset-A', position: 1, role: 'reference' as const }] };
+  const fetcher = vi.fn(async () => Response.json({ taskId: 'local-task' })); vi.stubGlobal('fetch', fetcher);
+  expect(await createWorkbenchTask(input)).toBe('local-task');
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  expect(fetcher).toHaveBeenCalledWith('/api/nova/workbench/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
+});
+it('canonical create preserves unverified capability rejection and never changes model or retries a lost POST', async () => {
+  const input = { localRequestId: 'intent-A', connectionVersionId: 'connection-A', capabilityVersionId: 'capability-A', mode: 'image.text' as const, model: 'gpt-image-2.5-flare', prompt: '中文', parameters: {}, inputAssets: [] };
+  const fetcher = vi.fn(async () => Response.json({ code: 'CAPABILITY_UNVERIFIED', error: '待受控验证' }, { status: 400 })); vi.stubGlobal('fetch', fetcher);
+  await expect(createWorkbenchTask(input)).rejects.toMatchObject({ code: 'CAPABILITY_UNVERIFIED', statusCode: 400 });
+  expect(fetcher).toHaveBeenCalledTimes(1);
+  fetcher.mockRejectedValueOnce(new TypeError('lost ACK'));
+  await expect(createWorkbenchTask(input)).rejects.toThrow('lost ACK'); expect(fetcher).toHaveBeenCalledTimes(2);
 });

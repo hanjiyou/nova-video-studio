@@ -59,3 +59,23 @@ export async function actOnWorkbenchTask(taskId: string, action: WorkbenchTaskAc
   if (!response.ok) throw new WorkbenchTaskActionError(result.code || 'TASK_ACTION_FAILED', result.error || '任务操作失败。', response.status, result.notBeforeAt);
   return result.task as WorkbenchTaskResponse;
 }
+
+/** Canonical B1 input. The caller persists this intent before sending; failed POSTs are never retried here. */
+export interface WorkbenchTaskInput {
+  localRequestId: string;
+  connectionVersionId: string;
+  capabilityVersionId: string;
+  mode: 'image.text' | 'image.reference' | 'video.text' | 'video.single_reference' | 'video.dual_reference';
+  model: string;
+  prompt: string;
+  parameters: Record<string, string | number | boolean>;
+  inputAssets: Array<{ assetId: string; role: 'reference'; position: number }>;
+  outputDirectoryVersionId?: string;
+  outputRootRef?: string;
+}
+export async function createWorkbenchTask(input: WorkbenchTaskInput): Promise<string> {
+  const response = await fetch('/api/nova/workbench/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
+  const result = await response.json();
+  if (!response.ok) throw new WorkbenchTaskActionError(result.code || 'TASK_CREATE_FAILED', result.error || '创建任务失败。', response.status);
+  return result.taskId as string;
+}

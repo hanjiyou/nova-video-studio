@@ -1,0 +1,56 @@
+{
+  "startedAt": "2026-10-23T12:21:56.517Z",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\release-b1\\win-unpacked\\Nova Image Studio.exe",
+  "mode": "override",
+  "providerRequests": "read-only loopback GET /v1/models only; no external provider requests",
+  "checks": {
+    "expected storage mode": true,
+    "desktop defaults disabled": true,
+    "main renderer HTTP authorized": true,
+    "unauthenticated API rejected": true,
+    "main renderer WS authorized": true,
+    "desktop PWA not registered": true,
+    "Node globals unavailable": true,
+    "packaged managed asset import": true,
+    "packaged persistent draft": true,
+    "packaged managed asset bytes match digest": true,
+    "packaged OS-encrypted connection save": true,
+    "packaged IPC summary has no credential": true,
+    "packaged read-only model check": true,
+    "packaged visibility does not upgrade capabilities": true,
+    "packaged database contains ciphertext only": true,
+    "packaged actual IPC clears credentials": true,
+    "explicit data policy honored": true,
+    "clean desktop exit": true
+  },
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "storageAssetId": "63e05736-3f51-4c87-b206-c154603c6b2d",
+  "connectionChecks": [
+    {
+      "method": "GET",
+      "path": "/v1/models",
+      "authorized": true
+    }
+  ],
+  "dataDirectory": "E:\\Learn\\AI\\nova-image-studio\\temp\\b1-packaged-final\\data",
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "databaseQuickCheck": [
+    {
+      "quick_check": "ok"
+    }
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-23T12:22:02.742Z"
+}

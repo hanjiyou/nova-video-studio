@@ -1,0 +1,66 @@
+{
+  "batch": "T16 independent local offline installation preparation",
+  "reviewer": "parent_session",
+  "recordedAt": "2026-10-23T18:00:44.864Z",
+  "status": "accepted_partial_offline_preparation_commit_push_authorized",
+  "authorizationSource": "Direct parent-session instruction explicitly accepts the independent T16 local-offline preparation scope and authorizes recording this review, staging only this batch manifest, committing and a normal push to origin/dev.",
+  "acceptedScope": "Existing preparation results only; not final T16 acceptance, M5, real generation or public distribution.",
+  "authorizedActions": [
+    "record review and existing gates",
+    "stage only batch source/doc/evidence files listed in change-manifest",
+    "commit this T16 preparation batch",
+    "normal push origin/dev",
+    "query actual remote SHA, HEAD, tracking and worktree status"
+  ],
+  "independentParentChecks": {
+    "ledger": {
+      "requirementIdentitiesUnchanged": 61,
+      "taskIdsPreserved": 17,
+      "dispositions": {
+        "offline_passed": 39,
+        "real_service_pending": 16,
+        "release_pending": 6
+      },
+      "status": "passed"
+    },
+    "backendWorkbenchContracts": {
+      "passed": 5,
+      "total": 5,
+      "failed": 0
+    },
+    "frontendB3AndB5": {
+      "passed": 16,
+      "total": 16,
+      "failed": 0
+    },
+    "installerSha256": {
+      "expected": "68fea9929c93d09b66df528e29eb9c357d7f69360a9db655bdea4a72151b81dd",
+      "matched": true
+    }
+  },
+  "checkProvenance": "These independent checks are reported directly by the parent reviewer. The implementation agent does not relabel its native/payload tests as independent parent checks or claim their raw logs were saved here.",
+  "retainedGates": [
+    "T15 remains paused at the user request; no real Key, real provider checks or paid generation is authorized.",
+    "Final T16 acceptance and M5 remain false; 61 original requirements and the 39/16/6 disposition remain.",
+    "Restricted standard token only demonstrated file installation exit 0, no uninstall registration observed; both Nova and stock Electron baseline failed with 0xc0000135 and the exact dynamic module remains unknown.",
+    "Administrator current-user installation and a scrubbed PATH do not prove ordinary-user full operation or an independent machine without development tools.",
+    "The six original manual/system interactions remain pending, including title-bar dragging, SaveDialog/overwrite/cancel and Explorer selection.",
+    "Historical NSIS 0xc0000409 / fast-fail 0x23 lacks a retained dump/call stack; repeated successes and module loading do not establish cause or repair.",
+    "33 upstream source archives remain partial: exact transitive revisions, patches and Gyan build/link/toolchain materials and compliant GPL corresponding-source delivery are not complete.",
+    "Only same-version overwrite was tested; future cross-version/schema migration requires separate verification.",
+    "The installer is unsigned and retains default Electron branding/resource metadata; formal delivery is not approved.",
+    "Full tsc retains the existing 60 test diagnostics and full-directory lint retains existing issues; targeted successes do not override those baselines.",
+    "Do not read/delete the protected Administrator APPDATA/nova-image profile, probe/import old exe/data/browser information or change system security settings."
+  ],
+  "prohibitedActions": [
+    "expand implementation scope in this handoff",
+    "real provider checks or paid tests",
+    "publish/upload installer or create release",
+    "main merge or main push",
+    "force push",
+    "delete protected APPDATA"
+  ],
+  "deliveryReceipt": "temp/t16-git-delivery.json (local ignored receipt written after Git delivery)",
+  "deliveryWhitespaceObservation": "git-whitespace-observation.json",
+  "implementationFrozenDuringGitHandoff": true
+}

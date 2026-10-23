@@ -1,3 +1,5 @@
+Local customization status (2026-10-24): **local offline test build; real generation is not yet verified**. See the [Chinese user guide](docs/本地离线测试版使用说明.md) and [T16 evidence report](docs/implementation/T16-本地离线安装交付准备.md). T15 is paused; this installer is not for public distribution.
+
 # Nova Studio
 
 <div align="center">

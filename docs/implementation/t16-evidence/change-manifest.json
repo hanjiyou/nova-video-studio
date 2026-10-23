@@ -1,0 +1,704 @@
+{
+  "baselineCommit": "68b6ff7807edd66358c8c696178c248ece191681",
+  "branch": "dev",
+  "status": "accepted_partial_offline_preparation_commit_push_authorized",
+  "trackedModified": 12,
+  "untrackedNew": 88,
+  "totalChangedIncludingThisManifest": 100,
+  "files": [
+    {
+      "file": "README.md",
+      "status": "modified",
+      "bytes": 34700,
+      "sha256": "109533e069ef959e7e9d7e507d6fbe2a8a8da07cad37e6e858a5e3aada8a71c9",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "README.zh-CN.md",
+      "status": "modified",
+      "bytes": 30605,
+      "sha256": "856434eca24cdd7d4ddb533f5b2fc93781df66fe4f08b20948d64be2ade8b7b4",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "desktop/installer/LOCAL-TEST-NOTICE.txt",
+      "status": "new",
+      "bytes": 2010,
+      "sha256": "7c29356611f4b338185913c9eafb7636f0d0eb776e78b1b62811662635b1ce36",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/installer/data-retention.nsh",
+      "status": "new",
+      "bytes": 314,
+      "sha256": "bab3bb02e8c71f968001f49696fb14518872df2edef704976fa9a6aef85a2a3e",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/main.cjs",
+      "status": "modified",
+      "bytes": 6665,
+      "sha256": "b7c9c3ac0778bde5cb3c847be37a6370818cf00a736470b6d159e81adfb6a5b7",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/third-party/FFmpeg-NOTICE.md",
+      "status": "modified",
+      "bytes": 2595,
+      "sha256": "0604fcc11cc8ddf94fa85883b23a7fef9f3b4c0d4500713f362496797e74708c",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/third-party/FFmpeg-SOURCE-STATUS.json",
+      "status": "new",
+      "bytes": 13981,
+      "sha256": "e73dd6d72294f82a2f5b4781bf5624c476b60f82d48942ea7710e6c392a53bf1",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/third-party/THIRD-PARTY-NOTICES.md",
+      "status": "new",
+      "bytes": 1275,
+      "sha256": "c74a2bb86eac7c3f0c732f3ef830f5c80913a0ff9214aca022f753b559baf1be",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "desktop/third-party/dependency-license-inventory.json",
+      "status": "new",
+      "bytes": 6796,
+      "sha256": "24918fc58b261876fddd07b398f1b5dfa91330134eae1f925a0bc367ef8d6e06",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "docs/Nova-Studio改造分析与实施拆解.md",
+      "status": "modified",
+      "bytes": 26303,
+      "sha256": "2ccc4467821d7287f2458a13eb2720a9202b8eae48c92d8f5319f54913b0688b",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "status": "modified",
+      "bytes": 27904,
+      "sha256": "43b71545f791d6259be282056ba570b7bbf142eb0f74e7a194de1675c6bb6306",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/acceptance/T15-真实线路验收前置清单.md",
+      "status": "modified",
+      "bytes": 3070,
+      "sha256": "2030f2e0d16e367cfdc19f0961d9380c34e6fcc07ce50c2d246c64c1af7b18ed",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "status": "modified",
+      "bytes": 214563,
+      "sha256": "07827c5f84168ab94d40e2af94fd682e67a9cfaa9b3569dd6d83be52730d08f5",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "status": "modified",
+      "bytes": 15488,
+      "sha256": "a0b25373e9af948b16227b4a09139ba8c29644a03b61bc8a9d6bcc4187f94cee",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/implementation/T16-本地离线安装交付准备.md",
+      "status": "new",
+      "bytes": 13600,
+      "sha256": "6c15c5f245be78d2e5bc7989a199525f0b0e4d5c9c50b6ebd566f4a5d3f9ae62",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/admin-install.json",
+      "status": "new",
+      "bytes": 454,
+      "sha256": "c06c2a53c4529d072ca8f41bd99670d57294cd52d981548f097124583411051f",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-reinstall-evidence.json",
+      "status": "new",
+      "bytes": 6305,
+      "sha256": "026b7c02f30b6a526b76114d46e1c8c354079248473efcc744b757d7d2ca0f08",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-reinstall-stderr.log",
+      "status": "new",
+      "bytes": 1370,
+      "sha256": "ebf634e5c1986883f22d9273f372d1456093f5888bef9f0395e9469b1fafdf11",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-reinstall-stdout.log",
+      "status": "new",
+      "bytes": 2208,
+      "sha256": "df54ed05bd0acbcbb00767b9146315b4a0f84d1d42a2bf08c1245f79fe2abc59",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-upgrade-evidence.json",
+      "status": "new",
+      "bytes": 6119,
+      "sha256": "149035af3c5409e61e8bfc21691ee162cc705ba35359120fa80506495fbc6980",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-upgrade-stderr.log",
+      "status": "new",
+      "bytes": 548,
+      "sha256": "e0e7c73c7174e97180193fee1387431249102a065024debba213cda7b7ba278d",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/after-upgrade-stdout.log",
+      "status": "new",
+      "bytes": 948,
+      "sha256": "4979dc2ead0f45b0148e7f304e91b833881e5898e286a8ecfdc02c83e4e1bc48",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/approval-review.json",
+      "status": "new",
+      "bytes": 3891,
+      "sha256": "f48743cd9f4f0aa40c884518f519ccd6f2556314103c97cea6e7e054dc01255c",
+      "scope": "review_record"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/artifact-manifest.json",
+      "status": "new",
+      "bytes": 2213,
+      "sha256": "d7bc9fe9f316fef1249e2274a45d837a54d9a063409add6bca2aed34349be501",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/baseline-inherited-path-result.json",
+      "status": "new",
+      "bytes": 121,
+      "sha256": "fcf07a0ebed5322b15b0a8c7b35601deb3eed7536af7adb79239444222341cab",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/baseline-inherited-path-stderr.log",
+      "status": "new",
+      "bytes": 637,
+      "sha256": "cfba5c22327168f6f6f840ed053b6d0ac776c75aceecfab777ed905ed5d50c31",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/baseline-scrubbed-path-result.json",
+      "status": "new",
+      "bytes": 121,
+      "sha256": "fcf07a0ebed5322b15b0a8c7b35601deb3eed7536af7adb79239444222341cab",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/baseline-scrubbed-path-stderr.log",
+      "status": "new",
+      "bytes": 506,
+      "sha256": "cc2593dd5641ec1a36c552e55c807c0a0cb9fe8ae445158962d8c74ec6d4ac13",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/build.log",
+      "status": "new",
+      "bytes": 987,
+      "sha256": "a283bf50cdb65f455e9d01f2b579d9ca3ac8e3927dba341bc179db26fd7ababe",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/command-results.json",
+      "status": "new",
+      "bytes": 4266,
+      "sha256": "fd74c38a02f936cd89c7bc3cc472aac137dc76efcc00c26b1b7bcafcbd785feb",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/contracts.log",
+      "status": "new",
+      "bytes": 640,
+      "sha256": "03e197157f17645e62d247777baeef916e25f753fa4738f32b44f45928aa73c2",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/electron-baseline-comparison.json",
+      "status": "new",
+      "bytes": 687,
+      "sha256": "7840c1a914242717b71129812f992f6e7bb2428d391c9e676f69abf3275d9bfb",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/ffmpeg-buildconf.txt",
+      "status": "new",
+      "bytes": 1277,
+      "sha256": "1dc8510d6d174013c7ca4bf0b750ba0ef259199247c762dd341848ede89af950",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/ffmpeg-source-assessment.json",
+      "status": "new",
+      "bytes": 13981,
+      "sha256": "e73dd6d72294f82a2f5b4781bf5624c476b60f82d48942ea7710e6c392a53bf1",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/final-checks.json",
+      "status": "new",
+      "bytes": 1831,
+      "sha256": "35bb9986e940dd707759a9f0b8e127f916e6e2284fde33bcb45a6d78b3587296",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/first-evidence.json",
+      "status": "new",
+      "bytes": 5538,
+      "sha256": "d28a84f63340b76025f6defd773e45f9131c6bce95fb72debdb403083fffd205",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/first-stderr.log",
+      "status": "new",
+      "bytes": 274,
+      "sha256": "e55886accf88b25a9c7f7b70700e8e82bb742ee46725731f6e0e7fc120b2a5f0",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/first-stdout.log",
+      "status": "new",
+      "bytes": 474,
+      "sha256": "60006e9df4cf0dc2fee5a82572387ce48023178b274ba282a61d8396e96cd7ef",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/frontend.log",
+      "status": "new",
+      "bytes": 547,
+      "sha256": "fdb99263d5ff0274ad65e43216cc37d35c210d4eceb0df365d3f139f9e651830",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/frontendLint.log",
+      "status": "new",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/git-whitespace-observation.json",
+      "status": "new",
+      "bytes": 1496,
+      "sha256": "824570d6d8e7932069521595cbc091b68c868f3b90a2d2ae2662f0235799722e",
+      "scope": "review_record"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/host-lint-initial-unused-import.log",
+      "status": "new",
+      "bytes": 186,
+      "sha256": "b8b119ea6891258ad69758c9c79dab80d1f62f587c3b01c2f665dd7b93c8134f",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/host-lint.log",
+      "status": "new",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/hostLint.log",
+      "status": "new",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/initial-diagnostic-harness-timeout.json",
+      "status": "new",
+      "bytes": 5481,
+      "sha256": "230a5887094d9a23587c1788acf9695e153720c8dfc0ee480633c082d9b27113",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/initial-fixture-duration-assertion.json",
+      "status": "new",
+      "bytes": 5322,
+      "sha256": "066391d93e4eb86ad7bc56d58fd5020f90c25b26c9498d2b6c655ffcc6ad59fb",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/initial-observations.json",
+      "status": "new",
+      "bytes": 3702,
+      "sha256": "c82eda4a09019f0d38dfacde0b8a096fd3cfa0c92ac4751f81e5ce1e3d5cf432",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/install-final.json",
+      "status": "new",
+      "bytes": 366,
+      "sha256": "79c176394f2a698757a25576c02bb8d0c330a92848a9b48b088c5a2f62ee2590",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/install-pilot.json",
+      "status": "new",
+      "bytes": 2757,
+      "sha256": "e2b9b76d7b0090b17ce600f986ddf6b9b32e291a59692c2f2bb1d84f744f56f8",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/installed-diagnostic-collector.json",
+      "status": "new",
+      "bytes": 6801,
+      "sha256": "fa13bc5bb126cb36bf6cbd286216325b2c3de5e58cc5241bbfa798386481588b",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/installed-settings.png",
+      "status": "new",
+      "bytes": 68745,
+      "sha256": "d3f9ce3048fafe192002fba37cfabaad0d6e32988f5affde094a4395ca62f73e",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/installer-direct-owner.json",
+      "status": "new",
+      "bytes": 298,
+      "sha256": "7a9ff25d13fd4382403aedc5be26dd29c27bc2f07ecdb4e00814cd433c777363",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/ledger-initial-line-endings.log",
+      "status": "new",
+      "bytes": 847,
+      "sha256": "f76f5935e3dade229516d10b83c4f229714b0bb5bdd4f1ecaf032df371f74848",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/ledger.log",
+      "status": "new",
+      "bytes": 316,
+      "sha256": "f54b88244e0362310bba5f8faafda55a2246322fce546106e893dce7ae68648c",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/native-window-initial-unsupported-cdp.json",
+      "status": "new",
+      "bytes": 3621,
+      "sha256": "61320feb478079cad1ba79ecf385b67ce1162bae06b2442935a5f25575e9064a",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/native-window-script-policy-failure.json",
+      "status": "new",
+      "bytes": 3707,
+      "sha256": "9b66ac7ebee03671220d2d92f2712718c5aee98c490828fdaa9ddc6056a0fbfd",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/new-installer-events.json",
+      "status": "new",
+      "bytes": 227,
+      "sha256": "d6853db70f7f86ea9c5f3dd923ce0ea91c45c4e30b57b1c01b7b228fb20f7247",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/nsis-crash-investigation.json",
+      "status": "new",
+      "bytes": 3967,
+      "sha256": "52ec3042a1492ee8dfe825b1a99bf474f056afea9aee99c356517fbc6eaa1895",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/package-audit-initial-resource-location.json",
+      "status": "new",
+      "bytes": 1553,
+      "sha256": "26e50f167c414c3d11fb0d90cc1cbcd5811c96500eb495d56f7a4395dcdbb3c8",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/package-audit.json",
+      "status": "new",
+      "bytes": 2326,
+      "sha256": "969c1610d8256f4d476a8c84ab33aa06ba5906c187d36515d53dc146e5382113",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/package-before-final-wording.log",
+      "status": "new",
+      "bytes": 1798,
+      "sha256": "877faa06e717d1ce1d71b2fb2f0e089a0dbda35d57673403257c2723d9dd10dd",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/package-initial-before-final-notices.log",
+      "status": "new",
+      "bytes": 1798,
+      "sha256": "877faa06e717d1ce1d71b2fb2f0e089a0dbda35d57673403257c2723d9dd10dd",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/package.log",
+      "status": "new",
+      "bytes": 1798,
+      "sha256": "877faa06e717d1ce1d71b2fb2f0e089a0dbda35d57673403257c2723d9dd10dd",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/payload-stderr.log",
+      "status": "new",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/payload-stdout.log",
+      "status": "new",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/powershell-syntax.json",
+      "status": "new",
+      "bytes": 211,
+      "sha256": "7160515a5f5296e54b4485ae126093270161e6f977fd8e3b4fb3fce96c3d9bbe",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/priorLedger.log",
+      "status": "new",
+      "bytes": 203,
+      "sha256": "044280f7807640f67a2be32e706f4d5e8113201bd914e20bdf73acfc0396e9d6",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/reinstall-before-final-notices.json",
+      "status": "new",
+      "bytes": 652,
+      "sha256": "a664852bdc37f5c3fedd0f6f144bba15fcafee32c2face6639acf7ea8f069aff",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/reinstall-record.json",
+      "status": "new",
+      "bytes": 652,
+      "sha256": "52e85758dbcf87f6e162b9ee0427839e9defd7a879b495b15c52209d23076ba5",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restart-evidence.json",
+      "status": "new",
+      "bytes": 6180,
+      "sha256": "347c581091111a433337063e2de5c244940196a94c9f0102bc38d0ffb6c331a7",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restart-stderr.log",
+      "status": "new",
+      "bytes": 274,
+      "sha256": "c17d3417c417354fd3262d9ca05ae6c917fa1af1b7e33fa648890756594a318d",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restart-stdout.log",
+      "status": "new",
+      "bytes": 474,
+      "sha256": "0dbee4e3206bc5b9a4cadcab5c057d31cb7cea71bbf36b83cc06cf44532e69af",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restricted-installed-failure.json",
+      "status": "new",
+      "bytes": 3196,
+      "sha256": "cb01669a7e416b3d65a465f7d3bd9e2252d05e274c849909965df84e3b1a8577",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restricted-installed-stderr.log",
+      "status": "new",
+      "bytes": 1296,
+      "sha256": "8885c9346dd5d3adfa3465d18aaa480bc055a72e4a63fe425100bd2b5cd89ec1",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restricted-unpacked-failure.json",
+      "status": "new",
+      "bytes": 3109,
+      "sha256": "06d6f3aa4300ff9391205fab973d30d2d576a2a8d2aa6826513a2b82aec6787e",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/restricted-unpacked-stderr.log",
+      "status": "new",
+      "bytes": 1296,
+      "sha256": "64fe9d0e88e50e61c06021c567245278f490ed39be168990ae86da79fda5fb9f",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/source-materials.json",
+      "status": "new",
+      "bytes": 41546,
+      "sha256": "9318f9c211496f981a69696934f66a859959504e5a369368bf5b41742404d612",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/source-snapshot-verification.json",
+      "status": "new",
+      "bytes": 221,
+      "sha256": "bc6cd96156556a7785d6e0f5949f40a6acaacf2bb2e96877181f1fea8c5223fb",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/source-snapshot.json",
+      "status": "new",
+      "bytes": 335,
+      "sha256": "77844991a555a17efdd7ee9465611aae7173a13f1d93e33b663b24eaa9921d20",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/static-dependency-observation.json",
+      "status": "new",
+      "bytes": 11914,
+      "sha256": "e5f528967c77c66231e564304915549f309f8188626f6c2c843dcf564998a427",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/summary.json",
+      "status": "new",
+      "bytes": 2019,
+      "sha256": "e04223db4286db75595d8e88bc4efd0d7c660e327c846ea1c00cc86e46737578",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/uninstall-before-final-notices.json",
+      "status": "new",
+      "bytes": 653,
+      "sha256": "6dad4b0cc28a789f27b1de0dd1f4bc48414b7d0415a15abf8908ed618ae77f41",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/uninstall-record.json",
+      "status": "new",
+      "bytes": 653,
+      "sha256": "926767b5f5e1b4912d789c85316af1a1c5dd167397145f5698c826b02590a197",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/upgrade-before-final-notices.json",
+      "status": "new",
+      "bytes": 650,
+      "sha256": "37671cce1dac72f8561c7692841139e0e9c921ef1be57b78b8342806ace8c4cd",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/upgrade-record.json",
+      "status": "new",
+      "bytes": 650,
+      "sha256": "3bb06849c924281e99b275b7affec07ef6a4de6cf20d503e0a1832a584cd1a2e",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/implementation/t16-evidence/x264-runtime-revision.json",
+      "status": "new",
+      "bytes": 229,
+      "sha256": "35f6eafa6a10c72408d454d40914b84323c6c8a88d2167d85565c3f89b49d9c7",
+      "scope": "evidence"
+    },
+    {
+      "file": "docs/本地离线测试版使用说明.md",
+      "status": "new",
+      "bytes": 6212,
+      "sha256": "334f2d86c1270acf84a550b014f4e616e74224fff853f5066e65969c7abc2f0c",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "docs/视频工作台功能规划-拆解-方案.md",
+      "status": "modified",
+      "bytes": 53380,
+      "sha256": "7b8142e406c3d7d5d3be647e37c92aec41733124c6fbeed8514d1cd6c785200b",
+      "scope": "documentation_and_ledger"
+    },
+    {
+      "file": "electron-builder.offline.yml",
+      "status": "new",
+      "bytes": 498,
+      "sha256": "c9b999eda75d1b53b8edac59104ddac50d6446ffa06e7de98c48328f82925f21",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "electron-builder.yml",
+      "status": "modified",
+      "bytes": 2690,
+      "sha256": "46d264d9b5edc39de607f78f4bab588635f4b9dced8f040057dc254a0da32aed",
+      "scope": "desktop_packaging"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "status": "modified",
+      "bytes": 20035,
+      "sha256": "3b21436fefa1fe033fb7f09f1852b757298a9d3d8d9f2cb4e6118d69a8c5270d",
+      "scope": "visible_offline_notice"
+    },
+    {
+      "file": "scripts/collect-t16-source-materials.ps1",
+      "status": "new",
+      "bytes": 5305,
+      "sha256": "f0d35739da8b1d770d15448823b4c98e15ea6391cea3d499f731085b36826426",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/electron-t16-baseline-entry.cjs",
+      "status": "new",
+      "bytes": 859,
+      "sha256": "68ac7349fb4ca913952f898f73036c275f891e2a21d3c77584c28b7087c7d6aa",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/run-t16-checks.cjs",
+      "status": "new",
+      "bytes": 1682,
+      "sha256": "249c000b7453a84be9142ef2d09a834064576e24d2875c7941b5de9c0399ecd7",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/t16-payload-entry.cjs",
+      "status": "new",
+      "bytes": 1339,
+      "sha256": "e3783aefd55d8b730cd0d6e30af44876a007e4a42c880c49fd19b15ec7febae2",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/test-t16-installer.ps1",
+      "status": "new",
+      "bytes": 3894,
+      "sha256": "69500f7c2e0479b77691419e22d5f657052488c5f1a10edcf93bf26291826a79",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/verify-desktop-t16.cjs",
+      "status": "new",
+      "bytes": 13221,
+      "sha256": "8557448fc4fbc5f633b4a64a7c854860766b7281519b902edd481d5a47f72a57",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/verify-t16-acceptance.cjs",
+      "status": "new",
+      "bytes": 2429,
+      "sha256": "0c6ee6ac5686d8320825d5fd9914ce9e9b4c4d045b98a3bc598d19202412708f",
+      "scope": "acceptance_and_material_collection"
+    },
+    {
+      "file": "scripts/verify-t16-package.cjs",
+      "status": "new",
+      "bytes": 4424,
+      "sha256": "40b9e1d4767bb4d567cd76b85e2172afefc461e7fa6007fb36f303e5d2c3a2d4",
+      "scope": "acceptance_and_material_collection"
+    }
+  ],
+  "parentReview": "docs/implementation/t16-evidence/approval-review.json"
+}

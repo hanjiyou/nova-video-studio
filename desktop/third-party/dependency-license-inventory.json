@@ -1,0 +1,304 @@
+{
+  "scope": "npm ls --omit=dev; metadata and notice files; optional absent modules are identified; no legal completion claim",
+  "packages": [
+    {
+      "name": "better-sqlite3",
+      "version": "13.0.3",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/WiseLibs/better-sqlite3.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "node-addon-api",
+      "version": "8.9.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/nodejs/node-addon-api.git"
+      },
+      "noticeFiles": [
+        "LICENSE.md"
+      ]
+    },
+    {
+      "name": "ffmpeg-static",
+      "version": "5.3.0",
+      "installed": true,
+      "license": "GPL-3.0-or-later",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/eugeneware/ffmpeg-static"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@derhuerst/http-basic",
+      "version": "8.2.4",
+      "installed": true,
+      "license": "MIT",
+      "repository": "https://github.com/derhuerst/http-basic.git",
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "caseless",
+      "version": "0.12.0",
+      "installed": true,
+      "license": "Apache-2.0",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/mikeal/caseless"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "concat-stream",
+      "version": "2.0.0",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "http://github.com/maxogden/concat-stream.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "buffer-from",
+      "version": "1.1.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": "LinusU/buffer-from",
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "inherits",
+      "version": "2.0.4",
+      "installed": true,
+      "license": "ISC",
+      "repository": "git://github.com/isaacs/inherits",
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "readable-stream",
+      "version": "3.6.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/nodejs/readable-stream"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "string_decoder",
+      "version": "1.1.1",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/nodejs/string_decoder.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "safe-buffer",
+      "version": "5.1.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/feross/safe-buffer.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "util-deprecate",
+      "version": "1.0.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/TooTallNate/util-deprecate.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "typedarray",
+      "version": "0.0.6",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/substack/typedarray.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "http-response-object",
+      "version": "3.0.2",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/ForbesLindesay/http-response-object.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "@types/node",
+      "version": "10.17.60",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+        "directory": "types/node"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "parse-cache-control",
+      "version": "1.0.1",
+      "installed": true,
+      "license": null,
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/roryf/parse-cache-control.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "env-paths",
+      "version": "2.2.1",
+      "installed": true,
+      "license": "MIT",
+      "repository": "sindresorhus/env-paths",
+      "noticeFiles": [
+        "license"
+      ]
+    },
+    {
+      "name": "https-proxy-agent",
+      "version": "5.0.1",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/TooTallNate/node-https-proxy-agent.git"
+      },
+      "noticeFiles": []
+    },
+    {
+      "name": "agent-base",
+      "version": "7.1.4",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "https://github.com/TooTallNate/proxy-agents.git",
+        "directory": "packages/agent-base"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "debug",
+      "version": "4.4.3",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/debug-js/debug.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "progress",
+      "version": "2.0.3",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git://github.com/visionmedia/node-progress"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "undici",
+      "version": "8.10.0",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nodejs/undici.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "ws",
+      "version": "8.21.3",
+      "installed": true,
+      "license": "MIT",
+      "repository": {
+        "type": "git",
+        "url": "git+https://github.com/websockets/ws.git"
+      },
+      "noticeFiles": [
+        "LICENSE"
+      ]
+    },
+    {
+      "name": "bufferutil",
+      "installed": false,
+      "optional": false,
+      "reason": "optional tree entry has no installed package"
+    },
+    {
+      "name": "utf-8-validate",
+      "installed": false,
+      "optional": false,
+      "reason": "optional tree entry has no installed package"
+    }
+  ]
+}

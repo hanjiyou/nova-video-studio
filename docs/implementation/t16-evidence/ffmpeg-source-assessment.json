@@ -1,0 +1,433 @@
+{
+  "binarySha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00",
+  "license": "GPL-3.0-or-later",
+  "completeCorrespondingSource": false,
+  "publicDistributionAllowed": false,
+  "collectedArchives": [
+    {
+      "name": "FFmpeg",
+      "revision": "e38092ef93",
+      "sha256": "9a8c6f3f87d7e1550dfafd2adc8d8265d021f594e46c71da2ed3123b4763e571",
+      "bytes": 15101626,
+      "archiveRoot": "FFmpeg-e38092ef93/",
+      "url": "https://codeload.github.com/FFmpeg/FFmpeg/tar.gz/e38092ef93"
+    },
+    {
+      "name": "ffmpeg-static",
+      "revision": "b6.1.1",
+      "sha256": "e6a25706d5128cf9ed05472f28ddb2f17e465116aaa33c4514a11549178635cd",
+      "bytes": 38870,
+      "archiveRoot": "ffmpeg-static-b6.1.1/",
+      "url": "https://codeload.github.com/eugeneware/ffmpeg-static/tar.gz/b6.1.1"
+    },
+    {
+      "name": "x265",
+      "revision": "ce8642f22",
+      "sha256": "cfb7c21eb69dccd26daf03e16398bd12bb7cb53150bcc77b4037fa310ceab0c7",
+      "bytes": 1654534,
+      "archiveRoot": "x265-ce8642f22/",
+      "url": "https://codeload.github.com/videolan/x265/tar.gz/ce8642f22"
+    },
+    {
+      "name": "libass",
+      "revision": "c047dd2",
+      "sha256": "41d0356e1cbfeb0b57598c0bdec7e465edce896cc632671d002bb48270d212a6",
+      "bytes": 315120,
+      "archiveRoot": "libass-c047dd2/",
+      "url": "https://codeload.github.com/libass/libass/tar.gz/c047dd2"
+    },
+    {
+      "name": "harfbuzz",
+      "revision": "d455066ad",
+      "sha256": "0075732b39fdc53356800856b0b77a09b51d59cf80af521e103984c87fcc2747",
+      "bytes": 36014419,
+      "archiveRoot": "harfbuzz-d455066ad/",
+      "url": "https://codeload.github.com/harfbuzz/harfbuzz/tar.gz/d455066ad"
+    },
+    {
+      "name": "fribidi",
+      "revision": "5b9a242",
+      "sha256": "5867605a3a1c9357aa82011db409abd63a64199adbcf6013eba445c24519e190",
+      "bytes": 2110428,
+      "archiveRoot": "fribidi-5b9a242/",
+      "url": "https://codeload.github.com/fribidi/fribidi/tar.gz/5b9a242"
+    },
+    {
+      "name": "libwebp",
+      "revision": "e78e924f",
+      "sha256": "9cb1a7c54e1c9ab5c92d5b3c7297d80594f84b0fe05875b64e0e065174147124",
+      "bytes": 3798664,
+      "archiveRoot": "libwebp-e78e924f/",
+      "url": "https://codeload.github.com/webmproject/libwebp/tar.gz/e78e924f"
+    },
+    {
+      "name": "opus",
+      "revision": "c8549975",
+      "sha256": "e1913df918453644ccbe4f3d42e3b8f46de97ff2f7c2f5e95b5853196d1727dc",
+      "bytes": 855071,
+      "archiveRoot": "opus-c8549975/",
+      "url": "https://codeload.github.com/xiph/opus/tar.gz/c8549975"
+    },
+    {
+      "name": "vorbis",
+      "revision": "84c02369",
+      "sha256": "d3dc2b02893a79a6e8db97eeb96269b12390d793799f893dfc013676d7e711af",
+      "bytes": 1235747,
+      "archiveRoot": "vorbis-84c02369/",
+      "url": "https://codeload.github.com/xiph/vorbis/tar.gz/84c02369"
+    },
+    {
+      "name": "SDL",
+      "revision": "0f8f4f676",
+      "sha256": "1b615ed192aad4650533b8d8d708681034e477fcac911d07750e1f3fab389d3d",
+      "bytes": 7745353,
+      "archiveRoot": "SDL-0f8f4f676/",
+      "url": "https://codeload.github.com/libsdl-org/SDL/tar.gz/0f8f4f676"
+    },
+    {
+      "name": "srt",
+      "revision": "02acd18",
+      "sha256": "e12d82f34bb6291b476ee102d881a28a779e6872781f48f9e432223cfab8cfab",
+      "bytes": 1714591,
+      "archiveRoot": "srt-02acd18/",
+      "url": "https://codeload.github.com/Haivision/srt/tar.gz/02acd18"
+    },
+    {
+      "name": "vmaf",
+      "revision": "cf67786b",
+      "sha256": "5b056c47216ede3f134866a59728b7f4d233382b11f39096363e72813ae65099",
+      "bytes": 18115085,
+      "archiveRoot": "vmaf-cf67786b/",
+      "url": "https://codeload.github.com/Netflix/vmaf/tar.gz/cf67786b"
+    },
+    {
+      "name": "zimg",
+      "revision": "7143181",
+      "sha256": "dfc5f932bbb31163f24e90ba6874e365c007946fc247070a0adbf2f20b9dc696",
+      "bytes": 309716,
+      "archiveRoot": "zimg-7143181/",
+      "url": "https://codeload.github.com/sekrit-twc/zimg/tar.gz/7143181"
+    },
+    {
+      "name": "ffnvcodec",
+      "revision": "75f032b",
+      "sha256": "544f549bce4f1317604cfca793819d46c56cfa9edf1d0c21e33ad98be4911f9c",
+      "bytes": 79591,
+      "archiveRoot": "nv-codec-headers-75f032b/",
+      "url": "https://codeload.github.com/FFmpeg/nv-codec-headers/tar.gz/75f032b"
+    },
+    {
+      "name": "vidstab",
+      "revision": "05829db",
+      "sha256": "e9aebae029f6ae9fb4e6ea0f4777f3ff088212f3b26a148c1aeaa6ab9460dbcb",
+      "bytes": 80830,
+      "archiveRoot": "vid.stab-05829db/",
+      "url": "https://codeload.github.com/georgmartius/vid.stab/tar.gz/05829db"
+    },
+    {
+      "name": "AviSynthPlus",
+      "revision": "eb3c4330",
+      "sha256": "5f5e946447cdb21a7c36cfa8a7877eec53ba8f3c46251992e5a691df191313a4",
+      "bytes": 12365245,
+      "archiveRoot": "AviSynthPlus-eb3c4330/",
+      "url": "https://codeload.github.com/AviSynth/AviSynthPlus/tar.gz/eb3c4330"
+    },
+    {
+      "name": "x264",
+      "revision": "c1c9931",
+      "sha256": "1c2669d3f9c3197d326141b9931c6ee250e32e1c026204bf2e777fe4c7fd3a27",
+      "bytes": 1031292,
+      "archiveRoot": "x264-c1c9931/",
+      "url": "https://codeload.github.com/mirror/x264/tar.gz/c1c9931"
+    },
+    {
+      "name": "libvpx",
+      "revision": "655da33b8",
+      "sha256": "1de17bc1d1265d48e3ee4c8fbc600a7283bb746208381100a4ac5edeb501c725",
+      "bytes": 5610223,
+      "archiveRoot": "libvpx-655da33b8/",
+      "url": "https://codeload.github.com/webmproject/libvpx/tar.gz/655da33b8"
+    },
+    {
+      "name": "speex",
+      "revision": "3693431",
+      "sha256": "6d168fe2c296e5dfebdd611026e64cb1869fdaeab687d56c51669d551f55fd4f",
+      "bytes": 1047179,
+      "archiveRoot": "speex-3693431/",
+      "url": "https://codeload.github.com/xiph/speex/tar.gz/3693431"
+    },
+    {
+      "name": "openmpt",
+      "revision": "7ec8c1440",
+      "sha256": "0e832145850a87a1437ff4d241596ffa70c2f1ef8a658da115b7a31aeba32c28",
+      "bytes": 17340607,
+      "archiveRoot": "openmpt-7ec8c1440/",
+      "url": "https://codeload.github.com/OpenMPT/openmpt/tar.gz/7ec8c1440"
+    },
+    {
+      "name": "AMF",
+      "revision": "v1.4.32",
+      "sha256": "f08c048e818f71bc7909c447bd810e727818d442db649d479ef87fb5a44a3474",
+      "bytes": 198373985,
+      "archiveRoot": "AMF-1.4.32/",
+      "url": "https://codeload.github.com/GPUOpen-LibrariesAndSDKs/AMF/tar.gz/v1.4.32"
+    },
+    {
+      "name": "freetype",
+      "revision": "VER-2-13-2",
+      "sha256": "427201f5d5151670d05c1f5b45bef5dda1f2e7dd971ef54f0feaaa7ffd2ab90c",
+      "bytes": 2480637,
+      "archiveRoot": "freetype-VER-2-13-2/",
+      "url": "https://codeload.github.com/freetype/freetype/tar.gz/VER-2-13-2"
+    },
+    {
+      "name": "libgme",
+      "revision": "0.6.3",
+      "sha256": "4c5a7614acaea44e5cb1423817d2889deb82674ddbc4e3e1291614304b86fca0",
+      "bytes": 314980,
+      "archiveRoot": "game-music-emu-0.6.3/",
+      "url": "https://codeload.github.com/libgme/game-music-emu/tar.gz/0.6.3"
+    },
+    {
+      "name": "rubberband",
+      "revision": "v1.8.1",
+      "sha256": "b69e99ef9458644285a80325403f9deef47515933017b16996d36110a277e2eb",
+      "bytes": 207945,
+      "archiveRoot": "rubberband-1.8.1/",
+      "url": "https://codeload.github.com/breakfastquay/rubberband/tar.gz/v1.8.1"
+    },
+    {
+      "name": "zeromq",
+      "revision": "v4.3.5",
+      "sha256": "6c972d1e6a91a0ecd79c3236f04cf0126f2f4dfbbad407d72b4606a7ba93f9c6",
+      "bytes": 875547,
+      "archiveRoot": "libzmq-4.3.5/",
+      "url": "https://codeload.github.com/zeromq/libzmq/tar.gz/v4.3.5"
+    },
+    {
+      "name": "libtheora",
+      "revision": "v1.1.1",
+      "sha256": "1d5c3b25bbced448f3e741c42df6796e3d5e57136a74bcd68262318290ec2982",
+      "bytes": 1132902,
+      "archiveRoot": "theora-1.1.1/",
+      "url": "https://codeload.github.com/xiph/theora/tar.gz/v1.1.1"
+    },
+    {
+      "name": "libssh",
+      "revision": "libssh-0.10.4",
+      "sha256": "0644d73d4dcb8171c465334dba891b0965311f9ec66b1987805c2882afa0cc58",
+      "bytes": 795039,
+      "archiveRoot": "libssh-mirror-libssh-0.10.4/",
+      "url": "https://codeload.github.com/libssh/libssh-mirror/tar.gz/libssh-0.10.4"
+    },
+    {
+      "name": "aom",
+      "revision": "0eeb62d344",
+      "sha256": "75655908bdc3b0246ecb51ce0ffa0e789b17dde804edeed714d08ab76a546726",
+      "bytes": 5557701,
+      "archiveRoot": ".clang-format",
+      "url": "https://aomedia.googlesource.com/aom/+archive/0eeb62d344.tar.gz"
+    },
+    {
+      "name": "gsm",
+      "revision": "1.0.22",
+      "sha256": "f0072e91f6bb85a878b2f6dbf4a0b7c850c4deb8049d554c65340b3bf69df0ac",
+      "bytes": 66583,
+      "archiveRoot": "gsm-1.0-pl22/",
+      "url": "https://www.quut.com/gsm/gsm-1.0.22.tar.gz"
+    },
+    {
+      "name": "xvid",
+      "revision": "1.3.7",
+      "sha256": "abbdcbd39555691dd1c9b4d08f0a031376a3b211652c0d8b3b8aa9be1303ce2d",
+      "bytes": 820854,
+      "archiveRoot": "xvidcore/",
+      "url": "https://downloads.xvid.com/downloads/xvidcore-1.3.7.tar.gz"
+    },
+    {
+      "name": "lame",
+      "revision": "3.100",
+      "sha256": "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e",
+      "bytes": 1524133,
+      "archiveRoot": "lame-3.100/",
+      "url": "https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz"
+    },
+    {
+      "name": "opencore-amr",
+      "revision": "0.1.6",
+      "sha256": "483eb4061088e2b34b358e47540b5d495a96cd468e361050fae615b1809dc4a1",
+      "bytes": 939179,
+      "archiveRoot": "opencore-amr-0.1.6/",
+      "url": "https://downloads.sourceforge.net/project/opencore-amr/opencore-amr/opencore-amr-0.1.6.tar.gz"
+    },
+    {
+      "name": "vo-amrwbenc",
+      "revision": "0.1.3",
+      "sha256": "5652b391e0f0e296417b841b02987d3fd33e6c0af342c69542cbb016a71d9d4e",
+      "bytes": 608936,
+      "archiveRoot": "vo-amrwbenc-0.1.3/",
+      "url": "https://downloads.sourceforge.net/project/opencore-amr/vo-amrwbenc/vo-amrwbenc-0.1.3.tar.gz"
+    }
+  ],
+  "reportedLibraryVersions": [
+    {
+      "name": "AMF",
+      "reportedRevision": "v1.4.32"
+    },
+    {
+      "name": "aom",
+      "reportedRevision": "v3.8.0-180-g0eeb62d344"
+    },
+    {
+      "name": "AviSynthPlus",
+      "reportedRevision": "v3.7.3-38-geb3c4330"
+    },
+    {
+      "name": "ffnvcodec",
+      "reportedRevision": "n12.1.14.0-1-g75f032b"
+    },
+    {
+      "name": "freetype",
+      "reportedRevision": "VER-2-13-2"
+    },
+    {
+      "name": "fribidi",
+      "reportedRevision": "v1.0.13-2-g5b9a242"
+    },
+    {
+      "name": "gsm",
+      "reportedRevision": "1.0.22"
+    },
+    {
+      "name": "harfbuzz",
+      "reportedRevision": "8.3.0-41-gd455066ad"
+    },
+    {
+      "name": "lame",
+      "reportedRevision": "3.100"
+    },
+    {
+      "name": "libass",
+      "reportedRevision": "0.17.0-63-gc047dd2"
+    },
+    {
+      "name": "libgme",
+      "reportedRevision": "0.6.3"
+    },
+    {
+      "name": "libopencore-amrnb",
+      "reportedRevision": "0.1.6"
+    },
+    {
+      "name": "libopencore-amrwb",
+      "reportedRevision": "0.1.6"
+    },
+    {
+      "name": "libssh",
+      "reportedRevision": "0.10.4"
+    },
+    {
+      "name": "libtheora",
+      "reportedRevision": "1.1.1"
+    },
+    {
+      "name": "libwebp",
+      "reportedRevision": "v1.3.2-109-ge78e924f"
+    },
+    {
+      "name": "oneVPL",
+      "reportedRevision": "2.9"
+    },
+    {
+      "name": "openmpt",
+      "reportedRevision": "libopenmpt-0.6.12-54-g7ec8c1440"
+    },
+    {
+      "name": "opus",
+      "reportedRevision": "v1.4-9-gc8549975"
+    },
+    {
+      "name": "rubberband",
+      "reportedRevision": "v1.8.1"
+    },
+    {
+      "name": "SDL",
+      "reportedRevision": "release-2.28.0-345-g0f8f4f676"
+    },
+    {
+      "name": "speex",
+      "reportedRevision": "Speex-1.2.1-20-g3693431"
+    },
+    {
+      "name": "srt",
+      "reportedRevision": "v1.5.3-21-g02acd18"
+    },
+    {
+      "name": "vidstab",
+      "reportedRevision": "v1.1.1-4-g05829db"
+    },
+    {
+      "name": "vmaf",
+      "reportedRevision": "v3.0.0-28-gcf67786b"
+    },
+    {
+      "name": "vo-amrwbenc",
+      "reportedRevision": "0.1.3"
+    },
+    {
+      "name": "vorbis",
+      "reportedRevision": "v1.3.7-10-g84c02369"
+    },
+    {
+      "name": "vpx",
+      "reportedRevision": "v1.13.1-601-g655da33b8"
+    },
+    {
+      "name": "x264",
+      "reportedRevision": "v0.164.3172"
+    },
+    {
+      "name": "x265",
+      "reportedRevision": "3.5-153-gce8642f22"
+    },
+    {
+      "name": "xvid",
+      "reportedRevision": "v1.3.7"
+    },
+    {
+      "name": "zeromq",
+      "reportedRevision": "4.3.5"
+    },
+    {
+      "name": "zimg",
+      "reportedRevision": "release-3.0.5-150-g7143181"
+    }
+  ],
+  "missingPreciseVersions": [
+    "bzlib",
+    "gmp",
+    "gnutls",
+    "iconv",
+    "libxml2",
+    "lzma",
+    "zlib",
+    "libfontconfig",
+    "libopenjpeg",
+    "libogg (transitive)",
+    "nettle/hogweed (possible GnuTLS transitive)",
+    "GCC runtime/winpthreads (toolchain, system-library analysis required)"
+  ],
+  "missingBuildMaterials": [
+    "Gyan recipe used for this exact binary, including library configure flags and link options",
+    "Upstream/local patches and generated build inputs actually used",
+    "Transitive static-link source inventory and exact revisions",
+    "Toolchain provenance and source obligations for non-system components",
+    "Installation/build scripts required by GPLv3 section 1; attribution/license audit for all sources",
+    "Reproducible mapping between the source set and the pinned executable, or other sufficient corresponding-source evidence"
+  ],
+  "legalMethod": "Local testing only. GPLv3 sections 1 and 6 must be satisfied before public binary distribution. A source archive or link alone is not asserted complete; choose a compliant source distribution method with binary/source offering and provide full modified Nova AGPL source as applicable.",
+  "x264RuntimeRevision": {
+    "revision": "c1c9931",
+    "evidence": "Synthetic encoder H264 SEI from the pinned binary identifies core 164 r3172 c1c9931"
+  }
+}

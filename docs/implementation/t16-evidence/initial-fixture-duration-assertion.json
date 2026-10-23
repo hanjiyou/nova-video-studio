@@ -1,0 +1,84 @@
+{
+  "phase": "first",
+  "executable": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\10\\23\\01a16690-3b01-76f2-9b30-0c4ae3c82a91\\T16 本地离线安装\\程序 中文 空格\\Nova Studio Offline Test.exe",
+  "startedAt": "2026-10-23T17:26:15.412Z",
+  "scope": "Actual installed local test EXE, synthetic persisted media, explicit profile, normal inherited token, scrubbed developer PATH. No real provider and no GUI dialog/Explorer claim.",
+  "checks": {
+    "installed runtime and narrow renderer bridge": true,
+    "explicit profile and app version": true,
+    "visible offline test qualification": true,
+    "external sessionless client denied": true,
+    "installed local setting saves": true,
+    "installed Chinese multiline draft saves": true,
+    "installed Windows encrypted configuration saves": true,
+    "save DTO has no key or credential reference": true,
+    "installed bundled FFmpeg verifies synthetic PNG and H264 AAC": true,
+    "local_queued survives without auto submission": true,
+    "submission_unknown survives without auto submission": true,
+    "polling_paused survives without auto submission": true,
+    "paused upstream ID preserved": true
+  },
+  "requests": [],
+  "childPath": "C:\\Windows\\System32;C:\\Windows",
+  "controllerIdentity": "nspc-hanjiyou\\administrator",
+  "tokenGroups": "\r\nGROUP INFORMATION\r\n-----------------\r\n\r\nGroup Name                           Type             SID          Attributes                                                     \r\n==================================== ================ ============ ===============================================================\r\nEveryone                             Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户和管理员组成员  Well-known group S-1-5-114    Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Administrators               Alias            S-1-5-32-544 Mandatory group, Enabled by default, Enabled group, Group owner\r\nBUILTIN\\Performance Log Users        Alias            S-1-5-32-559 Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Users                        Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\INTERACTIVE             Well-known group S-1-5-4      Mandatory group, Enabled by default, Enabled group             \r\nCONSOLE LOGON                        Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Authenticated Users     Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\This Organization       Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户                Well-known group S-1-5-113    Mandatory group, Enabled by default, Enabled group             \r\nLOCAL                                Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\NTLM Authentication     Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group             \r\nMandatory Label\\High Mandatory Level Label            S-1-16-12288                                                                \r\n",
+  "pid": 43468,
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "outputAssets": [
+    {
+      "assetId": "b28d423f-7a84-4ec8-bc64-48e6b08b9d08",
+      "kind": "image",
+      "displayName": "asset",
+      "mimeType": "image/png",
+      "byteLength": 96,
+      "sha256": "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25",
+      "width": 2,
+      "height": 2,
+      "durationSeconds": null,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T17:26:15.455Z",
+      "previewUrl": "/api/nova/assets/b28d423f-7a84-4ec8-bc64-48e6b08b9d08/content",
+      "position": 0,
+      "role": "result"
+    },
+    {
+      "assetId": "f17793fb-a147-4cf7-8453-44b53a524cb5",
+      "kind": "video",
+      "displayName": "asset",
+      "mimeType": "video/mp4",
+      "byteLength": 40808,
+      "sha256": "60b4c6995ead267b2203b6e34033bc686e52ab40b32990e11ea8987591e18934",
+      "width": 160,
+      "height": 96,
+      "durationSeconds": 2.020136054421769,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T17:26:15.459Z",
+      "previewUrl": "/api/nova/assets/f17793fb-a147-4cf7-8453-44b53a524cb5/content",
+      "position": 0,
+      "role": "result"
+    }
+  ],
+  "playback": {
+    "width": 160,
+    "height": 96,
+    "duration": 2,
+    "time": 1.2,
+    "paused": true,
+    "volume": 0.4,
+    "readyState": 4
+  },
+  "status": "failed",
+  "error": "AssertionError [ERR_ASSERTION]: installed Chromium plays pauses seeks and changes volume\n    at check (E:\\Learn\\AI\\nova-image-studio\\scripts\\verify-desktop-t16.cjs:10:35)\n    at E:\\Learn\\AI\\nova-image-studio\\scripts\\verify-desktop-t16.cjs:56:2",
+  "finishedAt": "2026-10-23T17:26:16.882Z"
+}

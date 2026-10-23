@@ -1,0 +1,20 @@
+
+DevTools listening on ws://127.0.0.1:52125/devtools/browser/37df5055-0c27-40f2-aa1e-5660c41bcde6
+(node:49576) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)
+
+DevTools listening on ws://127.0.0.1:55724/devtools/browser/20a0241f-58b4-4e38-9ec6-18253747ae79
+(node:60012) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)
+
+DevTools listening on ws://127.0.0.1:52367/devtools/browser/fff2f15f-352c-4e55-a83e-3e8e1507496b
+(node:32996) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)
+
+DevTools listening on ws://127.0.0.1:65301/devtools/browser/cb755cbb-ffc2-48cb-b918-54305c084270
+(node:35764) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)
+
+DevTools listening on ws://127.0.0.1:65103/devtools/browser/6b8eba4b-dfd1-4dc5-885a-a2651ee136b5
+(node:50336) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)

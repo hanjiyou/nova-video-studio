@@ -1,0 +1,133 @@
+[
+  {
+    "name": "hostLint",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "desktop/main.cjs",
+      "scripts/verify-desktop-t16.cjs",
+      "scripts/t16-payload-entry.cjs",
+      "scripts/verify-t16-package.cjs",
+      "scripts/verify-t16-acceptance.cjs",
+      "scripts/electron-t16-baseline-entry.cjs",
+      "scripts/run-t16-checks.cjs"
+    ],
+    "startedAt": "2026-10-23T17:43:52.967Z",
+    "finishedAt": "2026-10-23T17:43:53.637Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "frontendLint",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "args": [
+      "node_modules/eslint/bin/eslint.js",
+      "src/components/workbench/WorkbenchShell.tsx"
+    ],
+    "startedAt": "2026-10-23T17:43:53.640Z",
+    "finishedAt": "2026-10-23T17:44:48.672Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "contracts",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "--test",
+      "backend/test/workbench-contracts.test.js"
+    ],
+    "startedAt": "2026-10-23T17:44:48.673Z",
+    "finishedAt": "2026-10-23T17:44:48.881Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "ledger",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "scripts/verify-t16-acceptance.cjs"
+    ],
+    "startedAt": "2026-10-23T17:44:48.881Z",
+    "finishedAt": "2026-10-23T17:44:49.056Z",
+    "exitCode": 1,
+    "error": null
+  },
+  {
+    "name": "ledger",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "scripts/verify-t16-acceptance.cjs"
+    ],
+    "startedAt": "2026-10-23T17:46:40.471Z",
+    "finishedAt": "2026-10-23T17:46:40.903Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "priorLedger",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "scripts/verify-b5-acceptance.cjs"
+    ],
+    "startedAt": "2026-10-23T17:46:40.906Z",
+    "finishedAt": "2026-10-23T17:46:41.075Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "productionBuild",
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "log": "build.log",
+    "startedAt": null,
+    "finishedAt": null,
+    "timing": "Not instrumented by the wrapper; successful exit observed in the tool invocation. Native/install/source-archive evidence has its own recorded times."
+  },
+  {
+    "name": "finalNSIS",
+    "command": "node node_modules/electron-builder/cli.js --win --x64 --config electron-builder.offline.yml",
+    "exitCode": 0,
+    "log": "package.log",
+    "startedAt": null,
+    "finishedAt": null,
+    "timing": "Not instrumented by the wrapper; successful exit observed in the tool invocation. Native/install/source-archive evidence has its own recorded times."
+  },
+  {
+    "name": "focusedFrontend16",
+    "command": "node node_modules/vitest/vitest.mjs run src/components/workbench/__tests__/workbench-b3.test.tsx src/components/workbench/__tests__/workbench-b5.test.tsx",
+    "exitCode": 0,
+    "log": "frontend.log",
+    "startedAt": null,
+    "finishedAt": null,
+    "timing": "Not instrumented by the wrapper; successful exit observed in the tool invocation. Native/install/source-archive evidence has its own recorded times."
+  },
+  {
+    "name": "hostLint",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "args": [
+      "backend/node_modules/eslint/bin/eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "desktop/main.cjs",
+      "scripts/verify-desktop-t16.cjs",
+      "scripts/t16-payload-entry.cjs",
+      "scripts/verify-t16-package.cjs",
+      "scripts/verify-t16-acceptance.cjs",
+      "scripts/electron-t16-baseline-entry.cjs",
+      "scripts/run-t16-checks.cjs"
+    ],
+    "startedAt": "2026-10-23T17:51:36.118Z",
+    "finishedAt": "2026-10-23T17:51:36.823Z",
+    "exitCode": 0,
+    "error": null
+  }
+]

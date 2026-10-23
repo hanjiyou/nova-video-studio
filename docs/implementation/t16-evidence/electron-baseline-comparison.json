@@ -1,0 +1,23 @@
+{
+  "scope": "Official installed node_modules Electron 43.4.0, minimal hidden sandboxed window; no Nova app code; standard inherited sandbox token",
+  "records": [
+    {
+      "mode": "inherited-path",
+      "exitCode": 1,
+      "error": null,
+      "baselineResult": {
+        "status": "failed",
+        "error": "Error: ERR_FAILED (-2) loading 'data:text/html,<html><body>Electron baseline</body></html>'"
+      }
+    },
+    {
+      "mode": "scrubbed-path",
+      "exitCode": 1,
+      "error": null,
+      "baselineResult": {
+        "status": "failed",
+        "error": "Error: ERR_FAILED (-2) loading 'data:text/html,<html><body>Electron baseline</body></html>'"
+      }
+    }
+  ]
+}

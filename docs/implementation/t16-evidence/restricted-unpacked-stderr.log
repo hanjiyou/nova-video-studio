@@ -1,0 +1,12 @@
+[69076:1024/012540.059:ERROR:net\base\network_change_notifier_win.cc:213] WSALookupServiceBegin failed with: -1
+
+DevTools listening on ws://127.0.0.1:55228/devtools/browser/ab9ccf4f-ed31-4f65-9bc4-929a6ae13e63
+[69076:1024/012540.108:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+[69076:1024/012540.880:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+[69076:1024/012540.947:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+[69076:1024/012540.991:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+(node:69076) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)
+[69076:1024/012541.009:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+[69076:1024/012541.025:ERROR:content\browser\gpu\gpu_process_host.cc:1089] GPU process exited unexpectedly: exit_code=-1073741515
+[69076:1024/012541.025:FATAL:content\browser\gpu\gpu_data_manager_impl_private.cc:416] GPU process isn't usable. Goodbye.

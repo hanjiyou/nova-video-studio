@@ -1,0 +1,12 @@
+[
+  {
+    "file": "scripts/collect-t16-source-materials.ps1",
+    "errorCount": 0,
+    "errors": []
+  },
+  {
+    "file": "scripts/test-t16-installer.ps1",
+    "errorCount": 0,
+    "errors": []
+  }
+]

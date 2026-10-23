@@ -1,0 +1,15 @@
+{
+  "action": "upgrade",
+  "startedAt": "2026-10-23T17:34:46.7315320Z",
+  "finishedAt": "2026-10-23T17:35:09.9439576Z",
+  "identity": "nspc-hanjiyou\\administrator",
+  "exitCode": 0,
+  "installerSha256": "5fec6779f7c22b7e6a42e09b76e19dad099d794102290792d9c2805d76e21535",
+  "installDirectory": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\程序 中文 空格",
+  "profile": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-accepted-installed\\隔离配置 中文 profile",
+  "fullProfileBytesUnchanged": true,
+  "sentinelRetained": true,
+  "installedExePresent": true,
+  "registrationCountAfter": 1,
+  "status": "passed"
+}

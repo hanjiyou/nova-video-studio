@@ -1,0 +1,10 @@
+{
+  "caller": "nspc-hanjiyou\\codexsandboxoffline",
+  "ownerUser": null,
+  "scope": "UseShellExecute=false via explicit stdout/stderr redirection; direct installer child owner observed",
+  "ownerDomain": null,
+  "registration": [],
+  "exitCode": 0,
+  "pid": 69848,
+  "exePresent": true
+}

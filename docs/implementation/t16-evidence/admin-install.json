@@ -1,0 +1,16 @@
+{
+  "exitCode": 0,
+  "startedAt": "2026-10-23T17:33:59.0148516Z",
+  "registration": [
+    {
+      "DisplayName": "Nova Studio 3.4.0 - Local Offline Test",
+      "InstallLocation": null,
+      "PSChildName": "54918c94-e9da-55b0-97dc-31504e3d4b4c"
+    }
+  ],
+  "finishedAt": "2026-10-23T17:34:11.6017400Z",
+  "caller": "nspc-hanjiyou\\administrator",
+  "exePresent": true,
+  "ownerUser": "Administrator",
+  "ownerDomain": "NSPC-HANJIYOU"
+}

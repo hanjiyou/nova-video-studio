@@ -54,6 +54,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装态正常启动与关闭通过；B5 原生窗口 API 证据保留。T16 可选 CDP 窗口方法不受 Electron 支持，外部 PS 文件受执行策略阻止，未绕过；人工拖动/标题栏按钮仍待验。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -333,6 +343,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装态在中文隔离 profile 验证受管结果、Range 和冻结文件可读；系统目录/Explorer 人工定位未验收。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -946,6 +966,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装包中另存实现与当前源码字节一致；先前受控另存/占用证据保留。系统 SaveDialog、重名确认与人工取消仍待验。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -1006,6 +1036,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装态真实资产路径包含中文/空格且本地读取通过，定位模块与当前源码一致；Explorer 选择真实文件的人工观察仍待验。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -1847,6 +1887,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装态视频实际落盘并可播放；另存模块已入包并核对字节。未操作系统 SaveDialog，不能填人工另存通过。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -1907,6 +1957,16 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16Verification": {
+        "status": "partial_local_test_manual_pending",
+        "scope": "安装态真实视频资产可读，缺失防护保留；Explorer 人工定位仍待验。",
+        "evidence": [
+          "../implementation/t16-evidence/package-audit.json",
+          "../implementation/t16-evidence/first-evidence.json",
+          "../implementation/t16-evidence/after-upgrade-evidence.json"
+        ],
+        "manualAccepted": false
       }
     },
     {
@@ -3425,5 +3485,33 @@
     "report": "../implementation/B5-T14-诊断与离线完整验收.md",
     "reviewScope": "offline_batch_only_not_final_product",
     "parentReview": "../implementation/b5-evidence/approval-review.json"
+  },
+  "t16": {
+    "status": "accepted_partial_offline_preparation",
+    "authorization": "User explicitly paused T15 paid tests and approved T16 independent local-offline preparation only.",
+    "baselineCommit": "68b6ff7807edd66358c8c696178c248ece191681",
+    "realGenerationVerified": false,
+    "publicDistributionAllowed": false,
+    "finalT16Accepted": false,
+    "milestoneM5Accepted": false,
+    "requirementCount": 61,
+    "taskCount": 17,
+    "dispositionsUnchanged": {
+      "offline_passed": 39,
+      "real_service_pending": 16,
+      "release_pending": 6,
+      "not_passed": 0
+    },
+    "report": "../implementation/T16-本地离线安装交付准备.md",
+    "limitations": [
+      "Existing restricted standard token: file installation returned 0, no uninstall registration observed, app and stock Electron baseline failed with child STATUS_DLL_NOT_FOUND; exact dynamic module unknown.",
+      "Administrator installed current-user mode passed; sanitized PATH on a developer machine is not an independent clean-machine test.",
+      "Six original system/manual items remain pending; no title-bar drag, SaveDialog/overwrite or Explorer manual acceptance.",
+      "Same-version overwrite only; future version/schema migrations require their own test.",
+      "Historical NSIS 0xc0000409 / fast-fail 0x23 root cause remains open.",
+      "33 upstream archives collected; exact transitive sources/patches/build toolchain materials remain incomplete."
+    ],
+    "reviewScope": "local_preparation_only_not_final_T16_or_M5",
+    "parentReview": "../implementation/t16-evidence/approval-review.json"
   }
 }

@@ -1,0 +1,14 @@
+extends: ./electron-builder.yml
+# Separate installer registration; all acceptance runs use a fresh NOVA_DATA_DIR.
+appId: com.novaimage.studio.offline-test
+productName: Nova Studio Offline Test
+buildVersion: 3.4.0.16
+directories:
+  output: release-t16
+win:
+  artifactName: Nova-Studio-${version}-offline-test-${arch}.${ext}
+nsis:
+  createDesktopShortcut: false
+  createStartMenuShortcut: false
+  uninstallDisplayName: Nova Studio 3.4.0 - Local Offline Test
+electronDist: node_modules/electron/dist

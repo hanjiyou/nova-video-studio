@@ -1,0 +1,5 @@
+{
+  "querySinceLocal": "2026-10-24T01:24:00.0000000",
+  "matchingEvents": [],
+  "interpretation": "No matching event is not proof that the historical heap failure is fixed; explicit process exit records remain primary."
+}

@@ -1,0 +1,67 @@
+{
+  "status": "accepted_partial_offline_preparation_commit_push_authorized",
+  "baseline": "68b6ff7807edd66358c8c696178c248ece191681",
+  "requirements": {
+    "unchanged": 61,
+    "tasks": 17,
+    "offlinePassed": 39,
+    "realPending": 16,
+    "manualPending": 6,
+    "finalT16Accepted": false
+  },
+  "validation": {
+    "frontendExistingTests": {
+      "passed": 16,
+      "failed": 0
+    },
+    "contracts": {
+      "passed": 5,
+      "failed": 0
+    },
+    "installedRuntime": {
+      "firstPreFinalNotices": 21,
+      "restartPreFinalNotices": 20,
+      "finalAfterUpgrade": 20,
+      "finalAfterReinstall": 20
+    },
+    "installedPayloadChecks": 23,
+    "focusedLint": "passed",
+    "ledger": "passed",
+    "powershellSyntax": "passed",
+    "build": "passed",
+    "nsis": "passed",
+    "fullTypecheck": "not_rerun_known_60_test_diagnostics",
+    "fullDirectoryLint": "not_rerun_known_existing_issues"
+  },
+  "installer": {
+    "sha256": "68fea9929c93d09b66df528e29eb9c357d7f69360a9db655bdea4a72151b81dd",
+    "bytes": 133449192,
+    "version": "3.4.0",
+    "fileVersion": "3.4.0.16",
+    "signed": false,
+    "fullProfileBytesUnchangedDuringFinalUpgradeUninstallReinstall": true
+  },
+  "standardToken": {
+    "fileExtractionExit": 0,
+    "uninstallRegistrationObserved": false,
+    "appStartPassed": false,
+    "stockElectronMinimalStartPassed": false,
+    "childStatus": "0xc0000135",
+    "specificDynamicModuleUnknown": true
+  },
+  "source": {
+    "archives": 33,
+    "bytes": 340262612,
+    "completeCorrespondingSource": false,
+    "reviewApplicationSourceZipSha256": "065bcb9f5340334be506c4995cd719942f4e063cd37f991892eaf45e54e98a85"
+  },
+  "realKeyAccessed": false,
+  "realProviderRequests": 0,
+  "publicDistributionAllowed": false,
+  "commitPushAuthorized": true,
+  "commitPushPerformed": false,
+  "protectedAppDataTouched": false,
+  "snapshotStage": "approval_recorded_before_git_delivery",
+  "parentReview": "approval-review.json",
+  "gitDeliveryReceipt": "temp/t16-git-delivery.json (local ignored)"
+}

@@ -1,0 +1,32 @@
+{
+  "status": "observed_preserved_existing_reviewed_bytes",
+  "gitDiffCachedCheckExitCode": 2,
+  "findings": [
+    {
+      "file": "docs/implementation/t16-evidence/build.log",
+      "line": 35,
+      "kind": "new blank line at EOF",
+      "reason": "Preserve original build output."
+    },
+    {
+      "file": "docs/implementation/t16-evidence/frontend.log",
+      "line": 12,
+      "kind": "new blank line at EOF",
+      "reason": "Preserve original test output."
+    },
+    {
+      "file": "docs/implementation/t16-evidence/host-lint-initial-unused-import.log",
+      "line": 6,
+      "kind": "new blank line at EOF",
+      "reason": "Preserve original initial lint output."
+    },
+    {
+      "file": "scripts/verify-desktop-t16.cjs",
+      "line": 36,
+      "kind": "one space on an otherwise blank line",
+      "reason": "Existing reviewed non-executing whitespace retained in this review-record/delivery-only turn; application/test behavior and the frozen 534-file source review snapshot remain unchanged."
+    }
+  ],
+  "rawOutput": "docs/implementation/t16-evidence/build.log:35: new blank line at EOF.\r\ndocs/implementation/t16-evidence/frontend.log:12: new blank line at EOF.\r\ndocs/implementation/t16-evidence/host-lint-initial-unused-import.log:6: new blank line at EOF.\r\nscripts/verify-desktop-t16.cjs:36: trailing whitespace.\r\n+ \r\n",
+  "scope": "No whitespace failure is relabeled as a clean diff check. No runtime/source implementation expanded in the approval handoff."
+}

@@ -1,0 +1,118 @@
+{
+  "phase": "after-reinstall",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\程序 中文 空格\\Nova Studio Offline Test.exe",
+  "startedAt": "2026-10-23T17:43:34.609Z",
+  "scope": "Actual installed local test EXE, synthetic persisted media, explicit profile, normal inherited token, scrubbed developer PATH. No real provider and no GUI dialog/Explorer claim.",
+  "checks": {
+    "installed runtime and narrow renderer bridge": true,
+    "explicit profile and app version": true,
+    "visible offline test qualification": true,
+    "external sessionless client denied": true,
+    "same configuration version and decryptable credential restored": true,
+    "Chinese multiline draft restored": true,
+    "setup completion restored": true,
+    "installed bundled FFmpeg verifies synthetic PNG and H264 AAC": true,
+    "local_queued survives without auto submission": true,
+    "submission_unknown survives without auto submission": true,
+    "polling_paused survives without auto submission": true,
+    "paused upstream ID preserved": true,
+    "installed Chromium plays pauses seeks and changes volume": true,
+    "installed local range playback": true,
+    "installed settings exposes diagnostics": true,
+    "diagnostic preload exposes no path parameter": true,
+    "zero synthetic provider traffic including no POST": true,
+    "installed app clean exit": true,
+    "credential ciphertext and SQLite integrity": true,
+    "out-of-install profile sentinel retained": true
+  },
+  "requests": [],
+  "packageHashes": {
+    "exe": "5494d09729679678573fd2a3c21ad14e12df24d5b3740ee7c15ff1738c4c3c93",
+    "asar": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324"
+  },
+  "childPath": "C:\\Windows\\System32;C:\\Windows",
+  "controllerIdentity": "nspc-hanjiyou\\administrator",
+  "tokenGroups": "\r\nGROUP INFORMATION\r\n-----------------\r\n\r\nGroup Name                           Type             SID          Attributes                                                     \r\n==================================== ================ ============ ===============================================================\r\nEveryone                             Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户和管理员组成员  Well-known group S-1-5-114    Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Administrators               Alias            S-1-5-32-544 Mandatory group, Enabled by default, Enabled group, Group owner\r\nBUILTIN\\Performance Log Users        Alias            S-1-5-32-559 Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Users                        Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\INTERACTIVE             Well-known group S-1-5-4      Mandatory group, Enabled by default, Enabled group             \r\nCONSOLE LOGON                        Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Authenticated Users     Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\This Organization       Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户                Well-known group S-1-5-113    Mandatory group, Enabled by default, Enabled group             \r\nLOCAL                                Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\NTLM Authentication     Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group             \r\nMandatory Label\\High Mandatory Level Label            S-1-16-12288                                                                \r\n",
+  "pid": 50336,
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "connectionSummary": {
+    "connection": {
+      "connectionId": "d499e75b-2b27-4845-bd5a-84aaf6678ddf",
+      "connectionVersionId": "95de6078-bb9e-4ffa-a772-6aba497edbaf",
+      "displayName": "T16 合成离线连接",
+      "baseUrl": "http://127.0.0.1:63116/v1",
+      "provider": "openai-compatible",
+      "protocol": "openai",
+      "hasCredential": true,
+      "credentialState": "ready",
+      "validationState": "unverified",
+      "lastCheckedAt": null,
+      "lastSuccessAt": null,
+      "modelsFetchedAt": null,
+      "errorCode": null,
+      "defaultImageModel": "gpt-image-2.5-flare",
+      "defaultVideoModel": "grok-imagine-video-1.5-6s",
+      "isDefault": true
+    }
+  },
+  "outputAssets": [
+    {
+      "assetId": "a87676a0-cd82-47b3-9987-0dad03ce7bf1",
+      "kind": "image",
+      "displayName": "asset",
+      "mimeType": "image/png",
+      "byteLength": 96,
+      "sha256": "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25",
+      "width": 2,
+      "height": 2,
+      "durationSeconds": null,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T17:30:27.626Z",
+      "previewUrl": "/api/nova/assets/a87676a0-cd82-47b3-9987-0dad03ce7bf1/content",
+      "position": 0,
+      "role": "result"
+    },
+    {
+      "assetId": "bedb8a5c-7d4b-4643-8e53-09efe1c59d5f",
+      "kind": "video",
+      "displayName": "asset",
+      "mimeType": "video/mp4",
+      "byteLength": 40808,
+      "sha256": "60b4c6995ead267b2203b6e34033bc686e52ab40b32990e11ea8987591e18934",
+      "width": 160,
+      "height": 96,
+      "durationSeconds": 2.020136054421769,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T17:30:27.630Z",
+      "previewUrl": "/api/nova/assets/bedb8a5c-7d4b-4643-8e53-09efe1c59d5f/content",
+      "position": 0,
+      "role": "result"
+    }
+  ],
+  "playback": {
+    "width": 160,
+    "height": 96,
+    "duration": 2,
+    "time": 1.2,
+    "paused": true,
+    "volume": 0.4,
+    "readyState": 4
+  },
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "status": "passed",
+  "finishedAt": "2026-10-23T17:43:36.747Z"
+}

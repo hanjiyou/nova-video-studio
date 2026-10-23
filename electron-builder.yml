@@ -2,6 +2,14 @@ appId: com.novaimage.studio
 productName: Nova Image Studio
 beforePack: scripts/verify-ffmpeg-before-pack.cjs
 extraResources:
+  - from: LICENSE
+    to: licenses/Nova-AGPL-3.0.txt
+  - from: desktop/third-party
+    to: licenses/notices
+  - from: docs/本地离线测试版使用说明.md
+    to: 本地离线测试版使用说明.md
+  - from: desktop/installer/LOCAL-TEST-NOTICE.txt
+    to: LOCAL-TEST-NOTICE.txt
   - from: node_modules/ffmpeg-static/ffmpeg.exe.LICENSE
     to: licenses/FFmpeg-GPLv3.txt
   - from: node_modules/ffmpeg-static/ffmpeg.exe.README
@@ -54,6 +62,10 @@ nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
+  runAfterFinish: false
+  deleteAppDataOnUninstall: false
+  include: desktop/installer/data-retention.nsh
+  license: desktop/installer/LOCAL-TEST-NOTICE.txt
 mac:
   target:
     - target: zip

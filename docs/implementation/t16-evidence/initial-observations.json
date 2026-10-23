@@ -1,0 +1,78 @@
+{
+  "status": "known_limits_retained_final_local_checks_passed",
+  "entries": [
+    {
+      "name": "initial-runtime-download",
+      "outcome": "Stopped the redundant builder Electron download after it stalled; local offline config now uses the locked node_modules/electron/dist. No dependency version changed.",
+      "evidence": "package-before-final-wording.log"
+    },
+    {
+      "name": "restricted-standard-token",
+      "outcome": "Installer file extraction returned 0 but no HKCU uninstall registration observed. Both Nova and stock Electron minimal windows failed with child 0xc0000135. Direct static-import DLL files exist; exact dynamic module/access failure remains unknown.",
+      "evidence": [
+        "restricted-installed-failure.json",
+        "restricted-unpacked-failure.json",
+        "electron-baseline-comparison.json",
+        "static-dependency-observation.json"
+      ]
+    },
+    {
+      "name": "owner-query",
+      "outcome": "CIM GetOwner in the restricted session was denied; null owner fields are not child-owner evidence. Administrator fresh installer child owner was observed separately.",
+      "evidence": [
+        "installer-direct-owner.json",
+        "admin-install.json"
+      ]
+    },
+    {
+      "name": "fixture-duration-assertion",
+      "outcome": "Initial harness required browser duration >2.0. Actual browser duration is exactly 2.0 while FFmpeg metadata is 2.020136; changed harness tolerance to 1.9..2.1, no media/application change.",
+      "evidence": "initial-fixture-duration-assertion.json"
+    },
+    {
+      "name": "diagnostic-harness",
+      "outcome": "Passing an object to the no-argument preload method caused the preload to discard it and open a real SaveDialog, yielding a harness timeout. Removed that invalid test; no SaveDialog acceptance is claimed. Final actual installed collector is tested separately.",
+      "evidence": [
+        "initial-diagnostic-harness-timeout.json",
+        "installed-diagnostic-collector.json"
+      ]
+    },
+    {
+      "name": "asar-audit-locations",
+      "outcome": "Initial audit looked for notices inside ASAR instead of extraResources, then used slash paths for nested Windows ASAR members. Fixed audit only; final 23 checks pass.",
+      "evidence": [
+        "package-audit-initial-resource-location.json",
+        "package-audit.json"
+      ]
+    },
+    {
+      "name": "optional-window-probe",
+      "outcome": "Electron did not support Browser.getWindowForTarget in this context; subsequent external PS file invocation was blocked by existing execution policy. Kept both observations, removed the unused attempt, did not bypass/change policy. Manual window interaction stays pending.",
+      "evidence": [
+        "native-window-initial-unsupported-cdp.json",
+        "native-window-script-policy-failure.json"
+      ]
+    },
+    {
+      "name": "ledger-line-endings",
+      "outcome": "Initial dependency byte comparison failed on unchanged Git LF versus working CRLF. Corrected only line-ending normalization; all six dependency files and all 61 requirement identities remain unchanged.",
+      "evidence": [
+        "ledger-initial-line-endings.log",
+        "ledger.log"
+      ]
+    },
+    {
+      "name": "initial-focused-lint",
+      "outcome": "Removed an unused harness crypto import; final scoped lint passes.",
+      "evidence": [
+        "host-lint-initial-unused-import.log",
+        "hostLint.log"
+      ]
+    },
+    {
+      "name": "historical-nsis",
+      "outcome": "WER exception-data 0x23 identified as unexpected heap exception; no retained dump/call stack, root cause and public-release gate remain open.",
+      "evidence": "nsis-crash-investigation.json"
+    }
+  ]
+}

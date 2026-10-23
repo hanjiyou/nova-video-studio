@@ -1,0 +1,17 @@
+﻿Nova Studio 3.4.0 — 本地离线测试版
+
+真实生成能力尚未完成验证。本安装包仅供本机离线功能测试，不能作为全功能正式版交付。未验证的生成模式继续受能力闸门限制。
+
+本地功能：编辑并保存草稿、导入本地素材、浏览本地作品、播放已落盘媒体、保存配置与导出脱敏诊断。生成图片或视频仍需远端服务；没有附带本地生成模型。不要将合成测试样本当作真实服务能力证明。
+
+安装包包含自己的 Electron/Node 运行时及固定 FFmpeg，不要求另装 Node/npm/Python/FFmpeg。未在无开发环境的独立机器完成验证。
+
+安装/升级/卸载保留配置、草稿、数据库、素材和输出。不要把 NOVA_DATA_DIR 或作品目录放进安装目录；卸载会移除整个安装目录。卸载不支持 --delete-app-data。清理数据须用户另行明确选择并备份，不由安装程序执行。
+
+本包未签名，不提供自动更新。安装结束后请手动启动应用。当前受限标准令牌下只证实文件落盘，完整注册/运行未通过；Administrator 当前用户安装与运行已验证。本地测试安装使用独立的应用注册身份，不覆盖正式安装。原包首次 NSIS 0xc0000409 的根因仍在调查；多次测试成功也不等于已证实根治。
+
+原项目 Nova Image Studio：https://github.com/tianjiangqiji/nova-image-studio 。本地定制源码仓库为 hanjiyou/nova-video-studio，应用源码许可证 AGPL-3.0，完整原文随包 resources/licenses/Nova-AGPL-3.0.txt。上游仓库：https://github.com/hanjiyou/nova-video-studio
+
+FFmpeg 6.1.1-essentials_build-www.gyan.dev 单独使用 GPL-3.0-or-later；它的 GPL、实际构建说明和来源清单位于 resources/licenses。FFmpeg/链接库对应源码及完整构建材料尚未齐备，链接和本声明不代替履行相应义务。本安装包不得公开分发或发布。
+
+详细说明：resources/本地离线测试版使用说明.md

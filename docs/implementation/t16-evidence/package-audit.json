@@ -1,0 +1,50 @@
+{
+  "startedAt": "2026-10-23T17:42:00.329Z",
+  "scope": "Actual installed final package, source byte equality, payload/license inventory and bundled-runtime diagnostic collector",
+  "checks": {
+    "no test harness or backend data in package": true,
+    "installed source bytes desktop/main.cjs": true,
+    "installed source bytes desktop/runtime.cjs": true,
+    "installed source bytes desktop/preload.cjs": true,
+    "installed source bytes desktop/ipc.cjs": true,
+    "installed source bytes desktop/diagnostic-actions.cjs": true,
+    "installed source bytes desktop/asset-actions.cjs": true,
+    "installed source bytes backend/storage/diagnostics.js": true,
+    "installed source bytes backend/storage/store.js": true,
+    "installed source bytes backend/tasks/service.js": true,
+    "installed resource bytes licenses/Nova-AGPL-3.0.txt": true,
+    "installed resource bytes 本地离线测试版使用说明.md": true,
+    "installed resource bytes LOCAL-TEST-NOTICE.txt": true,
+    "installed resource bytes licenses/FFmpeg-GPLv3.txt": true,
+    "installed resource bytes licenses/FFmpeg-build.txt": true,
+    "installed resource bytes licenses/notices/FFmpeg-SOURCE-STATUS.json": true,
+    "installed resource bytes licenses/notices/FFmpeg-NOTICE.md": true,
+    "installed resource bytes licenses/notices/THIRD-PARTY-NOTICES.md": true,
+    "pinned FFmpeg binary retained": true,
+    "Electron Chromium license files accompany EXE": true,
+    "source incompleteness and public distribution gate visible": true,
+    "installed bundled runtime SQLite and privacy projection": true,
+    "installed ASAR equals final local build": true
+  },
+  "collectorExit": 0,
+  "hashes": {
+    "exe": "5494d09729679678573fd2a3c21ad14e12df24d5b3740ee7c15ff1738c4c3c93",
+    "asar": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324",
+    "ffmpeg": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00"
+  },
+  "package": {
+    "name": "nova-image",
+    "version": "3.4.0",
+    "private": true,
+    "description": "Nova Studio - AI 视频/图像生成工作台",
+    "main": "desktop/main.cjs",
+    "dependencies": {
+      "better-sqlite3": "^13.0.3",
+      "ffmpeg-static": "5.3.0",
+      "undici": "^8.2.0",
+      "ws": "^8.20.0"
+    }
+  },
+  "status": "passed",
+  "finishedAt": "2026-10-23T17:42:01.004Z"
+}

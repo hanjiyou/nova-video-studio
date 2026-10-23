@@ -1,0 +1,480 @@
+{
+  "scope": "Read-only static direct-import dependency presence; API sets are virtual. Presence does not prove dynamic loads or token access and does not identify the 0xc0000135 missing module.",
+  "files": [
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ADVAPI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "RPCRT4.dll"
+        }
+      ],
+      "file": "d3dcompiler_47.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "USER32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ADVAPI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ole32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "OLEAUT32.dll"
+        }
+      ],
+      "file": "dxcompiler.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ole32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ADVAPI32.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-heap-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-runtime-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-string-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-stdio-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-utility-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-math-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-crt-convert-l1-1-0.dll"
+        }
+      ],
+      "file": "dxil.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        }
+      ],
+      "file": "ffmpeg.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        }
+      ],
+      "file": "libEGL.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "USER32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dxgi.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "GDI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "d3d9.dll"
+        }
+      ],
+      "file": "libGLESv2.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "VERSION.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WINMM.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WS2_32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ntdll.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "CRYPT32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "DWrite.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ffmpeg.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "COMCTL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "UIAutomationCore.DLL"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WTSAPI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ADVAPI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dbghelp.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "GDI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "OLEAUT32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "SHELL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "SHLWAPI.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "USER32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ole32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dwmapi.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-core-winrt-string-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-core-handle-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "IPHLPAPI.DLL"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-core-winrt-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "SETUPAPI.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "RPCRT4.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "pdh.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "PROPSYS.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "d3d11.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dxgi.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "MMDevAPI.DLL"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "MF.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "MFPlat.DLL"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "MFReadWrite.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "wevtapi.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "OLEACC.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "HID.DLL"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WINTRUST.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-shcore-scaling-l1-1-1.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-power-base-l1-1-0.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-core-realtime-l1-1-1.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "USERENV.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ncrypt.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "UxTheme.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "d3d12.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dcomp.dll"
+        },
+        {
+          "apiSetContract": true,
+          "filePresent": false,
+          "name": "api-ms-win-core-synch-l1-2-0.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "bcryptprimitives.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "Secur32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "CFGMGR32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "COMDLG32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WINHTTP.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "urlmon.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "WINUSB.DLL"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "dhcpcsvc.DLL"
+        }
+      ],
+      "file": "Nova Studio Offline Test.exe"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "USER32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "GDI32.dll"
+        }
+      ],
+      "file": "vk_swiftshader.dll"
+    },
+    {
+      "dependencies": [
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "KERNEL32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "ADVAPI32.dll"
+        },
+        {
+          "apiSetContract": false,
+          "filePresent": true,
+          "name": "CFGMGR32.dll"
+        }
+      ],
+      "file": "vulkan-1.dll"
+    }
+  ]
+}

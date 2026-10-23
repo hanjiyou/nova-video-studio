@@ -1,0 +1,56 @@
+{
+  "status": "passed_local_preparation_only",
+  "branch": "dev",
+  "head": "68b6ff7807edd66358c8c696178c248ece191681",
+  "stagedFiles": 0,
+  "commitOrPushPerformed": false,
+  "actualArtifactsRehashed": 5,
+  "installedHashes": {
+    "exe": "5494d09729679678573fd2a3c21ad14e12df24d5b3740ee7c15ff1738c4c3c93",
+    "asar": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324"
+  },
+  "installedPhaseCheckCounts": [
+    {
+      "phase": "first",
+      "count": 21,
+      "exactPackageHashes": "Pre-final-notices probe; see report for artifact scope."
+    },
+    {
+      "phase": "restart",
+      "count": 20,
+      "exactPackageHashes": "Pre-final-notices probe; see report for artifact scope."
+    },
+    {
+      "phase": "after-upgrade",
+      "count": 20,
+      "exactPackageHashes": "Final installer operation correlated by upgrade-record.json and package-audit.json; this probe did not yet record its own hashes."
+    },
+    {
+      "phase": "after-reinstall",
+      "count": 20,
+      "exactPackageHashes": {
+        "exe": "5494d09729679678573fd2a3c21ad14e12df24d5b3740ee7c15ff1738c4c3c93",
+        "asar": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324"
+      }
+    }
+  ],
+  "installedPayloadChecks": 23,
+  "finalInstallerRetentionOperations": 3,
+  "sourceSnapshotFilesVerified": 534,
+  "requirementDispositions": {
+    "offline_passed": 39,
+    "real_service_pending": 16,
+    "release_pending": 6
+  },
+  "publicDistributionAllowed": false,
+  "finalT16Accepted": false,
+  "knownGates": [
+    "T15 real generation",
+    "restricted-standard-token registration/start",
+    "independent clean machine",
+    "six manual/system interactions",
+    "historical NSIS heap failure root cause",
+    "complete FFmpeg corresponding source/build materials"
+  ],
+  "recordedAt": "2026-10-23T17:52:21.602Z"
+}

@@ -1,0 +1,55 @@
+{
+  "installerAppId": "com.novaimage.studio.offline-test",
+  "publicDistributionAllowed": false,
+  "installerUploadOrReleaseCreated": false,
+  "completeFFmpegCorrespondingSource": false,
+  "baselineCommit": "68b6ff7807edd66358c8c696178c248ece191681",
+  "sourceArchiveCount": 33,
+  "version": "3.4.0",
+  "realGenerationVerified": false,
+  "status": "local_offline_test_only_awaiting_review",
+  "artifacts": [
+    {
+      "kind": "installer",
+      "file": "E:\\Learn\\AI\\nova-image-studio\\release-t16\\Nova-Studio-3.4.0-offline-test-x64.exe",
+      "bytes": 133449192,
+      "sha256": "68fea9929c93d09b66df528e29eb9c357d7f69360a9db655bdea4a72151b81dd",
+      "fileVersion": "3.4.0.16",
+      "productVersion": "3.4.0",
+      "signatureStatus": "NotSigned"
+    },
+    {
+      "kind": "unpacked-executable",
+      "file": "E:\\Learn\\AI\\nova-image-studio\\release-t16\\win-unpacked\\Nova Studio Offline Test.exe",
+      "bytes": 225533952,
+      "sha256": "5494d09729679678573fd2a3c21ad14e12df24d5b3740ee7c15ff1738c4c3c93",
+      "fileVersion": "43.4.0",
+      "productVersion": "43.4.0",
+      "signatureStatus": "NotSigned"
+    },
+    {
+      "kind": "asar",
+      "file": "E:\\Learn\\AI\\nova-image-studio\\release-t16\\win-unpacked\\resources\\app.asar",
+      "bytes": 9047585,
+      "sha256": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324"
+    },
+    {
+      "kind": "ffmpeg",
+      "file": "E:\\Learn\\AI\\nova-image-studio\\release-t16\\win-unpacked\\resources\\app.asar.unpacked\\node_modules\\ffmpeg-static\\ffmpeg.exe",
+      "bytes": 82797568,
+      "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00",
+      "fileVersion": null,
+      "productVersion": null,
+      "signatureStatus": "NotSigned"
+    },
+    {
+      "kind": "application-source-review-zip",
+      "file": "E:\\Learn\\AI\\nova-image-studio\\release-t16\\Nova-Studio-3.4.0-offline-review-source.zip",
+      "bytes": 4080157,
+      "sha256": "065bcb9f5340334be506c4995cd719942f4e063cd37f991892eaf45e54e98a85"
+    }
+  ],
+  "builtFromUncommittedWorkingTree": true,
+  "sourceArchiveBytes": 340262612,
+  "installerBuildVersion": "3.4.0.16"
+}

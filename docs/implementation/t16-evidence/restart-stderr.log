@@ -1,0 +1,4 @@
+
+DevTools listening on ws://127.0.0.1:63792/devtools/browser/5dba0f90-137f-492b-ba55-78ac857813d5
+(node:32200) [DEP0180] DeprecationWarning: fs.Stats constructor is deprecated.
+(Use `Nova Studio Offline Test --trace-deprecation ...` to show where the warning was created)

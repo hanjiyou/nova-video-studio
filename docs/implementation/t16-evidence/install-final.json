@@ -1,0 +1,10 @@
+{
+  "phase": "final installer over pilot",
+  "startedAt": "2026-10-23T17:28:48.3227076Z",
+  "finishedAt": "2026-10-23T17:28:56.9307446Z",
+  "identity": "nspc-hanjiyou\\codexsandboxoffline",
+  "exitCode": 0,
+  "installerSha256": "5fec6779f7c22b7e6a42e09b76e19dad099d794102290792d9c2805d76e21535",
+  "executablePresent": true,
+  "sourceStatusNotice": true
+}

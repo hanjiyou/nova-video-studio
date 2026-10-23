@@ -38,6 +38,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  if (window.novaDesktop) { document.documentElement.setAttribute('data-theme', 'dark'); return; }
                   const theme = window.localStorage.getItem('theme');
                   if (theme === 'dark' || theme === 'light') {
                     document.documentElement.setAttribute('data-theme', theme);
@@ -58,6 +59,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
+                  if (window.novaDesktop) return;
                   var stored = window.localStorage.getItem('nova-wide-mode');
                   var wide = stored === 'enabled' && window.innerWidth >= 1280;
                   if (wide) {

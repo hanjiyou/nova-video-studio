@@ -1,0 +1,50 @@
+[
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "rejected"
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "unsupported"
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "slow"
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "good"
+  },
+  {
+    "phase": 2,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "good"
+  },
+  {
+    "phase": 2,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "good"
+  },
+  {
+    "phase": 2,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "good"
+  },
+  {
+    "phase": 3,
+    "method": "GET",
+    "path": "/v1/models",
+    "credentialCase": "good"
+  }
+]

@@ -12,7 +12,7 @@ function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtime
     channels.push(channel);
     ipcMain.handle(channel, async (event, ...args) => {
       if (!policy.isTrustedSender(event)) return { ok: false, code: 'IPC_FORBIDDEN' };
-      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError || DETAILS[error.code] ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
+      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError || error.statusCode || DETAILS[error.code] ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
     });
   }
   register('nova:runtime-info', (...args) => args.length ? { ok: false, code: 'INVALID_ARGUMENT' } : { ok: true, ...runtimeInfo() });
@@ -24,6 +24,22 @@ function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtime
       return {ok:true,connection:service[method](args[0])};
     });
   }
+  register('nova:validate-and-save-connection', async (...args) => {
+    if(args.length!==1)return {ok:false,code:'INVALID_ARGUMENT'};
+    const service=getConnectionService();if(!service)return {ok:false,code:'CONNECTION_SERVICE_NOT_READY'};
+    return {ok:true,...await service.validateAndSave(args[0],getAssetService())};
+  });
+  register('nova:cancel-connection-validation', (...args) => {
+    if(args.length!==1)return {ok:false,code:'INVALID_ARGUMENT'};
+    const service=getConnectionService();if(!service)return {ok:false,code:'CONNECTION_SERVICE_NOT_READY'};
+    return {ok:true,...service.cancelCandidate(args[0])};
+  });
+  register('nova:complete-workbench-setup', (...args) => {
+    if(args.length!==1)return {ok:false,code:'INVALID_ARGUMENT'};
+    const service=getConnectionService();if(!service)return {ok:false,code:'CONNECTION_SERVICE_NOT_READY'};
+    return {ok:true,...service.completeSetup(args[0],getAssetService())};
+  });
+  register('nova:check-output-directory', (...args) => args.length ? {ok:false,code:'INVALID_ARGUMENT'} : {ok:true,...getAssetService()?.checkOutputDirectory()});
   register('nova:choose-output-directory', async (...args) => {
     if (args.length) return { ok: false, code: 'INVALID_ARGUMENT' };
     const result = await dialog.showOpenDialog(getWindow(), { properties: ['openDirectory', 'createDirectory'] });

@@ -1,0 +1,26 @@
+{
+  "phase": 3,
+  "platform": "win32",
+  "checks": {
+    "advanced desktop background features stay closed": true,
+    "real Windows safeStorage": true,
+    "check success saves resumable defaults step atomically": true,
+    "no generated or fake task records": true,
+    "public state excludes synthetic credential": true,
+    "desktop does not initialize legacy browser stores": true
+  },
+  "scope": "Actual Electron UI DOM events, native safeStorage/SQLite and restart. Provider is loopback synthetic; system dialog target is a controlled test double. No paid generation, manual dialog or installed-package acceptance.",
+  "lastAction": "click 测试连接并继续",
+  "browserStorageKeys": [],
+  "window": {
+    "bounds": {
+      "x": 304,
+      "y": 102,
+      "width": 1440,
+      "height": 902
+    },
+    "zoom": 1
+  },
+  "bodyText": "影像工作台\n欢迎使用影像工作台\n\n连接你的生成服务，开始创作图片和视频\n\n作品保存在本机。生成时会将提示词和所选图片发送到配置的服务。\n1\n连接服务\n2\n设置默认项\n选择默认项，开始创作\n\n默认项仅用于新草稿与新任务；已有草稿、任务快照和结果目录保持原记录。\n\n模型列表与能力说明\n图片默认模型\n\n当前模型列表缺少 gpt-image-2.5-flare；保留该完整型号，相关生成暂不可用。请明确选择替代型号，应用不会自动替换。\n\n视频默认模型\n\n列表中可见；具体模式和规格仍需独立能力证据。\n\n作品保存位置\n\nstorage\n\n本机受管目录 · 选择后验证可写并立即应用于新任务。已有文件不自动搬迁。\n\n选择文件夹\n\n视频预设为 6 秒、16:9、1280×720；双图是有序参考，不承诺首尾帧锁定。\n\n上一步\n进入工作台\n稍后设置，进入工作台\n最近只读检查通过；模型可见不代表生成模式已验证。",
+  "status": "passed"
+}

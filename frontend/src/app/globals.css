@@ -628,3 +628,142 @@ body {
 .animate-progress-indeterminate {
   animation: progress-indeterminate 1.4s ease-in-out infinite;
 }
+/* Desktop workbench: one restrained dark/purple system, independent of legacy Web themes. */
+.nova-workbench { --wb-bg:#101116; --wb-panel:#1a1b23; --wb-soft:#22232e; --wb-border:#343541; --wb-text:#f2f0fa; --wb-muted:#aaa8ba; --wb-purple:#b39aff; color:var(--wb-text); background:var(--wb-bg); min-height:100vh; font-family:Arial,"Microsoft YaHei",sans-serif; font-size:14px; line-height:1.6; color-scheme:dark; }
+.nova-workbench * { box-sizing:border-box; }
+.nova-workbench h1,.nova-workbench h2,.nova-workbench h3,.nova-workbench p { margin:0; }
+.nova-workbench h1 { font-size:28px; line-height:1.3; font-weight:650; }
+.nova-workbench h2 { font-size:16px; font-weight:600; }
+.nova-workbench h3 { font-size:15px; font-weight:500; }
+.nova-workbench button,.nova-workbench input,.nova-workbench select,.nova-workbench textarea { font:inherit; }
+.nova-workbench button { display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer; background:#292a36; color:var(--wb-text); border:1px solid #434453; padding:9px 15px; border-radius:8px; transition:background .15s,border-color .15s; white-space:normal; }
+.nova-workbench button:hover:not(:disabled) { background:#353545; border-color:#77718e; }
+.nova-workbench button:disabled { opacity:.42; cursor:not-allowed; }
+.nova-workbench :is(button,input,select,textarea,a):focus-visible { outline:2px solid var(--wb-purple); outline-offset:3px; }
+.nova-workbench button.wb-primary { color:#fff; background:linear-gradient(110deg,#7355db,#8b63e9); border-color:#9b7cee; font-weight:600; }
+.nova-workbench button.wb-primary:hover:not(:disabled) { background:#8667e3; }
+.nova-workbench button.wb-link { border-color:transparent; padding-left:0; padding-right:0; background:transparent; color:var(--wb-purple); }
+.nova-workbench input,.nova-workbench textarea,.nova-workbench select { display:block; width:100%; color:var(--wb-text); border:1px solid #494a5b; border-radius:8px; background:#242530; padding:11px 13px; min-height:44px; }
+.nova-workbench textarea { resize:vertical; min-height:170px; }
+.nova-workbench input::placeholder,.nova-workbench textarea::placeholder { color:#9290a4; }
+.nova-workbench label { display:flex; flex-direction:column; gap:9px; font-weight:500; }
+.nova-workbench small,.wb-help { font-size:12px; color:var(--wb-muted); font-weight:normal; overflow-wrap:anywhere; }
+.wb-error { color:#ffb4bd; font-size:13px; overflow-wrap:anywhere; }
+.wb-warning { color:#e9c68d; font-size:12px; overflow-wrap:anywhere; }
+.wb-notice { border:1px solid #655881; background:#282238; border-radius:9px; padding:12px 15px; color:#d3c6f7; overflow-wrap:anywhere; }
+.wb-brand { display:flex; align-items:center; gap:11px; font-size:17px; font-weight:600; color:var(--wb-text); text-decoration:none; }
+.wb-brand>span { display:flex; align-items:center; justify-content:center; width:35px; height:35px; border-radius:10px; background:linear-gradient(145deg,#ae8bff,#7351df); color:white; }
+.wb-brand small { display:block; font-size:9px; letter-spacing:2.1px; color:#a9a5b9; }
+.wb-shell { display:grid; grid-template-columns:202px minmax(0,1fr); }
+.wb-sidebar { padding:29px 17px 22px; background:#16171e; border-right:1px solid #2b2c37; display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+.wb-sidebar .wb-brand { margin:0 2px 39px; }
+.wb-sidebar nav { display:flex; flex-direction:column; gap:10px; }
+.wb-sidebar nav button { justify-content:flex-start; border-color:transparent; background:transparent; color:#b0adbe; padding:12px 15px; }
+.wb-sidebar nav button[aria-current=page] { border-color:#53416e; background:linear-gradient(90deg,#3a2b56,#292236); color:#d9c7ff; }
+.wb-sidebar-bottom { margin-top:auto; padding:17px 5px 0; border-top:1px solid #30313d; color:#c1bdcc; font-size:12px; }
+.wb-sidebar-bottom small { display:block; margin-top:9px; }
+.wb-local-indicator { display:inline-block; width:6px; height:6px; margin-right:8px; background:#a796cc; border-radius:50%; }
+.wb-main { min-width:0; padding:27px 30px 35px; max-width:1800px; width:100%; }
+.wb-page-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:23px; gap:15px; }
+.wb-page-header p { font-size:12px; color:#aaa5b8; margin-bottom:6px; letter-spacing:1px; }
+.wb-local-pill { border:1px solid #3e354e; border-radius:20px; color:#c7b4e8; padding:5px 13px; font-size:12px; }
+.wb-connection-banner { display:flex; align-items:center; justify-content:space-between; gap:16px; border:1px solid #4c415e; border-radius:10px; background:#24202e; padding:13px 17px; margin-bottom:23px; color:#d2c5eb; font-size:13px; overflow-wrap:anywhere; }
+.wb-connection-banner small { display:block; margin-top:3px; }
+.wb-connection-banner button { flex-shrink:0; background:transparent; border-color:#685180; color:#d4bdff; padding:6px 13px; }
+.wb-mode-row { display:flex; align-items:center; justify-content:space-between; gap:15px; margin-bottom:17px; color:#b4afc3; font-size:12px; }
+.wb-mode-row [role=tablist] { display:flex; padding:4px; gap:4px; background:#20212a; border:1px solid #343440; border-radius:10px; }
+.wb-mode-row [role=tab] { background:transparent; border-color:transparent; color:#a9a5b8; padding:7px 15px; }
+.wb-mode-row [role=tab][aria-selected=true] { color:#e1d2ff; background:#42305e; border-color:#695187; }
+.wb-workspace-grid { display:grid; grid-template-columns:minmax(320px,.94fr) minmax(320px,1.14fr); gap:21px; align-items:stretch; }
+.wb-panel { padding:23px; border:1px solid var(--wb-border); border-radius:13px; background:var(--wb-panel); box-shadow:0 4px 15px #0000000b; min-width:0; }
+.wb-section-heading { display:flex; justify-content:space-between; align-items:center; gap:15px; margin-bottom:20px; }
+.wb-section-heading span { font-size:11px; color:#a9a4b9; }
+.wb-editor { display:flex; flex-direction:column; gap:13px; }
+.wb-editor>.wb-section-heading { margin-bottom:4px; }
+.wb-references { border:1px solid #3d3c4c; border-radius:10px; padding:15px; background:#1e1e29; margin:5px 0; }
+.wb-references .wb-section-heading { margin-bottom:13px; }
+.wb-reference-grid { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:12px; }
+.wb-reference { width:calc(50% - 6px); max-width:170px; position:relative; border:1px solid #484152; border-radius:8px; padding:6px; }
+.wb-reference img { width:100%; height:100px; object-fit:contain; background:#14141c; border-radius:5px; }
+.wb-reference p { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11px; color:#b0a7bd; }
+.wb-reference-number { position:absolute; top:8px; left:8px; padding:1px 7px; background:#634990; border-radius:5px; font-size:11px; }
+.nova-workbench .wb-remove { position:absolute; right:8px; top:8px; padding:2px; background:#2a2338e6; }
+.wb-reference-order { display:flex; gap:5px; margin-top:5px; }
+.nova-workbench .wb-reference-order button { padding:2px 8px; }
+.nova-workbench .wb-upload { display:flex; flex-direction:column; justify-content:center; gap:6px; min-height:120px; width:145px; border:1px dashed #655575; background:#272131; color:#bba5df; padding:13px 7px; }
+.wb-character-count { margin-top:-8px !important; text-align:right; font-size:11px; color:#a69eb5; }
+.wb-specs { display:flex; gap:10px; flex-wrap:wrap; }
+.wb-specs span { border:1px solid #44404e; background:#25222e; border-radius:5px; padding:3px 9px; font-size:11px; color:#c1b4d5; }
+.wb-editor-footer { margin-top:auto; padding-top:15px; border-top:1px solid #35323e; display:flex; flex-direction:column; gap:13px; }
+.wb-editor-footer .wb-primary { width:100%; }
+.wb-preview { display:flex; flex-direction:column; min-height:510px; }
+.wb-empty { flex:1; min-height:275px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:15px; text-align:center; color:#aaa3bb; padding:35px 15px; }
+.wb-empty svg { color:#89749f; stroke-width:1.1; }
+.wb-empty h3 { color:#d6cfe4; }
+.wb-empty p { font-size:12px; max-width:300px; }
+.wb-preview-actions { display:flex; justify-content:flex-end; gap:10px; padding-top:16px; border-top:1px solid #35323e; }
+.wb-recents { margin-top:22px; }
+.wb-recents .wb-section-heading { margin-bottom:13px; }
+.wb-recent-list { display:flex; flex-wrap:wrap; gap:12px; }
+.wb-recent-list article { border:1px solid #464050; border-radius:9px; padding:12px; max-width:260px; }
+.wb-recent-list article>span { color:#c7adee; font-size:12px; }
+.wb-recent-list article p { overflow-wrap:anywhere; }
+.wb-form { display:flex; flex-direction:column; gap:18px; }
+.wb-key-field { position:relative; display:block; }
+.wb-key-field input { padding-right:48px; }
+.nova-workbench .wb-icon { position:absolute; top:7px; right:8px; padding:5px; border-color:transparent; background:transparent; }
+.wb-actions { display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:center; gap:12px; padding-top:17px; margin-top:4px; border-top:1px solid #3b3746; }
+.wb-actions .wb-link { margin-right:auto; }
+.wb-saved { color:#c1b5d2; display:flex; flex-wrap:wrap; align-items:center; gap:9px; padding:11px 13px; border:1px solid #40364f; border-radius:8px; background:#24202d; font-size:12px; overflow-wrap:anywhere; }
+.wb-saved span { color:#e9c68d; }
+.wb-settings { max-width:960px; display:flex; flex-direction:column; gap:22px; }
+.wb-settings>.wb-section-heading { margin-bottom:0; }
+.wb-directory { display:flex; align-items:center; justify-content:space-between; gap:15px; padding:16px; border:1px solid #444050; border-radius:9px; background:#22212c; }
+.wb-directory button { flex-shrink:0; }
+.wb-label { display:block; font-size:13px; color:#bdb2cf; margin-bottom:7px; }
+.wb-directory p { overflow-wrap:anywhere; }
+.wb-danger-zone { border-top:1px solid #3e3545; padding-top:19px; margin-top:10px; }
+.nova-workbench .wb-danger-zone button { border-color:#70424e; color:#eeb9c3; background:#30232b; }
+.wb-danger-zone [role=alertdialog] { padding:15px; border:1px solid #7e4e61; background:#30242c; border-radius:9px; margin-top:15px; font-size:13px; }
+.wb-library-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:18px; margin-top:22px; }
+.wb-library-grid article { border:1px solid #40394b; border-radius:9px; overflow:hidden; padding:10px; }
+.wb-library-grid img,.wb-library-placeholder { width:100%; height:150px; object-fit:contain; background:#14141c; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+.wb-library-grid article p { overflow-wrap:anywhere; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.wb-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px; padding:30px; }
+.wb-loading-icon { color:var(--wb-purple); }
+.wb-onboarding { padding-bottom:70px; background:radial-gradient(ellipse at 74% 12%,#29213d77,transparent 56%),#15161e; }
+.wb-onboarding>header { border-bottom:1px solid #35323f; padding:14px 25px; }
+.wb-welcome { text-align:center; margin:45px 20px 30px; }
+.wb-welcome h1 { font-size:36px; margin-bottom:12px; }
+.wb-welcome h1 span { color:#b69afa; }
+.wb-welcome>p { font-size:18px; color:#e1dae9; margin-bottom:12px; }
+.wb-welcome small { color:#aaa1b8; }
+.wb-onboarding-card { margin:0 auto; width:min(800px,calc(100% - 45px)); padding:29px 39px; border:1px solid #4b435c; border-radius:14px; background:linear-gradient(135deg,#242530ed,#1c1d27ed); box-shadow:0 22px 60px #00000026; }
+.wb-steps { display:flex; justify-content:center; gap:75px; list-style:none; padding:0; margin:0 0 29px; color:#9690a5; }
+.wb-steps li { display:flex; align-items:center; gap:11px; font-size:15px; }
+.wb-steps b { display:inline-flex; width:31px; height:31px; align-items:center; justify-content:center; border-radius:50%; border:1px solid #615771; font-weight:500; }
+.wb-steps [aria-current=step] { color:#bfa0ff; }
+.wb-steps [aria-current=step] b { background:#a586ed; color:#1d1530; border-color:#b69cfa; }
+.wb-onboarding-footer { position:fixed; bottom:0; left:0; right:0; border-top:1px solid #38333f; padding:12px 25px; color:#aaa1b7; background:#191a23; font-size:12px; }
+@media(min-width:1600px) { .wb-main { padding:35px 42px; } .wb-workspace-grid { gap:27px; } .wb-panel { padding:27px; } }
+@media(max-width:1120px) { .wb-shell { grid-template-columns:166px minmax(0,1fr); } .wb-sidebar { padding:24px 11px; } .wb-main { padding:23px 20px; } .wb-workspace-grid { grid-template-columns:minmax(0,1fr); } .wb-preview { min-height:380px; } .wb-sidebar .wb-brand { font-size:14px; gap:7px; } }
+@media(max-width:650px) { .wb-shell { display:block; } .wb-sidebar { position:static; height:auto; padding:15px; } .wb-sidebar .wb-brand { margin-bottom:15px; } .wb-sidebar nav { flex-direction:row; gap:4px; flex-wrap:wrap; } .wb-sidebar nav button { padding:8px 10px; } .wb-sidebar-bottom { display:none; } .wb-main { padding:19px 14px; } .wb-page-header h1 { font-size:24px; } .wb-local-pill { display:none; } .wb-connection-banner,.wb-directory { align-items:flex-start; flex-direction:column; } .wb-mode-row { align-items:flex-start; flex-direction:column; } .wb-panel { padding:17px; } .wb-welcome { margin-top:30px; } .wb-welcome h1 { font-size:26px; } .wb-welcome>p { font-size:15px; } .wb-onboarding-card { padding:23px 20px; } .wb-steps { gap:25px; } }
+.wb-model-cache { border:1px solid #484051; border-radius:9px; padding:13px 15px; background:#24202d; }
+.wb-model-cache summary { cursor:pointer; color:#cfbae9; font-size:13px; }
+.wb-model-cache p { margin-top:10px; }
+.wb-model-cache ul { list-style:none; padding:0; max-height:220px; overflow:auto; margin:12px 0; }
+.wb-model-cache li { display:flex; justify-content:space-between; gap:16px; border-bottom:1px solid #403649; padding:7px 0; font-size:12px; overflow-wrap:anywhere; }
+.wb-model-cache li span { color:#b4a7c2; flex-shrink:0; }
+@media(min-width:651px) {
+  .wb-onboarding .wb-welcome { margin:28px 20px 24px; }
+  .wb-onboarding .wb-welcome h1 { font-size:31px; margin-bottom:9px; }
+  .wb-onboarding .wb-welcome>p { margin-bottom:8px; }
+  .wb-onboarding-card { padding:24px 35px; }
+  .wb-onboarding-card .wb-steps { margin-bottom:22px; }
+  .wb-onboarding-card .wb-form { gap:14px; }
+  .wb-onboarding-card .wb-form label { display:grid; grid-template-columns:115px minmax(0,1fr); align-items:center; gap:14px; }
+  .wb-onboarding-card form.wb-form>.wb-help { margin-left:129px; margin-top:-5px; }
+  .wb-onboarding-card .wb-saved { padding:8px 12px; }
+}
+/* Avoid the legacy body's implicit scroll container breaking desktop sticky navigation. */
+body:has(.nova-workbench) { overflow-x:clip; }

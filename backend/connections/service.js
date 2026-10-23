@@ -1,6 +1,7 @@
 'use strict';
 const { randomUUID } = require('node:crypto');
 const { UUID } = require('../storage/store');
+const { containsCredential } = require('./redaction');
 const { OPENSOSEN_URL, PRESET_MODELS, normalizeBaseUrl, seedCapabilities, listCapabilities } = require('./capabilities');
 const publicError = (code, message, statusCode = 400) => Object.assign(new Error(message), { code, statusCode, connectionError: true });
 function exact(value, keys) {
@@ -21,6 +22,8 @@ function model(value, fallback) {
 }
 function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...args), clock = () => Date.now(), checkTimeoutMs = 8000, cacheTtlMs = 300000 }) {
     const inFlight = new Map();
+    let candidate = null;
+    function invalidateCandidate() { if (candidate) { candidate.controller.abort(); candidate = null; } }
     const versionRow = versionId => db.prepare(`SELECT v.*,p.protocol,p.default_image_model,p.default_video_model FROM connection_versions v JOIN connection_preferences p ON p.connection_version_id=v.id WHERE v.id=?`).get(id(versionId));
     const connectionRow = connectionId => db.prepare('SELECT * FROM connections WHERE id=?').get(id(connectionId));
     const getVersion = versionId => {
@@ -44,7 +47,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             hasCredential: credentialState !== 'missing', credentialState, validationState: check?.validation_state || 'unverified', lastCheckedAt: check?.last_checked_at || null, lastSuccessAt: check?.last_success_at || null, modelsFetchedAt: check?.models_fetched_at || null, errorCode: check?.error_code || null,
             defaultImageModel: version.default_image_model, defaultVideoModel: version.default_video_model, isDefault: currentId() === connectionId };
     }
-    function save(input) {
+    function prepare(input) {
         exact(input, ['connectionId', 'expectedVersionId', 'displayName', 'baseUrl', 'provider', 'apiKey', 'defaultImageModel', 'defaultVideoModel']);
         const connectionId = input.connectionId ? id(input.connectionId) : randomUUID();
         const previous = input.connectionId ? active(connectionId) : null;
@@ -64,8 +67,13 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             throw publicError('CREDENTIAL_REQUIRED', '修改服务地址时请重新输入凭据，避免向其他服务发送旧凭据。', 409);
         const image = model(input.defaultImageModel, old?.default_image_model || PRESET_MODELS[0]);
         const video = model(input.defaultVideoModel, old?.default_video_model || PRESET_MODELS[2]);
-        if (input.apiKey && [displayName, baseUrl, image, video].some(value => value.includes(input.apiKey)))
+        if (input.apiKey && [displayName, baseUrl, image, video].some(value => containsCredential(value,input.apiKey)))
             throw publicError('CONNECTION_INPUT_INVALID', '凭据不能出现在连接名称、地址或模型中。');
+        return { connectionId, previous, old, baseUrl, provider, displayName, image, video };
+    }
+    function save(input) { invalidateCandidate(); return persist(input); }
+    function persist(input) {
+        const { connectionId, previous, old, baseUrl, provider, displayName, image, video } = prepare(input);
         return db.transaction(() => {
             const now = new Date(clock()).toISOString(), versionId = randomUUID();
             const credentialRef = input.apiKey === undefined ? (old?.credential_ref || null) : vault.store(input.apiKey);
@@ -81,6 +89,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         })();
     }
     function clear(input) {
+        invalidateCandidate();
         exact(input, ['connectionId', 'expectedVersionId']);
         const connection = active(input.connectionId);
         if (input.expectedVersionId !== connection.current_version_id)
@@ -95,6 +104,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         })();
     }
     function select(input) {
+        invalidateCandidate();
         exact(input, ['connectionId', 'expectedVersionId']);
         const connection = active(input.connectionId);
         if (input.expectedVersionId !== connection.current_version_id)
@@ -113,23 +123,12 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         const ids = [...new Set([...PRESET_MODELS, ...(visible || [])])];
         return { connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, models: ids.map(modelId => ({ model: modelId, visibility: visible ? (visible.includes(modelId) ? 'visible' : 'absent') : 'unknown' })), capabilities: listCapabilities(db, version.provider, version.base_url) };
     }
-    async function checkConnection(connectionId, input = {}) {
-        exact(input, ['connectionVersionId', 'force']);
-        const connection = active(connectionId), versionId = connection.current_version_id;
-        if (input.connectionVersionId !== versionId)
-            throw publicError('CONNECTION_VERSION_CONFLICT', '连接已更新，请重新检查。', 409);
-        if (input.force !== undefined && typeof input.force !== 'boolean')
-            throw publicError('CONNECTION_INPUT_INVALID', '检查参数无效。');
-        const old = db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(versionId);
-        if (!input.force && old?.last_checked_at && clock() - Date.parse(old.last_checked_at) < cacheTtlMs)
-            return { stale: false, cached: true, connection: summary(connectionId), ...models(connectionId) };
-        if (inFlight.has(versionId))
-            return inFlight.get(versionId);
-        const pending = (async () => {
-            let state = 'offline', errorCode = 'CONNECTION_OFFLINE', visible = null;
+    async function probeModels(getCredential, signal) {
+            let state = 'offline', errorCode = 'CONNECTION_OFFLINE', visible = null, httpStatus = null;
             try {
-                const auth = getAuth(versionId);
-                const response = await fetchImpl(auth.baseUrl + '/models', { method: 'GET', headers: { Authorization: 'Bearer ' + auth.apiKey, Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.timeout(checkTimeoutMs) });
+                const auth = getCredential();
+                const response = await fetchImpl(auth.baseUrl + '/models', { method: 'GET', headers: { Authorization: 'Bearer ' + auth.apiKey, Accept: 'application/json' }, redirect: 'manual', signal: AbortSignal.any([AbortSignal.timeout(checkTimeoutMs), ...(signal ? [signal] : [])]) });
+                httpStatus = response.status;
                 if (response.status >= 300 && response.status < 400) {
                     state = 'redirect_rejected';
                     errorCode = 'CONNECTION_REDIRECT_REJECTED';
@@ -177,6 +176,22 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
                     errorCode = 'MODEL_LIST_INVALID';
                 }
             }
+        return { state, errorCode, visible, httpStatus };
+    }
+    async function checkConnection(connectionId, input = {}) {
+        exact(input, ['connectionVersionId', 'force']);
+        const connection = active(connectionId), versionId = connection.current_version_id;
+        if (input.connectionVersionId !== versionId)
+            throw publicError('CONNECTION_VERSION_CONFLICT', '连接已更新，请重新检查。', 409);
+        if (input.force !== undefined && typeof input.force !== 'boolean')
+            throw publicError('CONNECTION_INPUT_INVALID', '检查参数无效。');
+        const old = db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(versionId);
+        if (!input.force && old?.last_checked_at && clock() - Date.parse(old.last_checked_at) < cacheTtlMs)
+            return { stale: false, cached: true, connection: summary(connectionId), ...models(connectionId) };
+        if (inFlight.has(versionId))
+            return inFlight.get(versionId);
+        const pending = (async () => {
+            const { state, errorCode, visible } = await probeModels(() => getAuth(versionId));
             if (active(connectionId).current_version_id !== versionId)
                 return { stale: true, cached: false, connectionVersionId: versionId };
             const now = new Date(clock()).toISOString();
@@ -192,6 +207,73 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             inFlight.delete(versionId);
         }
     }
-    return { save, clear, select, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, check: checkConnection, getAuth };
+    function cancelCandidate(input) {
+        exact(input, ['operationId']); id(input.operationId);
+        if (candidate?.id === input.operationId) invalidateCandidate();
+        return { cancelled: true };
+    }
+    async function validateAndSave(input, store) {
+        exact(input, ['connectionId','expectedVersionId','displayName','baseUrl','provider','apiKey','defaultImageModel','defaultVideoModel','operationId','expectedOnboardingRevision']);
+        const { operationId, expectedOnboardingRevision, ...fields } = input;
+        id(operationId); invalidateCandidate();
+        // Validate the same immutable field set used by persist, before any network call.
+        const prepared = prepare(fields);
+        const key = fields.apiKey === undefined ? vault.read(prepared.old?.credential_ref) : fields.apiKey;
+        if (typeof key !== 'string' || !key || key.length > 4096 || key.trim() !== key || /\p{Cc}/u.test(key)) throw publicError('CREDENTIAL_REQUIRED','请填写有效的 API Key。');
+        if ([prepared.displayName,prepared.baseUrl,prepared.image,prepared.video].some(value=>containsCredential(value,key))) throw publicError('CONNECTION_INPUT_INVALID','凭据不能出现在连接名称、地址或模型中。');
+        if (expectedOnboardingRevision !== undefined && (!Number.isInteger(expectedOnboardingRevision) || expectedOnboardingRevision < 0 || !store)) throw publicError('CONNECTION_INPUT_INVALID','引导版本无效。');
+        invalidateCandidate();
+        const operation = { id: operationId, controller: new AbortController() }; candidate = operation;
+        try {
+            const result = await probeModels(() => ({ baseUrl: prepared.baseUrl, apiKey: key }), operation.controller.signal);
+            if (candidate !== operation || operation.controller.signal.aborted) return { stale: true, cancelled: true };
+            if (result.state !== 'verified') {
+                // An unchanged saved configuration may record its latest failure, while a
+                // failed edited candidate never mutates the active profile or credential.
+                let currentConnection;
+                if (prepared.previous && fields.apiKey === undefined) {
+                    const old=summary(prepared.connectionId);
+                    if(old.connectionVersionId===fields.expectedVersionId&&old.baseUrl===prepared.baseUrl&&old.provider===prepared.provider&&old.displayName===prepared.displayName){
+                        const check=db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(old.connectionVersionId),now=new Date(clock()).toISOString();
+                        db.prepare('INSERT INTO connection_checks VALUES(?,?,?,?,?,?,?) ON CONFLICT(connection_version_id) DO UPDATE SET validation_state=excluded.validation_state,last_checked_at=excluded.last_checked_at,error_code=excluded.error_code')
+                            .run(old.connectionVersionId,result.state,now,check?.last_success_at||null,check?.models_fetched_at||null,check?.models_json||'[]',result.errorCode);
+                        currentConnection=summary(prepared.connectionId);
+                    }
+                }
+                return { stale:false,validationState:result.state,errorCode:result.errorCode,httpStatus:result.httpStatus,...(currentConnection?{currentConnection}: {}) };
+            }
+            // No await between the host revision check and the transaction. Edits/cancel/new
+            // operations invalidate this capability before it can create any persisted row.
+            return db.transaction(() => {
+                if (candidate !== operation || operation.controller.signal.aborted) return { stale: true, cancelled: true };
+                const old = prepared.previous ? summary(prepared.connectionId) : null;
+                const unchanged = old && fields.apiKey === undefined && old.baseUrl === prepared.baseUrl && old.provider === prepared.provider && old.displayName === prepared.displayName && old.defaultImageModel === prepared.image && old.defaultVideoModel === prepared.video;
+                // Revalidate the current version even when reusing an unchanged saved connection.
+                prepare(fields);
+                const connection = unchanged ? old : persist(fields), now = new Date(clock()).toISOString();
+                db.prepare('INSERT INTO connection_checks(connection_version_id,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code) VALUES(?,?,?,?,?,?,?) ON CONFLICT(connection_version_id) DO UPDATE SET validation_state=excluded.validation_state,last_checked_at=excluded.last_checked_at,last_success_at=excluded.last_success_at,models_fetched_at=excluded.models_fetched_at,models_json=excluded.models_json,error_code=excluded.error_code')
+                    .run(connection.connectionVersionId,'verified',now,now,now,JSON.stringify(result.visible),null);
+                const onboarding = expectedOnboardingRevision === undefined ? undefined : store.putSetting('onboarding',{ value:{dismissed:false,step:'defaults'},expectedRevision:expectedOnboardingRevision });
+                return { stale:false, connection:summary(connection.connectionId), ...models(connection.connectionId), ...(onboarding ? {onboarding} : {}) };
+            })();
+        } finally { if (candidate === operation) candidate = null; }
+    }
+    function completeSetup(input, store) {
+        exact(input,['connectionId','expectedVersionId','defaultImageModel','defaultVideoModel','expectedOnboardingRevision']);
+        if (!store) throw publicError('CONNECTION_SERVICE_NOT_READY','本机设置服务未就绪。');
+        const {expectedOnboardingRevision,...fields}=input;
+        const old=active(fields.connectionId);if(old.current_version_id!==fields.expectedVersionId)throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新读取。',409);
+        const previous=summary(fields.connectionId);prepare(fields);store.checkOutputDirectory();invalidateCandidate();
+        return db.transaction(()=>{
+            const unchanged=fields.defaultImageModel===previous.defaultImageModel&&fields.defaultVideoModel===previous.defaultVideoModel;
+            const connection=unchanged?previous:persist(fields);
+            // Only defaults changed: origin and credential are identical, so a prior read-only
+            // check still describes this exact service. Tasks continue to reference old versions.
+            if(!unchanged)db.prepare('INSERT INTO connection_checks SELECT ?,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code FROM connection_checks WHERE connection_version_id=?').run(connection.connectionVersionId,previous.connectionVersionId);
+            const onboarding=expectedOnboardingRevision===undefined?undefined:store.putSetting('onboarding',{value:{dismissed:true,step:'completed'},expectedRevision:expectedOnboardingRevision});
+            return {connection:summary(connection.connectionId),...(onboarding?{onboarding}:{})};
+        })();
+    }
+    return { save, clear, select, validateAndSave, cancelCandidate, completeSetup, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, check: checkConnection, getAuth };
 }
 module.exports = { createConnectionService, publicError };

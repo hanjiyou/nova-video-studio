@@ -1,0 +1,37 @@
+{
+  "phase": 2,
+  "platform": "win32",
+  "checks": {
+    "advanced desktop background features stay closed": true,
+    "real Windows safeStorage": true,
+    "skip does not force onboarding on restart": true,
+    "restart retains image.text": true,
+    "restart retains video.text": true,
+    "restart retains video.single_reference": true,
+    "restart retains video.dual_reference": true,
+    "restart restores last dual mode": true,
+    "offline health is visible while local library stays available": true,
+    "decrypt failure preserves profile and local drafts": true,
+    "new version recovers current configuration only": true,
+    "clear explains remote cost and old-version impact": true,
+    "clear retains imported assets and drafts": true,
+    "unconfigured state remains editable after clear": true,
+    "no generated or fake task records": true,
+    "public state excludes synthetic credential": true,
+    "desktop does not initialize legacy browser stores": true
+  },
+  "scope": "Actual Electron UI DOM events, native safeStorage/SQLite and restart. Provider is loopback synthetic; system dialog target is a controlled test double. No paid generation, manual dialog or installed-package acceptance.",
+  "lastAction": "click 返回创作",
+  "browserStorageKeys": [],
+  "window": {
+    "bounds": {
+      "x": 304,
+      "y": 102,
+      "width": 1440,
+      "height": 902
+    },
+    "zoom": 1
+  },
+  "bodyText": "影像工作台\nNOVA STUDIO\n图片生成\n视频生成\n作品库\n设置\n作品保存在本机\n我的创作服务\n\n你的灵感，在这里成形\n\n视频生成\n本地工作空间\n\n需要填写 API Key。\n\n配置连接\n文生视频\n单图生视频\n双图参考\n独立草稿 · 自动保存\n创作参数\n草稿已保存到本机\n生成模型\ngrok-imagine-video-6s · 未确认可见\ngrok-imagine-video-1.5-6s · 未确认可见\n\n当前模型与模式尚未验证；保留显示，暂不开放提交。\n\n参考图片\n2 / 2\n1\n\nreference-b.png\n\n2\n\n中文 原始参考.png\n\n导入即复制到本机素材目录。移除只改变草稿引用。双图是有序参考，不代表首尾帧锁定。\n\n剧情描述\n\n6 字\n\n6 秒 · 固定\n16:9\n1280 × 720\n\n配置连接后，再由你确认提交生成。\n\n配置连接后生成\n视频预览\n等待创作\n生成结果将在这里显示\n\n添加两张参考图，描述它们之间的剧情。\n\n另存副本\n打开结果目录\n最近任务\n查看作品库\n\n还没有生成任务",
+  "status": "passed"
+}

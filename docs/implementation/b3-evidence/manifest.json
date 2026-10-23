@@ -1,0 +1,309 @@
+{
+  "createdAt": "2026-10-23T15:12:40.653Z",
+  "branch": "dev",
+  "head": "78db6451543e22e12d445ba4b6ae0c6280b237d6",
+  "origin": "https://github.com/hanjiyou/nova-video-studio.git",
+  "reviewStatus": "T09/T10 scope accepted by main session; explicitly approved for commit and normal push to origin/dev",
+  "backend": {
+    "pass": 116,
+    "fail": 0,
+    "skip": 0
+  },
+  "frontend": {
+    "pass": 21,
+    "fail": 0
+  },
+  "native": {
+    "phases": 4,
+    "checks": 60,
+    "paidRequests": 0,
+    "providerRequests": 8,
+    "scope": "real Electron dev runtime, loopback synthetic provider and controlled dialog targets; no new install/package/real supplier acceptance"
+  },
+  "typecheck": {
+    "exitCode": 2,
+    "knownExistingTestDiagnostics": 60,
+    "newB3Diagnostics": 0
+  },
+  "source": [
+    {
+      "file": "backend/connections/service.js",
+      "bytes": 22564,
+      "sha256": "1058cfa0f8c292721ba4f7edc25e9027a9c4fbd03ebea01386a1740026a5b539"
+    },
+    {
+      "file": "backend/storage/store.js",
+      "bytes": 27751,
+      "sha256": "602f44bdc41c71cd66fd72fd4a1404f919de6e8d1d6a2b76aad9cce00c7f91bf"
+    },
+    {
+      "file": "backend/storage/output-directories.js",
+      "bytes": 4157,
+      "sha256": "24b0079c86e52d562087bef8cd7ab62f0ee21330c0b83505593cc9d7eb2e5afc"
+    },
+    {
+      "file": "backend/test/workbench-b3.test.js",
+      "bytes": 14411,
+      "sha256": "db6bf8dc086c49e6012b851f053e675adb4a8c3703fada57fb7433497d00263b"
+    },
+    {
+      "file": "desktop/main.cjs",
+      "bytes": 6612,
+      "sha256": "a89bcc61fd2bfdb70126c90a4bec670b00bde795bb917dc110542af2d66073f4"
+    },
+    {
+      "file": "desktop/ipc.cjs",
+      "bytes": 5237,
+      "sha256": "4814bd38625c6b24b8adef6294672e1ad563c675b57765b52d03cd6a01a1648b"
+    },
+    {
+      "file": "desktop/preload.cjs",
+      "bytes": 1441,
+      "sha256": "5ee89a6cc7a0c7c9c9c07e4c94298fe334af239a8d8eee5546624e90b9425bbc"
+    },
+    {
+      "file": "desktop/startup.cjs",
+      "bytes": 675,
+      "sha256": "0afe71e44573624b3093bfc4444f3ae1959182c40ff7048041ec01c9b921437c"
+    },
+    {
+      "file": "frontend/src/app/layout.tsx",
+      "bytes": 3371,
+      "sha256": "b70ccd822d03b592db203630df25f2fb16fd4177939b483afe1332ef912d5731"
+    },
+    {
+      "file": "frontend/src/app/globals.css",
+      "bytes": 31371,
+      "sha256": "43371e9683a8d65c6ba4b3aa51979c1ecda2819b9b0f504911944bdf8896db53"
+    },
+    {
+      "file": "frontend/src/components/workspace/WorkspaceShell.tsx",
+      "bytes": 651,
+      "sha256": "b8978e6aabb851eb86bb385cb633a72c6d18a8c70fc66c5bca19913f2eaf400c"
+    },
+    {
+      "file": "frontend/src/components/workspace/LegacyWorkspaceShell.tsx",
+      "bytes": 28716,
+      "sha256": "99e9f944837229cf666483aa23315ac7f48f1f2f975b3492fec71d98a1d99eae"
+    },
+    {
+      "file": "frontend/src/components/workbench/ConnectionForm.tsx",
+      "bytes": 10499,
+      "sha256": "4e880d01598be111e9509576d0b94fbed025987197f2013d0a18697bb150d158"
+    },
+    {
+      "file": "frontend/src/components/workbench/DefaultSettings.tsx",
+      "bytes": 5868,
+      "sha256": "0be18e72e653b5075b8adbbbd94eb93dd2163a13e272f2eb29e3bbc3ec0617a1"
+    },
+    {
+      "file": "frontend/src/components/workbench/DraftEditor.tsx",
+      "bytes": 7882,
+      "sha256": "4e083c1a32d9fd39b5fe0139978b8335afa0bb3d781081a91396d51d95eda1c7"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "bytes": 16087,
+      "sha256": "f133a133538a183bf50e1b251e88e7bf4bc1f7472af08d5d1e89a695fddd00a3"
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "bytes": 14348,
+      "sha256": "5cbf42897af657fd138bb14ff799c07653bdcea7c5f9cfba16280e44606336cf"
+    },
+    {
+      "file": "frontend/src/hooks/useWorkbenchDrafts.ts",
+      "bytes": 2525,
+      "sha256": "41123d98a60feabd565bb67fcafc3c4d3c1d12bce41e1ea0913a2f782b98e4aa"
+    },
+    {
+      "file": "frontend/src/lib/workbench-client.ts",
+      "bytes": 7298,
+      "sha256": "f825094685ad5aff896b472a5e8ef83e095ecf853e0140ff7e043205b9617b8e"
+    },
+    {
+      "file": "frontend/src/types/nova-desktop.d.ts",
+      "bytes": 2646,
+      "sha256": "e297eaf8d09384b18bce8ae3e943a7ecfeb1b73ef6bfe7ff2752b3f9c487298b"
+    },
+    {
+      "file": "scripts/run-b3-checks.cjs",
+      "bytes": 2706,
+      "sha256": "3c6f78c118807d1c231d9c798517c720201711469eae52d4c9e847fa2bb281f1"
+    },
+    {
+      "file": "scripts/verify-desktop-b3.cjs",
+      "bytes": 3603,
+      "sha256": "b9929c86188114babc169745e411a37ff311900b4e503cb6797ef3d895e3b86a"
+    },
+    {
+      "file": "scripts/electron-b3-test-entry.cjs",
+      "bytes": 19268,
+      "sha256": "8b9bd46d403ed36de82fc6a412534a92d8cc5ab5d26e73bdc3b292e6abaf254f"
+    }
+  ],
+  "build": [
+    {
+      "file": "frontend/out/index.html",
+      "bytes": 10946,
+      "sha256": "82582a274bbbb8db31921e6e87500d34f41eb429c02b79287a5429e65ee69df8"
+    }
+  ],
+  "evidence": [
+    {
+      "file": "docs/implementation/b3-evidence/01-first-launch.png",
+      "bytes": 472942,
+      "sha256": "c4c41f05db9d95bc40fc3b9176b3eef3c3380da5e75035ad642627cf4ffc12f3"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/02-image-draft.png",
+      "bytes": 88339,
+      "sha256": "bfecb34e0e8ec48a2cb238c6e41b6e9464d8403e4b57c7914b7bac518924306f"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/03-library-empty.png",
+      "bytes": 59194,
+      "sha256": "26b5add9ada54c1c95a03861c3983cc2869007e0738418fbab2cbb78a84ccdfd"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/04-settings-verified-missing-model.png",
+      "bytes": 91111,
+      "sha256": "5d27d6aa4700d893da3a526eb8c39a8afd474d9a56285493e82ab9c6f0001930"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/04a-unwritable-directory.png",
+      "bytes": 96379,
+      "sha256": "1ba14078c59ef27f700b409d24a1a1761f54c8bd3664f9704db3926173263119"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/04b-default-models-and-directory.png",
+      "bytes": 104652,
+      "sha256": "5d47206dd705457b9cd1baf24ab3b7669c7b0de94bb8b826e2efd2805a127ab4"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/05-video-draft.png",
+      "bytes": 99157,
+      "sha256": "a9f174366b1663392dbb559f0c71376f284dcc0dbcb58ac9aede916384771d1e"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/06-video-150-percent.png",
+      "bytes": 149126,
+      "sha256": "65c63a763f685f63534b820acc950d302429567538ce58138f1be1fe901e16ec"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/07-credential-unavailable.png",
+      "bytes": 91199,
+      "sha256": "06243ec561156c726a17a1f2eea9ed4ba4e3e5dd3539f45a371dad33049e9e93"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/07-offline-status.png",
+      "bytes": 91232,
+      "sha256": "0d48761c714586308f14b5c141885ee7b8b8fa9ad13fae9b19600872f94df892"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/08-cleared-credentials.png",
+      "bytes": 86459,
+      "sha256": "270cfc3c89baefe3cdc0a769e487651cc3ddbce2cd3f407a6bcb9d57a4c201d8"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/08a-clear-impact-confirmation.png",
+      "bytes": 105041,
+      "sha256": "72ab3487fbbaffbab523926b1bed2ea5fee1894291448fc109ff03fc86f60382"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/09-onboarding-defaults-before-restart.png",
+      "bytes": 484158,
+      "sha256": "736081f4c504f3e6940131d894b12370b73bd067faeb4aa78c512eed12463512"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/10-onboarding-completed.png",
+      "bytes": 91662,
+      "sha256": "d0984972cd3fd435685658cf88a83f72ba29ccbf8236b9453bafe653c18d6581"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/backend.log",
+      "bytes": 14044,
+      "sha256": "22f410c3ee09e6269e685a665010c3877e2ec30a56a7bc38781f5d61630b5401"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/baseline-invariants.json",
+      "bytes": 1134,
+      "sha256": "9e89f474d73c6b70162944c28cd3652383352dd584c5bbc7e6ea44913f6d1480"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/build.log",
+      "bytes": 833,
+      "sha256": "aca024f9c51a4062a6a6fc0ad1208de966a34be44368825ff560fabe6f342cb5"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/command-results.json",
+      "bytes": 18933,
+      "sha256": "8d15b4a11f8511032f1f52175abd4364520ef62ca07d206340b76b133fa398c8"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/frontend.log",
+      "bytes": 390,
+      "sha256": "4be18e3d5afeeff1fc0915a43624c82e3f01a874c1926d4ae320c7561ea61d9a"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/hostLint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/phase-1.json",
+      "bytes": 3350,
+      "sha256": "458a4db2968d87cd2c737ed54a8352a5b42e66e54158adbff805f140185d970d"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/phase-2.json",
+      "bytes": 2527,
+      "sha256": "9db4e96019bfee8e0f368c5b4fe4ea21156856aac5fa5abc6b07495cf689f8be"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/phase-3.json",
+      "bytes": 1935,
+      "sha256": "c1768473ca453a853e8a89ba3f1bee38f36f62f8f1796497850757c4c8f80692"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/phase-4.json",
+      "bytes": 2060,
+      "sha256": "85f9a7b81a205d804dd297f79b404cd53a5df146840ba9002df53ee5eea70545"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/requests.json",
+      "bytes": 822,
+      "sha256": "5b089c3595fd0f853659dbcd05ed3dd8e23c5078395299b3742aa6be528ac598"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/tsc.log",
+      "bytes": 9854,
+      "sha256": "ac7d535d0c8606c7780be30ec795c3b86164e5c60c4070fe0547708613d5d05b"
+    },
+    {
+      "file": "docs/implementation/b3-evidence/approval-review.json",
+      "bytes": 2880,
+      "sha256": "f7f031d4227dcdb4daaeff0de0076b5806436d0d64de1abf65f3e368d74d0dac"
+    }
+  ],
+  "headMeaning": "Reviewed implementation base; resulting delivery commit is reported separately.",
+  "mainSessionReview": {
+    "record": "approval-review.json",
+    "independentBackend": {
+      "pass": 40,
+      "fail": 0,
+      "skip": 0
+    },
+    "independentFrontend": {
+      "pass": 21,
+      "fail": 0,
+      "skip": 0
+    },
+    "nativeIndependentRerun": false
+  }
+}

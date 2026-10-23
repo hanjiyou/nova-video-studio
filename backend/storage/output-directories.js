@@ -51,6 +51,12 @@ function createOutputDirectories({ db, defaultDirectory }) {
             return root.directory;
         } catch (error) { throw fileFailure(error); }
     }
-    return { DEFAULT, freeze, version, directory, select, current: () => publicVersion(current()) };
+    function checkCurrent() {
+        const selected=current();const canonical=directory(selected.root_ref),probe=path.join(canonical,'.nova-write-probe-'+randomUUID());let fd;
+        try {fd=fs.openSync(probe,'wx');fs.writeSync(fd,'probe');fs.fsyncSync(fd);return publicVersion(selected);}
+        catch(error){throw fileFailure(error);}
+        finally{if(fd!==undefined)fs.closeSync(fd);if(fs.existsSync(probe))fs.unlinkSync(probe);}
+    }
+    return { DEFAULT, freeze, version, directory, select, checkCurrent, current: () => publicVersion(current()) };
 }
 module.exports = { createOutputDirectories };

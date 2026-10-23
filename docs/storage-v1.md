@@ -61,3 +61,10 @@ preload新增importReferenceAssets()：无参数，宿主系统文件选择只�
 桌面跳过原启动判失败/删图、任务TTL清理和插件素材TTL清理；ACK只记一次事件，不缩短历史；失败只改变旧任务状态，不删除共享输入。重启保留原状态和ID，当前不会自动恢复队列或补发POST；T05定义恢复动作。upstream_task_id及历史摘要upstreamTaskId目前是结构占位，旧插件ID仍在request_json，T05统一这些字段；不承诺旧摘要已补全。显式移除历史也不删除共享对象。Web原有启动失败标记、TTL和ACK语义通过单独回归保留。
 
 旧工作台UI尚未全面改用这些API，不把原IndexedDB状态、导航草稿或作品库交互当成本阶段已验收。T09/T11/T12/T13接入实际界面。没有读取旧浏览器存储或真实Key，没有付费调用。
+## B3 桌面草稿/导航接入
+
+B3/T09 使用现有真实草稿/素材/设置服务，阶段记录见 [B3](implementation/B3-T09-T10-四页框架与首次引导.md)。桌面产品采用图片与视频三模式共四个草稿槽位；图片槽位保留可选参考图，提交模式由后续 T11 判定，API 原有 image.reference 槽位兼容保持。
+
+workspace 窄结构追加 activePage（image/video/library/settings）和 returnPage（image/video/library）；仍拒绝任意字段、Key 或路径，没有 schema 迁移或历史数据扫描。持久化返回上下文用于设置页重启后返回原工作区；每模式 revision 串行保存，冲突显示错误并提供显式重读，不静默覆盖。
+
+onboarding 继续只使用 dismissed/step。连接只读检查成功后的 defaults 及最终默认型号/完成状态在宿主事务中保存，见连接契约 B3 补充。B2 已提供正式 Range、另存与定位能力；本文件前段“留 T08”是 T03 原始阶段边界，不再描述当前实现状态。B3 仅接入四页骨架，不把完整作品库及生成/播放动作计作验收完成。

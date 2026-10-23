@@ -278,12 +278,14 @@ function createWorkbenchStore({ db, rootDirectory }) {
         if (key === 'theme' && !['system', 'light', 'dark'].includes(value.value))
             throw fail('INVALID_SETTING_VALUE');
         if (key === 'workspace') {
-            exactKeys(value.value, ['wideMode', 'activeMode']);
+            exactKeys(value.value, ['wideMode', 'activeMode', 'activePage', 'returnPage']);
             if (value.value.wideMode !== undefined && typeof value.value.wideMode !== 'boolean')
                 throw fail('INVALID_SETTING_VALUE');
             if (value.value.activeMode !== undefined && !MODES.has(value.value.activeMode))
                 throw fail('INVALID_SETTING_VALUE');
         }
+        if (key === 'workspace' && value.value.activePage !== undefined && !['image','video','library','settings'].includes(value.value.activePage)) throw fail('INVALID_SETTING_VALUE');
+        if (key === 'workspace' && value.value.returnPage !== undefined && !['image','video','library'].includes(value.value.returnPage)) throw fail('INVALID_SETTING_VALUE');
         if (key === 'onboarding') {
             exactKeys(value.value, ['dismissed', 'step']);
             if (value.value.dismissed !== undefined && typeof value.value.dismissed !== 'boolean')
@@ -358,7 +360,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
     const importFiles = files => { if (!Array.isArray(files) || files.length > 32)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
     const service = { importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
-        outputDirectory: () => outputDirectories.current(), selectOutputDirectory: directory => outputDirectories.select(directory),
+        outputDirectory: () => outputDirectories.current(), checkOutputDirectory: () => outputDirectories.checkCurrent(), selectOutputDirectory: directory => outputDirectories.select(directory),
         freezeOutputDirectory: snapshot => outputDirectories.freeze(snapshot),
         downloadDirectory: rootRef => {
             const directory = path.join(outputDirectories.directory(rootRef || outputDirectories.DEFAULT), '.nova-parts');

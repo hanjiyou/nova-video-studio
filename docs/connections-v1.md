@@ -49,3 +49,19 @@ T04未调用真实供应商模型接口或付费生成，没有在本阶段验�
 ## B1 能力使用边界
 
 B1 新创建必须携带 capabilityVersionId，宿主核对其服务源、provider、精确模型、模式、协议和精确参数，不用模型可见性代替能力证据。当前仍只有原 OpenSosen 1.5 单/双参考保留 historically_verified，所有未验证记录不因离线/原生合成测试而升级。缺证据返回 CAPABILITY_UNVERIFIED，保留原产品需求供 T15 验证；不存在自动换型号或改绑新凭据。新接口见 [B1 适配契约](b1-adapters-v1.md)。
+## B3 首次引导与设置补充
+
+B3/T10 已接入共享表单，实施/验证记录见 [B3](implementation/B3-T09-T10-四页框架与首次引导.md)，已由主会话审核接受本批T09/T10范围，见[主审记录](implementation/b3-evidence/approval-review.json)。原已保存版本的 HTTP check 保留；新增以下窄 preload/IPC：
+
+| 方法 | 输入与行为 |
+| --- | --- |
+| validateAndSaveConnection | 原 save 字段 + UUID operationId + 可选 expectedOnboardingRevision；先在宿主用瞬时凭据做相同 GET /models，只读成功后才事务保存密文、连接版本、检查和 defaults 步骤；失败不新增连接或凭据 |
+| cancelConnectionValidation | 仅 operationId；作废并中止候选；编辑/取消/新检查/其他配置写入后，旧响应不得晚到保存 |
+| completeWorkbenchSetup | connectionId、expectedVersionId、两个完整默认型号、可选 expectedOnboardingRevision；目录复查后事务保存默认型号与 completed/dismissed；旧任务不改绑 |
+| checkOutputDirectory | 无输入；宿主复查当前目录可写，返回受控名称和 opaque 引用 |
+
+候选检查没有 HTTP Key 保存/读取入口；复用原 8 秒/1 MiB/5000 条、禁止重定向与固定错误边界。只有主 webContents+主 frame 可调用。无新 Key 时只能在宿主读取同一已保存版本；改地址仍必须新填 Key。检查失败区分 auth_rejected（并保留本次 HTTP401/403 分类）、models_unsupported、models_invalid、offline、unavailable，不将其当成生成可用性。
+
+宿主在写入前核对 operation 身份与 expectedVersionId，且检查通过到同步事务间没有异步间隙；仅 UI 丢弃返回不作为竞态保证。未修改的已保存连接检查不新建版本；该配置检查失败时更新健康状态、保留上次成功/模型缓存。编辑候选失败不污染原连接。型号默认项变更沿用同一地址和凭据的检查记录，但创建新不可变版本；已有任务仍引用旧版本。成功检查的 defaults 步骤、最终完成状态均通过事务保证重启分流正确。
+
+renderer 只在当前表单保存瞬时输入；保存成功清空，离页/取消引导/Esc 不把 Key 写入草稿或浏览器存储。离线/过期缓存与生成能力证据分别显示，未验证模式不因列表可见而启用。

@@ -2,15 +2,17 @@
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
+const { createAssetActions } = require('./asset-actions.cjs');
+const { DETAILS } = require('../backend/storage/download-errors');
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, getAssetService = () => null, getConnectionService = () => null }) {
+function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtimeInfo, getAssetService = () => null, getConnectionService = () => null }) {
   const selections = new Map();
   const channels = [];
   function register(channel, handler) {
     channels.push(channel);
     ipcMain.handle(channel, async (event, ...args) => {
       if (!policy.isTrustedSender(event)) return { ok: false, code: 'IPC_FORBIDDEN' };
-      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
+      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError || DETAILS[error.code] ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
     });
   }
   register('nova:runtime-info', (...args) => args.length ? { ok: false, code: 'INVALID_ARGUMENT' } : { ok: true, ...runtimeInfo() });
@@ -34,8 +36,10 @@ function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, g
     const selectionId = randomUUID();
     if (selections.size >= 16) selections.delete(selections.keys().next().value);
     selections.set(selectionId, directory);
-    return { ok: true, cancelled: false, selectionId, displayName: path.basename(directory) };
+    const service=getAssetService();
+    return { ok: true, cancelled: false, selectionId, displayName: path.basename(directory), ...(service?service.selectOutputDirectory(directory):{}) };
   });
+  register('nova:output-directory',(...args)=>args.length?{ok:false,code:'INVALID_ARGUMENT'}:{ok:true,...getAssetService()?.outputDirectory()});
   register('nova:import-reference-assets', async (...args)=>{
     if(args.length)return {ok:false,code:'INVALID_ARGUMENT'};
     const service=getAssetService();if(!service)return {ok:false,code:'ASSET_SERVICE_NOT_READY'};
@@ -45,10 +49,11 @@ function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, g
     const assets=service.importFiles(result.filePaths);
     return {ok:true,cancelled:false,assets};
   });
+  const assetActions=createAssetActions({getStore:getAssetService,dialog,shell,getWindow});
   for (const channel of ['nova:save-asset-copy', 'nova:reveal-asset']) register(channel, (...args) => {
     if (args.length !== 1 || typeof args[0] !== 'string' || !UUID.test(args[0])) return { ok: false, code: 'INVALID_ASSET_ID' };
-    // T03/T08 provide asset resolution; never interpret a renderer string as a path.
-    return { ok: false, code: 'ASSET_SERVICE_NOT_READY' };
+    if(!getAssetService())return {ok:false,code:'ASSET_SERVICE_NOT_READY'};
+    return channel==='nova:save-asset-copy'?assetActions.save(args[0]):assetActions.reveal(args[0]);
   });
   return {
     resolveDirectorySelection: id => selections.get(id) || null, // Host-only T03 integration point.

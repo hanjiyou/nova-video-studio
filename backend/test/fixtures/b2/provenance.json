@@ -1,0 +1,14 @@
+{
+  "scope": "synthetic_offline_only",
+  "file": "valid-video.mp4",
+  "creation": "node_modules/ffmpeg-static/ffmpeg.exe -hide_banner -v error -f lavfi -i testsrc2=size=160x96:rate=12:duration=2 -f lavfi -i sine=frequency=440:duration=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -movflags +faststart -shortest -y backend/test/fixtures/b2/valid-video.mp4",
+  "creatorBinary": "6.1.1-essentials_build-www.gyan.dev",
+  "sha256": "60b4c6995ead267b2203b6e34033bc686e52ab40b32990e11ea8987591e18934",
+  "byteLength": 40808,
+  "videoFrames": 24,
+  "width": 160,
+  "height": 96,
+  "videoDurationSeconds": 2,
+  "decodedDurationWithAudioPaddingSeconds": 2.020136054421769,
+  "note": "Generated color/test pattern and sine wave only. No user media, real credential or paid provider. Does not verify any provider's model, dimensions, duration or codec capability."
+}

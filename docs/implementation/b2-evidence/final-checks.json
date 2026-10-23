@@ -1,0 +1,75 @@
+{
+  "head": "27344ed72c4c76de3da4bf19f5e6b0db0ccd46e4",
+  "trackingDev": "27344ed72c4c76de3da4bf19f5e6b0db0ccd46e4",
+  "branch": "dev",
+  "stagedFiles": [],
+  "requirements": {
+    "count": 61,
+    "unchanged": true,
+    "acceptedCount": 0,
+    "taskIds": 17
+  },
+  "binarySha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00",
+  "appAsarSha256": "4787b63503b11d63b1924cf6bdaf0031517e5b3fa0d7f2345ccbd52158fec374",
+  "exeSha256": "ccc516826b03b18632276aa007705d36d367f68e5caf1ba9fed214e000067c66",
+  "limits": [
+    "Main session explicitly approved this batch commit and normal push origin/dev; actual Git delivery is recorded after execution in ignored temp/b2-git-delivery.json.",
+    "No B3 UI or real-provider capability promotion.",
+    "No actual manual SaveDialog/Explorer GUI acceptance; native target/shell adapters controlled in test host.",
+    "No NSIS install/release; T16 0xc0000409 root cause still open.",
+    "Corresponding-source delivery is a T16 public redistribution gate.",
+    "Prior full tsc 60 existing diagnostics and full-directory lint 21 existing diagnostics were not represented as passed or routinely rerun.",
+    "No change to model/priority settings; actual Fast not independently confirmed."
+  ],
+  "sourceAndEvidenceFiles": 67,
+  "workingTreeIsDeliberatelyDirty": true,
+  "trackedDiffCheck": {
+    "exitCode": 0,
+    "output": "",
+    "stderrOnlyLineEndingWarnings": [
+      "warning: in the working copy of 'backend/server.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/storage/http.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/tasks/service.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/test/support/desktop-http-runtime.cjs', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/test/workbench-b1-http.test.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/test/workbench-tasks-http.test.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'backend/test/workbench-tasks.test.js', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'desktop/ipc.cjs', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'desktop/main.cjs', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'desktop/preload.cjs', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'docs/Nova-Studio落地任务清单.md', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'docs/acceptance/workbench-61.json', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'docs/acceptance/workbench-61.md', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'docs/b1-adapters-v1.md', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'docs/tasks-v1.md', LF will be replaced by CRLF the next time Git touches it",
+      "warning: in the working copy of 'frontend/src/types/nova-desktop.d.ts', LF will be replaced by CRLF the next time Git touches it"
+    ]
+  },
+  "evidencePrivacy": {
+    "checked": true,
+    "note": "Known synthetic key and signed-resource markers absent from evidence logs/DTO/state reports. Test source contains deliberate test-only fixtures."
+  },
+  "snapshotPhase": "pre_stage_after_main_session_approval",
+  "mainSessionReview": {
+    "approved": true,
+    "total": 105,
+    "passed": 104,
+    "skipped": 1,
+    "failed": 0,
+    "skippedTest": "symlinked managed file cannot disclose a file outside the managed root",
+    "skipReason": "Windows process lacks symlink privilege",
+    "independentAppAsarSha256": "4787b63503b11d63b1924cf6bdaf0031517e5b3fa0d7f2345ccbd52158fec374",
+    "source": "Direct main-session report; separate from implementation-side 105/105."
+  },
+  "stagedDiffCheck": {
+    "fullExitCode": 2,
+    "sourceAndDocumentExitCode": 0,
+    "rawLogOnly": "build.log:27 new blank line at EOF",
+    "preserved": true
+  },
+  "stagedSensitiveDataCheck": {
+    "textFilesChecked": 65,
+    "realCredentialPatternsFound": 0,
+    "note": "Synthetic test credentials in test source are intentional; evidence logs/DTO reports were separately checked."
+  }
+}

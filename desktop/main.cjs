@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, Menu, dialog, ipcMain, session, safeStorage, net: electronNet } = require('electron');
+const { app, BrowserWindow, Menu, dialog, shell, ipcMain, session, safeStorage, net: electronNet } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { randomBytes } = require('node:crypto');
@@ -72,7 +72,7 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready;

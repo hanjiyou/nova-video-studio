@@ -1,5 +1,15 @@
 'use strict';
 const { fail, MAX_ASSET_BYTES } = require('./store');
+function rangeFor(value, size) {
+    if (!value) return null;
+    const match=/^bytes=(\d*)-(\d*)$/.exec(value);
+    if(!match||!match[1]&&!match[2])return false;
+    if([match[1],match[2]].some(part=>part&&!Number.isSafeInteger(Number(part))))return false;
+    let start=match[1]?Number(match[1]):Math.max(0,size-Number(match[2]));
+    let end=match[1]?(match[2]?Math.min(Number(match[2]),size-1):size-1):size-1;
+    if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start>=size||end<start||!match[1]&&Number(match[2])===0)return false;
+    return {start,end};
+}
 function createStorageHttp({ getStore, readRawBody, sendJson }) {
     const jsonBody = async (req) => {
         try {
@@ -37,8 +47,12 @@ function createStorageHttp({ getStore, readRawBody, sendJson }) {
                     return true;
                 }
                 const { bytes, asset: metadata } = store.readAsset(asset[1]);
-                res.writeHead(200, { 'Content-Type': metadata.mimeType, 'Content-Length': bytes.length, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff' });
-                res.end(req.method === 'HEAD' ? undefined : bytes);
+                const etag='"sha256-'+metadata.sha256+'"',headers={ 'Content-Type': metadata.mimeType, 'Content-Length': bytes.length, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff','Accept-Ranges':'bytes',ETag:etag };
+                const selected=req.method==='HEAD'||req.headers['if-range']&&req.headers['if-range']!==etag?null:rangeFor(req.headers.range,bytes.length);
+                if(selected===false){res.writeHead(416,{...headers,'Content-Length':0,'Content-Range':'bytes */'+bytes.length});res.end();return true;}
+                if(selected){headers['Content-Length']=selected.end-selected.start+1;headers['Content-Range']='bytes '+selected.start+'-'+selected.end+'/'+bytes.length;}
+                res.writeHead(selected?206:200,headers);
+                res.end(req.method === 'HEAD' ? undefined : selected?bytes.subarray(selected.start,selected.end+1):bytes);
                 return true;
             }
             const draft = pathname.match(/^\/api\/nova\/storage\/drafts\/([^/]+)$/);
@@ -77,4 +91,4 @@ function createStorageHttp({ getStore, readRawBody, sendJson }) {
         }
     };
 }
-module.exports = { createStorageHttp };
+module.exports = { createStorageHttp, rangeFor };

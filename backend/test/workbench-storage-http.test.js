@@ -95,14 +95,14 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     const outputId = (await success.json()).taskId;
     const unknown = path.join(directory, 'images', outputId + '-0-0.png');
     fs.writeFileSync(unknown, 'unknown pre-existing file');
-    await until(async () => { const value = await (await runtime.request('/api/nova/tasks/' + outputId)).json(); return value.status === 'remote_completed'; });
+    await until(async () => { const value = await (await runtime.request('/api/nova/tasks/' + outputId)).json(); if(value.status==='download_failed')throw new Error(JSON.stringify(value.taskError));return value.status === 'completed'; });
     assert.equal(posts.length, 3);
     assert.equal(fs.readFileSync(unknown, 'utf8'), 'unknown pre-existing file');
     const candidateDb = new Database(path.join(directory, 'tasks.sqlite'), {readonly:true});
     const candidates=JSON.parse(candidateDb.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(outputId).result_sources_json);candidateDb.close();
     assert.equal(candidates[0].kind,'asset');
     assert.deepEqual(Buffer.from(await (await runtime.request('/api/nova/assets/'+candidates[0].assetId+'/content')).arrayBuffer()), fixture('reference-a.png'));
-    assert.equal((await (await runtime.request('/api/nova/tasks/'+outputId)).json()).outputAssets.length,0); // candidate is not a verified local output
+    assert.equal((await (await runtime.request('/api/nova/tasks/'+outputId)).json()).outputAssets[0].validationState,'verified'); // B2 decoder now publishes the local output
     const db = new Database(path.join(directory, 'tasks.sqlite'));
     const beforeAck = db.prepare('SELECT expires_at FROM tasks WHERE id=?').get(ids[0]).expires_at;
     const snapshot = JSON.parse(db.prepare('SELECT input_snapshot_json FROM tasks WHERE id=?').get(ids[0]).input_snapshot_json);

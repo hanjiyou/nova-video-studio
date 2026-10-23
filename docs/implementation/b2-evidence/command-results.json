@@ -1,0 +1,213 @@
+[
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "--test"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "startedAt": "2026-10-23T13:38:17.843Z",
+    "finishedAt": "2026-10-23T13:38:29.568Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "build",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\frontend\\node_modules\\next\\dist\\bin\\next",
+      "build",
+      "--webpack"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "startedAt": "2026-10-23T13:39:38.377Z",
+    "finishedAt": "2026-10-23T13:40:24.071Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "package",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-builder\\out\\cli\\cli.js",
+      "--dir",
+      "--win",
+      "--x64",
+      "--config",
+      "electron-builder.yml",
+      "-c.directories.output=release-b2",
+      "-c.electronDist=node_modules/electron/dist"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:40:24.072Z",
+    "finishedAt": "2026-10-23T13:40:38.558Z",
+    "exitCode": 1,
+    "error": null
+  },
+  {
+    "name": "package",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-builder\\out\\cli\\cli.js",
+      "--dir",
+      "--win",
+      "--x64",
+      "--config",
+      "electron-builder.yml",
+      "-c.directories.output=release-b2",
+      "-c.electronDist=node_modules/electron/dist"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:41:39.349Z",
+    "finishedAt": "2026-10-23T13:41:54.011Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "backend",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "--test"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "startedAt": "2026-10-23T13:44:03.712Z",
+    "finishedAt": "2026-10-23T13:44:13.599Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "targeted",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "--test",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-downloads-http.test.js",
+      "backend/test/workbench-tasks.test.js"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:46:49.429Z",
+    "finishedAt": "2026-10-23T13:46:51.524Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\backend\\node_modules\\eslint\\bin\\eslint.js",
+      "--config",
+      "temp/b2-eslint.config.mjs",
+      "backend/server.js",
+      "backend/storage/download-errors.js",
+      "backend/storage/output-directories.js",
+      "backend/storage/media-validator.js",
+      "backend/storage/download-worker.js",
+      "backend/storage/migrations.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-downloads-http.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-tasks-http.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/support/desktop-http-runtime.cjs",
+      "desktop/asset-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "scripts/electron-b2-test-entry.cjs",
+      "scripts/verify-desktop-b2.cjs",
+      "scripts/verify-desktop-b2-package.cjs",
+      "scripts/verify-b2-package-audit.cjs",
+      "scripts/verify-ffmpeg-before-pack.cjs",
+      "scripts/verify-b2-windows-file-lock.cjs",
+      "scripts/run-b2-checks.cjs"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:46:51.525Z",
+    "finishedAt": "2026-10-23T13:46:52.236Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "targeted",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "--test",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-downloads-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/workbench-storage.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-contracts.test.js"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:49:24.913Z",
+    "finishedAt": "2026-10-23T13:49:31.904Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "lint",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\backend\\node_modules\\eslint\\bin\\eslint.js",
+      "--config",
+      "scripts/eslint-b2.config.mjs",
+      "backend/server.js",
+      "backend/storage/download-errors.js",
+      "backend/storage/output-directories.js",
+      "backend/storage/media-validator.js",
+      "backend/storage/download-worker.js",
+      "backend/storage/migrations.js",
+      "backend/storage/store.js",
+      "backend/storage/http.js",
+      "backend/tasks/service.js",
+      "backend/test/workbench-downloads.test.js",
+      "backend/test/workbench-downloads-http.test.js",
+      "backend/test/workbench-b1-http.test.js",
+      "backend/test/workbench-tasks-http.test.js",
+      "backend/test/workbench-storage-http.test.js",
+      "backend/test/workbench-tasks.test.js",
+      "backend/test/support/desktop-http-runtime.cjs",
+      "desktop/asset-actions.cjs",
+      "desktop/ipc.cjs",
+      "desktop/main.cjs",
+      "desktop/preload.cjs",
+      "scripts/electron-b2-test-entry.cjs",
+      "scripts/verify-desktop-b2.cjs",
+      "scripts/verify-desktop-b2-package.cjs",
+      "scripts/verify-b2-package-audit.cjs",
+      "scripts/verify-ffmpeg-before-pack.cjs",
+      "scripts/verify-b2-windows-file-lock.cjs",
+      "scripts/run-b2-checks.cjs"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:49:31.906Z",
+    "finishedAt": "2026-10-23T13:49:32.579Z",
+    "exitCode": 0,
+    "error": null
+  },
+  {
+    "name": "package",
+    "command": "C:\\Program Files\\nodejs\\node.exe",
+    "args": [
+      "E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-builder\\out\\cli\\cli.js",
+      "--dir",
+      "--win",
+      "--x64",
+      "--config",
+      "electron-builder.yml",
+      "-c.directories.output=release-b2",
+      "-c.electronDist=node_modules/electron/dist"
+    ],
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "startedAt": "2026-10-23T13:49:32.579Z",
+    "finishedAt": "2026-10-23T13:49:35.992Z",
+    "exitCode": 0,
+    "error": null
+  }
+]

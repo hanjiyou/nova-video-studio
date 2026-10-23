@@ -19,6 +19,13 @@ function runChild() {
     process.on('message', async (message) => {
         try {
             if (message.action === 'start') {
+                if(message.opensosenOrigin||message.pluginOrigin){
+                    const worker=require('../../storage/download-worker'),production=worker.createDownloadWorker;
+                    const origin=message.opensosenOrigin?'https://newapi.opensosen.com':'https://pro.ccode.vip';
+                    // Test-only destination check; global.fetch below maps this exact synthetic
+                    // service to loopback. There is no production env/route capability bypass.
+                    worker.createDownloadWorker=options=>production({...options,checkUrl:async url=>{if(url.origin!==origin)throw require('../../storage/download-errors').failure('DOWNLOAD_FORBIDDEN');}});
+                }
                 if (message.session) {
                     require('../../desktop-session').configureDesktopSession(message.session);
                     require('../../connections/host').configureConnectionHost(db => require('../../../desktop/credential-vault.cjs').createCredentialVault({ db, safeStorage: testProtection() }));
@@ -95,7 +102,7 @@ async function start(directory, { desktop = true, imageStream = false, pluginOri
     }
     catch (error) {
         child.kill();
-        throw new Error(error.message + '; ' + output);
+        throw new Error(error.message + '; ' + output,{cause:error});
     }
     const headers = desktop ? { 'x-nova-session': token } : {};
     return { origin, secret: token, headers, request: (route, options = {}) => fetch(origin + route, { ...options, headers: { ...headers, ...options.headers } }), output: () => output,

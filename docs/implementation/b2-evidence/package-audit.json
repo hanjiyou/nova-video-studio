@@ -1,0 +1,139 @@
+{
+  "archive": "E:\\Learn\\AI\\nova-image-studio\\release-b2\\win-unpacked\\resources\\app.asar",
+  "appAsarSha256": "4787b63503b11d63b1924cf6bdaf0031517e5b3fa0d7f2345ccbd52158fec374",
+  "exeSha256": "ccc516826b03b18632276aa007705d36d367f68e5caf1ba9fed214e000067c66",
+  "modules": [
+    {
+      "file": "backend/server.js",
+      "sha256": "8e169efbdd0a0dd2bd487c95220b10cfd96f15019ecfe29d6fc1d7810ea6d978",
+      "packagedSha256": "8e169efbdd0a0dd2bd487c95220b10cfd96f15019ecfe29d6fc1d7810ea6d978",
+      "identical": true
+    },
+    {
+      "file": "backend/tasks/service.js",
+      "sha256": "6535b54b1048aea7dfb54ac378ac33e937f31399542e553c2c2ff39ffe9407ea",
+      "packagedSha256": "6535b54b1048aea7dfb54ac378ac33e937f31399542e553c2c2ff39ffe9407ea",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/http.js",
+      "sha256": "56e412f27a7aa3cb9c39038a0efc090fe08bb1f2f01ae18aefae137a084e9f71",
+      "packagedSha256": "56e412f27a7aa3cb9c39038a0efc090fe08bb1f2f01ae18aefae137a084e9f71",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/migrations.js",
+      "sha256": "12b4421bf033d62a41d881394a058e4f0c6ef39635fb793fb0ff3713b43714fc",
+      "packagedSha256": "12b4421bf033d62a41d881394a058e4f0c6ef39635fb793fb0ff3713b43714fc",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/store.js",
+      "sha256": "33ac303068005c695533d8a641283428c0bf21021521440fb7bdb686c571e0b2",
+      "packagedSha256": "33ac303068005c695533d8a641283428c0bf21021521440fb7bdb686c571e0b2",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/download-worker.js",
+      "sha256": "f391825d00dd09b0898228ff70816cd1a3d306f71eebca36f99ff8215bc726f1",
+      "packagedSha256": "f391825d00dd09b0898228ff70816cd1a3d306f71eebca36f99ff8215bc726f1",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/download-errors.js",
+      "sha256": "5ef2e1342428ae37c8c77a1e542491c20c40ae61df7590dc7ea3a7b462c24fa1",
+      "packagedSha256": "5ef2e1342428ae37c8c77a1e542491c20c40ae61df7590dc7ea3a7b462c24fa1",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/media-validator.js",
+      "sha256": "7f97485f866a2858d155742de7e7b9992fe90ec307e09fb4a8151f6f859debba",
+      "packagedSha256": "7f97485f866a2858d155742de7e7b9992fe90ec307e09fb4a8151f6f859debba",
+      "identical": true
+    },
+    {
+      "file": "backend/storage/output-directories.js",
+      "sha256": "7f96ef4e37fbea9b84df3964afde6ef404e133268d89b0246eaa675fcc2c7e58",
+      "packagedSha256": "7f96ef4e37fbea9b84df3964afde6ef404e133268d89b0246eaa675fcc2c7e58",
+      "identical": true
+    },
+    {
+      "file": "desktop/main.cjs",
+      "sha256": "a6796032bc5889d0ce3142f0b5599ced0049f36ddd691fdbaec0eadc5316012e",
+      "packagedSha256": "a6796032bc5889d0ce3142f0b5599ced0049f36ddd691fdbaec0eadc5316012e",
+      "identical": true
+    },
+    {
+      "file": "desktop/ipc.cjs",
+      "sha256": "88d92e2036c6bf70028dc7413b8e910a6987ce24a7d637dfee11b876b8a5d246",
+      "packagedSha256": "88d92e2036c6bf70028dc7413b8e910a6987ce24a7d637dfee11b876b8a5d246",
+      "identical": true
+    },
+    {
+      "file": "desktop/preload.cjs",
+      "sha256": "5a8ac56994484c4f8f4d5447e9985f703aaacdaa13fd8775816047cf1dbe72b5",
+      "packagedSha256": "5a8ac56994484c4f8f4d5447e9985f703aaacdaa13fd8775816047cf1dbe72b5",
+      "identical": true
+    },
+    {
+      "file": "desktop/asset-actions.cjs",
+      "sha256": "343cbd88104d0fb419c16893ee686260deb865c85ceac81afae99c6fd52fbfd9",
+      "packagedSha256": "343cbd88104d0fb419c16893ee686260deb865c85ceac81afae99c6fd52fbfd9",
+      "identical": true
+    },
+    {
+      "file": "desktop/ffmpeg-runtime.json",
+      "sha256": "0fe9609f83e84f2566a1ea9f8c8016b6df3fa4f6c6cfee79714921ef9ec9a88a",
+      "packagedSha256": "0fe9609f83e84f2566a1ea9f8c8016b6df3fa4f6c6cfee79714921ef9ec9a88a",
+      "identical": true
+    },
+    {
+      "file": "desktop/third-party/FFmpeg-NOTICE.md",
+      "sha256": "c1394296593b167c4a3d3babd5a6d0a47e0c85d4484bfb1e6e7e3d9fcd9ecce2",
+      "packagedSha256": "c1394296593b167c4a3d3babd5a6d0a47e0c85d4484bfb1e6e7e3d9fcd9ecce2",
+      "identical": true
+    }
+  ],
+  "binarySha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00",
+  "binaryBytes": 82797568,
+  "binaryVersion": [
+    "ffmpeg version 6.1.1-essentials_build-www.gyan.dev Copyright (c) 2000-2023 the FFmpeg developers\r",
+    "built with gcc 12.2.0 (Rev10, Built by MSYS2 project)\r",
+    "configuration: --enable-gpl --enable-version3 --enable-static --pkg-config=pkgconf --disable-w32threads --disable-autodetect --enable-fontconfig --enable-iconv --enable-gnutls --enable-libxml2 --enable-gmp --enable-bzlib --enable-lzma --enable-zlib --enable-libsrt --enable-libssh --enable-libzmq --enable-avisynth --enable-sdl2 --enable-libwebp --enable-libx264 --enable-libx265 --enable-libxvid --enable-libaom --enable-libopenjpeg --enable-libvpx --enable-mediafoundation --enable-libass --enable-libfreetype --enable-libfribidi --enable-libharfbuzz --enable-libvidstab --enable-libvmaf --enable-libzimg --enable-amf --enable-cuda-llvm --enable-cuvid --enable-ffnvcodec --enable-nvdec --enable-nvenc --enable-dxva2 --enable-d3d11va --enable-libvpl --enable-libgme --enable-libopenmpt --enable-libopencore-amrwb --enable-libmp3lame --enable-libtheora --enable-libvo-amrwbenc --enable-libgsm --enable-libopencore-amrnb --enable-libopus --enable-libspeex --enable-libvorbis --enable-librubberband\r",
+    "libavutil      58. 29.100 / 58. 29.100\r"
+  ],
+  "licenses": [
+    {
+      "file": "FFmpeg-GPLv3.txt",
+      "sha256": "8ceb4b9ee5adedde47b31e975c1d90c73ad27b6b165a1dcd80c7c545eb65b903"
+    },
+    {
+      "file": "FFmpeg-build.txt",
+      "sha256": "a636a7183c58006351acbaf35303c0ed85c6e1320fd4e80de453ba6157de6311"
+    }
+  ],
+  "historicalSql": [
+    {
+      "name": "BASE_SCHEMA",
+      "sha256": "64593c5018c5825b3f5d6fa6bd23f2028df60fb476a87b2e5025ab05c955563a",
+      "unchanged": true
+    },
+    {
+      "name": "DURABLE_SCHEMA",
+      "sha256": "df634e04b0959b15a81b6a1b51bd4ec5fc9978a6a917c5f489c0579ffd3b112c",
+      "unchanged": true
+    },
+    {
+      "name": "CONNECTION_SCHEMA",
+      "sha256": "8b1ff8d3ff5812db2c0f1cda52757d0647266b368f63920dae0129491c507c55",
+      "unchanged": true
+    },
+    {
+      "name": "TASK_SCHEMA",
+      "sha256": "85e28957d4d41c9b32096a2d65c98fc887e58cb652045a6d3f94ef1aee932dc4",
+      "unchanged": true
+    }
+  ],
+  "excludedTestAndScriptRoots": true,
+  "scope": "Local Windows x64 unpacked test build; complete corresponding-source delivery remains a T16 public redistribution gate; no NSIS/install/publish claim"
+}

@@ -1,0 +1,15 @@
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  ⨯ The "path" argument must be of type string. Received undefined  failedTask=build stackTrace=TypeError: The "path" argument must be of type string. Received undefined
+    at Object.join (node:path:513:7)
+    at module.exports (E:\Learn\AI\nova-image-studio\scripts\verify-ffmpeg-before-pack.cjs:9:26)
+    at emitInternal (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\util\asyncEventEmitter.ts:61:31)
+    at AsyncEventEmitter.emit (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\util\asyncEventEmitter.ts:68:26)
+    at Packager.emitBeforePack (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\packager.ts:334:5)
+    at WinPackager.doPack (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\platformPackager.ts:231:5)
+    at WinPackager.pack (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\platformPackager.ts:163:5)
+    at Packager.doBuild (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\packager.ts:530:11)
+    at executeFinally (E:\Learn\AI\nova-image-studio\node_modules\builder-util\src\promise.ts:12:14)
+    at Packager.build (E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\src\packager.ts:450:31)
+    at executeFinally (E:\Learn\AI\nova-image-studio\node_modules\builder-util\src\promise.ts:12:14)

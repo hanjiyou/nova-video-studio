@@ -160,6 +160,59 @@ const MIGRATIONS = [
     { version: 2, name: 'durable-workbench-storage', sql: DURABLE_SCHEMA },
     { version: 3, name: 'protected-connections-and-capabilities', sql: CONNECTION_SCHEMA },
     { version: 4, name: 'durable-task-orchestration', sql: TASK_SCHEMA },
+    { version: 5, name: 'verified-media-and-output-roots', sql: `
+CREATE TABLE storage_roots (id TEXT PRIMARY KEY, directory TEXT NOT NULL, created_at TEXT NOT NULL);
+CREATE TABLE output_directory_versions (id TEXT PRIMARY KEY, root_ref TEXT NOT NULL REFERENCES storage_roots(id), created_at TEXT NOT NULL);
+CREATE TABLE output_directory_default (singleton INTEGER PRIMARY KEY CHECK(singleton=1), version_id TEXT NOT NULL REFERENCES output_directory_versions(id));
+CREATE TRIGGER output_version_immutable_update BEFORE UPDATE ON output_directory_versions BEGIN SELECT RAISE(ABORT,'IMMUTABLE_OUTPUT_VERSION'); END;
+CREATE TRIGGER output_version_immutable_delete BEFORE DELETE ON output_directory_versions BEGIN SELECT RAISE(ABORT,'IMMUTABLE_OUTPUT_VERSION'); END;
+CREATE TRIGGER storage_root_immutable_update BEFORE UPDATE ON storage_roots BEGIN SELECT RAISE(ABORT,'IMMUTABLE_STORAGE_ROOT'); END;
+CREATE TRIGGER storage_root_immutable_delete BEFORE DELETE ON storage_roots BEGIN SELECT RAISE(ABORT,'IMMUTABLE_STORAGE_ROOT'); END;
+CREATE TABLE assets_next (
+ id TEXT PRIMARY KEY, kind TEXT NOT NULL CHECK(kind IN ('image','video','audio')),
+ storage_key TEXT NOT NULL, display_name TEXT NOT NULL, mime_type TEXT NOT NULL,
+ byte_length INTEGER NOT NULL CHECK(byte_length>0), sha256 TEXT NOT NULL CHECK(length(sha256)=64),
+ width INTEGER, height INTEGER, duration_seconds REAL, source_kind TEXT NOT NULL,
+ validation_state TEXT NOT NULL DEFAULT 'unverified',
+ availability TEXT NOT NULL DEFAULT 'available' CHECK(availability IN ('available','missing','corrupt')),
+ created_at TEXT NOT NULL, root_ref TEXT REFERENCES storage_roots(id),
+ UNIQUE(root_ref,storage_key), UNIQUE(root_ref,sha256,mime_type,kind)
+);
+INSERT INTO assets_next SELECT *,NULL FROM assets;
+CREATE TABLE task_assets_copy AS SELECT * FROM task_assets;
+CREATE TABLE draft_assets_copy AS SELECT * FROM draft_assets;
+CREATE TABLE asset_legacy_links_copy AS SELECT * FROM asset_legacy_links;
+DROP TABLE task_assets;
+DROP TABLE draft_assets;
+DROP TABLE asset_legacy_links;
+DROP TABLE assets;
+ALTER TABLE assets_next RENAME TO assets;
+CREATE UNIQUE INDEX idx_assets_default_identity ON assets(sha256,mime_type,kind) WHERE root_ref IS NULL;
+CREATE UNIQUE INDEX idx_assets_default_key ON assets(storage_key) WHERE root_ref IS NULL;
+CREATE TABLE task_assets (
+ task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE, asset_id TEXT NOT NULL REFERENCES assets(id),
+ role TEXT NOT NULL CHECK(role IN ('input','output')), position INTEGER NOT NULL CHECK(position>=0), PRIMARY KEY(task_id,role,position)
+);
+CREATE INDEX idx_task_assets_asset ON task_assets(asset_id);
+CREATE TABLE draft_assets (
+ mode TEXT NOT NULL REFERENCES drafts(mode) ON DELETE CASCADE, asset_id TEXT NOT NULL REFERENCES assets(id),
+ position INTEGER NOT NULL CHECK(position>=0), PRIMARY KEY(mode,position)
+);
+CREATE INDEX idx_draft_assets_asset ON draft_assets(asset_id);
+CREATE TABLE asset_legacy_links (
+ kind TEXT NOT NULL CHECK(kind IN ('image','plugin-media')),relative_key TEXT NOT NULL,
+ asset_id TEXT NOT NULL REFERENCES assets(id),PRIMARY KEY(kind,relative_key)
+);
+INSERT INTO task_assets SELECT * FROM task_assets_copy;
+INSERT INTO draft_assets SELECT * FROM draft_assets_copy;
+INSERT INTO asset_legacy_links SELECT * FROM asset_legacy_links_copy;
+DROP TABLE task_assets_copy;
+DROP TABLE draft_assets_copy;
+DROP TABLE asset_legacy_links_copy;
+ALTER TABLE task_downloads ADD COLUMN refresh_not_before_at TEXT;
+ALTER TABLE task_downloads ADD COLUMN refresh_attempts INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE task_downloads ADD COLUMN refresh_budget_started_at TEXT;
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

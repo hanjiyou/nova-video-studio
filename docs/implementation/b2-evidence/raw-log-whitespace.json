@@ -1,0 +1,11 @@
+{
+  "fullStagedDiffCheck": {
+    "exitCode": 2,
+    "output": "docs/implementation/b2-evidence/build.log:27: new blank line at EOF.\n"
+  },
+  "sourceAndDocumentStagedDiffCheck": {
+    "exitCode": 0,
+    "excluded": "Original evidence *.log files"
+  },
+  "note": "Preserve the actual build tool output; the only whitespace report is its final blank line. No application source/document whitespace failures."
+}

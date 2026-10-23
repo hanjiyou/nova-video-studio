@@ -1,0 +1,74 @@
+{
+  "scope": "Actual packaged Windows EXE; production media worker from persisted inline candidates; no provider network or main-process injection. Renderer decoding, play/seek and Range. System dialog/shell GUI not automated.",
+  "checks": {
+    "packaged production decoder verifies PNG and all H264/AAC frames": true,
+    "actual packaged Chromium plays and seeks local video": true,
+    "packaged HTTP supports range seek and unsatisfiable response": true,
+    "packaged IPC rejects renderer path": true,
+    "packaged output directory is opaque": true,
+    "unauthorized local media read rejected": true,
+    "packaged renderer has no Node access": true,
+    "packaged process exits cleanly": true,
+    "SQLite integrity and foreign keys preserved": true
+  },
+  "assets": [
+    {
+      "assetId": "0da5234b-9446-41ff-aa24-a88bf35f13fa",
+      "kind": "image",
+      "displayName": "asset",
+      "mimeType": "image/png",
+      "byteLength": 96,
+      "sha256": "df1bc2902e618327ab0f08b8b8c27a0ed87cf85dd75df84a9021459815093e25",
+      "width": 2,
+      "height": 2,
+      "durationSeconds": null,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T13:50:38.250Z",
+      "previewUrl": "/api/nova/assets/0da5234b-9446-41ff-aa24-a88bf35f13fa/content",
+      "position": 0,
+      "role": "result"
+    },
+    {
+      "assetId": "a47e91dd-4ae9-4ed0-89a8-484c8ee51d67",
+      "kind": "video",
+      "displayName": "asset",
+      "mimeType": "video/mp4",
+      "byteLength": 40808,
+      "sha256": "60b4c6995ead267b2203b6e34033bc686e52ab40b32990e11ea8987591e18934",
+      "width": 160,
+      "height": 96,
+      "durationSeconds": 2.020136054421769,
+      "validationState": "verified",
+      "availability": "available",
+      "createdAt": "2026-10-23T13:50:38.253Z",
+      "previewUrl": "/api/nova/assets/a47e91dd-4ae9-4ed0-89a8-484c8ee51d67/content",
+      "position": 0,
+      "role": "result"
+    }
+  ],
+  "playback": {
+    "width": 160,
+    "height": 96,
+    "time": 1.2,
+    "readyState": 4
+  },
+  "ranges": [
+    {
+      "status": 206,
+      "length": 100,
+      "range": "bytes 0-99/40808"
+    },
+    {
+      "status": 206,
+      "length": 64,
+      "range": "bytes 40744-40807/40808"
+    },
+    {
+      "status": 416,
+      "length": 0,
+      "range": "bytes */40808"
+    }
+  ],
+  "status": "passed"
+}

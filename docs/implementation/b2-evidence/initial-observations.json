@@ -1,0 +1,13 @@
+{
+  "observations": [
+    "New schema means the old v3 upgrade assertion must expect v4+v5.",
+    "The first draft parent-table DROP with deferred foreign keys failed on referenced v4 assets; replaced by transaction-local copies and recreation of all three child association tables, preserving IDs and FK constraints without disabling foreign_keys.",
+    "A Windows inline-image fsync opened read-only yielded EPERM; fixed to exclusive writable FD, write, fsync, close. Real HTTP PNG generation now verifies.",
+    "A test local identifier duplicated bytes in the extended B1 HTTP fixture; renamed.",
+    "First package failed because the hook read a nonexistent appDir location. Corrected to context.packager.info.appDir. Initial raw log preserved.",
+    "A same-millisecond UUID ordering tie exposed a flaky FIFO assertion and a stalled test double. Queue ties now use SQLite insertion rowid; test always releases its held response on assertion failure. Interrupted only the owned test process; profile preserved.",
+    "Default-root partial unique indexes retain T03 database identity guarantees after multi-root support; explicit tests preserve old asset IDs, reference FKs and v1-v4 SQL."
+  ],
+  "noRealCredentialsOrPaidGeneration": true,
+  "noAppdataCleanup": true
+}

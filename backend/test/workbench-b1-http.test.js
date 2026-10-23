@@ -15,6 +15,7 @@ async function rig(t,behavior={}){
         const chunks=[];for await(const chunk of req)chunks.push(chunk);
         const record={method:req.method,path:req.url,authorization:req.headers.authorization,contentType:req.headers['content-type'],rawBody:Buffer.concat(chunks)};
         calls.push(record);
+        if(req.method==='GET'&&req.url.endsWith('/content')){const bytes=fs.readFileSync(path.join(__dirname,'fixtures/b2/valid-video.mp4'));res.writeHead(200,{'content-type':'video/mp4','content-length':bytes.length});res.end(bytes);return;}
         if(req.method==='POST'){
             record.dispatch=inspect(db=>db.prepare("SELECT dispatch_started_at,input_snapshot_json FROM tasks WHERE status='submitting'").get());
             const form=await new Response(record.rawBody,{headers:{'content-type':record.contentType}}).formData();
@@ -49,26 +50,30 @@ async function rig(t,behavior={}){
         async restart(){await runtime.crash();inspect(db=>db.prepare("UPDATE tasks SET next_poll_at='2000-01-01T00:00:00Z' WHERE status IN ('remote_queued','generating')").run());runtime=await start(directory,{opensosenOrigin,...(behavior.timeout?{pluginRequestTimeoutMs:behavior.timeout}:{})});},
         posts:()=>calls.filter(item=>item.method==='POST'),gets:()=>calls.filter(item=>item.method==='GET')};
 }
-for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes original asset order/parameters, one dispatch and download queue only',async t=>{
+for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes original assets and completes through B2 verified local download',async t=>{
     const f=await rig(t),input=f.input({mode:count===1?'video.single_reference':'video.dual_reference'});
     if(count===2)input.inputAssets=[{...f.refs[1],position:0},{...f.refs[0],position:1}];
     const id=await f.create(input);await until(async()=>(await f.task(id)).status==='remote_queued');
     const post=f.posts()[0];assert.ok(post.dispatch.dispatch_started_at);assert.equal(f.posts().length,1);assert.match(post.contentType,/multipart\/form-data; boundary=/);
     assert.deepEqual(post.parts.slice(0,4),[{name:'model',value:MODEL},{name:'prompt',value:prompt.replace(/\r?\n/g,'\r\n')},{name:'seconds',value:'6'},{name:'size',value:'1280x720'}]);
-    const bytes=count===1?[fixture('reference-a.png')]:[fixture('reference-single.jpg'),fixture('reference-a.png')];
+    const referenceBytes=count===1?[fixture('reference-a.png')]:[fixture('reference-single.jpg'),fixture('reference-a.png')];
     assert.deepEqual(post.parts.slice(4).map(item=>item.name),Array(count).fill('input_reference'));
-    post.parts.slice(4).forEach((item,index)=>assert.deepEqual(item.bytes,bytes[index]));
+    post.parts.slice(4).forEach((item,index)=>assert.deepEqual(item.bytes,referenceBytes[index]));
     const snapshot=JSON.parse(post.dispatch.input_snapshot_json);assert.equal(snapshot.prompt,prompt);assert.deepEqual(snapshot.inputAssets,input.inputAssets);assert.equal(snapshot.adapterVersion,'1.0.0');assert.equal(snapshot.capabilityVersionId,input.capabilityVersionId);
     assert.equal(await f.create(input),id);
     await f.runtime.saveConnection({connectionId:f.connection.connectionId,expectedVersionId:f.connection.connectionVersionId,baseUrl:'https://other.invalid/v1',apiKey:'synthetic-new-b1'});
-    await f.restart();await until(async()=>(await f.task(id)).status==='remote_completed');
-    assert.equal(f.posts().length,1);assert.equal(f.gets().length,1);assert.equal(f.gets()[0].path,'/v1/videos/task_b1_original');assert.equal(f.gets()[0].authorization,'Bearer '+KEY);
-    const dto=await f.task(id);assert.equal(dto.completedAt,null);assert.deepEqual(dto.outputAssets,[]);assert.equal(JSON.stringify(dto).includes('opensosen.com'),false);
+    await f.restart();await until(async()=>(await f.task(id)).status==='completed');
+    assert.equal(f.posts().length,1);assert.equal(f.gets().length,2);assert.equal(f.gets()[0].path,'/v1/videos/task_b1_original');assert.equal(f.gets()[1].path,'/v1/videos/task_b1_original/content');assert.ok(f.gets().every(call=>call.authorization==='Bearer '+KEY));
+    const dto=await f.task(id);assert.ok(dto.completedAt);assert.equal(dto.outputAssets[0].validationState,'verified');assert.equal(JSON.stringify(dto).includes('opensosen.com'),false);
     const stored=f.inspect(db=>({task:db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id),download:db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id)}));
-    assert.equal(stored.download.state,'waiting');assert.deepEqual(JSON.parse(stored.task.result_sources_json),[{kind:'url',url:'https://newapi.opensosen.com/v1/videos/task_b1_original/content',authScope:'connection',mediaKind:'video'}]);
+    assert.equal(stored.download.state,'completed');assert.deepEqual(JSON.parse(stored.task.result_sources_json),[{kind:'url',url:'https://newapi.opensosen.com/v1/videos/task_b1_original/content',authScope:'connection',mediaKind:'video'}]);
     assert.equal(stored.task.result_sources_json.includes('signature'),false);
-    await f.restart();assert.equal((await f.task(id)).status,'remote_completed');assert.equal(f.posts().length,1);assert.equal(f.gets().length,1);
-    t.diagnostic(JSON.stringify({mode:input.mode,files:count,postCount:f.posts().length,getCount:f.gets().length,localState:'remote_completed',download:'waiting'}));
+    const asset=dto.outputAssets[0],bytes=fs.readFileSync(path.join(__dirname,'fixtures/b2/valid-video.mp4'));
+    for(const [range,start,end]of[['bytes=0-99',0,99],['bytes=100-',100,bytes.length-1],['bytes=-128',bytes.length-128,bytes.length-1]]){const result=await f.runtime.request(asset.previewUrl,{headers:{Range:range}});assert.equal(result.status,206);assert.equal(result.headers.get('content-range'),'bytes '+start+'-'+end+'/'+bytes.length);assert.deepEqual(Buffer.from(await result.arrayBuffer()),bytes.subarray(start,end+1));}
+    const invalid=await f.runtime.request(asset.previewUrl,{headers:{Range:'bytes='+bytes.length+'-'}});assert.equal(invalid.status,416);assert.equal(invalid.headers.get('content-range'),'bytes */'+bytes.length);
+    const head=await f.runtime.request(asset.previewUrl,{method:'HEAD',headers:{Range:'bytes=0-1'}});assert.equal(head.status,200);assert.equal(head.headers.get('content-length'),String(bytes.length));
+    await f.restart();assert.equal((await f.task(id)).status,'completed');assert.equal(f.posts().length,1);assert.equal(f.gets().length,2);assert.deepEqual(Buffer.from(await(await f.runtime.request(asset.previewUrl)).arrayBuffer()),bytes);
+    t.diagnostic(JSON.stringify({mode:input.mode,files:count,postCount:f.posts().length,getCount:f.gets().length,localState:'completed',download:'verified and readable offline',range:'206/416/HEAD exact bytes'}));
 });
 test('canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request',async t=>{
     const f=await rig(t);
@@ -94,7 +99,7 @@ test('script accepted ID persists before encoded credential contamination; query
     const next=await f.create();await sleep(40);assert.equal((await f.task(next)).status,'local_queued');assert.equal(f.posts().length,1);
     await f.post('/api/nova/tasks/'+next+'/cancel-queued');
     const ws=f.runtime.openWebSocket(),messages=[];ws.on('message',data=>messages.push(String(data)));await new Promise(resolve=>ws.once('open',resolve));
-    await f.post('/api/nova/tasks/'+id+'/resume-polling');await until(async()=>(await f.task(id)).status==='remote_completed');
+    await f.post('/api/nova/tasks/'+id+'/resume-polling');await until(async()=>(await f.task(id)).status==='completed');
     ws.close();await new Promise(resolve=>ws.once('close',resolve));
     const history=await(await f.runtime.request('/api/nova/storage/tasks')).json();
     const persistence=f.inspect(db=>JSON.stringify({tasks:db.prepare('SELECT request_json,input_snapshot_json,result_sources_json,task_error_json FROM tasks').all(),events:db.prepare('SELECT payload_json FROM task_events').all()}));
@@ -157,8 +162,8 @@ for(const invalid of ['.','..'])test('review actual HTTP accepted dot ID '+inval
     assert.equal((await f.task(id)).status,'polling_paused');assert.equal(f.gets().length,0);
     await f.post('/api/nova/tasks/'+next+'/cancel-queued');
     assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
-    await until(async()=>(await f.task(id)).status==='remote_completed');
-    const encoded=encodeURIComponent(normal);assert.equal(f.gets().length,1);assert.equal(f.gets()[0].path,'/v1/videos/'+encoded);
+    await until(async()=>(await f.task(id)).status==='completed');
+    const encoded=encodeURIComponent(normal);assert.equal(f.gets().length,2);assert.equal(f.gets()[0].path,'/v1/videos/'+encoded);assert.equal(f.gets()[1].path,'/v1/videos/'+encoded+'/content');
     const sources=f.inspect(db=>JSON.parse(db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id).result_sources_json));
     assert.equal(new URL(sources[0].url).pathname,'/v1/videos/'+encoded+'/content');assert.equal(f.posts().length,1);
     t.diagnostic(JSON.stringify({rejectedId:invalid,postCount:1,getCount:1,queryPath:f.gets()[0].path,contentPath:new URL(sources[0].url).pathname,reattachedOnlyAfterValidation:true}));

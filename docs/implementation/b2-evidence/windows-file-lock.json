@@ -1,0 +1,11 @@
+{
+  "scope": "Actual Windows FileShare.None target lock; OS dialog target is a controlled test double. No GUI automation.",
+  "checks": {
+    "lockedTargetRejected": true,
+    "oldTargetPreserved": true,
+    "retryAfterUnlockSucceeds": true,
+    "noPartialExportLeft": true
+  },
+  "status": "passed",
+  "reference": "67ad6cce-7dea-4bd9-bcea-7c4a972a5667"
+}

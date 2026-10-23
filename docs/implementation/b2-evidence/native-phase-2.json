@@ -1,0 +1,28 @@
+{
+  "phase": 2,
+  "platform": "win32",
+  "checks": {
+    "real Windows safeStorage available": true,
+    "restarted backend port differs": true,
+    "only decoded managed asset completes after restart": true,
+    "old output root is frozen": true,
+    "original intent deduplicates after restart": true,
+    "actual renderer Range returns exact 206 bytes": true,
+    "Chromium decodes plays and seeks actual local H264/AAC": true,
+    "real trusted IPC atomically saves selected target": true,
+    "save cancellation is successful": true,
+    "reveal resolves real managed file": true,
+    "renderer cannot pass arbitrary path": true,
+    "default change preserves old task root": true,
+    "public state excludes key CDN signature and paths": true
+  },
+  "scope": "Actual Electron main/preload/renderer, native FFmpeg, HTTP Range and crash recovery. Synthetic provider. Dialog target and shell adapter are controlled test doubles; no manual GUI acceptance.",
+  "playback": {
+    "width": 160,
+    "height": 96,
+    "time": 1.2,
+    "readyState": 4,
+    "duration": 2
+  },
+  "status": "passed"
+}

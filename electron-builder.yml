@@ -1,5 +1,11 @@
 appId: com.novaimage.studio
 productName: Nova Image Studio
+beforePack: scripts/verify-ffmpeg-before-pack.cjs
+extraResources:
+  - from: node_modules/ffmpeg-static/ffmpeg.exe.LICENSE
+    to: licenses/FFmpeg-GPLv3.txt
+  - from: node_modules/ffmpeg-static/ffmpeg.exe.README
+    to: licenses/FFmpeg-build.txt
 directories:
   output: release
 files:
@@ -30,6 +36,7 @@ files:
   - '!backend/.env'
 asarUnpack:
   - node_modules/better-sqlite3/**
+  - node_modules/ffmpeg-static/**
   - backend/plugin-runtime/**
   - backend/plugins/**
 # better-sqlite3 v13 的 npm 包自带全平台 N-API prebuilds（prebuilds/ 目录），

@@ -1,0 +1,34 @@
+[
+  {
+    "command": "node scripts/verify-desktop-b2.cjs temp/b2-native-final",
+    "exitCode": 0,
+    "evidence": [
+      "native-phase-1.json",
+      "native-phase-2.json",
+      "native-requests.json"
+    ],
+    "note": "Actual Windows Electron, both process exits checked strict 0."
+  },
+  {
+    "command": "node scripts/verify-b2-windows-file-lock.cjs temp/b2-native-lock-final",
+    "exitCode": 0,
+    "evidence": [
+      "windows-file-lock.json"
+    ]
+  },
+  {
+    "command": "node scripts/verify-b2-package-audit.cjs release-b2/win-unpacked/resources/app.asar docs/implementation/b2-evidence/package-audit.json",
+    "exitCode": 0,
+    "evidence": [
+      "package-audit.json"
+    ]
+  },
+  {
+    "command": "node scripts/verify-desktop-b2-package.cjs \"release-b2/win-unpacked/Nova Image Studio.exe\" temp/b2-package-final",
+    "exitCode": 0,
+    "evidence": [
+      "packaged-evidence.json"
+    ],
+    "note": "Actual Windows EXE process exit checked strict 0."
+  }
+]

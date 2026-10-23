@@ -2,6 +2,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
+const { createOutputDirectories } = require('./output-directories');
+const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MODES = new Set(['image.text', 'image.reference', 'video.text', 'video.single_reference', 'video.dual_reference']);
 const MIME_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif',
@@ -48,17 +50,25 @@ function createWorkbenchStore({ db, rootDirectory }) {
     const assetRoot = path.join(root, 'assets');
     fs.mkdirSync(assetRoot, { recursive: true });
     const canonicalRoot = fs.realpathSync.native(assetRoot);
+    const outputDirectories = createOutputDirectories({ db, defaultDirectory: root });
+    function objectsFor(ref) {
+        if (!ref || ref === outputDirectories.DEFAULT) return canonicalRoot;
+        const base = outputDirectories.directory(ref), objects = path.join(base, 'assets');
+        return objects;
+    }
     function row(id) { return db.prepare('SELECT * FROM assets WHERE id=?').get(uuid(id)); }
     function trustedPath(asset) {
         if (!asset || !/^[a-f0-9]{2}[\\/][a-f0-9]{64}\.[a-z0-9]+$/.test(asset.storage_key))
             throw fail('ASSET_PATH_REJECTED');
-        const candidate = path.resolve(canonicalRoot, asset.storage_key);
-        if (!candidate.startsWith(canonicalRoot + path.sep))
+        let managedRoot;
+        try { managedRoot = objectsFor(asset.root_ref); } catch (error) { if (error.code === 'DIRECTORY_NOT_WRITABLE') return null; throw error; }
+        const candidate = path.resolve(managedRoot, asset.storage_key);
+        if (!candidate.startsWith(managedRoot + path.sep))
             throw fail('ASSET_PATH_REJECTED');
         if (!fs.existsSync(candidate))
             return null;
         const actual = fs.realpathSync.native(candidate);
-        if (!actual.startsWith(canonicalRoot + path.sep) || fs.lstatSync(candidate).isSymbolicLink() || !fs.statSync(actual).isFile())
+        if (!actual.startsWith(managedRoot + path.sep) || fs.lstatSync(candidate).isSymbolicLink() || !fs.statSync(actual).isFile())
             throw fail('ASSET_PATH_REJECTED');
         return actual;
     }
@@ -73,7 +83,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
             byteLength: asset.byte_length, sha256: asset.sha256, width: asset.width, height: asset.height, durationSeconds: asset.duration_seconds,
             validationState: asset.validation_state, availability, createdAt: asset.created_at, previewUrl: '/api/nova/assets/' + asset.id + '/content' };
     }
-    function importBuffer(bytes, { mimeType, displayName = 'asset', sourceKind = 'imported' } = {}) {
+    function importBuffer(bytes, { mimeType, displayName = 'asset', sourceKind = 'imported', rootRef = null, validation = null } = {}) {
         if (!Buffer.isBuffer(bytes) || !bytes.length || bytes.length > MAX_ASSET_BYTES)
             throw fail('ASSET_SIZE_INVALID');
         const rawMime = String(mimeType || '').split(';')[0].trim().toLowerCase();
@@ -84,12 +94,14 @@ function createWorkbenchStore({ db, rootDirectory }) {
         const kind = mime.split('/')[0];
         const sha = digest(bytes);
         const storageKey = path.join(sha.slice(0, 2), sha + '.' + ext);
-        const directory = path.join(assetRoot, sha.slice(0, 2));
+        rootRef = rootRef === outputDirectories.DEFAULT ? null : rootRef;
+        const objectRoot = objectsFor(rootRef);
+        const directory = path.join(objectRoot, sha.slice(0, 2));
         fs.mkdirSync(directory, { recursive: true });
-        if (!fs.realpathSync.native(directory).startsWith(canonicalRoot + path.sep))
+        if (!fs.realpathSync.native(directory).startsWith(objectRoot + path.sep))
             throw fail('ASSET_PATH_REJECTED');
-        const destination = path.join(assetRoot, storageKey);
-        const existing = db.prepare('SELECT * FROM assets WHERE sha256=? AND mime_type=? AND kind=?').get(sha, mime, kind);
+        const destination = path.join(objectRoot, storageKey);
+        const existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND sha256=? AND mime_type=? AND kind=?').get(rootRef, sha, mime, kind);
         if (fs.existsSync(destination)) {
             if (fs.lstatSync(destination).isSymbolicLink() || digest(fs.readFileSync(destination)) !== sha)
                 throw fail('ASSET_FILE_CONFLICT', '受管理文件与记录不一致，原文件已保留。', 409);
@@ -121,14 +133,15 @@ function createWorkbenchStore({ db, rootDirectory }) {
         }
         if (existing) {
             db.prepare("UPDATE assets SET availability='available' WHERE id=?").run(existing.id);
+            if (validation) db.prepare("UPDATE assets SET validation_state='verified',width=?,height=?,duration_seconds=? WHERE id=?").run(validation.width, validation.height, validation.durationSeconds ?? null, existing.id);
             return summary(row(existing.id));
         }
         const id = randomUUID();
         const name = path.basename(String(displayName)).replace(/\p{Cc}/gu, '').slice(0, 240) || 'asset';
         const width = mime === 'image/png' && bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ? bytes.readUInt32BE(16) : null;
         const height = width ? bytes.readUInt32BE(20) : null;
-        db.prepare(`INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,source_kind,created_at)
-      VALUES(?,?,?,?,?,?,?,?,?,?,?)`).run(id, kind, storageKey, name, mime, bytes.length, sha, width, height, sourceKind, new Date().toISOString());
+        db.prepare(`INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,source_kind,created_at,root_ref,validation_state,duration_seconds)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, kind, storageKey, name, mime, bytes.length, sha, validation?.width ?? width, validation?.height ?? height, sourceKind, new Date().toISOString(), rootRef, validation ? 'verified' : 'unverified', validation?.durationSeconds ?? null);
         return summary(row(id));
     }
     function importFile(filePath, options = {}) {
@@ -155,6 +168,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
             db.prepare("UPDATE assets SET availability='corrupt' WHERE id=?").run(id);
             throw fail('ASSET_CORRUPT', '素材文件与摘要不符，记录已保留。', 409);
         }
+        if(asset.availability!=='available'){db.prepare("UPDATE assets SET availability='available' WHERE id=?").run(id);asset.availability='available';}
         return { bytes, asset: summary(asset) };
     }
     function references(items) {
@@ -332,6 +346,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
         return { localTaskId: task.id, status: task.status, mode: task.mode, prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', createdAt: task.created_at, completedAt: task.completed_at,
             localRequestId: task.local_request_id, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
+            outputDirectoryVersionId:task.output_directory_version_id,outputRootRef:task.output_root_ref,
             remoteState: task.remote_state, rawStatus: task.raw_status, pauseReason: task.pause_reason, notBeforeAt: task.not_before_at, requiresContinue: Boolean(task.requires_continue),
             taskError: task.task_error_json ? JSON.parse(task.task_error_json) : null, inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
     }
@@ -343,6 +358,20 @@ function createWorkbenchStore({ db, rootDirectory }) {
     const importFiles = files => { if (!Array.isArray(files) || files.length > 32)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
     const service = { importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
+        outputDirectory: () => outputDirectories.current(), selectOutputDirectory: directory => outputDirectories.select(directory),
+        freezeOutputDirectory: snapshot => outputDirectories.freeze(snapshot),
+        downloadDirectory: rootRef => {
+            const directory = path.join(outputDirectories.directory(rootRef || outputDirectories.DEFAULT), '.nova-parts');
+            fs.mkdirSync(directory, { recursive: true });
+            if (fs.realpathSync.native(directory) !== directory) throw fail('ASSET_PATH_REJECTED');
+            return directory;
+        },
+        publishVerifiedFile: (file, metadata, rootRef) => {
+            const bytes = fs.readFileSync(file);
+            if (digest(bytes) !== metadata.sha256) throw fail('ASSET_CORRUPT');
+            if (!Number.isInteger(metadata.width) || !Number.isInteger(metadata.height) || metadata.width < 1 || metadata.height < 1) throw fail('MEDIA_INVALID');
+            return importBuffer(bytes, { mimeType: metadata.mimeType, sourceKind: 'generated', rootRef, validation: metadata });
+        },
         getDraft, putDraft, getSetting, putSetting, registerLegacyFile, linkLegacyAsset, legacyAsset, legacyImage, listTasks,
         getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; },
         events: id => db.prepare('SELECT id,type,payload_json,created_at FROM task_events WHERE task_id=? ORDER BY id').all(uuid(id)).map(item => ({ id: item.id, type: item.type, payload: JSON.parse(item.payload_json), createdAt: item.created_at })),
@@ -359,6 +388,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
             catch (cause) {
                 if (cause.statusCode)
                     throw cause;
+                if (['ENOSPC','EDQUOT','EBUSY','EPERM','ETXTBSY','EACCES','ENOENT','ENOTDIR','ENAMETOOLONG'].includes(cause.code)) throw fileFailure(cause);
                 throw Object.assign(fail('STORAGE_OPERATION_FAILED', '存储操作失败，已有记录和文件保留。', 500), { cause });
             }
         }]));

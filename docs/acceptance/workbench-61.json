@@ -124,13 +124,18 @@
         "T08",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "G07",
@@ -312,13 +317,18 @@
         "T08",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "I09",
@@ -332,12 +342,16 @@
       "status": "in_progress",
       "evidence": {
         "offline": [
-          "../implementation/b1-evidence/b1-targeted.log"
+          "../implementation/b1-evidence/b1-targeted.log",
+          "../implementation/b2-evidence/targeted.log"
         ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 合成图片空输出/坏结果被拒绝；候选不是本地完成，T08/T11 保存与界面仍未完成。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 合成图片空输出/坏结果被拒绝；候选不是本地完成，T08/T11 保存与界面仍未完成。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "I10",
@@ -351,14 +365,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "I11",
@@ -372,14 +390,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "I12",
@@ -407,13 +429,18 @@
         "T08",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "I14",
@@ -668,13 +695,18 @@
         "T12",
         "T16"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "V12",
@@ -688,14 +720,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "V13",
@@ -709,14 +745,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "V14",
@@ -769,17 +809,20 @@
         "offline": [
           "../implementation/t05-evidence/tasks-targeted.log",
           "../implementation/b1-evidence/b1-targeted.log",
-          "../implementation/b1-evidence/review-dot-id-targeted.log"
+          "../implementation/b1-evidence/review-dot-id-targeted.log",
+          "../implementation/b2-evidence/targeted.log"
         ],
         "realService": [],
         "desktop": [
           "../implementation/t05-evidence/native-tasks-phase-1.json",
           "../implementation/t05-evidence/native-tasks-phase-2.json",
           "../implementation/b1-evidence/native-b1-phase-1.json",
-          "../implementation/b1-evidence/native-b1-phase-2.json"
+          "../implementation/b1-evidence/native-b1-phase-2.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "L01",
@@ -891,13 +934,18 @@
         "T08",
         "T13"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "S01",
@@ -1004,14 +1052,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "S06",
@@ -1147,14 +1199,18 @@
       ],
       "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/b2-evidence/targeted.log"
+        ],
         "realService": [],
         "desktop": [
           "../implementation/t02-evidence/native-boundary-evidence.json",
-          "../implementation/t02-evidence/installed-system-evidence.json"
+          "../implementation/t02-evidence/installed-system-evidence.json",
+          "../implementation/b2-evidence/native-phase-2.json",
+          "../implementation/b2-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。"
+      "notes": "T02核心桌面/网络边界已由主会话接受；本产品条目仍需其余关联阶段完成，不等于完整交互或安装发布已验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。"
     },
     {
       "id": "O07",

@@ -4,6 +4,7 @@ const { UUID, fail } = require('../storage/store');
 const uuid = value => { if (typeof value !== 'string' || !UUID.test(value)) throw fail('INVALID_ID'); return value; };
 const { containsCredential } = require('../connections/redaction');
 const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
+const { DETAILS, failure: downloadFailure } = require('../storage/download-errors');
 const TERMINAL = new Set(['completed', 'failed', 'local_cancelled', 'remote_cancelled']);
 const REMOTE_ACTIVE = new Set(['remote_queued', 'generating']);
 const RESERVING = new Set(['submitting', 'submission_unknown', 'remote_queued', 'generating', 'polling_paused']);
@@ -40,19 +41,19 @@ const MESSAGES = {
     ADAPTER_UNAVAILABLE: '原适配器版本不可用，任务已暂停。',
 };
 function errorDto(code, phase, task, extra = {}) {
-    return { code, phase, message: MESSAGES[code] || '任务已暂停，请检查详情。', retryAction: ({
+    return { code, phase, message: DETAILS[code]?.[1] || MESSAGES[code] || '任务已暂停，请检查详情。', retryAction: ({
         SUBMISSION_UNKNOWN: 'reconcile_submission', REMOTE_REJECTED: 'edit_input', INPUT_INVALID: 'edit_input', CAPABILITY_UNVERIFIED: 'edit_input',
         AUTH_REJECTED: 'reauthenticate', CREDENTIAL_REQUIRED: 'reauthenticate', CREDENTIAL_UNAVAILABLE: 'reauthenticate',
         POLL_TRANSIENT: 'retry_poll', RATE_LIMITED: 'retry_poll', REMOTE_STATUS_UNKNOWN: 'retry_poll',
         DOWNLOAD_FAILED: 'retry_download', DOWNLOAD_EXPIRED: 'retry_download',
-    })[code] || 'none', transmission: phase === 'submit' ? 'may_have_reached_upstream' : 'not_applicable',
+    })[code] || (DETAILS[code] ? 'retry_download' : 'none'), transmission: phase === 'submit' ? 'may_have_reached_upstream' : 'not_applicable',
     localTaskId: task.id, ...(task.upstream_task_id ? { upstreamTaskId: task.upstream_task_id } : {}), ...extra };
 }
 /** Desktop-only durable orchestration. Adapters perform exactly one submit or one GET.
  * Download workers are injected by T08; without one, candidates remain remote_completed.
  */
 function createTaskService({ db, store, connections, resolveAdapter, onChange = () => {}, now = Date.now, random = Math.random, policy = {}, downloadWorker = null }) {
-    const rules = { ...DEFAULT_POLICY, ...policy }, timers = new Map(), inFlight = new Map(), controllers = new Set();
+    const rules = { ...DEFAULT_POLICY, ...policy }, timers = new Map(), inFlight = new Map(), controllers = new Set(), ephemeralSources = new Map();
     let closed = false, pumping = false, downloadsRunning = 0, schedulerError = null;
     function background(promise) { promise.catch(() => { schedulerError = 'STORAGE_OPERATION_FAILED'; closed = true; for (const timer of timers.values()) clearTimeout(timer); timers.clear(); for (const controller of controllers) controller.abort(); }); }
     const iso = ms => new Date(Math.min(8640000000000000, ms ?? now())).toISOString();
@@ -100,13 +101,19 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const checked = snapshotFor(snapshot);
         const existing = db.prepare('SELECT * FROM tasks WHERE local_request_id=?').get(checked.localRequestId);
         if (!existing) return null;
-        if (canonical(JSON.parse(existing.input_snapshot_json)) !== canonical(checked)) throw fail('LOCAL_REQUEST_CONFLICT', '同一本地请求标识对应不同任务输入。', 409);
+        const saved = JSON.parse(existing.input_snapshot_json);
+        if (!checked.outputDirectoryVersionId && !checked.outputRootRef) {
+            if(saved.outputDirectoryVersionId)checked.outputDirectoryVersionId=saved.outputDirectoryVersionId;
+            if(saved.outputRootRef)checked.outputRootRef=saved.outputRootRef;
+        }
+        if (canonical(saved) !== canonical(checked)) throw fail('LOCAL_REQUEST_CONFLICT', '同一本地请求标识对应不同任务输入。', 409);
         return existing.id;
     }
     function enqueue({ snapshot: input, request, mode }) {
         if (closed) throw fail('SERVER_NOT_ACCEPTING_TASKS', '服务正在关闭。', 503);
-        const snapshot = snapshotFor(input), duplicate = findDuplicate(snapshot);
+        let snapshot = snapshotFor(input); const duplicate = findDuplicate(snapshot);
         if (duplicate) return duplicate;
+        snapshot = store.freezeOutputDirectory(snapshot);
         // A controlled preflight can establish not_dispatched. No key is kept in the record.
         connections.getAuth(snapshot.connectionVersionId);
         const id = randomUUID();
@@ -126,18 +133,24 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     function candidates(task, result, key) {
         if (!Array.isArray(result) || result.length === 0 || result.length > 32) throw fail('REMOTE_STATUS_UNKNOWN');
-        return result.map(source => {
+        const transient=[];
+        const saved=result.map(source => {
             if (source.kind === 'asset') { store.readAsset(source.assetId); return { kind: 'asset', assetId: source.assetId }; }
             if (source.kind === 'inline') {
                 const asset = store.importBuffer(source.bytes, { mimeType: source.mimeType, sourceKind: 'generated' });
                 return { kind: 'asset', assetId: asset.assetId };
             }
+            if(typeof source.url!=='string'||source.url.length>8192)throw fail('DOWNLOAD_EXPIRED');
             const url = new URL(source.url);
             if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash || containsCredential(url.toString(), key)) throw Object.assign(fail('DOWNLOAD_EXPIRED'), { credentialRedacted: containsCredential(url.toString(), key) });
-            // Signed/query-bearing addresses remain ephemeral. T08 can refresh the same ID.
-            if (url.search) throw fail('DOWNLOAD_EXPIRED');
+            // Signed addresses are handed directly to the worker in memory. A durable marker
+            // records the limitation without persisting any query/token or temporary path.
+            if (url.search) { transient.push({ ...source, url:url.toString() }); return { kind:'ephemeral', mediaKind:source.mediaKind || 'image' }; }
             return { kind: 'url', url: url.toString(), authScope: source.authScope === 'connection' ? 'connection' : 'none', mediaKind: source.mediaKind || 'image' };
         });
+        if(transient.length)ephemeralSources.set(task.id,result.map((source,index)=>saved[index].kind==='ephemeral'?transient.shift():saved[index]));
+        else ephemeralSources.delete(task.id);
+        return saved;
     }
     function remoteCompleted(id, result, key, rawStatus = null) {
         let sources;
@@ -195,7 +208,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         pumping = true;
         try {
             if (db.prepare("SELECT 1 FROM tasks WHERE status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused') AND (dispatch_started_at IS NOT NULL OR upstream_task_id IS NOT NULL) LIMIT 1").get()) return;
-            const next = db.prepare("SELECT id FROM tasks WHERE status='local_queued' AND requires_continue=0 ORDER BY created_at,id LIMIT 1").get();
+            const next = db.prepare("SELECT id FROM tasks WHERE status='local_queued' AND requires_continue=0 ORDER BY created_at,rowid LIMIT 1").get();
             if (!next) return;
             const promise = submit(next.id); inFlight.set(next.id, promise);
             try { await promise; } finally { inFlight.delete(next.id); }
@@ -291,16 +304,44 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             update(id, 'polling_paused', { upstream_task_id: value, pause_reason: 'reconciled_id', error: null, task_error_json: null }, 'submission_reconciled');
         } else if (name === 'retry-download') {
             if (task.status !== 'download_failed') throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
-            if (!task.result_sources_json) throw fail('RESULT_REFRESH_REQUIRED', '需要由原适配器刷新结果地址；不会重新生成。', 409);
+            if (!task.result_sources_json && !task.upstream_task_id) throw fail('RESULT_REFRESH_REQUIRED', '没有可恢复资源；不会重新生成。', 409);
+            const job=db.prepare('SELECT refresh_not_before_at FROM task_downloads WHERE task_id=?').get(id);
+            if(Date.parse(job?.refresh_not_before_at || '')>now())throw Object.assign(fail('POLL_NOT_BEFORE','尚未到上游允许的刷新时间。',409),{notBeforeAt:job.refresh_not_before_at});
             update(id, 'remote_completed', { task_error_json: null, error: null }, 'download_retry_requested');
-            db.prepare("UPDATE task_downloads SET state='waiting',updated_at=? WHERE task_id=?").run(iso(), id); background(drainDownloads());
+            db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at,refresh_attempts=0,refresh_budget_started_at=NULL").run(id,iso(),iso()); background(drainDownloads());
         } else throw fail('TASK_ACTION_INVALID');
         emit(id); return publicTask(row(id));
+    }
+    async function refreshDownload(task, signal) {
+        if(!task.upstream_task_id||!isQueryableUpstreamTaskId(task.upstream_task_id))throw downloadFailure('RESULT_NOT_RECOVERABLE');
+        const job=db.prepare('SELECT * FROM task_downloads WHERE task_id=?').get(task.id);
+        if(Date.parse(job.refresh_not_before_at || '')>now())throw downloadFailure('RATE_LIMITED');
+        if(job.refresh_attempts>=rules.maxRetries)throw downloadFailure('DOWNLOAD_EXPIRED');
+        const started=job.refresh_budget_started_at?Date.parse(job.refresh_budget_started_at):now();
+        if(now()-started>=rules.budgetMs)throw downloadFailure('DOWNLOAD_EXPIRED');
+        db.prepare('UPDATE task_downloads SET refresh_attempts=refresh_attempts+1,refresh_budget_started_at=? WHERE task_id=?').run(iso(started),task.id);
+        const auth=connections.getAuth(task.connection_version_id);
+        try {
+            const outcome=await adapter(task).poll(task,JSON.parse(task.input_snapshot_json),{...auth,signal});
+            if(outcome?.remoteState!=='completed')throw downloadFailure('DOWNLOAD_EXPIRED');
+            const saved=candidates(task,outcome.resultSources,auth.apiKey);
+            db.prepare('UPDATE tasks SET result_sources_json=? WHERE id=?').run(JSON.stringify(saved),task.id);
+            event(task.id,'download_source_refreshed',{sameUpstreamTask:true});
+            return ephemeralSources.get(task.id)||saved;
+        } catch(error) {
+            const wait=retryAfter(error.retryAfter,now());
+            if(wait!==null)db.prepare('UPDATE task_downloads SET refresh_not_before_at=? WHERE task_id=?').run(iso(now()+wait),task.id);
+            if([401,403].includes(error.httpStatus))throw downloadFailure('AUTH_REJECTED');
+            if(error.httpStatus===429)throw downloadFailure('RATE_LIMITED');
+            if(['CREDENTIAL_REQUIRED','CREDENTIAL_UNAVAILABLE'].includes(error.code))throw downloadFailure(error.code);
+            throw DETAILS[error.code]?error:downloadFailure('DOWNLOAD_EXPIRED');
+        }
     }
     function publicTask(task) {
         if (!task) return null;
         return { localTaskId: task.id, id: task.id, localRequestId: task.local_request_id, status: task.status,
             mode: task.mode, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
+            outputDirectoryVersionId:task.output_directory_version_id,outputRootRef:task.output_root_ref,
             remoteState: task.remote_state, rawStatus: task.raw_status, progress: task.remote_progress ?? undefined, pauseReason: task.pause_reason,
             notBeforeAt: task.not_before_at, nextPollAt: task.next_poll_at, requiresContinue: Boolean(task.requires_continue),
             generationReserved: RESERVING.has(task.status) && Boolean(task.dispatch_started_at || task.upstream_task_id),
@@ -312,20 +353,30 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     async function drainDownloads() {
         if (closed || !downloadWorker || downloadsRunning >= 1) return;
-        const job = db.prepare("SELECT * FROM task_downloads WHERE state='waiting' ORDER BY created_at,task_id LIMIT 1").get();
+        const job = db.prepare("SELECT * FROM task_downloads WHERE state='waiting' ORDER BY created_at,rowid LIMIT 1").get();
         if (!job) return;
         downloadsRunning++;
         const promise = (async () => {
             update(job.task_id, 'downloading'); db.prepare("UPDATE task_downloads SET state='running',updated_at=? WHERE task_id=?").run(iso(), job.task_id);
             try {
                 // T08 must return an independently verifiable proof; no caller can merely set completed.
-                const proof = await downloadWorker(row(job.task_id), JSON.parse(row(job.task_id).result_sources_json));
+                const task=row(job.task_id),controller=new AbortController();controllers.add(controller);
+                let proof;
+                try {
+                    let sources=ephemeralSources.get(task.id)||JSON.parse(task.result_sources_json || 'null');
+                    let refreshed=false;
+                    if(!sources||sources.some(source=>source.kind==='ephemeral')){sources=await refreshDownload(task,controller.signal);refreshed=true;}
+                    try { proof=await downloadWorker(task,sources,{signal:controller.signal}); }
+                    catch(error) { if(error.code!=='DOWNLOAD_EXPIRED'||refreshed||!task.upstream_task_id)throw error;
+                        sources=await refreshDownload(task,controller.signal);proof=await downloadWorker(task,sources,{signal:controller.signal}); }
+                } finally {controllers.delete(controller);}
                 if (!proof?.assetIds?.length) throw fail('DOWNLOAD_FAILED');
                 for (const id of proof.assetIds) { const checked = store.readAsset(id); if (checked.asset.validationState !== 'verified') throw fail('DOWNLOAD_FAILED'); }
                 if (closed) return;
                 db.transaction(() => { store.bindTaskAssets(job.task_id, proof.assetIds.map((assetId, position) => ({ assetId, position, role: 'reference' })), 'output'); update(job.task_id, 'completed', { completed_at: iso() }); db.prepare("UPDATE task_downloads SET state='completed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); })();
-            } catch {
-                if (!closed) { setError(job.task_id, 'download_failed', 'DOWNLOAD_FAILED', 'download'); db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); }
+                ephemeralSources.delete(job.task_id);
+            } catch (error) {
+                if (!closed) { const code=DETAILS[error.code]?error.code:'DOWNLOAD_FAILED';setError(job.task_id, 'download_failed', code, DETAILS[code]?.[0] || 'download'); db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); }
             }
         })();
         inFlight.set('download:' + job.task_id, promise);
@@ -339,6 +390,8 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                     update(task.id, 'local_queued', { requires_continue: 1 }, 'recovery_queue_waiting'); continue;
                 }
                 if (['remote_completed', 'downloading', 'download_failed'].includes(task.status)) {
+                    const saved=JSON.parse(task.result_sources_json || 'null');
+                    if(saved?.some(source=>source.kind==='ephemeral')&&!task.upstream_task_id){setError(task.id,'download_failed','RESULT_NOT_RECOVERABLE','download');db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);continue;}
                     if (task.status === 'downloading') update(task.id, 'remote_completed', {}, 'recovery_download_waiting');
                     db.prepare("UPDATE task_downloads SET state=CASE WHEN state='running' THEN 'waiting' ELSE state END,updated_at=? WHERE task_id=?").run(iso(), task.id); continue;
                 }
@@ -363,7 +416,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             downloadQueued: db.prepare("SELECT count(*) AS n FROM task_downloads WHERE state='waiting'").get().n, pausedCount: counts.polling_paused || 0,
             awaitingContinueCount: db.prepare("SELECT count(*) AS n FROM tasks WHERE status='local_queued' AND requires_continue=1").get().n };
     }
-    async function close() { closed = true; for (const controller of controllers) controller.abort(); for (const timer of timers.values()) clearTimeout(timer); timers.clear(); await Promise.allSettled([...inFlight.values()]); }
+    async function close() { closed = true; for (const controller of controllers) controller.abort(); for (const timer of timers.values()) clearTimeout(timer); timers.clear(); await Promise.allSettled([...inFlight.values()]); ephemeralSources.clear(); }
     return { enqueue, findDuplicate, action, recover, stats, close, get: id => publicTask(row(id)), poll, pump, drainDownloads };
 }
 module.exports = { createTaskService, canonical, retryAfter, DEFAULT_POLICY, STATES };

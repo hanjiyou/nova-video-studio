@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('novaDesktop', {
   importReferenceAssets: () => ipcRenderer.invoke('nova:import-reference-assets'),
   getRuntimeInfo: () => ipcRenderer.invoke('nova:runtime-info'),
   chooseOutputDirectory: () => ipcRenderer.invoke('nova:choose-output-directory'),
+  getOutputDirectory: () => ipcRenderer.invoke('nova:output-directory'),
   saveAssetCopy: assetId => ipcRenderer.invoke('nova:save-asset-copy', assetId),
   revealAsset: assetId => ipcRenderer.invoke('nova:reveal-asset', assetId),
 });

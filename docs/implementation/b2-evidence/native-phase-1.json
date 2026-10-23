@@ -1,0 +1,14 @@
+{
+  "phase": 1,
+  "platform": "win32",
+  "checks": {
+    "real Windows safeStorage available": true,
+    "real encrypted original connection": true,
+    "directory choice persists opaque version": true,
+    "canonical task dispatched once": true,
+    "partial file is not output or completed": true
+  },
+  "scope": "Actual Electron main/preload/renderer, native FFmpeg, HTTP Range and crash recovery. Synthetic provider. Dialog target and shell adapter are controlled test doubles; no manual GUI acceptance.",
+  "status": "passed",
+  "forcedExitWithoutCleanup": true
+}

@@ -77,10 +77,11 @@ for (const response of [
     if (response.name === 'unknown status') assert.equal(paused.rawStatus, 'NEW_PENDING_STATE');
     const history = await (await f.runtime.request('/api/nova/storage/tasks')).json(); assert.equal(JSON.stringify(history).includes('synthetic-http-A'), false); assert.equal(f.runtime.output().includes('synthetic-http-A'), false);
 });
-test('actual remote completion persists a download job and candidate but exposes neither a remote URL nor a completed local work', async t => {
+test('unavailable result remains download_failed after B2 worker, without remote URL exposure or repeated generation', async t => {
     const f = await rig(t, { poll: { body: { status: 'completed', progress: 100, video_url: 'https://cdn.invalid/synthetic.mp4' } } }), id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued'); await f.crashRestart();
-    await until(async () => (await f.task(id)).status === 'remote_completed');
+    await until(async () => (await f.task(id)).status === 'download_failed');
     const task = await f.task(id); assert.equal(task.outputAssets.length, 0); assert.equal(task.completedAt, null); assert.equal(JSON.stringify(task).includes('cdn.invalid'), false);
-    assert.equal(f.inspect(db => db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id).state), 'waiting');
-    await f.crashRestart(); assert.equal((await f.task(id)).status, 'remote_completed'); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1); assert.equal(f.calls.filter(call => call.method === 'GET').length, 1);
+    assert.equal(task.taskError.code,'DOWNLOAD_FORBIDDEN');
+    assert.equal(f.inspect(db => db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id).state), 'failed');
+    await f.crashRestart(); assert.equal((await f.task(id)).status, 'download_failed'); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1); assert.equal(f.calls.filter(call => call.method === 'GET').length, 1);
 });

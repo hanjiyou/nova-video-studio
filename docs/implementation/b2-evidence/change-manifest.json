@@ -1,0 +1,336 @@
+{
+  "files": [
+    {
+      "file": "backend/package-lock.json",
+      "bytes": 73893,
+      "sha256": "f93cd667d35c8724fa73637ab1544de114e205d243f39419f3c3f8ad61ec687e"
+    },
+    {
+      "file": "backend/package.json",
+      "bytes": 617,
+      "sha256": "4716c379bc52e7cfeffcfac015436c36189d7ccd47d5603820d33ad501120d1e"
+    },
+    {
+      "file": "backend/server.js",
+      "bytes": 159089,
+      "sha256": "8e169efbdd0a0dd2bd487c95220b10cfd96f15019ecfe29d6fc1d7810ea6d978"
+    },
+    {
+      "file": "backend/storage/download-errors.js",
+      "bytes": 2907,
+      "sha256": "5ef2e1342428ae37c8c77a1e542491c20c40ae61df7590dc7ea3a7b462c24fa1"
+    },
+    {
+      "file": "backend/storage/download-worker.js",
+      "bytes": 7140,
+      "sha256": "f391825d00dd09b0898228ff70816cd1a3d306f71eebca36f99ff8215bc726f1"
+    },
+    {
+      "file": "backend/storage/http.js",
+      "bytes": 5558,
+      "sha256": "56e412f27a7aa3cb9c39038a0efc090fe08bb1f2f01ae18aefae137a084e9f71"
+    },
+    {
+      "file": "backend/storage/media-validator.js",
+      "bytes": 4873,
+      "sha256": "7f97485f866a2858d155742de7e7b9992fe90ec307e09fb4a8151f6f859debba"
+    },
+    {
+      "file": "backend/storage/migrations.js",
+      "bytes": 17402,
+      "sha256": "12b4421bf033d62a41d881394a058e4f0c6ef39635fb793fb0ff3713b43714fc"
+    },
+    {
+      "file": "backend/storage/output-directories.js",
+      "bytes": 3699,
+      "sha256": "7f96ef4e37fbea9b84df3964afde6ef404e133268d89b0246eaa675fcc2c7e58"
+    },
+    {
+      "file": "backend/storage/store.js",
+      "bytes": 27300,
+      "sha256": "33ac303068005c695533d8a641283428c0bf21021521440fb7bdb686c571e0b2"
+    },
+    {
+      "file": "backend/tasks/service.js",
+      "bytes": 36132,
+      "sha256": "6535b54b1048aea7dfb54ac378ac33e937f31399542e553c2c2ff39ffe9407ea"
+    },
+    {
+      "file": "backend/test/fixtures/b2/provenance.json",
+      "bytes": 851,
+      "sha256": "0e4a0d325b1aa2ef7fea809f3fea16bd6db6b30b88590b5d271890a226c09df6"
+    },
+    {
+      "file": "backend/test/fixtures/b2/valid-video.mp4",
+      "bytes": 40808,
+      "sha256": "60b4c6995ead267b2203b6e34033bc686e52ab40b32990e11ea8987591e18934"
+    },
+    {
+      "file": "backend/test/support/desktop-http-runtime.cjs",
+      "bytes": 9729,
+      "sha256": "601493d772082e58fd91d41d7aa36a2cde7a7a4176ba447e0c53e9be2c343d1f"
+    },
+    {
+      "file": "backend/test/workbench-b1-http.test.js",
+      "bytes": 19277,
+      "sha256": "8af6dc8118714033a641f0ab7dbcde079be4c57116f51371a202c814186c03a8"
+    },
+    {
+      "file": "backend/test/workbench-downloads-http.test.js",
+      "bytes": 5606,
+      "sha256": "fbe7e202090a20599f3f4d9b520386898958d41f260a650f970f4d37bbb1d010"
+    },
+    {
+      "file": "backend/test/workbench-downloads.test.js",
+      "bytes": 20855,
+      "sha256": "454f9caab6216fb44b15b6db093b014465262daa157ef38f6d92bb04ba31f9af"
+    },
+    {
+      "file": "backend/test/workbench-storage-http.test.js",
+      "bytes": 18412,
+      "sha256": "d6240d841568b705e8600a6702c17955dce75122deabf2aa2a7d478f76109093"
+    },
+    {
+      "file": "backend/test/workbench-tasks-http.test.js",
+      "bytes": 11292,
+      "sha256": "8c2045028a4a1a52fb3fc3c1d0aabd061cbfe94ecb6e6c9afb350a90ccf20439"
+    },
+    {
+      "file": "backend/test/workbench-tasks.test.js",
+      "bytes": 25391,
+      "sha256": "81a2505a8f2517503d12c2c0dbf280e26ec77bad3f5442c77ad241308bd802cf"
+    },
+    {
+      "file": "desktop/asset-actions.cjs",
+      "bytes": 2712,
+      "sha256": "343cbd88104d0fb419c16893ee686260deb865c85ceac81afae99c6fd52fbfd9"
+    },
+    {
+      "file": "desktop/ffmpeg-runtime.json",
+      "bytes": 801,
+      "sha256": "0fe9609f83e84f2566a1ea9f8c8016b6df3fa4f6c6cfee79714921ef9ec9a88a"
+    },
+    {
+      "file": "desktop/ipc.cjs",
+      "bytes": 4109,
+      "sha256": "88d92e2036c6bf70028dc7413b8e910a6987ce24a7d637dfee11b876b8a5d246"
+    },
+    {
+      "file": "desktop/main.cjs",
+      "bytes": 6246,
+      "sha256": "a6796032bc5889d0ce3142f0b5599ced0049f36ddd691fdbaec0eadc5316012e"
+    },
+    {
+      "file": "desktop/preload.cjs",
+      "bytes": 1060,
+      "sha256": "5a8ac56994484c4f8f4d5447e9985f703aaacdaa13fd8775816047cf1dbe72b5"
+    },
+    {
+      "file": "desktop/third-party/FFmpeg-NOTICE.md",
+      "bytes": 2187,
+      "sha256": "c1394296593b167c4a3d3babd5a6d0a47e0c85d4484bfb1e6e7e3d9fcd9ecce2"
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "bytes": 24270,
+      "sha256": "029394c92b4ce45a87e80b26563c67471b4b777971eedaae4da000bdb90e15e6"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "bytes": 58707,
+      "sha256": "925414f8e3a289de959bbaaa474a07c280e86469a2dedcd92a074c48461bdc28"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "bytes": 23133,
+      "sha256": "ce0427e024c61353ce5ccde45165c582a5bf8b41379feeea30e1d7aed4334401"
+    },
+    {
+      "file": "docs/b1-adapters-v1.md",
+      "bytes": 8284,
+      "sha256": "e12e318b550960fb701a0ba27309324f268198a6b49264b6b81209c1201ac7ac"
+    },
+    {
+      "file": "docs/b2-media-v1.md",
+      "bytes": 8508,
+      "sha256": "acce5611be6f1d05b27c165f0e18c84f9dcaa00b29e213861fd5bfbe9c069d73"
+    },
+    {
+      "file": "docs/implementation/B2-T08-下载与本地媒体.md",
+      "bytes": 10737,
+      "sha256": "bbf1260752ca951712da2f375ea835acd0d0b6596280cdac0a040b42ccc83100"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/approval-review.json",
+      "bytes": 2118,
+      "sha256": "929ab1eb698148f17a856747466087c7363961fcd9cd20f2ca1daeef49479f3b"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/backend.log",
+      "bytes": 39035,
+      "sha256": "1eecd3a04f850776e62b5b6d9a054a72776c4d2189f1f475dd058abf3e66e3b5"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/build.log",
+      "bytes": 834,
+      "sha256": "99a6765b0e24a1fab2edff648b6b757036ffb2989a265d53d20ec00b1f9a25fd"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/command-results.json",
+      "bytes": 6897,
+      "sha256": "4cb7cda5f92599373b36ecebb3fed3ba1b49c921d7d1fb90650e11040cc68837"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/dependency-audit.json",
+      "bytes": 7400,
+      "sha256": "353a5acf58ee2a7e085da0b739735d611b450f33658032834a1207036fac2e92"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/ffmpeg-runtime-license.txt",
+      "bytes": 2097,
+      "sha256": "df29facfaf157a286e34640d65de64fd73fa7e416e68d4be498c28fff2fbfbde"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/final-checks.json",
+      "bytes": 4644,
+      "sha256": "6c30e3d4ebebcac1347d819ab4165d53a554a2a2ccde171e5ac7c385506f05b3"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/initial-observations.json",
+      "bytes": 1273,
+      "sha256": "f56a3e16f893e07feb8fcbf3b4ae2f4ccc40b63062a9f744cbd1043b85acdb92"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/lint.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/native-and-package-commands.json",
+      "bytes": 978,
+      "sha256": "6a883e3dc4a67b3d154ea220c933c68be503a3e849a9ab4973f85e70a0263f58"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/native-phase-1.json",
+      "bytes": 569,
+      "sha256": "edad305c6313e60a33d5066ec029ca2d08c634686be15e9e32039c747f0e382d"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/native-phase-2.json",
+      "bytes": 1096,
+      "sha256": "785b688155151a3ebf4d384cfd453d316380351934f537732be1d13398339b62"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/native-requests.json",
+      "bytes": 962,
+      "sha256": "f1ac3400cff793eff55b68b4562976776210f8713a2b8480ea5087ab3f9ba4b5"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/package-audit.json",
+      "bytes": 6624,
+      "sha256": "7db6d08067ef6147b15c16aaefa60f86973efda42539ec02aea8d378a3b1adc3"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/package-initial-failure.log",
+      "bytes": 1552,
+      "sha256": "94a6570c380423f28b6b489a0359efcf58180b44374904e7cea95a9380093b64"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/package.log",
+      "bytes": 1169,
+      "sha256": "3654a8aa4f9236a2d5f463f800a1cf8ae455b32c0c69a5df401b21f984190fdc"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/packaged-evidence.json",
+      "bytes": 2361,
+      "sha256": "b3d2309e21bee460ad39eb4bf99fc3fea3bfa8267db525f6f158036d35a2089a"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/targeted.log",
+      "bytes": 12820,
+      "sha256": "e3c65c12b2911fed4c75a5f5d4eaf0af700ceb82a3d872e4db98ebd72869a89c"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/windows-file-lock.json",
+      "bytes": 357,
+      "sha256": "bef3460eda473c36afca5d3cfdbade6bb00a337e33b501aaaa5f82167a119568"
+    },
+    {
+      "file": "docs/storage-v1.md",
+      "bytes": 7916,
+      "sha256": "b7f52dc37e5fe9f189780b30747f6ca3ae5d04eaf4d05097a6dead43a5e961d7"
+    },
+    {
+      "file": "docs/tasks-v1.md",
+      "bytes": 10829,
+      "sha256": "a020db5cc5da9d26dc7193bfed6ed7a8b0b879079338a1f80bd21e6ffce10751"
+    },
+    {
+      "file": "electron-builder.yml",
+      "bytes": 2315,
+      "sha256": "dddf9f77b6d868250fde990412dfe21c9cfdcd39f905b9b5bc249ab3dcdedc4e"
+    },
+    {
+      "file": "frontend/src/types/nova-desktop.d.ts",
+      "bytes": 1551,
+      "sha256": "7deb899388a5bc8d8639aa95df8712aab4e0bf582c257ea63ac1a0128bfb121b"
+    },
+    {
+      "file": "package-lock.json",
+      "bytes": 144757,
+      "sha256": "77ef89dc4c31739708af507f5f399834c65a70a0db7fac456bc89a44a3dc38d1"
+    },
+    {
+      "file": "package.json",
+      "bytes": 1575,
+      "sha256": "79db7645a985bf2be0272ac12e0632bc3aac1dc1e4cda7f7ffa3aa9e85dbedad"
+    },
+    {
+      "file": "scripts/electron-b2-test-entry.cjs",
+      "bytes": 9528,
+      "sha256": "af4e87973250d62ac161aecc10623df27058b426ec9465b0de69639eb27ce77b"
+    },
+    {
+      "file": "scripts/eslint-b2.config.mjs",
+      "bytes": 429,
+      "sha256": "0c8e0dcc776ecb09417ce4fc1111af4a1091b64285850ce4b4d37c6c50f89642"
+    },
+    {
+      "file": "scripts/run-b2-checks.cjs",
+      "bytes": 3052,
+      "sha256": "c5bba230b686a082749a81aa153fe7506c251e748760a4e1fe6b977cd698128b"
+    },
+    {
+      "file": "scripts/verify-b2-package-audit.cjs",
+      "bytes": 3240,
+      "sha256": "01c9dc886d8b74d648c45b1e028e5c7a34e013817c9cdd80444c4115c1baa25c"
+    },
+    {
+      "file": "scripts/verify-b2-windows-file-lock.cjs",
+      "bytes": 2944,
+      "sha256": "3c592525b478a0e5df402f2fb8980624159e0f75f30f290302b3f577d3d01194"
+    },
+    {
+      "file": "scripts/verify-desktop-b2-package.cjs",
+      "bytes": 7246,
+      "sha256": "c262a4f46d1b268f8fc6e3f1653c9964aadbbea7770ecd4c1813b0b504e22587"
+    },
+    {
+      "file": "scripts/verify-desktop-b2.cjs",
+      "bytes": 3772,
+      "sha256": "b9c05bb4d08b6a2e5fbbb9482ae129367884efd37dfada970083cae86729fedb"
+    },
+    {
+      "file": "scripts/verify-ffmpeg-before-pack.cjs",
+      "bytes": 1020,
+      "sha256": "a37af83e1fda0b28957eb99590839aa1cba6620d738cb439afc3a51a76fad016"
+    },
+    {
+      "file": "docs/implementation/b2-evidence/raw-log-whitespace.json",
+      "bytes": 409,
+      "sha256": "f81b1718435ef9ea5c6fb0885c2bb75eb573b2977a5a781725410cdc3e580601"
+    }
+  ],
+  "selfExcluded": true,
+  "scope": "Main-session-approved B2 source/docs/evidence files; generated before staging/commit; ignored packages/profiles/temp excluded."
+}

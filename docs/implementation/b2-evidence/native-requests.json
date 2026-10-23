@@ -1,0 +1,50 @@
+[
+  {
+    "phase": 1,
+    "method": "POST",
+    "path": "/v1/videos",
+    "hasQuery": false,
+    "authorized": true,
+    "hasAnyAuthorization": true
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/videos/b2-original",
+    "hasQuery": false,
+    "authorized": true,
+    "hasAnyAuthorization": true
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/v1/videos/b2-original/content",
+    "hasQuery": false,
+    "authorized": true,
+    "hasAnyAuthorization": true
+  },
+  {
+    "phase": 1,
+    "method": "GET",
+    "path": "/file.mp4",
+    "hasQuery": true,
+    "authorized": false,
+    "hasAnyAuthorization": false
+  },
+  {
+    "phase": 2,
+    "method": "GET",
+    "path": "/v1/videos/b2-original/content",
+    "hasQuery": false,
+    "authorized": true,
+    "hasAnyAuthorization": true
+  },
+  {
+    "phase": 2,
+    "method": "GET",
+    "path": "/file.mp4",
+    "hasQuery": true,
+    "authorized": false,
+    "hasAnyAuthorization": false
+  }
+]

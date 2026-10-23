@@ -15,6 +15,7 @@ let workbenchStore = null;
 let connectionService = null;
 let taskService = null;
 const { createTaskService } = require('./tasks/service');
+const { createDownloadWorker } = require('./storage/download-worker');
 const { createPluginAdapter } = require('./tasks/plugin-adapter');
 const { createFlareImageAdapter } = require('./tasks/flare-image-adapter');
 const workbenchInput = require('./tasks/workbench-input');
@@ -3750,7 +3751,8 @@ async function initializeServer() {
   if (CDP_ENABLED) ensureCdpDir();
   cleanupExpiredTasks();pluginMedia.cleanupExpired();pluginRegistry.listPlugins();
   if (desktopSession.isDesktopMode()) {
-    taskService=createTaskService({db,store:workbenchStore,connections:connectionService,resolveAdapter:resolveDesktopTaskAdapter,onChange:id=>{broadcastTask(id);broadcastQueueStatus();}});
+    taskService=createTaskService({db,store:workbenchStore,connections:connectionService,resolveAdapter:resolveDesktopTaskAdapter,
+      downloadWorker:createDownloadWorker({store:workbenchStore,connections:connectionService}),onChange:id=>{broadcastTask(id);broadcastQueueStatus();}});
     taskService.recover();
   }
   lifecycleTimers.add(setInterval(cleanupExpiredTasks,CLEANUP_INTERVAL_MS).unref());

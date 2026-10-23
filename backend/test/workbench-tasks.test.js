@@ -137,13 +137,13 @@ test('download worker failure remains retryable and never uses the generation sl
     const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png' }] }) }), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_completed');
     await f.restart({ downloadWorker: async () => { throw new Error('disk full'); } }); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1); f.service.action(id, 'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1);
 });
-test('schema v3 to v4 keeps historical SQL checksums, committed WAL rows and a consistent rollback backup', async t => {
+test('schema v3 to current keeps historical SQL checksums, committed WAL rows and a consistent rollback backup', async t => {
     const f = await fixture(t), dbPath=path.join(f.directory,'v3.sqlite'), db=new Database(dbPath);
     try {
         await migrateDatabase({db,dbPath,migrations:MIGRATIONS.slice(0,3)}); db.pragma('journal_mode=WAL');
         const id=randomUUID(); db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at) VALUES(?,?,?,?,?)').run(id,'processing','plugin','{}','2026-10-23');
         const history=db.prepare('SELECT version,checksum FROM schema_migrations ORDER BY version').all();
-        const upgraded=await migrateDatabase({db,dbPath}); assert.deepEqual(upgraded.applied,[4]);
+        const upgraded=await migrateDatabase({db,dbPath}); assert.deepEqual(upgraded.applied,[4,5]);
         assert.deepEqual(db.prepare('SELECT version,checksum FROM schema_migrations WHERE version<=3 ORDER BY version').all(),history);
         const backup=new Database(upgraded.backupFile,{readonly:true});try {assert.equal(backup.prepare('SELECT status FROM tasks WHERE id=?').get(id).status,'processing');assert.equal(backup.pragma('quick_check',{simple:true}),'ok');}finally {backup.close();}
         assert.deepEqual(db.pragma('foreign_key_check'),[]);

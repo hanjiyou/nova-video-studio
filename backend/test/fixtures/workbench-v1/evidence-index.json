@@ -1,0 +1,157 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "id": "H01",
+      "file": "dialogue-video/single-image-job.json",
+      "kind": "historical_single_reference",
+      "sha256": "65388bba5f518d64adc6b0ed3e61ecb45a6a863567ad65b04aaec80df3ffad27"
+    },
+    {
+      "id": "H02",
+      "file": "multi-image-protocol-tests/repeated-input-reference/manifest.json",
+      "kind": "historical_dual_reference",
+      "sha256": "37f78e616f644d91d70bcd78a19e470028ad60ce8b9f02dd92567dbbe9edaa8c"
+    },
+    {
+      "id": "H03",
+      "file": "multi-image-protocol-tests/comparison.json",
+      "kind": "historical_visual_comparison",
+      "sha256": "ff8ae85ed2ff685028f1e992ac1bb584ac38fc8efeceacad63cb85c5d3dc639c"
+    },
+    {
+      "id": "H04",
+      "file": "peephole-json-input-reference/response.json",
+      "kind": "historical_rejection",
+      "sha256": "75a69cac9933fc37123c7bb933080392e79f71c0fde3ffb22ff7fad6a869ce78"
+    },
+    {
+      "id": "H05",
+      "file": "multi-image-protocol-tests/images-array/response.json",
+      "kind": "historical_rejection",
+      "sha256": "dc38e264174eec2d22834b256603239bba871a352d74346dc6f43daba9d421b8"
+    },
+    {
+      "id": "D01",
+      "file": "Desktop/OpenSosen视频生成接口使用说明.md v1.1",
+      "kind": "historical_summary",
+      "sha256": "78bbd17f7492136bc86e79169b718f53c9935a3fa62f8d81da9d300ae749125b"
+    },
+    {
+      "id": "P01",
+      "file": "E:/Learn/AI/ai-agent-book/视频工作台功能规划-拆解-方案.md",
+      "kind": "product_planning_not_provider_protocol",
+      "sha256": "4038ab8d9a4d90af04acfece3c5677c49f8b1e54f447e52fd9f15435b368a4bc"
+    },
+    {
+      "id": "H06",
+      "file": "multi-image-protocol-tests/repeated-input-reference/result.json",
+      "kind": "historical_media_and_visual_summary",
+      "sha256": "7aa9069652c2d14280afca1faa60a15d940c62ebd83773769ecf13d978a0bb1e"
+    }
+  ],
+  "referenceEvidence": {
+    "single": {
+      "bytes": 143866,
+      "sha256": "b5c2e9ee62d2e96e88b1ba380e8639203e762ee9dbcc19e6b81e34934e99ee3b",
+      "requestFileCount": 1
+    },
+    "dual": [
+      {
+        "sha256": "07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e",
+        "bytes": 1514260,
+        "order": 1,
+        "multipartName": "input_reference"
+      },
+      {
+        "sha256": "a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7",
+        "bytes": 1671548,
+        "order": 2,
+        "multipartName": "input_reference"
+      }
+    ],
+    "observedWireFileMimeTypes": [
+      "application/octet-stream"
+    ],
+    "observedOutput": {
+      "durationSeconds": 6.041667,
+      "width": 1280,
+      "height": 720,
+      "audioPresent": true,
+      "sourceId": "H06"
+    }
+  },
+  "verifiedHistorically": [
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "modes": [
+        "video.single_reference",
+        "video.dual_reference"
+      ],
+      "baseUrl": "https://newapi.opensosen.com/v1",
+      "encoding": "multipart",
+      "seconds": "6",
+      "size": "1280x720",
+      "sourceIds": [
+        "H01",
+        "H02",
+        "H03",
+        "D01"
+      ]
+    }
+  ],
+  "unverified": [
+    {
+      "model": "grok-imagine-video-6s",
+      "mode": "video.text",
+      "reason": "Historical success mentioned in planning; original successful JSON request not located in inspected evidence."
+    },
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "mode": "video.text",
+      "reason": "Original successful text-only JSON request not located; do not infer no-file multipart."
+    },
+    {
+      "model": "gpt-image-2.5-flare",
+      "mode": "image.text",
+      "reason": "User historical success known; exact raw request/response not archived here."
+    },
+    {
+      "model": "gpt-image-2.5-flare",
+      "mode": "image.reference",
+      "reason": "Edit fields and parameters not verified for this exact route/model."
+    },
+    {
+      "model": "grok-imagine-video-6s",
+      "mode": "video.dual_reference",
+      "reason": "No equivalent evidence."
+    }
+  ],
+  "unknownProviderRules": [
+    "idempotency",
+    "remote cancellation",
+    "async failure response",
+    "429 response and Retry-After",
+    "resource expiry",
+    "redirect authentication",
+    "text video exact JSON protocol",
+    "more than two reference images"
+  ],
+  "syntheticScenarios": [
+    "401/403",
+    "429/503",
+    "delayed response",
+    "disconnect after upstream acceptance",
+    "truncated HTTP200 body",
+    "async failure",
+    "download error",
+    "fake MP4 JSON",
+    "range responses"
+  ],
+  "notes": [
+    "HTTP wrapper status/body is local harness metadata, not an extra provider JSON envelope.",
+    "Single creation HTTP status not preserved in its raw job; null remains unknown.",
+    "Two-reference visual effect comes from historical H03, not mock output.",
+    "Synthetic download payload is arbitrary bytes, not a decodable MP4."
+  ]
+}

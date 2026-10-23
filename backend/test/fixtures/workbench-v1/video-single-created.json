@@ -1,0 +1,19 @@
+{
+  "evidenceKind": "historical_response_sanitized",
+  "sourceId": "H01",
+  "transformations": [
+    "replace task/request IDs",
+    "replace prompt",
+    "replace resource URLs with reserved .invalid host; preserve field structure/types"
+  ],
+  "response": {
+    "status": null,
+    "body": {
+      "created_at": 1792678113,
+      "id": "task_fixture_single",
+      "model": "grok-imagine-video-1.5-6s",
+      "status": "queued",
+      "task_id": "task_fixture_single"
+    }
+  }
+}

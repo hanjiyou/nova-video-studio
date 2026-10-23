@@ -1,0 +1,17 @@
+{
+  "evidenceKind": "historical_response_sanitized",
+  "sourceId": "H04",
+  "transformations": [
+    "replace task/request IDs",
+    "replace prompt",
+    "replace resource URLs with reserved .invalid host; preserve field structure/types"
+  ],
+  "response": {
+    "status": 400,
+    "body": {
+      "code": "invalid_request",
+      "message": "json: cannot unmarshal array into Go struct field .Alias.input_reference of type string",
+      "data": null
+    }
+  }
+}

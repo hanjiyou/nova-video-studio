@@ -1,0 +1,153 @@
+✔ mock binds loopback and captures JSON with Chinese/newline/quotes exactly (84.421ms)
+✖ multipart 1 file(s): repeated input_reference, original bytes, MIME and order (19.7638ms)
+✖ multipart 2 file(s): repeated input_reference, original bytes, MIME and order (11.3434ms)
+✖ multipart verifier detects swapped files, modified bytes and wrong field names (11.8645ms)
+✔ missing multipart boundary is rejected and still counted as one POST (5.2683ms)
+✔ synthetic 401 authentication rejection does not create a task or retain the token (4.7159ms)
+✔ synthetic 403 authentication rejection does not create a task or retain the token (3.1124ms)
+✔ create, poll generating, poll remote-completed; remote completion is not local file completion (12.428ms)
+✔ counter detects repeated creation even with the same local request/idempotency headers (9.0929ms)
+✔ client timeout after mock acceptance leaves one accepted POST, then GET can query the same ID (13.8075ms)
+✔ connection can drop after accepting a POST without returning its task ID (4.2251ms)
+✔ HTTP200 create body can be truncated after acceptance (29.1504ms)
+✔ poll fixtures support bounded-policy inputs: 429 Retry-After, 503 and unknown state (7.7566ms)
+✔ POST429 fixture is observable once; it does not imply a safe automatic resubmit (3.4506ms)
+✔ download 503, retry and Range operate on the same task without generation POSTs (4.997ms)
+✔ download fault fixtures include truncated bodies and JSON labelled as MP4 (30.2944ms)
+✔ test request memory budget rejects oversized bodies (2.7098ms)
+✔ production plugin loopback guard is unchanged; mock is used directly by tests (0.6664ms)
+ℹ tests 18
+ℹ suites 0
+ℹ pass 15
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 351.5642
+
+✖ failing tests:
+
+test at test\mock-provider.test.js:35:3
+✖ multipart 1 file(s): repeated input_reference, original bytes, MIME and order (19.7638ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      {
+        name: 'model',
+        value: 'grok-imagine-video-1.5-6s'
+      },
+      {
+        name: 'prompt',
+  +     value: '按参考图顺序生成。\r\n保留中文、引号“你好”和原始字节。'
+  -     value: '按参考图顺序生成。\n保留中文、引号“你好”和原始字节。'
+      },
+      {
+        name: 'seconds',
+        value: '6'
+      },
+  
+      at verifyMultipart (E:\Learn\AI\nova-image-studio\backend\test\support\mock-provider.js:60:31)
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\mock-provider.test.js:40:5)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { name: 'model', value: 'grok-imagine-video-1.5-6s' }, { name: 'prompt', value: '按参考图顺序生成。\r\n保留中文、引号“你好”和原始字节。' }, { name: 'seconds', value: '6' }, { name: 'size', value: '1280x720' } ],
+    expected: [ { name: 'model', value: 'grok-imagine-video-1.5-6s' }, { name: 'prompt', value: '按参考图顺序生成。\n保留中文、引号“你好”和原始字节。' }, { name: 'seconds', value: '6' }, { name: 'size', value: '1280x720' } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\mock-provider.test.js:35:3
+✖ multipart 2 file(s): repeated input_reference, original bytes, MIME and order (11.3434ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      {
+        name: 'model',
+        value: 'grok-imagine-video-1.5-6s'
+      },
+      {
+        name: 'prompt',
+  +     value: '按参考图顺序生成。\r\n保留中文、引号“你好”和原始字节。'
+  -     value: '按参考图顺序生成。\n保留中文、引号“你好”和原始字节。'
+      },
+      {
+        name: 'seconds',
+        value: '6'
+      },
+  
+      at verifyMultipart (E:\Learn\AI\nova-image-studio\backend\test\support\mock-provider.js:60:31)
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\mock-provider.test.js:40:5)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ { name: 'model', value: 'grok-imagine-video-1.5-6s' }, { name: 'prompt', value: '按参考图顺序生成。\r\n保留中文、引号“你好”和原始字节。' }, { name: 'seconds', value: '6' }, { name: 'size', value: '1280x720' } ],
+    expected: [ { name: 'model', value: 'grok-imagine-video-1.5-6s' }, { name: 'prompt', value: '按参考图顺序生成。\n保留中文、引号“你好”和原始字节。' }, { name: 'seconds', value: '6' }, { name: 'size', value: '1280x720' } ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\mock-provider.test.js:46:1
+✖ multipart verifier detects swapped files, modified bytes and wrong field names (11.8645ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /file name\/order/. Input:
+  
+  'AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:\n' +
+    '+ actual - expected\n' +
+    '\n' +
+    '  [\n' +
+    '    {\n' +
+    "      name: 'model',\n" +
+    "      value: 'grok-imagine-video-1.5-6s'\n" +
+    '    },\n' +
+    '    {\n' +
+    "      name: 'prompt',\n" +
+    "+     value: '按参考图顺序生成。\\r\\n保留中文、引号“你好”和原始字节。'\n" +
+    "-     value: '按参考图顺序生成。\\n保留中文、引号“你好”和原始字节。'\n" +
+    '    },\n' +
+    '    {\n' +
+    "      name: 'seconds',\n" +
+    "      value: '6'\n" +
+    '    },\n'
+  
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\mock-provider.test.js:50:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        {
+          name: 'model',
+          value: 'grok-imagine-video-1.5-6s'
+        },
+        {
+          name: 'prompt',
+    +     value: '按参考图顺序生成。\r\n保留中文、引号“你好”和原始字节。'
+    -     value: '按参考图顺序生成。\n保留中文、引号“你好”和原始字节。'
+        },
+        {
+          name: 'seconds',
+          value: '6'
+        },
+    
+        at verifyMultipart (E:\Learn\AI\nova-image-studio\backend\test\support\mock-provider.js:60:31)
+        at E:\Learn\AI\nova-image-studio\backend\test\mock-provider.test.js:50:23
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\mock-provider.test.js:50:10)
+        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:787:7),
+    expected: /file name\/order/,
+    operator: 'throws',
+    diff: 'simple'
+  }

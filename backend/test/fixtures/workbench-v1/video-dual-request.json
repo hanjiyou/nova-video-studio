@@ -1,0 +1,43 @@
+{
+  "evidenceKind": "historical_request_shape_with_synthetic_media",
+  "sourceId": "H02",
+  "request": {
+    "method": "POST",
+    "path": "/v1/videos",
+    "encoding": "multipart",
+    "fields": [
+      {
+        "name": "model",
+        "value": "grok-imagine-video-1.5-6s"
+      },
+      {
+        "name": "prompt",
+        "value": "  按参考图顺序生成。\n保留中文、引号“你好”和原始字节。  "
+      },
+      {
+        "name": "seconds",
+        "value": "6"
+      },
+      {
+        "name": "size",
+        "value": "1280x720"
+      }
+    ],
+    "files": [
+      {
+        "name": "input_reference",
+        "fixtureFile": "reference-a.png",
+        "mimeType": "image/png"
+      },
+      {
+        "name": "input_reference",
+        "fixtureFile": "reference-b.png",
+        "mimeType": "image/png"
+      }
+    ]
+  },
+  "notes": [
+    "Synthetic tiny media replace private original images. This fixture does not claim a new generation or visual verification.",
+    "Original successful curl wire used application/octet-stream for files; image MIME labels here test client byte fidelity, not a new provider acceptance claim."
+  ]
+}

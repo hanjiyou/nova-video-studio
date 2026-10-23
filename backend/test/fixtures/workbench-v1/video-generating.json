@@ -1,0 +1,28 @@
+{
+  "evidenceKind": "historical_response_sanitized",
+  "sourceId": "H02",
+  "transformations": [
+    "replace task/request IDs",
+    "replace prompt",
+    "replace resource URLs with reserved .invalid host; preserve field structure/types"
+  ],
+  "response": {
+    "status": 200,
+    "body": {
+      "aspect_ratio": "16:9",
+      "created_at": 1792683373,
+      "duration": 6,
+      "id": "task_fixture_two",
+      "model": "grok-imagine-video-1.5-6s",
+      "object": "video",
+      "progress": 1,
+      "prompt": "按参考图顺序生成。\n保留中文、引号“你好”和原始字节。",
+      "quality": "720p",
+      "request_id": "request_fixture_001",
+      "resolution": "720p",
+      "seconds": "6",
+      "size": "16:9",
+      "status": "in_progress"
+    }
+  }
+}

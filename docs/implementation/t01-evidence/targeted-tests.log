@@ -1,0 +1,33 @@
+✔ mock binds loopback and captures JSON with Chinese/newline/quotes exactly (100.4729ms)
+✔ multipart 1 file(s): repeated input_reference, original bytes, MIME and order (30.4305ms)
+✔ multipart 2 file(s): repeated input_reference, original bytes, MIME and order (21.499ms)
+✔ multipart verifier detects swapped files, modified bytes and wrong field names (20.3254ms)
+✔ missing multipart boundary is rejected and still counted as one POST (9.6279ms)
+✔ synthetic 401 authentication rejection does not create a task or retain the token (10.3052ms)
+✔ synthetic 403 authentication rejection does not create a task or retain the token (7.3856ms)
+✔ create, poll generating, poll remote-completed; remote completion is not local file completion (24.0301ms)
+✔ counter detects repeated creation even with the same local request/idempotency headers (19.2829ms)
+✔ client timeout after mock acceptance leaves one accepted POST, then GET can query the same ID (19.4943ms)
+✔ connection can drop after accepting a POST without returning its task ID (7.1114ms)
+✔ HTTP200 create body can be truncated after acceptance (30.2492ms)
+✔ poll fixtures support bounded-policy inputs: 429 Retry-After, 503 and unknown state (13.5069ms)
+✔ POST429 fixture is observable once; it does not imply a safe automatic resubmit (6.4208ms)
+✔ download 503, retry and Range operate on the same task without generation POSTs (6.1144ms)
+✔ download fault fixtures include truncated bodies and JSON labelled as MP4 (22.4241ms)
+✔ test request memory budget rejects oversized bodies (4.7505ms)
+✔ production plugin loopback guard is unchanged; mock is used directly by tests (0.5218ms)
+✔ synthetic remote failed query is independent of an active cancellation endpoint (10.9725ms)
+✔ synthetic remote cancelled query is independent of an active cancellation endpoint (9.9095ms)
+✔ acceptance ledger covers exactly the 61 baseline IDs with owners and separate evidence channels (6.1582ms)
+✔ historical fixtures have provenance and synthetic replacements, not private raw media or live URLs (11.1714ms)
+✔ observed provider response types/envelopes stay distinct from a successful local asset (3.3457ms)
+✔ known rejected formats preserve the original error nesting without broad capability claims (1.9094ms)
+✔ text protocols and unobserved provider guarantees remain explicitly unverified (0.6613ms)
+ℹ tests 25
+ℹ suites 0
+ℹ pass 25
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 500.592

@@ -1,0 +1,53 @@
+{
+  "sourceCommit": "a9cdb523f6840aa1ae66c9c282d159d29ba25dc0",
+  "branch": "dev",
+  "executedAt": "2026-10-23",
+  "commands": [
+    {
+      "command": "node --test test/mock-provider.test.js",
+      "cwd": "backend",
+      "exitCode": 1,
+      "log": "mock-provider-first.log",
+      "reason": "Initial assertion expected LF; actual FormData standard scalar CRLF normalization, binary parts unaffected"
+    },
+    {
+      "command": "node --test test/mock-provider.test.js test/workbench-contracts.test.js",
+      "cwd": "backend",
+      "exitCode": 0,
+      "assertionTests": 25,
+      "log": "targeted-tests.log"
+    },
+    {
+      "command": "npm test",
+      "cwd": "backend",
+      "exitCode": 0,
+      "totalReported": 141,
+      "existingAssertionTests": 115,
+      "newAssertionTests": 25,
+      "auxiliaryFilePasses": 1,
+      "log": "backend-regression.log"
+    },
+    {
+      "command": "node node_modules/eslint/bin/eslint.js test/mock-provider.test.js test/workbench-contracts.test.js test/support/mock-provider.js",
+      "cwd": "backend",
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "scope": {
+    "paidCalls": 0,
+    "realCredentialsUsed": false,
+    "productionRuntimeChanged": false,
+    "frontEndChanged": false,
+    "packageOrLockChanged": false
+  },
+  "status": "awaiting_review",
+  "parentReview": {
+    "focusedCommand": "node --test test/mock-provider.test.js test/workbench-contracts.test.js",
+    "assertionTests": 25,
+    "result": "passed; independently run by parent",
+    "logicReview": "passed",
+    "finalCommitReview": "pending"
+  }
+}

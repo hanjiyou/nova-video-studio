@@ -1,0 +1,1069 @@
+{
+  "version": 1,
+  "baseline": "视频工作台功能规划-拆解-方案.md v1.2 / 61 items",
+  "updatedAt": "2026-10-23",
+  "statusLabels": {
+    "not_started": "待开始",
+    "in_progress": "进行中",
+    "awaiting_review": "待审查",
+    "accepted": "已验收",
+    "blocked": "受阻"
+  },
+  "entries": [
+    {
+      "id": "G01",
+      "title": "标题栏及窗口按钮",
+      "requirement": "拖动、最小化、最大化/还原、关闭",
+      "acceptanceCriteria": "Windows 原生窗口行为正常，无误触；优先使用原生标题栏",
+      "implementationTasks": [
+        "T02",
+        "T16"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G02",
+      "title": "图片生成、视频生成导航",
+      "requirement": "切换工作区，分别保存未提交草稿",
+      "acceptanceCriteria": "来回切换不丢提示词、参数和已导入素材",
+      "implementationTasks": [
+        "T03",
+        "T09"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G03",
+      "title": "作品库",
+      "requirement": "展示真实本地作品与任务记录",
+      "acceptanceCriteria": "可检索历史并打开对应文件",
+      "implementationTasks": [
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G04",
+      "title": "连接设置",
+      "requirement": "配置供应商地址、Key、模型、目录等",
+      "acceptanceCriteria": "保存后新任务生效，已有任务仍关联原连接",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G05",
+      "title": "已连接状态",
+      "requirement": "显示最近一次鉴权/模型列表检查结果及时间",
+      "acceptanceCriteria": "离线或凭据错误时不会永久显示绿色；连接成功不等于生成可用",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G06",
+      "title": "文件保存在本机",
+      "requirement": "显示实际输出根目录并允许打开",
+      "acceptanceCriteria": "所指目录与实际结果一致",
+      "implementationTasks": [
+        "T08",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "G07",
+      "title": "深色视觉系统",
+      "requirement": "统一布局、字号、颜色、间距、焦点、错误提示",
+      "acceptanceCriteria": "两页一致，键盘可操作，文字和按钮不因缩放被截断",
+      "implementationTasks": [
+        "T09",
+        "T14"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I01",
+      "title": "模型下拉框与默认标签",
+      "requirement": "默认 flare；可切换已配置的图片模型",
+      "acceptanceCriteria": "请求使用用户选定型号；不可用时不偷偷更换",
+      "implementationTasks": [
+        "T04",
+        "T06",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I02",
+      "title": "画面描述",
+      "requirement": "多行输入、粘贴、字数显示、自动保存草稿",
+      "acceptanceCriteria": "中文、换行、引号完整保存和发送；空白提示词禁止提交",
+      "implementationTasks": [
+        "T03",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I03",
+      "title": "横版/方形/竖版",
+      "requirement": "与实际像素尺寸联动",
+      "acceptanceCriteria": "选项不会与尺寸冲突；不拉伸原图预览",
+      "implementationTasks": [
+        "T06",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I04",
+      "title": "图片尺寸",
+      "requirement": "读取该模型允许的尺寸配置",
+      "acceptanceCriteria": "不把任意输入直接作为已支持规格",
+      "implementationTasks": [
+        "T04",
+        "T06",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I05",
+      "title": "图片质量",
+      "requirement": "默认自动，显示此型号已确认的选项",
+      "acceptanceCriteria": "提交参数与选择一致；未知枚举不默认开放",
+      "implementationTasks": [
+        "T04",
+        "T06",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I06",
+      "title": "参考图片（可选）",
+      "requirement": "文件选择、拖入、缩略图、移除、素材校验",
+      "acceptanceCriteria": "无图片走文生图；有图片走已验证编辑适配器；不能忽略图片后继续文生图",
+      "implementationTasks": [
+        "T03",
+        "T06",
+        "T11",
+        "T15"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I07",
+      "title": "生成图片",
+      "requirement": "校验 → 建立本地任务 → 入队 → 提交一次",
+      "acceptanceCriteria": "连点不会造成重复提交；失败有明确操作入口",
+      "implementationTasks": [
+        "T05",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I08",
+      "title": "生成结果",
+      "requirement": "空状态、等待、图片预览、失败状态",
+      "acceptanceCriteria": "展示实际输出；大图适配容器，可点击放大和还原",
+      "implementationTasks": [
+        "T08",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I09",
+      "title": "已完成标签",
+      "requirement": "图片文件落盘、可解码后标记完成",
+      "acceptanceCriteria": "HTTP 200 或空结果不能显示已完成",
+      "implementationTasks": [
+        "T08",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I10",
+      "title": "保存图片",
+      "requirement": "将自动保存的结果另存为副本",
+      "acceptanceCriteria": "可选择路径，重名时确认覆盖；取消对话框不报错",
+      "implementationTasks": [
+        "T02",
+        "T08",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I11",
+      "title": "打开目录",
+      "requirement": "打开资源管理器并选中实际文件",
+      "acceptanceCriteria": "路径有中文、空格时仍正常",
+      "implementationTasks": [
+        "T02",
+        "T08",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I12",
+      "title": "用于生成视频",
+      "requirement": "将当前图片带入视频页单图模式",
+      "acceptanceCriteria": "使用同一资产，不重新生图；保留原图片记录",
+      "implementationTasks": [
+        "T11",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I13",
+      "title": "最近生成缩略图",
+      "requirement": "显示最近真实结果，点击切换预览",
+      "acceptanceCriteria": "图片、尺寸、状态与任务关联一致",
+      "implementationTasks": [
+        "T08",
+        "T11"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "I14",
+      "title": "更多菜单",
+      "requirement": "查看任务详情、复制提示词、复用参数",
+      "acceptanceCriteria": "每个菜单项有实际实现，未实现项不展示",
+      "implementationTasks": [
+        "T11",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V01",
+      "title": "三种模式",
+      "requirement": "文生视频不传图片，单图恰好一张，多图首版恰好两张",
+      "acceptanceCriteria": "模式校验在提交前完成；模式切换不自动裁掉素材",
+      "implementationTasks": [
+        "T07",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V02",
+      "title": "模型下拉",
+      "requirement": "普通版与 1.5 可选，能力随组合更新",
+      "acceptanceCriteria": "未验证组合给出原因，可由用户选择已验证模型，不静默切换",
+      "implementationTasks": [
+        "T04",
+        "T07",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V03",
+      "title": "已验证双图参考",
+      "requirement": "读取能力记录，不写死在界面",
+      "acceptanceCriteria": "只有对应线路/模型/模式显示；切换连接后重新匹配",
+      "implementationTasks": [
+        "T04",
+        "T07",
+        "T12",
+        "T15"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V04",
+      "title": "导入参考图",
+      "requirement": "支持文件选择、拖入、从作品库选图",
+      "acceptanceCriteria": "文件导入后即复制到应用素材目录；原文件移动不影响任务",
+      "implementationTasks": [
+        "T03",
+        "T12",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V05",
+      "title": "参考图排序",
+      "requirement": "拖动卡片调整顺序，另提供前移/后移操作",
+      "acceptanceCriteria": "预览序号、数据库顺序与 multipart 顺序一致",
+      "implementationTasks": [
+        "T07",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V06",
+      "title": "移除与补充图片",
+      "requirement": "X 移除草稿引用，空位显示上传入口",
+      "acceptanceCriteria": "不删除原文件或其他任务素材；数量不足时不允许生成",
+      "implementationTasks": [
+        "T03",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V07",
+      "title": "当前使用张数与说明",
+      "requirement": "显示实际数量与应用开放范围",
+      "acceptanceCriteria": "明确双图参考不等于首尾帧锁定",
+      "implementationTasks": [
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V08",
+      "title": "剧情描述",
+      "requirement": "多行输入，支持对白、镜头、动作描述",
+      "acceptanceCriteria": "不擅自修改用户台词；可提示六秒内容过多，但不阻断正常输入",
+      "implementationTasks": [
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V09",
+      "title": "时长、比例、清晰度",
+      "requirement": "由能力配置产生控件",
+      "acceptanceCriteria": "六秒型号锁定时长；未验证的规格不伪装为可用",
+      "implementationTasks": [
+        "T04",
+        "T07",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V10",
+      "title": "生成视频",
+      "requirement": "创建任务，保存返回 ID，开始查询",
+      "acceptanceCriteria": "一个本地任务最多发起一次自动创建请求",
+      "implementationTasks": [
+        "T05",
+        "T07",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V11",
+      "title": "视频预览",
+      "requirement": "实际本地文件播放、暂停、拖动、音量、全屏",
+      "acceptanceCriteria": "打包后的应用中可播放真实样本，时长读取媒体元数据",
+      "implementationTasks": [
+        "T08",
+        "T12",
+        "T16"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V12",
+      "title": "保存视频",
+      "requirement": "将已下载视频另存副本",
+      "acceptanceCriteria": "不触发重新生成；下载失败与另存失败分开处理",
+      "implementationTasks": [
+        "T02",
+        "T08",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V13",
+      "title": "打开目录",
+      "requirement": "定位已下载视频",
+      "acceptanceCriteria": "未下载时显示对应状态，不打开不存在的文件",
+      "implementationTasks": [
+        "T02",
+        "T08",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V14",
+      "title": "复用参数",
+      "requirement": "从任务快照创建新草稿",
+      "acceptanceCriteria": "不直接提交；重新检查当前模型能力和图片存在性",
+      "implementationTasks": [
+        "T12",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V15",
+      "title": "最近任务卡片",
+      "requirement": "显示本地排队、远端排队、生成、下载、完成、失败",
+      "acceptanceCriteria": "点击可查看详情；无真实进度时只显示状态和已用时间",
+      "implementationTasks": [
+        "T05",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "V16",
+      "title": "自动保存任务与结果",
+      "requirement": "提交前保存输入，拿到 ID 立即保存，完成后自动下载",
+      "acceptanceCriteria": "强制退出后可恢复已持久化的任务与文件状态",
+      "implementationTasks": [
+        "T05",
+        "T08",
+        "T12"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L01",
+      "title": "作品列表",
+      "requirement": "网格缩略图，图片/视频分类，按日期排序，分页或虚拟列表",
+      "acceptanceCriteria": "网格缩略图，图片/视频分类，按日期排序，分页或虚拟列表",
+      "implementationTasks": [
+        "T03",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L02",
+      "title": "搜索筛选",
+      "requirement": "按提示词、模型、状态查找；区分无结果和空库",
+      "acceptanceCriteria": "按提示词、模型、状态查找；区分无结果和空库",
+      "implementationTasks": [
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L03",
+      "title": "详情",
+      "requirement": "输入图片、完整提示词、参数、时间、任务 ID、输出路径、脱敏错误",
+      "acceptanceCriteria": "输入图片、完整提示词、参数、时间、任务 ID、输出路径、脱敏错误",
+      "implementationTasks": [
+        "T03",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L04",
+      "title": "跨模式复用",
+      "requirement": "单图带入单图视频，两图按选择顺序带入多图视频",
+      "acceptanceCriteria": "单图带入单图视频，两图按选择顺序带入多图视频",
+      "implementationTasks": [
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L05",
+      "title": "移除记录",
+      "requirement": "默认仅从库中移除，删除应用管理文件需单独明确选择；不得删除用户导入源文件",
+      "acceptanceCriteria": "默认仅从库中移除，删除应用管理文件需单独明确选择；不得删除用户导入源文件",
+      "implementationTasks": [
+        "T03",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "L06",
+      "title": "文件缺失",
+      "requirement": "外部删除后提示文件缺失；保留任务记录，可重新定位或尝试重新下载",
+      "acceptanceCriteria": "外部删除后提示文件缺失；保留任务记录，可重新定位或尝试重新下载",
+      "implementationTasks": [
+        "T08",
+        "T13"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S01",
+      "title": "连接档案",
+      "requirement": "显示名称、Base URL、Key；首版一个默认连接，数据模型允许多个",
+      "acceptanceCriteria": "显示名称、Base URL、Key；首版一个默认连接，数据模型允许多个",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S02",
+      "title": "测试连接",
+      "requirement": "检查地址规范、鉴权和模型列表；不发起付费生成",
+      "acceptanceCriteria": "检查地址规范、鉴权和模型列表；不发起付费生成",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S03",
+      "title": "模型刷新",
+      "requirement": "保存完整型号和刷新时间；离线保留缓存并标注过期",
+      "acceptanceCriteria": "保存完整型号和刷新时间；离线保留缓存并标注过期",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S04",
+      "title": "默认参数",
+      "requirement": "生图默认 flare，视频默认 1.5；比例、质量、目录可配置",
+      "acceptanceCriteria": "生图默认 flare，视频默认 1.5；比例、质量、目录可配置",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S05",
+      "title": "输出目录",
+      "requirement": "选择目录并做写入探测；变更只影响新任务，旧文件不自动搬迁",
+      "acceptanceCriteria": "选择目录并做写入探测；变更只影响新任务，旧文件不自动搬迁",
+      "implementationTasks": [
+        "T02",
+        "T08",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "S06",
+      "title": "诊断导出",
+      "requirement": "导出任务参数、状态、响应摘要、错误及应用版本；不导出 Key 和原图编码",
+      "acceptanceCriteria": "导出任务参数、状态、响应摘要、错误及应用版本；不导出 Key 和原图编码",
+      "implementationTasks": [
+        "T14"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O01",
+      "title": "首次启动分流",
+      "requirement": "空数据、未完成引导、跳过、已配置四种状态进入正确页面",
+      "acceptanceCriteria": "空数据、未完成引导、跳过、已配置四种状态进入正确页面",
+      "implementationTasks": [
+        "T04",
+        "T09",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O02",
+      "title": "欢迎页与跳过",
+      "requirement": "不填 Key 可进入工作台；再次启动不反复强制引导",
+      "acceptanceCriteria": "不填 Key 可进入工作台；再次启动不反复强制引导",
+      "implementationTasks": [
+        "T09",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O03",
+      "title": "服务预设与地址",
+      "requirement": "OpenSosen 预填正确，自定义留空，规范化不重复 `/v1`",
+      "acceptanceCriteria": "OpenSosen 预填正确，自定义留空，规范化不重复 `/v1`",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O04",
+      "title": "Key 输入与加密",
+      "requirement": "遮挡/显示可用，不进入日志或草稿，保存失败不显示已完成",
+      "acceptanceCriteria": "遮挡/显示可用，不进入日志或草稿，保存失败不显示已完成",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O05",
+      "title": "只读连接检查",
+      "requirement": "不调用生成接口，响应分类准确，可取消与重试",
+      "acceptanceCriteria": "不调用生成接口，响应分类准确，可取消与重试",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O06",
+      "title": "模型与目录设置",
+      "requirement": "缺省型号不可用时说明原因，目录可写后才能用于新结果",
+      "acceptanceCriteria": "缺省型号不可用时说明原因，目录可写后才能用于新结果",
+      "implementationTasks": [
+        "T02",
+        "T04",
+        "T08",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O07",
+      "title": "未配置工作台",
+      "requirement": "草稿/素材可编辑，生成按钮导向配置，预览显示真实空态",
+      "acceptanceCriteria": "草稿/素材可编辑，生成按钮导向配置，预览显示真实空态",
+      "implementationTasks": [
+        "T03",
+        "T09",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O08",
+      "title": "配置后的返回",
+      "requirement": "返回原模式且草稿完整，不自动提交原来的生成意图",
+      "acceptanceCriteria": "返回原模式且草稿完整，不自动提交原来的生成意图",
+      "implementationTasks": [
+        "T09",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O09",
+      "title": "未验证与离线状态",
+      "requirement": "不显示假绿色连接状态，本地作品可正常浏览",
+      "acceptanceCriteria": "不显示假绿色连接状态，本地作品可正常浏览",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O10",
+      "title": "更新/清除凭据",
+      "requirement": "影响范围明确，旧任务和作品不丢失，不跨供应商误查",
+      "acceptanceCriteria": "影响范围明确，旧任务和作品不丢失，不跨供应商误查",
+      "implementationTasks": [
+        "T04",
+        "T05",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O11",
+      "title": "检查竞态处理",
+      "requirement": "测试中修改地址/Key 后，旧结果不标记新配置验证成功",
+      "acceptanceCriteria": "测试中修改地址/Key 后，旧结果不标记新配置验证成功",
+      "implementationTasks": [
+        "T04",
+        "T10"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    },
+    {
+      "id": "O12",
+      "title": "引导恢复与键盘操作",
+      "requirement": "中途退出可恢复正确步骤，Tab/Enter/Esc 行为明确且不会误提交生成",
+      "acceptanceCriteria": "中途退出可恢复正确步骤，Tab/Enter/Esc 行为明确且不会误提交生成",
+      "implementationTasks": [
+        "T09",
+        "T10",
+        "T14"
+      ],
+      "status": "not_started",
+      "evidence": {
+        "offline": [],
+        "realService": [],
+        "desktop": []
+      },
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+    }
+  ]
+}

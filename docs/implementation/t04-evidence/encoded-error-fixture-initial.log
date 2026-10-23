@@ -1,0 +1,86 @@
+Command: node --test --test-concurrency=1 --test-name-pattern=percent-encoded|percent-encoding test/workbench-connections-http.test.js
+CWD: backend
+✖ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (10552.5764ms)
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (10463.4144ms)
+✖ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (10657.868ms)
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (10456.9096ms)
+✖ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (423.115ms)
+✖ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (394.1749ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 0
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43066.5775
+
+✖ failing tests:
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (10552.5764ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:20:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:202:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (10463.4144ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:20:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:202:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (10657.868ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:20:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:202:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (10456.9096ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:20:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:202:9)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-connections-http.test.js:230:5
+✖ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (423.115ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  400 !== 202
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:244:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 400,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:230:5
+✖ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (394.1749ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  400 !== 202
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:244:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 400,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

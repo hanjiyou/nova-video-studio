@@ -10,6 +10,7 @@
 const { resolveTemplate } = require('./template');
 const { classifyStatus, extractProgress, normalizeResult, extractError, pickFirstString } = require('./extract');
 const { isHostAllowed } = require('./registry');
+const { containsCredential } = require('../connections/redaction');
 
 const DEFAULT_SUBMIT_TIMEOUT_MS = 90 * 1000;
 const DEFAULT_POLL_TIMEOUT_MS = 15 * 1000;
@@ -69,10 +70,14 @@ function normalizeBaseUrl(url) {
 /**
  * 构造模板上下文。apiKey 只在这里出现一次，日志与入库都不会带上它。
  */
-function buildContext({ plugin, baseUrl, apiKey, model, facets, fields, media, upstreamTaskId, publicBaseUrl }) {
+function buildContext({ plugin, baseUrl, apiKey, model, facets, fields, media, upstreamTaskId, publicBaseUrl, connectionVersionId }) {
+  let resolvedBase=normalizeBaseUrl(baseUrl || (plugin.manifest.credential.defaultBaseUrl || ''));
+  // Legacy declarative templates own their /v1 suffix; the connection stores a canonical /v1 base.
+  if (connectionVersionId && !plugin.driver && resolvedBase.endsWith('/v1') && plugin.provider?.submit?.url?.startsWith('{{baseUrl}}/v1/')) resolvedBase=resolvedBase.slice(0,-3);
   return {
-    baseUrl: normalizeBaseUrl(baseUrl || (plugin.manifest.credential.defaultBaseUrl || '')),
+    baseUrl: resolvedBase,
     apiKey: String(apiKey || ''),
+    ...(connectionVersionId?{connectionVersionId}:{}),
     model: String(model || ''),
     facet: { ...(facets || {}) },
     fields: { ...(fields || {}) },
@@ -110,14 +115,31 @@ function summarizeBody(text) {
   return trimmed.length > 200 ? `${trimmed.slice(0, 200)}…` : trimmed;
 }
 
+function assertCredentialScope(context,url) {
+  if (!context.connectionVersionId) return;
+  let allowed=false;
+  try {allowed=new URL(url).origin===new URL(context.baseUrl).origin;}catch { /* Rejected below. */ }
+  if (!allowed || containsCredential(String(url),context.apiKey)) throw new PluginRequestError('连接凭据只能发送到该版本的服务源。',{fatal:true});
+}
+function assertResponseCredentialFree(text,payload,context) {
+  if (!context.connectionVersionId || !context.apiKey) return;
+  const pending=[text,payload];
+  while(pending.length) {
+    const value=pending.pop();
+    if (typeof value==='string' && containsCredential(value,context.apiKey)) throw new PluginRequestError('上游响应包含连接凭据，已停止处理。',{fatal:true});
+    if (value && typeof value==='object') for(const [key,item] of Object.entries(value)) pending.push(key,item);
+  }
+}
 function resolveRequest(spec, context, plugin, what) {
-  const url = assertUrlAllowed(plugin, resolveTemplate(spec.url, context), what);
+  const resolvedUrl=resolveTemplate(spec.url,context);
+  assertCredentialScope(context,resolvedUrl);
+  const url = assertUrlAllowed(plugin,resolvedUrl,what);
   const method = String(spec.method || 'GET').toUpperCase();
   const headers = {};
   for (const [key, value] of Object.entries(resolveTemplate(spec.headers || {}, context))) {
     headers[key] = String(value);
   }
-  const init = { method, headers };
+  const init = { method, headers, ...(context.connectionVersionId?{redirect:'manual'}:{}) };
   if (method !== 'GET' && method !== 'HEAD' && spec.body !== undefined) {
     const body = resolveTemplate(spec.body, context);
     init.body = JSON.stringify(body);
@@ -142,13 +164,14 @@ async function submitTask(plugin, context) {
     if (!req || typeof req !== 'object' || !req.url) {
       throw new PluginRequestError(`插件 ${plugin.id} 的 buildSubmit 必须返回包含 url 的对象`, { fatal: true });
     }
+    assertCredentialScope(context,req.url);
     const url = assertUrlAllowed(plugin, req.url, '创建请求');
     const method = String(req.method || 'POST').toUpperCase();
     const headers = {};
     for (const [key, value] of Object.entries(req.headers || {})) {
       headers[key] = String(value);
     }
-    const init = { method, headers };
+    const init = { method, headers, ...(context.connectionVersionId?{redirect:'manual'}:{}) };
     if (method !== 'GET' && method !== 'HEAD' && req.body !== undefined) {
       init.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
       if (!Object.keys(headers).some(key => key.toLowerCase() === 'content-type')) {
@@ -159,6 +182,7 @@ async function submitTask(plugin, context) {
     const response = await fetchWithTimeout(url, init, timeoutMs);
     const text = await response.text();
     const payload = parseJsonSafely(text);
+    assertResponseCredentialFree(text,payload,context);
 
     if (!response.ok) {
       const message = (payload && (payload.error?.message || payload.error || payload.msg || payload.message))
@@ -204,6 +228,7 @@ async function submitTask(plugin, context) {
   const response = await fetchWithTimeout(url, init, timeoutMs);
   const text = await response.text();
   const payload = parseJsonSafely(text);
+    assertResponseCredentialFree(text,payload,context);
 
   if (!response.ok || !payload) {
     const message = extractError(payload, spec.error)
@@ -285,13 +310,14 @@ async function pollTask(plugin, context) {
     if (!req || typeof req !== 'object' || !req.url) {
       throw new PluginRequestError(`插件 ${plugin.id} 的 buildQuery 必须返回包含 url 的对象`, { fatal: true });
     }
+    assertCredentialScope(context,req.url);
     const url = assertUrlAllowed(plugin, req.url, '查询请求');
     const method = String(req.method || 'GET').toUpperCase();
     const headers = {};
     for (const [key, value] of Object.entries(req.headers || {})) {
       headers[key] = String(value);
     }
-    const init = { method, headers };
+    const init = { method, headers, ...(context.connectionVersionId?{redirect:'manual'}:{}) };
     if (method !== 'GET' && method !== 'HEAD' && req.body !== undefined) {
       init.body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
     }
@@ -299,6 +325,7 @@ async function pollTask(plugin, context) {
     const response = await fetchWithTimeout(url, init, timeoutMs);
     const text = await response.text();
     const payload = parseJsonSafely(text);
+    assertResponseCredentialFree(text,payload,context);
 
     if (!response.ok || !payload) {
       const fatalCodes = [400, 401, 403, 404];
@@ -322,6 +349,7 @@ async function pollTask(plugin, context) {
   const response = await fetchWithTimeout(url, init, timeoutMs);
   const text = await response.text();
   const payload = parseJsonSafely(text);
+    assertResponseCredentialFree(text,payload,context);
 
   if (!response.ok || !payload) {
     const fatalCodes = Array.isArray(spec.fatalHttpStatus) ? spec.fatalHttpStatus : [400, 401, 403];

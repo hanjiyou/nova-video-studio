@@ -1,0 +1,92 @@
+Command: node scripts/verify-desktop-package.cjs release-t04/win-unpacked/Nova Image Studio.exe override temp/t04-packaged-encoded-errors --storage --connections --credential-errors
+CWD: E:\Learn\AI\nova-image-studio
+{
+  "startedAt": "2026-10-23T10:19:28.395Z",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\release-t04\\win-unpacked\\Nova Image Studio.exe",
+  "mode": "override",
+  "providerRequests": "loopback GET /v1/models and two synthetic failing image POSTs only; no external provider requests",
+  "checks": {
+    "expected storage mode": true,
+    "desktop defaults disabled": true,
+    "main renderer HTTP authorized": true,
+    "unauthenticated API rejected": true,
+    "main renderer WS authorized": true,
+    "desktop PWA not registered": true,
+    "Node globals unavailable": true,
+    "packaged managed asset import": true,
+    "packaged persistent draft": true,
+    "packaged managed asset bytes match digest": true,
+    "packaged OS-encrypted connection save": true,
+    "packaged IPC summary has no credential": true,
+    "packaged read-only model check": true,
+    "packaged visibility does not upgrade capabilities": true,
+    "packaged database contains ciphertext only": true,
+    "packaged encoded error depth 1 HTTP safe": true,
+    "packaged encoded error depth 1 WS safe": true,
+    "packaged encoded error depth 1 history safe": true,
+    "packaged encoded error depth 1 SQLite safe": true,
+    "packaged encoded error depth 2 HTTP safe": true,
+    "packaged encoded error depth 2 WS safe": true,
+    "packaged encoded error depth 2 history safe": true,
+    "packaged encoded error depth 2 SQLite safe": true,
+    "packaged exactly two synthetic image POSTs": true,
+    "packaged actual IPC clears credentials": true,
+    "explicit data policy honored": true,
+    "clean desktop exit": true,
+    "packaged encoded errors absent from process logs": true
+  },
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "storageAssetId": "e34d68b1-a365-4c9c-a62d-969e82a1e9f6",
+  "credentialErrorCases": [
+    {
+      "depth": 1,
+      "malformedPercentPrefix": true,
+      "taskId": "eea2a742-2040-46ea-a1ad-e8188582fed3",
+      "status": "passed"
+    },
+    {
+      "depth": 2,
+      "malformedPercentPrefix": true,
+      "taskId": "a700d493-6937-450c-a116-f76cca1e8912",
+      "status": "passed"
+    }
+  ],
+  "connectionChecks": [
+    {
+      "method": "GET",
+      "path": "/v1/models",
+      "authorized": true
+    },
+    {
+      "method": "POST",
+      "path": "/v1/images/generations",
+      "authorized": true
+    },
+    {
+      "method": "POST",
+      "path": "/v1/images/generations",
+      "authorized": true
+    }
+  ],
+  "dataDirectory": "E:\\Learn\\AI\\nova-image-studio\\temp\\t04-packaged-encoded-errors\\data",
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "databaseQuickCheck": [
+    {
+      "quick_check": "ok"
+    }
+  ],
+  "status": "passed",
+  "finishedAt": "2026-10-23T10:19:35.764Z"
+}

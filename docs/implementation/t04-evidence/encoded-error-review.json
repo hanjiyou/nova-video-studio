@@ -1,0 +1,54 @@
+{
+  "stage": "T04",
+  "status": "fixed; T04 foundation accepted by parent",
+  "productionFiles": [
+    "backend/server.js",
+    "backend/connections/redaction.js"
+  ],
+  "reproduction": {
+    "log": "encoded-error-reproduction.log",
+    "desktopLeakCases": 4,
+    "webControlsPassed": 2,
+    "observedLeakChannels": [
+      "task HTTP",
+      "subscribed WebSocket",
+      "SQLite tasks.error",
+      "SQLite task_items.error"
+    ],
+    "noLeakObserved": [
+      "storage history DTO",
+      "task events",
+      "process logs"
+    ]
+  },
+  "fix": {
+    "policy": "Desktop errors containing the known credential are replaced with a fixed safe message before normalization, persistence, HTTP or WS serialization.",
+    "percentDecodeRounds": 2,
+    "malformedPercentAndUtf8Neighbors": true,
+    "webBehavior": "unchanged; actual HTTP controls pass"
+  },
+  "regression": {
+    "log": "encoded-error-regression.log",
+    "passed": 6,
+    "failed": 0,
+    "targetedPassed": 75,
+    "backendPassed": 217,
+    "frontendPriorPassed": 682,
+    "frontendRerunForThisFix": false
+  },
+  "package": {
+    "checks": 28,
+    "probe": "packaged-evidence.json",
+    "providerRequests": "loopback GET /v1/models and two synthetic failing image POSTs only; no external provider requests",
+    "asarSha256": "82ffa8753100be7a76c4e8bb75a0bbdf62bde1e8ce6588d66b8d285e0833e914",
+    "executableSha256": "25750548b93b8908fa04ee227553de0ee0b7af89099754e79f3fddf213c0e504",
+    "previousUnreviewedAsarSha256": "7ca0b2087a724e3d495447923223ccb9f157c01a0ee6dbb37fb982ef89f1b118",
+    "previousUnreviewedExecutableSha256": "b64d04e6d8fe47b1934129c2bb45b4000f6f7e0148f6c21fe2b1fce2ed4db4fc"
+  },
+  "staged": false,
+  "committed": false,
+  "pushed": false,
+  "nextStageStarted": false,
+  "workflowSnapshot": "After explicit parent approval, before the authorized commit/push",
+  "approvalEvidence": "approval-review.json"
+}

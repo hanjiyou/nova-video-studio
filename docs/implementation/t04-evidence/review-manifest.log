@@ -1,0 +1,11 @@
+Command: node temp/t04-review-manifest.cjs
+CWD: E:\Learn\AI\nova-image-studio
+{
+  "status": "passed",
+  "sourceFiles": 39,
+  "syntaxFiles": 21,
+  "localLinks": 174,
+  "ledgerEntries": 61,
+  "stagedFiles": 0,
+  "baseCommit": "b9f7647a70110a7b6ca1ca4c713326f7d96fde2a"
+}

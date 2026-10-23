@@ -1,0 +1,2 @@
+Command: node node_modules/eslint/bin/eslint.js server.js plugin-runtime/executor.js connections storage/migrations.js test/workbench-connections.test.js test/workbench-connections-http.test.js test/workbench-storage.test.js test/workbench-storage-http.test.js test/desktop-boundary.test.js
+CWD: E:\Learn\AI\nova-image-studio\backend

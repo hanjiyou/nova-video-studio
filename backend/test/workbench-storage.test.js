@@ -33,7 +33,7 @@ const refs = assets => assets.map((asset, position) => ({ assetId: asset.assetId
 test('schema versions apply once, backup is independently readable, unchanged restart makes no new backup', async (t) => {
     const f = await setup(t);
     const history = f.db.prepare('SELECT version,backup_file FROM schema_migrations ORDER BY version').all();
-    assert.deepEqual(history.map(row => row.version), [1, 2]);
+    assert.deepEqual(history.map(row => row.version), MIGRATIONS.map(row=>row.version));
     assert.equal(new Set(history.map(row => row.backup_file)).size, 1);
     const backupFile = path.join(f.directory, 'backups', history[0].backup_file);
     const backup = new Database(backupFile, { readonly: true, fileMustExist: true });
@@ -63,7 +63,7 @@ test('failed multi-step upgrade rolls all DDL/data/history back and leaves consi
     const f = await setup(t);
     const id = task(f.db);
     const old = f.db.prepare('SELECT * FROM tasks').all();
-    const future = [...MIGRATIONS, { version: 3, name: 'test-stage', sql: "CREATE TABLE test_staged(x);UPDATE tasks SET status='changed';" }, { version: 4, name: 'test-fail', sql: 'THIS IS NOT VALID SQL;' }];
+    const future = [...MIGRATIONS, { version: MIGRATIONS.length+1, name: 'test-stage', sql: "CREATE TABLE test_staged(x);UPDATE tasks SET status='changed';" }, { version: MIGRATIONS.length+2, name: 'test-fail', sql: 'THIS IS NOT VALID SQL;' }];
     let failure;
     try {
         await f.upgrade(future);
@@ -74,7 +74,7 @@ test('failed multi-step upgrade rolls all DDL/data/history back and leaves consi
     assert.equal(failure.code, 'STORAGE_MIGRATION_FAILED');
     assert.ok(fs.existsSync(failure.backupFile));
     assert.deepEqual(f.db.prepare('SELECT * FROM tasks').all(), old);
-    assert.deepEqual(f.db.prepare('SELECT version FROM schema_migrations ORDER BY version').all(), [{ version: 1 }, { version: 2 }]);
+    assert.deepEqual(f.db.prepare('SELECT version FROM schema_migrations ORDER BY version').all(), MIGRATIONS.map(row=>({version:row.version})));
     assert.equal(f.db.prepare("SELECT 1 FROM sqlite_master WHERE name='test_staged'").get(), undefined);
     const backup = new Database(failure.backupFile, { readonly: true });
     assert.equal(backup.prepare('SELECT status FROM tasks WHERE id=?').get(id).status, 'completed');

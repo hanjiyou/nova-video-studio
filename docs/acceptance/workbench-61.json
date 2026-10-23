@@ -51,7 +51,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "G03",
@@ -78,13 +78,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "G05",
@@ -95,13 +101,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "G06",
@@ -147,13 +159,19 @@
         "T06",
         "T11"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "I02",
@@ -176,7 +194,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "I03",
@@ -254,7 +272,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "I07",
@@ -427,13 +445,19 @@
         "T07",
         "T12"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "V03",
@@ -446,13 +470,19 @@
         "T12",
         "T15"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "V04",
@@ -476,7 +506,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "V05",
@@ -516,7 +546,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "V07",
@@ -719,7 +749,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L02",
@@ -758,7 +788,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L04",
@@ -797,7 +827,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "L06",
@@ -825,13 +855,20 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/t04-evidence/encoded-error-regression.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。主会话编码错误回显审查已验收：先复现后修复：原文及最多两轮百分号编码Key在桌面错误持久化/HTTP/WS前隐藏，实际exe复测通过；未因此验收完整表单UI。"
     },
     {
       "id": "S02",
@@ -842,13 +879,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "S03",
@@ -859,13 +902,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "S04",
@@ -876,13 +925,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "S05",
@@ -965,13 +1020,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "O04",
@@ -982,13 +1043,20 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log",
+          "../implementation/t04-evidence/encoded-error-regression.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。主会话编码错误回显审查已验收：先复现后修复：原文及最多两轮百分号编码Key在桌面错误持久化/HTTP/WS前隐藏，实际exe复测通过；未因此验收完整表单UI。"
     },
     {
       "id": "O05",
@@ -999,13 +1067,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "O06",
@@ -1051,7 +1125,7 @@
           "../implementation/t03-evidence/packaged-evidence.json"
         ]
       },
-      "notes": "T03数据结构/API与隔离原生存储检查完成待审阅；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
+      "notes": "T03数据结构/API与隔离原生存储检查已由主会话接受；未接通该产品条目的完整UI/适配器/下载或作品库，后续关联阶段仍待完成。用户确认全新安装，不实现旧原版/浏览器数据导入。"
     },
     {
       "id": "O08",
@@ -1079,13 +1153,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "O10",
@@ -1097,13 +1177,19 @@
         "T05",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "O11",
@@ -1114,13 +1200,19 @@
         "T04",
         "T10"
       ],
-      "status": "not_started",
+      "status": "in_progress",
       "evidence": {
-        "offline": [],
+        "offline": [
+          "../implementation/t04-evidence/storage-connections-targeted.log"
+        ],
         "realService": [],
-        "desktop": []
+        "desktop": [
+          "../implementation/t04-evidence/native-connections-phase-1.json",
+          "../implementation/t04-evidence/native-connections-phase-2.json",
+          "../implementation/t04-evidence/packaged-evidence.json"
+        ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。"
+      "notes": "T04仅连接/系统加密凭据、精确默认型号、模型可见性/能力证据、状态与竞态API基础已由主会话验收；完整设置/引导/工作台UI及对应适配仍由后续阶段完成。模型可见不等于模式可用，历史证据不冒充本应用真实生成通过。"
     },
     {
       "id": "O12",

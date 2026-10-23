@@ -99,9 +99,40 @@ CREATE TABLE app_settings (
 INSERT INTO task_events(task_id,type,payload_json,created_at)
 SELECT id,'legacy_record_retained',json_object('status',status),strftime('%Y-%m-%dT%H:%M:%fZ','now') FROM tasks;
 `;
+const CONNECTION_SCHEMA = `
+CREATE TABLE credential_entries (
+  id TEXT PRIMARY KEY, ciphertext BLOB, created_at TEXT NOT NULL, revoked_at TEXT
+);
+CREATE TABLE connection_preferences (
+  connection_version_id TEXT PRIMARY KEY REFERENCES connection_versions(id),
+  protocol TEXT NOT NULL CHECK(protocol='openai'), default_image_model TEXT NOT NULL, default_video_model TEXT NOT NULL
+);
+CREATE TRIGGER connection_preferences_immutable_update BEFORE UPDATE ON connection_preferences
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CONNECTION_PREFERENCES'); END;
+CREATE TRIGGER connection_preferences_immutable_delete BEFORE DELETE ON connection_preferences
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CONNECTION_PREFERENCES'); END;
+CREATE TABLE connection_defaults (
+  singleton INTEGER PRIMARY KEY CHECK(singleton=1), connection_id TEXT NOT NULL REFERENCES connections(id)
+);
+CREATE TABLE connection_checks (
+  connection_version_id TEXT PRIMARY KEY REFERENCES connection_versions(id), validation_state TEXT NOT NULL,
+  last_checked_at TEXT, last_success_at TEXT, models_fetched_at TEXT, models_json TEXT NOT NULL DEFAULT '[]', error_code TEXT
+);
+CREATE TABLE model_capabilities (
+  id TEXT PRIMARY KEY, provider TEXT NOT NULL, base_url TEXT NOT NULL, model TEXT NOT NULL, mode TEXT NOT NULL,
+  protocol TEXT NOT NULL, parameters_json TEXT NOT NULL, evidence_level TEXT NOT NULL,
+  evidence_version TEXT NOT NULL, evidence_json TEXT NOT NULL, created_at TEXT NOT NULL,
+  UNIQUE(provider,base_url,model,mode,protocol,parameters_json,evidence_version)
+);
+CREATE TRIGGER model_capabilities_immutable_update BEFORE UPDATE ON model_capabilities
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CAPABILITY_VERSION'); END;
+CREATE TRIGGER model_capabilities_immutable_delete BEFORE DELETE ON model_capabilities
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_CAPABILITY_VERSION'); END;
+`;
 const MIGRATIONS = [
     { version: 1, name: 'legacy-baseline', sql: BASE_SCHEMA },
     { version: 2, name: 'durable-workbench-storage', sql: DURABLE_SCHEMA },
+    { version: 3, name: 'protected-connections-and-capabilities', sql: CONNECTION_SCHEMA },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

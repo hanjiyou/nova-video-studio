@@ -1,0 +1,50 @@
+[
+  {
+    "phase": "Initial targeted/full backend checks",
+    "observation": "The pre-T04 actual-server desktop boundary fixture still sent raw apiKey over HTTP; the new boundary correctly rejected it with 400.",
+    "handling": "Updated the test to store a synthetic credential through a test-only Node host bridge and submit connectionVersionId. Production has no test bypass.",
+    "rawLogs": [
+      "initial-storage-connections-targeted.log",
+      "initial-backend-regression.log"
+    ]
+  },
+  {
+    "phase": "Initial parallel full regression",
+    "observation": "The existing T02 35ms timeout fixture observed zero server-side POSTs while CPU-heavy checks ran concurrently; its strict assertion expected one.",
+    "handling": "Retained raw failure and reran full backend sequentially with test-concurrency=1; strict one-POST and no-proxy-retry assertions unchanged. No claim that the scheduling sensitivity was fixed."
+  },
+  {
+    "phase": "Optional full TypeScript check",
+    "observation": "60 diagnostics in three pre-existing test files.",
+    "handling": "Exported accepted T03 HEAD and original declaration files into an isolated temp directory; diagnostics exactly match current source. Production build passes. Unrelated test types and type-check configuration unchanged.",
+    "evidence": "baseline-typecheck-comparison.json"
+  },
+  {
+    "phase": "Early new test authoring",
+    "observation": "One assertion used queued instead of the existing serialized Chinese queue status; one new plugin executor fixture lacked the compiled registry host set.",
+    "handling": "Matched the current pre-T05 contract and used the actual registered plugin; final real HTTP/executor tests pass without loosening production guards."
+  },
+  {
+    "phase": "Final credential-pause DTO compatibility",
+    "observation": "After adding polling_paused to real task DTOs, the production build rejected the older canvas video progress union.",
+    "handling": "Added this state to the existing progress DTO only; no canvas behavior expansion and no disabled type checks. Final production build rerun required.",
+    "rawLog": "initial-pause-dto-build.log"
+  },
+  {
+    "phase": "Independent T04 encoded-error review",
+    "observation": "Production image errors used raw replaceAll and leaked once/twice fully percent-encoded credentials through task HTTP, subscribed WS, tasks.error and task_items.error in four actual HTTP cases.",
+    "handling": "Reproduced before production edits, then hid the complete error on shared known-secret detection and tolerated unrelated invalid percent/UTF-8 bytes. Six actual HTTP tests, the full backend suite and real unpacked-exe probe pass; Web behavior preserved.",
+    "rawLogs": [
+      "encoded-error-reproduction.log",
+      "encoded-error-regression.log"
+    ]
+  },
+  {
+    "phase": "First encoded-error fixture run",
+    "observation": "New fixtures omitted WS task subscription and legacy Web protocol. These initial failures do not reproduce a production leak.",
+    "handling": "Corrected fixtures before modifying production; retained setup failures separately.",
+    "rawLogs": [
+      "encoded-error-fixture-initial.log"
+    ]
+  }
+]

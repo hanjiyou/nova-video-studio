@@ -12,6 +12,7 @@ files:
   - backend/server.js
   - backend/desktop-session.js
   - backend/storage/**
+  - backend/connections/**
   - backend/cdp.js
   - backend/taobao-extract.js
   - backend/doubao.js

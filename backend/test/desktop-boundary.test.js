@@ -1,7 +1,6 @@
 'use strict';
 const assert = require('node:assert/strict');
 const { randomBytes } = require('node:crypto');
-const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const http = require('node:http');
 const os = require('node:os');
@@ -14,6 +13,7 @@ const { createSessionPolicy } = require('../../desktop/session-policy.cjs');
 const { registerDesktopIpc } = require('../../desktop/ipc.cjs');
 const { resolveDataPolicy, resolveBackendPort } = require('../../desktop/runtime.cjs');
 const { startMockProvider, FIXTURE_TOKEN } = require('./support/mock-provider');
+const { start } = require('./support/desktop-http-runtime.cjs');
 const token = () => randomBytes(32).toString('hex');
 const backendOrigin = 'http://127.0.0.1:31207';
 const listen = server => new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', () => resolve(server.address().port)); });
@@ -139,18 +139,12 @@ test('system mode uses one configured transport and abortPending cancels in-flig
 });
 
 async function startDesktopBackend(t) {
-  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nova-desktop-server-'));
-  const port = await resolveBackendPort(0);
-  const origin = 'http://127.0.0.1:' + port;
-  const secret = token();
-  const child = spawn(process.execPath, ['-e', "process.once('message', async config => { require('./desktop-session').configureDesktopSession(config); const server=require('./server'); await server.ready; process.send('ready'); });"], { cwd: path.resolve(__dirname, '..'), env: { ...process.env, NODE_ENV: 'production', HOSTNAME: '127.0.0.1', PORT: String(port), NOVA_TASK_DB: path.join(directory, 'tasks.sqlite'), NOVA_IMAGE_DIR: path.join(directory, 'images'), NOVA_PLUGIN_MEDIA_DIR: path.join(directory, 'plugin-media'), NOVA_CDP_ENABLED: 'false', NOVA_AGENT_ENABLED: 'false', NOVA_IMAGE_PARTIAL_IMAGES: '2' }, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe', 'ipc'] });
-  let output = '';
-  child.stdout.on('data', chunk => { output += chunk; });
-  child.stderr.on('data', chunk => { output += chunk; });
-  t.after(async () => { if (child.exitCode === null) { child.kill('SIGTERM'); await new Promise(resolve => child.once('exit', resolve)); } assert.equal(output.includes(secret), false); fs.rmSync(directory, { recursive: true, force: true }); });
-  await new Promise((resolve, reject) => { child.once('message', resolve); child.once('error', reject); child.once('exit', () => reject(new Error('Backend failed: ' + output))); child.send({ origin, token: secret }); });
-  return { origin, secret, headers: { [SESSION_HEADER]: secret } };
+  const directory=fs.mkdtempSync(path.join(os.tmpdir(),'nova-desktop-server-'));
+  const runtime=await start(directory,{imageStream:true});
+  t.after(async()=>{await runtime.stop();assert.ok(path.resolve(directory).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(directory,{recursive:true,force:true,maxRetries:5,retryDelay:50});});
+  return runtime;
 }
+
 function wsStatus(url, headers = {}) {
   return new Promise((resolve, reject) => {
     const socket = new WebSocket(url, { headers, handshakeTimeout: 2000 });
@@ -160,7 +154,7 @@ function wsStatus(url, headers = {}) {
   });
 }
 test('actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST', async t => {
-  const { origin, headers, secret } = await startDesktopBackend(t);
+  const { origin, headers, secret, saveConnection } = await startDesktopBackend(t);
   let candidateIndex = 0;
   for (const candidate of [{}, { [SESSION_HEADER]: 'wrong' }, { ...headers, Origin: 'https://attacker.invalid' }, { ...headers, Host: 'attacker.invalid' }, { ...headers, 'sec-fetch-site': 'cross-site' }]) {
     const status = await new Promise((resolve, reject) => { const request = http.get(origin + '/api/nova/config', { headers: candidate }, response => { response.resume(); resolve(response.statusCode); }); request.on('error', reject); });
@@ -174,8 +168,9 @@ test('actual backend protects HTTP and WS including no-Origin clients and never 
   let postCount = 0;
   const upstream = http.createServer(async (req, res) => { for await (const chunk of req) { void chunk; } postCount++; res.writeHead(400, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'Unsupported parameter: partial_images' } })); });
   const upstreamPort = await listen(upstream);
+  const connection=await saveConnection({baseUrl:'http://127.0.0.1:'+upstreamPort,apiKey:FIXTURE_TOKEN});
   t.after(() => close(upstream));
-  const created = await fetch(origin + '/api/nova/tasks', { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ apiKey: FIXTURE_TOKEN, baseUrl: 'http://127.0.0.1:' + upstreamPort, protocol: 'openai', mode: 'text-to-image', prompt: 'synthetic', model: 'gpt-image-1', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
+  const created = await fetch(origin + '/api/nova/tasks', { method: 'POST', headers: { ...headers, 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId:connection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic', model: 'gpt-image-1', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
   assert.equal(created.status, 202);
   const { taskId } = await created.json();
   const task = await until(async () => { const value = await (await fetch(origin + '/api/nova/tasks/' + taskId, { headers })).json(); return ['completed', 'failed'].includes(value.status) ? value : null; });

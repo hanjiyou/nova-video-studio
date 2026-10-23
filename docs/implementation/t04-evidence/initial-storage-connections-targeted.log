@@ -1,0 +1,97 @@
+Command: node --test test/workbench-connections.test.js test/workbench-connections-http.test.js test/workbench-storage.test.js test/workbench-storage-http.test.js test/desktop-boundary.test.js
+CWD: E:\Learn\AI\nova-image-studio\backend
+✔ desktop boundary fails closed for no-Origin clients, hostile sources, wrong host and revoked sessions (2.5306ms)
+✔ session injection requires the actual main frame and strips caller headers on all other requests (2.2898ms)
+✔ narrow IPC accepts only the main frame and opaque selections/asset IDs (17.3806ms)
+✔ data policy precedence and bounded loopback port selection (42.6568ms)
+✔ production network policy sends exactly one generation POST: accepted (104.0089ms)
+✔ production network policy sends exactly one generation POST: timeout (67.4909ms)
+✔ production network policy sends exactly one generation POST: after_accept (18.1873ms)
+✔ production network policy sends exactly one generation POST: mid_body (65.2533ms)
+✔ production network policy sends exactly one generation POST: http429 (16.7247ms)
+✔ production network policy sends exactly one generation POST: http503 (20.593ms)
+✔ production network policy sends exactly one generation POST: redirect307 (13.0978ms)
+✔ GET fallback is bounded, respects Retry-After and cancellation; internal redirects stay manual (11.275ms)
+✔ system mode uses one configured transport and abortPending cancels in-flight creation (2.3277ms)
+✖ actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST (722.2202ms)
+✔ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (1984.9946ms)
+✔ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (1325.6608ms)
+✔ safeStorage vault persists ciphertext only; connection summary never exposes key/ciphertext/ref (76.5711ms)
+✔ encryption unavailable/basic_text/encryption error fails closed without inserting plaintext or partial versions (39.9469ms)
+✔ changing address/key creates immutable versions; old auth and defaults never follow current configuration (66.0087ms)
+✔ a new destination requires explicit credential input; keeping a versioned credential at the same address is allowed (50.2633ms)
+✔ clear revokes every version of a connection while preserving versions/tasks/assets and other connections (56.7411ms)
+✔ decryption failure is explicit and recoverable by new version; no replacement fallback for old task auth (44.1432ms)
+✔ base URL normalization handles pasted endpoints and rejects embedded credentials/query/fragment/protocol tricks (1.1856ms)
+✔ read-only check uses only GET /models, no text-model requirement; caches visibility separately from capabilities (103.0735ms)
+✔ model absence preserves exact selected defaults; unknown visible IDs do not manufacture capabilities or upgrade evidence (46.3938ms)
+✔ historical capability evidence is source/model/mode/parameters scoped and immutable (45.6088ms)
+✔ in-flight model check is deduplicated and stale result cannot overwrite a new configuration (56.4359ms)
+✔ model check classifies HTTP 401 without exposing upstream errors or forwarding redirects (63.3713ms)
+✔ model check classifies HTTP 403 without exposing upstream errors or forwarding redirects (65.2252ms)
+✔ model check classifies HTTP 404 without exposing upstream errors or forwarding redirects (44.3051ms)
+✔ model check classifies HTTP 405 without exposing upstream errors or forwarding redirects (59.7406ms)
+✔ model check classifies HTTP 503 without exposing upstream errors or forwarding redirects (68.2207ms)
+✔ model check classifies HTTP 302 without exposing upstream errors or forwarding redirects (49.1119ms)
+✔ model response validation and network/decryption errors remain distinct without raw error leakage (75.6257ms)
+✔ credential IPC validates actual sender and exact argument shape before invoking the vault (56.6186ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+✔ v3 additive upgrade preserves v2 history and creates a consistent pre-v3 backup exactly once (77.4594ms)
+✔ version-bound legacy plugin uses exact original host, one /v1 suffix and manual redirects for submit/poll (14.8634ms)
+✔ version-bound plugin cannot send credentials to another manifest-allowed origin or in an encoded URL (0.9018ms)
+✔ check cache expires and transient failure preserves prior model timestamps without claiming current availability (58.1338ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (2107.2618ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (1754.8266ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (1067.4672ms)
+✔ schema versions apply once, backup is independently readable, unchanged restart makes no new backup (72.3892ms)
+✔ upgrade preserves existing custom-app rows/status/TTL and consistent backup includes committed WAL data (76.5003ms)
+✔ failed multi-step upgrade rolls all DDL/data/history back and leaves consistent pre-upgrade backup (78.0959ms)
+✔ unknown/corrupted migration history fails closed without creating a new backup (43.9918ms)
+✔ existing unknown database schema is not cleared or overwritten on upgrade failure (71.6532ms)
+✔ native file import copies exact JPEG/PNG bytes and survives moving the selected source (96.9509ms)
+✔ content-addressed assets reuse one identity and preserve original bytes and reference order (76.6354ms)
+✔ unknown object-file collisions are preserved and failed publication creates no asset row (54.8801ms)
+✔ missing media retains metadata, task associations and draft references (80.7642ms)
+✔ tampered media is rejected by digest without deleting metadata or content (63.1827ms)
+✔ asset IDs cannot resolve traversal paths even when a database path is corrupted (70.234ms)
+✔ symlinked managed file cannot disclose a file outside the managed root (70.1501ms)
+✔ drafts are independent per mode, preserve Chinese/newlines and swap/remove only references (113.9745ms)
+✔ stale draft revisions and invalid asset lists roll back without partial writes (65.5821ms)
+✔ task snapshot and connection versions remain immutable when draft/current connection changes (55.137ms)
+✔ failed/deleted task never deletes a shared input or another draft/task reference (67.3273ms)
+✔ settings and events are durable, ordered, revisioned, and reject credential/path fields (58.5509ms)
+✔ history pagination preserves more than fifty records and does not include raw request secrets/paths (100.4899ms)
+✔ desktop plugin media retention protects shared files during failure/TTL cleanup; Web policy remains explicit (97.4661ms)
+✔ backup failure prevents every schema/data update and preserves the blocked destination (52.1596ms)
+✔ unrelated existing SQLite file is rejected before schema or backup writes (77.0937ms)
+✔ batch file selection is transactional for metadata and never removes either selected source (170.9314ms)
+✔ current generated output route is backed by an asset ID and survives removing its compatibility file (107.821ms)
+✔ import IPC accepts no renderer paths, rejects untrusted senders before dialog, and returns opaque assets (94.0431ms)
+ℹ tests 66
+ℹ suites 0
+ℹ pass 65
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5149.1776
+
+✖ failing tests:
+
+test at test\desktop-boundary.test.js:162:1
+✖ actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST (722.2202ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  400 !== 202
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\desktop-boundary.test.js:179:10)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 400,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

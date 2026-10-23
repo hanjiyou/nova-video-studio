@@ -61,7 +61,7 @@ export type CanvasVideoMediaItem = {
 };
 
 export type CanvasVideoTaskProgress = {
-  status: "queued" | "processing" | "completed" | "failed" | "expired";
+  status: "queued" | "processing" | "polling_paused" | "completed" | "failed" | "expired";
   /** 上游真实进度（0-100）；上游未返回时为 undefined，调用方不得用时间估算顶替 */
   progress?: number;
   upstreamStatus?: "queued" | "processing" | "completed" | "failed";

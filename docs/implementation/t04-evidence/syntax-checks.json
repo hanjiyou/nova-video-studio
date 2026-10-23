@@ -1,0 +1,90 @@
+{
+  "command": "node --check <each changed JS/CJS file>",
+  "status": "passed",
+  "checks": [
+    {
+      "file": "backend/plugin-runtime/executor.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/server.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/storage/migrations.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/desktop-boundary.test.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/workbench-storage-http.test.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/workbench-storage.test.js",
+      "exitCode": 0
+    },
+    {
+      "file": "desktop/ipc.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "desktop/main.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "desktop/preload.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "scripts/verify-desktop-package.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/connections/capabilities.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/connections/host.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/connections/http.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/connections/redaction.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/connections/service.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/support/desktop-http-runtime.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/workbench-connections-http.test.js",
+      "exitCode": 0
+    },
+    {
+      "file": "backend/test/workbench-connections.test.js",
+      "exitCode": 0
+    },
+    {
+      "file": "desktop/credential-vault.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "scripts/electron-connections-test-entry.cjs",
+      "exitCode": 0
+    },
+    {
+      "file": "scripts/verify-desktop-connections.cjs",
+      "exitCode": 0
+    }
+  ]
+}

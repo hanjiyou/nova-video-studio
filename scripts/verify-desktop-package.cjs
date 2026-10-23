@@ -1,14 +1,17 @@
 'use strict';
-// Real packaged desktop smoke using explicit loopback-only CDP. No provider or credential calls.
+// Real packaged desktop smoke using explicit loopback-only CDP and synthetic credentials.
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
 const net=require('node:net');
+const http=require('node:http');
 const {spawn}=require('node:child_process');
 const WebSocket=require('ws');
 const Database=require('better-sqlite3');
 const [executableArg,mode='override',outputArg]=process.argv.slice(2);
 assert.ok(executableArg && ['system','override','portable'].includes(mode));
+if(process.argv.includes('--credential-errors'))assert.ok(process.argv.includes('--connections'),'Credential-error probe requires --connections');
+if(process.argv.includes('--connections'))assert.equal(mode,'override','T04 connection probe requires a fresh explicit profile');
 const executable=path.resolve(executableArg);
 const output=path.resolve(outputArg || path.join(__dirname,'../temp/t02-package-'+mode+'-'+Date.now()));
 fs.mkdirSync(output,{recursive:true});
@@ -20,6 +23,7 @@ const evidence={startedAt:new Date().toISOString(),executable,mode,providerReque
 let child;
 let exit;
 let client;
+let modelsServer;
 const check=(name,value)=>{assert.ok(value,name);evidence.checks[name]=true};
 const free=()=>new Promise((resolve,reject)=>{const server=net.createServer();server.once('error',reject);server.listen(0,'127.0.0.1',()=>{const port=server.address().port;server.close(()=>resolve(port))})});
 async function until(fn,timeout=30000){const end=Date.now()+timeout;let last;while(Date.now()<end){if(exit)throw new Error('Desktop exited: '+JSON.stringify(exit));try{const value=await fn();if(value)return value}catch(error){last=error}await new Promise(resolve=>setTimeout(resolve,100))}throw last || new Error('Timed out')}
@@ -56,10 +60,47 @@ async function connect(url){const socket=new WebSocket(url);await new Promise((r
    evidence.storageAssetId=imported.asset.assetId;
  }
 
+
+ if(process.argv.includes('--connections')) {
+   evidence.providerRequests=process.argv.includes('--credential-errors')?'loopback GET /v1/models and two synthetic failing image POSTs only; no external provider requests':'read-only loopback GET /v1/models only; no external provider requests';
+   const key='t04-pack-A9';const requests=[];const encodeBytes=value=>[...Buffer.from(value,'utf8')].map(byte=>'%'+byte.toString(16).padStart(2,'0').toUpperCase()).join('');
+   const secretForms=[key,encodeBytes(key),encodeBytes(encodeBytes(key))];const hasSecret=value=>secretForms.some(secret=>JSON.stringify(value).includes(secret));
+   modelsServer=http.createServer((req,res)=>{requests.push({method:req.method,path:req.url,authorized:req.headers.authorization==='Bearer '+key});if(req.method==='POST'){const depth=requests.filter(item=>item.method==='POST').length;res.writeHead(400,{'content-type':'application/json'});res.end(JSON.stringify({error:{message:'Synthetic failure: bad=%ZZ%FF '+secretForms[depth]}}));return;}res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({data:[{id:'gpt-image-2.5-flare'},{id:'grok-imagine-video-1.5-6s'}]}));});
+   await new Promise(resolve=>modelsServer.listen(0,'127.0.0.1',resolve));
+   const saved=await evaluate('window.novaDesktop.saveConnection('+JSON.stringify({baseUrl:'http://127.0.0.1:'+modelsServer.address().port+'/v1',provider:'openai-compatible',apiKey:key})+')');
+   check('packaged OS-encrypted connection save',saved.ok && saved.connection.credentialState==='ready');
+   check('packaged IPC summary has no credential',!JSON.stringify(saved).includes(key) && !JSON.stringify(saved).includes('credentialRef'));
+   const connection=saved.connection;
+   const checked=await evaluate('fetch('+JSON.stringify('/api/nova/connections/'+connection.connectionId+'/check')+',{method:"POST",headers:{"content-type":"application/json"},body:'+JSON.stringify(JSON.stringify({connectionVersionId:connection.connectionVersionId}))+'}).then(r=>r.json())');
+   check('packaged read-only model check',checked.connection.validationState==='verified' && requests.length===1 && requests[0].method==='GET' && requests[0].path==='/v1/models' && requests[0].authorized);
+   check('packaged visibility does not upgrade capabilities',checked.capabilities.every(cap=>cap.evidenceLevel==='unverified'));
+   const inspection=new Database(path.join(data,'nova-tasks.sqlite'),{readonly:true});const cipher=inspection.prepare('SELECT ciphertext FROM credential_entries').get().ciphertext;inspection.close();
+   check('packaged database contains ciphertext only',Buffer.isBuffer(cipher) && !cipher.includes(Buffer.from(key)));
+   if(process.argv.includes('--credential-errors')) {
+     evidence.credentialErrorCases=[];
+     for(const depth of [1,2]) {
+       const taskPayload={connectionVersionId:connection.connectionVersionId,mode:'text-to-image',model:'gpt-image-2',prompt:'T04 synthetic credential echo',parallelCount:1,outputSize:'auto',aspectRatio:'auto',images:[]};
+       const result=await evaluate('(async()=>{const ws=new WebSocket(location.origin.replace("http:","ws:")+"/api/nova/ws");await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject});const response=await fetch("/api/nova/tasks",{method:"POST",headers:{"content-type":"application/json"},body:'+JSON.stringify(JSON.stringify(taskPayload))+'});if(response.status!==202)throw Error("Synthetic task rejected");const created=await response.json();const event=await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error("No terminal WS message")),3000);ws.onmessage=message=>{const event=JSON.parse(message.data);if(event.type==="task" && event.task.id===created.taskId && event.task.status==="failed"){clearTimeout(timer);resolve(event)}};ws.send(JSON.stringify({type:"subscribeTasks",taskIds:[created.taskId]}))});ws.close();return {task:await (await fetch("/api/nova/tasks/"+created.taskId)).json(),event,history:await (await fetch("/api/nova/storage/tasks")).json(),events:await (await fetch("/api/nova/storage/tasks/"+created.taskId+"/events")).json()}})()');
+       check('packaged encoded error depth '+depth+' HTTP safe',result.task.status==='failed' && result.task.error.includes('连接凭据') && !hasSecret(result.task));
+       check('packaged encoded error depth '+depth+' WS safe',result.event.task.error.includes('连接凭据') && !hasSecret(result.event));
+       check('packaged encoded error depth '+depth+' history safe',!hasSecret({history:result.history,events:result.events}));
+       const inspection=new Database(path.join(data,'nova-tasks.sqlite'),{readonly:true});
+       const persisted={task:inspection.prepare('SELECT error FROM tasks WHERE id=?').get(result.task.id),items:inspection.prepare('SELECT error FROM task_items WHERE task_id=?').all(result.task.id),events:inspection.prepare('SELECT payload_json FROM task_events WHERE task_id=?').all(result.task.id)};inspection.close();
+       check('packaged encoded error depth '+depth+' SQLite safe',persisted.task.error.includes('连接凭据') && persisted.items.length===1 && persisted.items[0].error.includes('连接凭据') && !hasSecret(persisted));
+       evidence.credentialErrorCases.push({depth,malformedPercentPrefix:true,taskId:result.task.id,status:'passed'});
+     }
+     check('packaged exactly two synthetic image POSTs',requests.filter(item=>item.method==='POST').length===2 && requests.filter(item=>item.method==='POST').every(item=>item.path==='/v1/images/generations' && item.authorized));
+   }
+   const cleared=await evaluate('window.novaDesktop.clearConnectionCredential('+JSON.stringify({connectionId:connection.connectionId,expectedVersionId:connection.connectionVersionId})+')');
+   check('packaged actual IPC clears credentials',cleared.ok && !cleared.connection.hasCredential);
+   evidence.connectionChecks=requests;
+ }
+
  if(mode==='system'){const created=candidates.filter(candidate=>fs.existsSync(path.join(candidate,'nova-tasks.sqlite')));check('database under fresh system userData',created.length===1);evidence.dataDirectory=created[0];check('no executable adjacent data directory',!fs.existsSync(path.join(path.dirname(executable),'data')))}else{evidence.dataDirectory=data;check('explicit data policy honored',fs.existsSync(path.join(data,'nova-tasks.sqlite')))}
  await client.call('Browser.close').catch(()=>{});
  await new Promise((resolve,reject)=>{if(exit)return resolve();const timer=setTimeout(()=>reject(new Error('Desktop did not quit')),8000);child.once('exit',()=>{clearTimeout(timer);resolve()})});
  check('clean desktop exit',exit.code===0);evidence.exit=exit;
+ if(process.argv.includes('--credential-errors')) {const logs=['stdout.log','stderr.log'].filter(name=>fs.existsSync(path.join(output,name))).map(name=>fs.readFileSync(path.join(output,name),'utf8')).join('\n');const key='t04-pack-A9',encoded=[...Buffer.from(key)].map(byte=>'%'+byte.toString(16).padStart(2,'0').toUpperCase()).join('');const twice=[...Buffer.from(encoded)].map(byte=>'%'+byte.toString(16).padStart(2,'0').toUpperCase()).join('');check('packaged encoded errors absent from process logs',[key,encoded,twice].every(secret=>!logs.includes(secret)));}
  const db=new Database(path.join(evidence.dataDirectory,'nova-tasks.sqlite'),{readonly:true,fileMustExist:true});evidence.databaseQuickCheck=db.pragma('quick_check');db.close();assert.deepEqual(evidence.databaseQuickCheck,[{quick_check:'ok'}]);
  evidence.status='passed';
-})().catch(error=>{evidence.status='failed';evidence.error=error.stack;process.exitCode=1}).finally(()=>{client?.close();if(child && !exit)child.kill();evidence.finishedAt=new Date().toISOString();fs.writeFileSync(path.join(output,'evidence.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence,null,2))});
+})().catch(error=>{evidence.status='failed';evidence.error=error.stack;process.exitCode=1}).finally(()=>{client?.close();modelsServer?.closeAllConnections();modelsServer?.close();if(child && !exit)child.kill();evidence.finishedAt=new Date().toISOString();fs.writeFileSync(path.join(output,'evidence.json'),JSON.stringify(evidence,null,2)+'\n');console.log(JSON.stringify(evidence,null,2))});

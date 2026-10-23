@@ -1,0 +1,248 @@
+{
+  "stage": "T04",
+  "status": "approved_precommit_snapshot",
+  "snapshotPhase": "after explicit parent approval, before authorized commit",
+  "approvalEvidence": "approval-review.json",
+  "branch": "dev",
+  "baseCommit": "b9f7647a70110a7b6ca1ca4c713326f7d96fde2a",
+  "stagedFiles": 0,
+  "committed": false,
+  "pushed": false,
+  "nextStageStarted": false,
+  "sourceFiles": [
+    {
+      "status": " M",
+      "path": "backend/plugin-runtime/executor.js",
+      "bytes": 16597,
+      "sha256": "d010c6c5071ee786525334c5817bbd8ff448b77a2174d3f56f04280eee598ebc"
+    },
+    {
+      "status": " M",
+      "path": "backend/server.js",
+      "bytes": 150877,
+      "sha256": "b356ba58c96f294c19e6eec3946b610d80eb8e60eb71c683ee1611b4103cc92a"
+    },
+    {
+      "status": " M",
+      "path": "backend/storage/migrations.js",
+      "bytes": 11968,
+      "sha256": "4c2ae668169a8269fe6b3a5fdff12941b887ac6a4dbe8d909ec34e774a26b943"
+    },
+    {
+      "status": " M",
+      "path": "backend/test/desktop-boundary.test.js",
+      "bytes": 14798,
+      "sha256": "481e26a79975c74ca1e540112e5132b54a529195f8b81f970b4311a8d81bb1ab"
+    },
+    {
+      "status": " M",
+      "path": "backend/test/workbench-storage-http.test.js",
+      "bytes": 17254,
+      "sha256": "544febab8472c8d0c82ea272bd37abd41b5dc00b81a5b9fad4b1649aec6f65ba"
+    },
+    {
+      "status": " M",
+      "path": "backend/test/workbench-storage.test.js",
+      "bytes": 24382,
+      "sha256": "0b4996e2510fa5ff05946659e11df54a1fb933d73cd6f65ad4cce56c223d022d"
+    },
+    {
+      "status": " M",
+      "path": "desktop/ipc.cjs",
+      "bytes": 3585,
+      "sha256": "7b70653cd4a923220138aac7640d55b375a99b2128ac4c6f527626b5da731c7e"
+    },
+    {
+      "status": " M",
+      "path": "desktop/main.cjs",
+      "bytes": 6232,
+      "sha256": "f00aee541fd2be3cb8b70dd0e1784713f288a371131ddf813f1185e497b269bc"
+    },
+    {
+      "status": " M",
+      "path": "desktop/preload.cjs",
+      "bytes": 987,
+      "sha256": "3155d91e10985b78c5794887588ef444359a39d8138c51cbf2e78068ed5df971"
+    },
+    {
+      "status": " M",
+      "path": "docs/Nova-Studio落地任务清单.md",
+      "bytes": 20028,
+      "sha256": "201bb6bdc9f0d02bb566abc82f0e196f0ea45b203fcfbbc3f4566491188d0787"
+    },
+    {
+      "status": " M",
+      "path": "docs/acceptance/workbench-61.json",
+      "bytes": 47681,
+      "sha256": "b43783fb6dfeafa3295ef10ec18c215ff75594aabf209d7a94e39dd1663e301c"
+    },
+    {
+      "status": " M",
+      "path": "docs/acceptance/workbench-61.md",
+      "bytes": 17215,
+      "sha256": "f80631ae26669e18f8fa2b7d05c26617e2531d13a852cc83708894c348b25a41"
+    },
+    {
+      "status": " M",
+      "path": "docs/desktop-runtime.md",
+      "bytes": 5525,
+      "sha256": "56597f08168db83f04c90449c9518d05383b3217c86efa681b690286433a61bf"
+    },
+    {
+      "status": " M",
+      "path": "docs/implementation/T03-持久存储与资产基础.md",
+      "bytes": 11744,
+      "sha256": "36ee1c2a3f75ee20ce9ce994c7b893a9a9dec2c0399d2753ce9fb3f3c56d8dd7"
+    },
+    {
+      "status": " M",
+      "path": "docs/storage-v1.md",
+      "bytes": 7362,
+      "sha256": "c6f244b06b67dff12c463998d9601f757a283bc8da31c49148fa0fc379ceba9d"
+    },
+    {
+      "status": " M",
+      "path": "electron-builder.yml",
+      "bytes": 1948,
+      "sha256": "73fa3cd9652e36b11f710cba4f19a3f2a5fa48c350ea22cfafa7055598d60773"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/components/canvas/canvas-video-generation-service.ts",
+      "bytes": 12674,
+      "sha256": "25d2576134e5998d462909d77a77ff7241805a3984a707b0401fa2952ee0be62"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/lib/ccode-task-client.ts",
+      "bytes": 12257,
+      "sha256": "59cde46e1b9838bc5fa4867866db8d1e1b0fe478143a8f710d5c69d80d57af72"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/lib/nova-models.ts",
+      "bytes": 23370,
+      "sha256": "bf8abf9a721e6637e6035063d4ccbf32f1a12203b25d003b55066868eded56eb"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/lib/plugin-registry-client.ts",
+      "bytes": 6380,
+      "sha256": "2ad3408af845fe8101f51d4313fd9e8876858dfae96987c8fee5be937f40d451"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/lib/plugin-task-client.ts",
+      "bytes": 8090,
+      "sha256": "b977221f68508beaacdf52cd96e7d4ef8bdc465968d4e1302667a0de95eee3bf"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/lib/provider-models-client.ts",
+      "bytes": 1995,
+      "sha256": "34685824b5541c5097c2873d9dabb210d84647c9ef8420257c64e8cc4cbdb31f"
+    },
+    {
+      "status": " M",
+      "path": "frontend/src/types/nova-desktop.d.ts",
+      "bytes": 1281,
+      "sha256": "5f3f2abe7c527afbdd1ff151945ccff3e0aa913cbfefe2e7ac1b3cdb32fb7521"
+    },
+    {
+      "status": " M",
+      "path": "scripts/verify-desktop-package.cjs",
+      "bytes": 14854,
+      "sha256": "b8c76a35d97615e63aec4aff8ba59387ebcfb3497377220826786403652f409a"
+    },
+    {
+      "status": "??",
+      "path": "backend/connections/capabilities.js",
+      "bytes": 3131,
+      "sha256": "8d724596120990738af82b26eddcbe7eaa4334412fd2804ed527c57aa273a207"
+    },
+    {
+      "status": "??",
+      "path": "backend/connections/host.js",
+      "bytes": 752,
+      "sha256": "8ffe69dd18af079fcf4a4e21d3a7f5bef6f50e30844f69d1ca9e148876557a58"
+    },
+    {
+      "status": "??",
+      "path": "backend/connections/http.js",
+      "bytes": 1782,
+      "sha256": "845a8a239c0e7b8ded62c00ae5a15993f1622a7629424f029f6e5d635170f19d"
+    },
+    {
+      "status": "??",
+      "path": "backend/connections/redaction.js",
+      "bytes": 773,
+      "sha256": "731028ab4a7991d37a8f3eaf466404b0dc0814397e2eabb3686658cdfb33ef53"
+    },
+    {
+      "status": "??",
+      "path": "backend/connections/service.js",
+      "bytes": 14567,
+      "sha256": "20ad4966a626d72ada5322aca81bd1bb398bd49074de65143fc08a5341ebfec6"
+    },
+    {
+      "status": "??",
+      "path": "backend/test/support/desktop-http-runtime.cjs",
+      "bytes": 5528,
+      "sha256": "c83ef0a89ffd72d6725eefebc6f6749ff68f35cd0dc35223df6e95e9e08b5786"
+    },
+    {
+      "status": "??",
+      "path": "backend/test/workbench-connections-http.test.js",
+      "bytes": 18134,
+      "sha256": "29c4272556499c63f4ba439870c7da00f281f243e4edca4df378557d63ae2c5c"
+    },
+    {
+      "status": "??",
+      "path": "backend/test/workbench-connections.test.js",
+      "bytes": 24973,
+      "sha256": "08d76dc2fd7154730ead6b2e8aebebab0549da06d78e7394411bce7e1114bbe7"
+    },
+    {
+      "status": "??",
+      "path": "desktop/credential-vault.cjs",
+      "bytes": 2808,
+      "sha256": "47f999df073c6293b81188ed492a41c6e9d27bc093cedc4ebfa056fbe98138c0"
+    },
+    {
+      "status": "??",
+      "path": "docs/connections-v1.md",
+      "bytes": 7089,
+      "sha256": "4aecf88b1330f99d3f2bbef3895b2d43e84d3ef782a5a8c8fd78fa7a67037e64"
+    },
+    {
+      "status": "??",
+      "path": "docs/implementation/T04-连接凭据与能力配置.md",
+      "bytes": 14660,
+      "sha256": "eab8a156462e36f315c8145e3b88ede7940d02896da06567ebad7493ca7eec9b"
+    },
+    {
+      "status": "??",
+      "path": "frontend/src/lib/__tests__/connection-client.test.ts",
+      "bytes": 6217,
+      "sha256": "b9fefbc8fcb93d355314043a267dd8aa0dfabc033d995750c141fdcffffb3bf0"
+    },
+    {
+      "status": "??",
+      "path": "frontend/src/lib/connection-client.ts",
+      "bytes": 4638,
+      "sha256": "6328f366aa135f21fce2047dc13cbfff3c736eb5ec837f75bb55a54bd840fb8c"
+    },
+    {
+      "status": "??",
+      "path": "scripts/electron-connections-test-entry.cjs",
+      "bytes": 10336,
+      "sha256": "a3602ebbe5b817c0bb5daa426b077f5e1aedb5d48821f565102108dc59a585b1"
+    },
+    {
+      "status": "??",
+      "path": "scripts/verify-desktop-connections.cjs",
+      "bytes": 3705,
+      "sha256": "8e66fa029f3331eab1a238d2b43476a3bb4bd42f673d3833a6fde9c3207b810d"
+    }
+  ]
+}

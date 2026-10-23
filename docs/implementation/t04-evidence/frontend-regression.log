@@ -1,0 +1,66 @@
+Command: node node_modules/vitest/vitest.mjs run --reporter=dot
+CWD: E:\Learn\AI\nova-image-studio\frontend
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+··········································································································································································································································································································································································stderr | src/components/workspace/__tests__/WorkspaceShell.agent-sessions.test.tsx > WorkspaceShell Agent sessions > never initializes Agent sessions or mounts Agent when desktop disables it
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\plugin\PluginWorkbench.tsx:94:10
+}
+
+········stderr | src/components/agent/__tests__/AgentChatWorkspace.header.test.tsx > AgentChatWorkspace Header > 在 Agent 标题左侧渲染侧边栏触发按钮并支持点击
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+···················································stderr | src/hooks/__tests__/useAgentChat.test.tsx > useAgentChat session binding > disables Workspace send and upload controls before session restoration completes
+Received `true` for a non-boolean attribute `jsx`.
+
+If you want to write it to the DOM, pass a string instead: jsx="true" or jsx={value.toString()}.
+
+··········································································stderr | src/components/canvas/__tests__/CanvasEditor.connections.test.tsx > CanvasEditor connections > deletes the selected connection with the Delete key
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+·························································stderr | src/components/canvas/__tests__/CanvasEditor.routes.test.tsx > CanvasEditor prompt routes > lists complete routes and persists the selected route on the config
+[plugin-registry] 读取插件列表失败 [TypeError: Failed to parse URL from /api/nova/plugins] {
+  [cause]: TypeError: Invalid URL: /api/nova/plugins
+      at new URLImpl (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL-impl.js:20:13)
+      at Object.exports.setup (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:54:12)
+      at new URL (E:\Learn\AI\nova-image-studio\frontend\node_modules\whatwg-url\lib\URL.js:115:22)
+      at new Request (node:internal/deps/undici/undici:11063:25)
+      at fetch (node:internal/deps/undici/undici:11988:25)
+      at fetch (node:internal/deps/undici/undici:16555:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:80:30
+      at loadPluginRegistry (E:\Learn\AI\nova-image-studio\frontend\src\lib\plugin-registry-client.ts:103:3)
+      at E:\Learn\AI\nova-image-studio\frontend\src\components\canvas\CanvasEditor.tsx:464:10
+}
+
+··································································································································
+
+ Test Files  70 passed (70)
+      Tests  682 passed (682)
+   Start at  17:24:04
+   Duration  37.15s (transform 49.69s, setup 50.89s, collect 94.84s, tests 55.65s, environment 195.18s, prepare 30.38s)

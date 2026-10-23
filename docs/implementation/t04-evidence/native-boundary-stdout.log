@@ -1,0 +1,7 @@
+
+[network] undici Agent 已配置: TCP keepalive=15s, timeout=30min
+[image-storage] 图片存储目录: E:\Learn\AI\nova-image-studio\temp\t04-native-boundary-final\data\nova-images
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+Nova Studio server ready on http://localhost:49182
+T02 native boundary passed
+[shutdown] SQLite WAL checkpoint 完成 [ { busy: 0, log: 0, checkpointed: 0 } ]

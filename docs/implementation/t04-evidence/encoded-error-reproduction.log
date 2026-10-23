@@ -1,0 +1,150 @@
+Command: node --test --test-concurrency=1 --test-name-pattern=percent-encoded|percent-encoding test/workbench-connections-http.test.js
+CWD: backend
+✖ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (543.3098ms)
+ℹ {"case":"fully percent-encoded","leakChannels":{"http":true,"websocket":true,"sqliteTask":true,"sqliteTaskItems":true,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (464.7168ms)
+ℹ {"case":"twice fully percent-encoded","leakChannels":{"http":true,"websocket":true,"sqliteTask":true,"sqliteTaskItems":true,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✖ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (446.9939ms)
+ℹ {"case":"fully percent-encoded after malformed percent escapes","leakChannels":{"http":true,"websocket":true,"sqliteTask":true,"sqliteTaskItems":true,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (393.7195ms)
+ℹ {"case":"twice fully percent-encoded after malformed percent escapes","leakChannels":{"http":true,"websocket":true,"sqliteTask":true,"sqliteTaskItems":true,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (390.821ms)
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (372.46ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 2
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2733.566
+
+✖ failing tests:
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (543.3098ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      history: false,
+      historyEvents: false,
+  +   http: true,
+  -   http: false,
+      processLog: false,
+  +   sqliteTask: true,
+  -   sqliteTask: false,
+      sqliteTaskEvents: false,
+  +   sqliteTaskItems: true,
+  +   websocket: true
+  -   sqliteTaskItems: false,
+  -   websocket: false
+    }
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:226:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { http: true, websocket: true, sqliteTask: true, sqliteTaskItems: true, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    expected: { http: false, websocket: false, sqliteTask: false, sqliteTaskItems: false, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (464.7168ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      history: false,
+      historyEvents: false,
+  +   http: true,
+  -   http: false,
+      processLog: false,
+  +   sqliteTask: true,
+  -   sqliteTask: false,
+      sqliteTaskEvents: false,
+  +   sqliteTaskItems: true,
+  +   websocket: true
+  -   sqliteTaskItems: false,
+  -   websocket: false
+    }
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:226:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { http: true, websocket: true, sqliteTask: true, sqliteTaskItems: true, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    expected: { http: false, websocket: false, sqliteTask: false, sqliteTaskItems: false, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (446.9939ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      history: false,
+      historyEvents: false,
+  +   http: true,
+  -   http: false,
+      processLog: false,
+  +   sqliteTask: true,
+  -   sqliteTask: false,
+      sqliteTaskEvents: false,
+  +   sqliteTaskItems: true,
+  +   websocket: true
+  -   sqliteTaskItems: false,
+  -   websocket: false
+    }
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:226:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { http: true, websocket: true, sqliteTask: true, sqliteTaskItems: true, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    expected: { http: false, websocket: false, sqliteTask: false, sqliteTaskItems: false, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:180:5
+✖ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (393.7195ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    {
+      history: false,
+      historyEvents: false,
+  +   http: true,
+  -   http: false,
+      processLog: false,
+  +   sqliteTask: true,
+  -   sqliteTask: false,
+      sqliteTaskEvents: false,
+  +   sqliteTaskItems: true,
+  +   websocket: true
+  -   sqliteTaskItems: false,
+  -   websocket: false
+    }
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:226:16)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: { http: true, websocket: true, sqliteTask: true, sqliteTaskItems: true, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    expected: { http: false, websocket: false, sqliteTask: false, sqliteTaskItems: false, sqliteTaskEvents: false, history: false, historyEvents: false, processLog: false },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

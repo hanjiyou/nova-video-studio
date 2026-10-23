@@ -4,13 +4,11 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const http = require('node:http');
-const { spawn } = require('node:child_process');
-const { randomUUID, randomBytes, createHash } = require('node:crypto');
+const { randomUUID, createHash } = require('node:crypto');
 const test = require('node:test');
 const Database = require('better-sqlite3');
 const { BASE_SCHEMA } = require('../storage/migrations');
-const { resolveBackendPort } = require('../../desktop/runtime.cjs');
-const backend = path.resolve(__dirname, '..');
+const { start } = require('./support/desktop-http-runtime.cjs');
 const fixture = name => fs.readFileSync(path.join(__dirname, 'fixtures/workbench-v1', name));
 async function until(fn, timeout = 10000) { const end = Date.now() + timeout; while (Date.now() < end) {
     const value = await fn();
@@ -18,33 +16,7 @@ async function until(fn, timeout = 10000) { const end = Date.now() + timeout; wh
         return value;
     await new Promise(resolve => setTimeout(resolve, 30));
 } throw new Error('Timed out'); }
-async function start(directory, { desktop = true } = {}) {
-    const port = await resolveBackendPort(0);
-    const origin = 'http://127.0.0.1:' + port;
-    const token = randomBytes(32).toString('hex');
-    const child = spawn(process.execPath, ['-e', "let server;process.on('message',async message=>{if(message.action==='start'){if(message.session)require('./desktop-session').configureDesktopSession(message.session);server=require('./server');try{await server.ready;process.send('ready')}catch{process.exit(1)}}else if(message.action==='stop'){await server.shutdown({drain:false});await require('undici').getGlobalDispatcher().close();process.disconnect()}})"], { cwd: backend, env: { ...process.env, NODE_ENV: 'production', HOSTNAME: '127.0.0.1', PORT: String(port), NOVA_TASK_DB: path.join(directory, 'tasks.sqlite'), NOVA_IMAGE_DIR: path.join(directory, 'images'), NOVA_PLUGIN_MEDIA_DIR: path.join(directory, 'plugin-media'), NOVA_STORAGE_DIR: path.join(directory, 'storage'), NOVA_CDP_ENABLED: 'false', NOVA_AGENT_ENABLED: 'false', NOVA_IMAGE_STREAM: 'false' }, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe', 'ipc'] });
-    let output = '';
-    child.stdout.on('data', chunk => { output += chunk; });
-    child.stderr.on('data', chunk => { output += chunk; });
-    let startupTimer;
-    try {
-        await Promise.race([new Promise((resolve, reject) => { child.once('message', resolve); child.once('error', reject); child.once('exit', () => reject(new Error('Startup failed: ' + output))); child.send({ action: 'start', ...(desktop ? { session: { origin, token } } : {}) }); }), new Promise((_, reject) => { startupTimer = setTimeout(() => reject(new Error('Startup timeout')), 10000); })]);
-    }
-    catch (error) {
-        child.kill();
-        throw error;
-    }
-    finally {
-        clearTimeout(startupTimer);
-    }
-    const headers = desktop ? { 'x-nova-session': token } : {};
-    const request = (route, options = {}) => fetch(origin + route, { ...options, headers: { ...headers, ...options.headers } });
-    return { origin, request, output: () => output, async stop() { if (child.exitCode !== null)
-            return; await new Promise((resolve, reject) => { const timer = setTimeout(() => { child.kill(); reject(new Error('Shutdown timeout')); }, 5000); child.once('exit', code => { clearTimeout(timer); if (code === 0)
-            resolve();
-        else
-            reject(new Error('Shutdown exit ' + code + '; ' + output)); }); child.send({ action: 'stop' }); }); assert.equal(output.includes(token), false); } };
-}
+
 function seed(directory) {
     fs.mkdirSync(path.join(directory, 'images'), { recursive: true });
     fs.mkdirSync(path.join(directory, 'plugin-media'), { recursive: true });
@@ -100,9 +72,10 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
         return;
     } res.writeHead(400, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'Synthetic image rejection' } })); });
     await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
+    const fixtureConnection = await runtime.saveConnection({baseUrl:'http://127.0.0.1:' + upstream.address().port,apiKey:'fixture-token'});
     const ids = [];
     for (const input of [[refs[1], refs[0]], [refs[0]]]) {
-        const response = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ apiKey: 'fixture-token', baseUrl: 'http://127.0.0.1:' + upstream.address().port, protocol: 'openai', mode: 'image-to-image', prompt: 'synthetic', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', inputAssets: input.map((item, position) => ({ ...item, position })) }) });
+        const response = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId: fixtureConnection.connectionVersionId, mode: 'image-to-image', prompt: 'synthetic', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', inputAssets: input.map((item, position) => ({ ...item, position })) }) });
         assert.equal(response.status, 202);
         const { taskId } = await response.json();
         ids.push(taskId);
@@ -115,7 +88,7 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     const uploaded = await upload.json();
     assert.equal(uploaded.assetId, assets[0].assetId);
     assert.deepEqual(Buffer.from(await (await runtime.request(new URL(uploaded.url).pathname)).arrayBuffer()), fixture('reference-a.png'));
-    const success = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ apiKey: 'fixture-token', baseUrl: 'http://127.0.0.1:' + upstream.address().port, protocol: 'openai', mode: 'text-to-image', prompt: 'synthetic output', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
+    const success = await runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ connectionVersionId: fixtureConnection.connectionVersionId, mode: 'text-to-image', prompt: 'synthetic output', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] }) });
     assert.equal(success.status, 202);
     const outputId = (await success.json()).taskId;
     const unknown = path.join(directory, 'images', outputId + '-0-0.png');
@@ -179,12 +152,13 @@ test('actual HTTP legacy images cannot forge asset identity; missing/corrupt aut
         fs.rmSync(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 });
     });
     await new Promise(resolve => upstream.listen(0, '127.0.0.1', resolve));
+    const fixtureConnection = await runtime.saveConnection({baseUrl:'http://127.0.0.1:' + upstream.address().port,apiKey:'fixture-token'});
     const originalBytes = fixture('reference-a.png');
     const actualBytes = fixture('reference-b.png');
     const imported = await runtime.request('/api/nova/assets/import', { method: 'POST', headers: { 'content-type': 'image/png' }, body: originalBytes });
     assert.equal(imported.status, 201);
     const original = (await imported.json()).asset;
-    const payload = { apiKey: 'fixture-token', baseUrl: 'http://127.0.0.1:' + upstream.address().port, protocol: 'openai', mode: 'image-to-image', prompt: 'synthetic identity forgery', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto' };
+    const payload = { connectionVersionId: fixtureConnection.connectionVersionId, mode: 'image-to-image', prompt: 'synthetic identity forgery', model: 'gpt-image-2', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto' };
     const submit = input => runtime.request('/api/nova/tasks', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...payload, ...input }) });
     const ids = [];
     const forged = async () => {

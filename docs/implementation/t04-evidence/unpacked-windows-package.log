@@ -1,0 +1,12 @@
+Command: node node_modules/electron-builder/cli.js --win --x64 --dir --config temp/electron-builder-t04.yml
+CWD: E:\Learn\AI\nova-image-studio
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\temp\electron-builder-t04.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  • skipped dependencies rebuild  reason=npmRebuild is set to false
+  • packaging       platform=win32 arch=x64 electron=43.4.0 appOutDir=release-t04\win-unpacked
+  • downloaded      label=electron progress=100%
+  • downloaded electron zip extracted successfully  output=E:\Learn\AI\nova-image-studio\release-t04\win-unpacked
+  • searching for node modules  pm=npm searchDir=E:\Learn\AI\nova-image-studio
+  • updating asar integrity executable resource  executablePath=release-t04\win-unpacked\Nova Image Studio.exe
+  • executable resource editing and code signing skipped — signAndEditExecutable is false. To skip only code signing while keeping icon and metadata applied, use signExecutable: false instead.  exe=release-t04\win-unpacked\Nova Image Studio.exe

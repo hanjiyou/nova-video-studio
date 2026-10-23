@@ -1,0 +1,6 @@
+
+[network] undici Agent 已配置: TCP keepalive=15s, timeout=30min
+[image-storage] 图片存储目录: E:\Learn\AI\nova-image-studio\temp\t04-packaged-encoded-errors\data\nova-images
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+Nova Studio server ready on http://localhost:57318
+[shutdown] SQLite WAL checkpoint 完成 [ { busy: 0, log: 0, checkpointed: 0 } ]

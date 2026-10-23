@@ -1,0 +1,36 @@
+{
+  "stage": "T04",
+  "status": "accepted",
+  "approvedAt": "2026-10-23T10:30:37.825Z",
+  "approvalSource": "Explicit parent-session approval on 2026-10-23 after independent review; commit and push to origin/dev authorized.",
+  "scope": "Credential/connection/version/capability foundation only",
+  "parentIndependentValidation": {
+    "connectionUnitAndHttpTests": {
+      "passed": 34,
+      "failed": 0,
+      "skipped": 0
+    },
+    "reviewed": [
+      "percent-byte decoding in redaction.js",
+      "fixed credentialSafeError message",
+      "actual failing-response regression"
+    ],
+    "asarSha256": "82ffa8753100be7a76c4e8bb75a0bbdf62bde1e8ce6588d66b8d285e0833e914",
+    "rawParentTestLogIncluded": false
+  },
+  "retainedLimits": [
+    "Production build passes; full tsc retains 60 pre-existing test diagnostics verified against T03 HEAD.",
+    "Recovery and reauthentication interactions remain T05/T10.",
+    "T02 initial NSIS 0xc0000409 remains a T16 release gate."
+  ],
+  "workflow": [
+    "Develop and validate one stage.",
+    "Leave the stage diff uncommitted for parent review.",
+    "Commit and push origin/dev only after explicit parent approval.",
+    "Verify remote SHA and worktree status.",
+    "Parent assigns any next stage to a new gpt-6.1-sol/xhigh agent."
+  ],
+  "nextStageStarted": false,
+  "mergeMainAuthorized": false,
+  "forcePushAuthorized": false
+}

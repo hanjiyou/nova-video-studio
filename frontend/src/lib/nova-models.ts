@@ -604,6 +604,7 @@ export function loadRegistry(): NovaModelRegistry {
     return getInitialRegistry();
   }
 
+  if (window.novaDesktop) return getInitialRegistry();
   const raw = localStorage.getItem(REGISTRY_KEY);
   if (!raw) {
     return getInitialRegistry();
@@ -614,6 +615,7 @@ export function loadRegistry(): NovaModelRegistry {
 
 export function saveRegistry(registry: NovaModelRegistry): void {
   if (typeof window === 'undefined') return;
+  if (window.novaDesktop) throw new Error('桌面连接请通过受信连接接口保存。');
   const normalized = hydrateRegistry(registry);
   localStorage.setItem(REGISTRY_KEY, JSON.stringify(normalized));
 }

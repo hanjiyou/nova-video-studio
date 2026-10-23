@@ -1,0 +1,87 @@
+Command: node temp/t04-audit.cjs
+CWD: E:\Learn\AI\nova-image-studio
+{
+  "archive": "release-t04/win-unpacked/resources/app.asar",
+  "asarSha256": "82ffa8753100be7a76c4e8bb75a0bbdf62bde1e8ce6588d66b8d285e0833e914",
+  "executable": "release-t04/win-unpacked/Nova Image Studio.exe",
+  "executableSha256": "25750548b93b8908fa04ee227553de0ee0b7af89099754e79f3fddf213c0e504",
+  "requiredModulesMatchSource": [
+    "backend/server.js",
+    "backend/storage/migrations.js",
+    "backend/storage/store.js",
+    "backend/storage/http.js",
+    "backend/connections/host.js",
+    "backend/connections/capabilities.js",
+    "backend/connections/service.js",
+    "backend/connections/http.js",
+    "backend/connections/redaction.js",
+    "backend/plugin-runtime/executor.js",
+    "backend/desktop-session.js",
+    "desktop/credential-vault.cjs",
+    "desktop/main.cjs",
+    "desktop/ipc.cjs",
+    "desktop/preload.cjs"
+  ],
+  "testScriptsShipped": false,
+  "backendTestsShipped": false,
+  "inspection": {
+    "quickCheck": [
+      {
+        "quick_check": "ok"
+      }
+    ],
+    "foreignKeyCheck": [],
+    "schemaVersions": [
+      {
+        "version": 1
+      },
+      {
+        "version": 2
+      },
+      {
+        "version": 3
+      }
+    ],
+    "assetCount": 1,
+    "draftCount": 1,
+    "connectionCount": 1,
+    "connectionVersionCount": 2,
+    "credentialEntryCount": 1,
+    "revokedCredentialCount": 1,
+    "capabilityCount": 8
+  },
+  "previousMigrationChecksums": [
+    {
+      "version": 1,
+      "sha256": "64593c5018c5825b3f5d6fa6bd23f2028df60fb476a87b2e5025ab05c955563a",
+      "unchanged": true
+    },
+    {
+      "version": 2,
+      "sha256": "df634e04b0959b15a81b6a1b51bd4ec5fc9978a6a917c5f489c0579ffd3b112c",
+      "unchanged": true
+    }
+  ],
+  "historicalArtifacts": [
+    {
+      "file": "release/Nova Image Studio-3.4.0-win-x64.exe",
+      "sha256": "18c97098f41bd7f4ad81cdfe2d59382e02e7ad7511436558434536c1c09fc25b",
+      "unchanged": true
+    },
+    {
+      "file": "release-t02/Nova Image Studio-3.4.0-win-x64.exe",
+      "sha256": "bdb3260aa53b20898822639cfa42f1836d7598e74e4ea1abfae276c5da526b0b",
+      "unchanged": true
+    },
+    {
+      "file": "release-t03/win-unpacked/resources/app.asar",
+      "sha256": "d1774f9db740d6dc2d235c49530aeb9f27e9f2d38000b995a22b15a2348c8b32",
+      "unchanged": true
+    },
+    {
+      "file": "release-t03/win-unpacked/Nova Image Studio.exe",
+      "sha256": "42dc26dbf8606df8799fbe760690acddb9faecdc66d28d5cddf46dc73a5e1673",
+      "unchanged": true
+    }
+  ]
+}

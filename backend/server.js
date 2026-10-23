@@ -12,6 +12,11 @@ const { migrateDatabase } = require('./storage/migrations');
 const { createWorkbenchStore } = require('./storage/store');
 const { createStorageHttp } = require('./storage/http');
 let workbenchStore = null;
+let connectionService = null;
+const { createConnectionService } = require('./connections/service');
+const { createConnectionHttp } = require('./connections/http');
+const { createHostVault } = require('./connections/host');
+const { containsCredential } = require('./connections/redaction');
 const { CdpError, getCdpStatus, listPageTargets, evaluateInPage, capturePageScreenshot, fetchResourceInPage, openTarget, normalizeCdpHost } = require('./cdp');
 const { TAOBAO_EXTRACT_EXPRESSION } = require('./taobao-extract');
 const { buildDoubaoImagesUrl, resolveDoubaoImageSize, buildDoubaoImagePayload, DEFAULT_ARK_BASE_URL } = require('./doubao');
@@ -1015,7 +1020,11 @@ function readJsonBody(req) {
     req.on('end', () => {
       if (aborted) return;
       try {
-        resolve(raw ? JSON.parse(raw) : {});
+        const value = raw ? JSON.parse(raw) : {};
+        if (desktopSession.isDesktopMode() && value && Object.hasOwn(value,'apiKey')) {
+          reject(createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','凭据仅通过受信桌面连接接口保存。'));return;
+        }
+        resolve(value);
       } catch {
         reject(new Error('请求 JSON 格式无效'));
       }
@@ -1108,7 +1117,30 @@ function validateCreatePayload(body) {
   // 开源版：不做模型级参数规范化，前端负责传递正确的参数，后端无条件透传
 }
 
+function prepareTaskConnection(body) {
+  if (!desktopSession.isDesktopMode()) return body;
+  if (!body || ['apiKey','baseUrl','protocol','credentialRef'].some(key=>Object.hasOwn(body,key))) throw createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','桌面任务只接收连接版本。');
+  const auth=connectionService.getAuth(body.connectionVersionId);
+  return {...body,...auth};
+}
+function taskAuth(task) {
+  if (!desktopSession.isDesktopMode()) return {apiKey:apiKeys.get(task.id)};
+  const auth=connectionService.getAuth(task.connection_version_id);
+  return auth;
+}
+function pauseForCredential(taskId,error) {
+  if (!desktopSession.isDesktopMode() || !['CREDENTIAL_REQUIRED','CREDENTIAL_UNAVAILABLE'].includes(error?.code)) return false;
+  db.prepare("UPDATE tasks SET status='polling_paused',error=? WHERE id=?").run(error.code==='CREDENTIAL_REQUIRED'?'凭据已清除，任务已暂停。':'凭据暂不可用，任务已暂停。',taskId);
+  workbenchStore.appendTaskEvent(taskId,'credential_access_paused',{code:error.code});
+  cleanupTaskRuntimeState(taskId);broadcastTask(taskId);broadcastQueueStatus();return true;
+}
+function credentialSafeError(error,apiKey) {
+  if (!desktopSession.isDesktopMode()) return error;
+  const value=error instanceof Error?error.message:String(error);
+  return new Error(containsCredential(value,apiKey)?'上游错误包含连接凭据，已隐藏详情。':value);
+}
 function createTask(body, req) {
+  body=prepareTaskConnection(body);
   if (workbenchStore && body?.inputAssets !== undefined) {
     if (!Array.isArray(body.inputAssets) || body.inputAssets.length > 32 || (body.images?.length > 0)) throw createHttpError(400,'INVALID_ASSET_ORDER','输入素材引用无效。');
     body.images = body.inputAssets.map((item,index) => {
@@ -1165,13 +1197,14 @@ function createTask(body, req) {
     }
     if (workbenchStore) workbenchStore.setTaskSnapshot(taskId,{
       contractVersion:1,mode:body.images.length?'image.reference':'image.text',model:body.model,prompt:body.prompt,
+      ...(desktopSession.isDesktopMode()?{connectionVersionId:body.connectionVersionId}:{}),
       parameters:Object.fromEntries(['outputSize','customSize','aspectRatio','temperature','gptImageQuality','gptImageStyle','gptImageBackground','parallelCount'].filter(key=>body[key]!==undefined).map(key=>[key,body[key]])),
       inputAssets,adapterId:'legacy-image',adapterVersion:'3.4.0'
     });
   });
   tx();
 
-  apiKeys.set(taskId, body.apiKey);
+  if (!desktopSession.isDesktopMode()) apiKeys.set(taskId, body.apiKey);
   taskRefImages.set(taskId, body.images);
   taskSources.set(taskId, source);
   // 递增 pending 计数
@@ -1809,7 +1842,7 @@ async function fetchWithTimeout(url, init) {
   activeRequestControllers.add(controller);
   const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    return await fetch(url, { ...init, signal: controller.signal });
+    return await fetch(url, { ...init, ...(desktopSession.isDesktopMode()?{redirect:'manual'}:{}), signal: controller.signal });
   } finally {
     clearTimeout(timeout);
     activeRequestControllers.delete(controller);
@@ -1973,6 +2006,7 @@ async function generateSingleImage(apiKey, request, taskId, index) {
       const img = expanded[subIdx];
       if (img.startsWith('URL:')) {
         const remoteUrl = img.substring(4);
+        if (desktopSession.isDesktopMode() && containsCredential(remoteUrl,apiKey)) throw new Error('上游资源地址包含连接凭据，已停止下载。');
         const result = await downloadUrlToDisk(taskId, index, subIdx, remoteUrl);
         diskRefs.push(`URL:${result.httpUrl}`);
       } else {
@@ -1985,7 +2019,7 @@ async function generateSingleImage(apiKey, request, taskId, index) {
       .run(JSON.stringify(diskRefs), new Date().toISOString(), taskId, index);
     return { success: true, images: diskRefs };
   } catch (error) {
-    const message = normalizeError(error);
+    const message = normalizeError(credentialSafeError(error,apiKey));
     db.prepare("UPDATE task_items SET status = 'failed', error = ?, completed_at = ? WHERE task_id = ? AND item_index = ?")
       .run(message, new Date().toISOString(), taskId, index);
     return { success: false, error: message };
@@ -1994,17 +2028,19 @@ async function generateSingleImage(apiKey, request, taskId, index) {
 
 async function runTask(taskId) {
   const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
-  const apiKey = apiKeys.get(taskId);
-  if (!task || !apiKey || ![TASK_STATUS.QUEUED, TASK_STATUS.LEGACY_QUEUED].includes(task.status)) {
+  if (!task || ![TASK_STATUS.QUEUED, TASK_STATUS.LEGACY_QUEUED].includes(task.status)) {
     cleanupTaskRuntimeState(taskId);
     return;
   }
 
   try {
-    await runTaskBody(taskId, task, apiKey);
+    const auth=taskAuth(task);
+    if (!auth.apiKey) {cleanupTaskRuntimeState(taskId);return;}
+    await runTaskBody(taskId, task, auth.apiKey, auth);
   } catch (error) {
     // 任何未预期异常（请求体损坏、字段缺失等）都必须落终态并释放内存，
     // 否则任务会永久卡在 processing、taskRefImages/apiKeys 永驻（重启才能自愈）。
+    if (pauseForCredential(taskId,error)) return;
     const message = normalizeError(error);
     const completedAt = new Date().toISOString();
     const expiresAt = new Date(Date.now() + TASK_TTL_MS).toISOString();
@@ -2017,8 +2053,9 @@ async function runTask(taskId) {
   }
 }
 
-async function runTaskBody(taskId, task, apiKey) {
+async function runTaskBody(taskId, task, apiKey, auth) {
   const request = JSON.parse(task.request_json);
+  if (desktopSession.isDesktopMode()) {request.baseUrl=normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl);request.protocol=auth.protocol;}
   const refImages = taskRefImages.get(taskId);
   if (refImages && refImages.length > 0) {
     request.images = refImages;
@@ -2086,6 +2123,7 @@ function sleep(ms) {
  * 上游创建挪到 runPluginTask 里，这样名额从「开始跑」一直持有到「轮询出终态」。
  */
 function createPluginTask(body, req) {
+  body=prepareTaskConnection(body);
   if (!body || typeof body !== 'object') throw new Error('请求体不能为空');
   if (typeof body.apiKey !== 'string' || body.apiKey.trim().length === 0) throw new Error('缺少 API 密钥');
 
@@ -2138,6 +2176,7 @@ function createPluginTask(body, req) {
     pluginMedia.bindToTask(taskId,normalized.mediaUrls);
     if(workbenchStore)workbenchStore.setTaskSnapshot(taskId,{
       contractVersion:1,mode:'legacy.plugin',model:normalized.model,prompt:typeof normalized.fields.prompt==='string'?normalized.fields.prompt:'',
+      ...(desktopSession.isDesktopMode()?{connectionVersionId:body.connectionVersionId}:{}),
       parameters:{facets:normalized.facets,fields:normalized.fields},
       inputAssets:workbenchStore.taskAssets(taskId).map((asset,position)=>({assetId:asset.assetId,position,role:'reference'})),
       adapterId:'plugin:'+plugin.id,adapterVersion:plugin.manifest.version
@@ -2145,7 +2184,7 @@ function createPluginTask(body, req) {
   })();
 
   // apiKey 只留在内存里，从不入库
-  apiKeys.set(taskId, body.apiKey);
+  if (!desktopSession.isDesktopMode()) apiKeys.set(taskId, body.apiKey);
   taskSources.set(taskId, source);
   if (source.ip) pendingCountByIp.set(source.ip, (pendingCountByIp.get(source.ip) || 0) + 1);
   if (source.apiKeyHash) pendingCountByApiKeyHash.set(source.apiKeyHash, (pendingCountByApiKeyHash.get(source.apiKeyHash) || 0) + 1);
@@ -2214,7 +2253,7 @@ async function pollPluginTaskOnce(taskId, plugin, context) {
   }
 
   if (outcome.state === 'failed') {
-    failPluginTask(taskId, outcome.error || '生成失败');
+    failPluginTask(taskId, normalizePluginError(credentialSafeError(outcome.error || '生成失败',context.apiKey)));
     return 'failed';
   }
 
@@ -2228,8 +2267,7 @@ async function pollPluginTaskOnce(taskId, plugin, context) {
  */
 async function runPluginTask(taskId) {
   const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(taskId);
-  const apiKey = apiKeys.get(taskId);
-  if (!task || !apiKey || ![TASK_STATUS.QUEUED, TASK_STATUS.LEGACY_QUEUED].includes(task.status)) {
+  if (!task || ![TASK_STATUS.QUEUED, TASK_STATUS.LEGACY_QUEUED].includes(task.status)) {
     cleanupTaskRuntimeState(taskId);
     return;
   }
@@ -2248,7 +2286,6 @@ async function runPluginTask(taskId) {
   const baseContext = {
     plugin,
     baseUrl: request.baseUrl,
-    apiKey,
     model: request.model,
     facets: request.facets,
     fields: request.fields,
@@ -2256,9 +2293,14 @@ async function runPluginTask(taskId) {
   };
 
   let upstreamTaskId;
+  let submitCredential;
   try {
-    const submitted = await pluginExecutor.submitTask(plugin, pluginExecutor.buildContext(baseContext));
+    const auth=taskAuth(task);
+    if (!auth.apiKey) {cleanupTaskRuntimeState(taskId);return;}
+    submitCredential=auth.apiKey;
+    const submitted = await pluginExecutor.submitTask(plugin, pluginExecutor.buildContext({...baseContext,...auth}));
     upstreamTaskId = submitted.upstreamTaskId;
+    submitCredential=undefined;
 
     // 记下上游 ID：前端 GET 与后续轮询都要用
     db.prepare('UPDATE tasks SET request_json = ? WHERE id = ?')
@@ -2282,13 +2324,13 @@ async function runPluginTask(taskId) {
       return;
     }
   } catch (error) {
-    failPluginTask(taskId, normalizePluginError(error));
+    if (pauseForCredential(taskId,error)) return;
+    failPluginTask(taskId, normalizePluginError(credentialSafeError(error,submitCredential)));
     return;
   }
 
   const { intervalMs, maxTotalMs } = pluginExecutor.resolvePollTiming(plugin);
   const deadline = Date.now() + maxTotalMs;
-  const pollContext = pluginExecutor.buildContext({ ...baseContext, upstreamTaskId });
 
   while (Date.now() < deadline) {
     await sleep(intervalMs);
@@ -2306,6 +2348,8 @@ async function runPluginTask(taskId) {
     }
 
     try {
+      const auth=taskAuth(task);
+      const pollContext=pluginExecutor.buildContext({...baseContext,...auth,upstreamTaskId});
       const state = await pollPluginTaskOnce(taskId, plugin, pollContext);
       if (state === 'completed' || state === 'failed') {
         cleanupTaskRuntimeState(taskId);
@@ -2314,7 +2358,8 @@ async function runPluginTask(taskId) {
       }
     } catch (error) {
       // 单次轮询失败不判死刑，等下一轮；上游抖动很常见
-      console.warn(`[plugin-task] 轮询失败 taskId=${taskId}:`, error?.message || error);
+      if (pauseForCredential(taskId,error)) return;
+      console.warn(`[plugin-task] 轮询失败 taskId=${taskId}:`,desktopSession.isDesktopMode()?'UPSTREAM_POLL_FAILED':error?.message || error);
     }
   }
 
@@ -2345,7 +2390,7 @@ async function getPluginTaskForClient(taskId) {
   if (!row) {
     return { id: taskId, status: 'expired', error: '该任务已超出取回时间' };
   }
-  if (row.status === 'completed' || row.status === 'failed') {
+  if (row.status === 'completed' || row.status === 'failed' || row.status === 'polling_paused') {
     return serializeTask(row);
   }
 
@@ -2354,8 +2399,9 @@ async function getPluginTaskForClient(taskId) {
   if (!request.upstreamTaskId) return serializeTask(row);
 
   const plugin = pluginRegistry.getPlugin(request.pluginId);
-  const apiKey = apiKeys.get(taskId);
-  if (!plugin || !apiKey) return serializeTask(row);
+  if (!plugin) return serializeTask(row);
+  let auth;try {auth=taskAuth(row);}catch(error){if(pauseForCredential(taskId,error))return serializeTask(db.prepare('SELECT * FROM tasks WHERE id=?').get(taskId));throw error;}
+  if (!auth.apiKey) return serializeTask(row);
 
   const now = Date.now();
   const cached = pluginTaskCache.get(taskId);
@@ -2366,8 +2412,8 @@ async function getPluginTaskForClient(taskId) {
 
   const context = pluginExecutor.buildContext({
     plugin,
-    baseUrl: request.baseUrl,
-    apiKey,
+    ...auth,
+    baseUrl: desktopSession.isDesktopMode()?auth.baseUrl:request.baseUrl,
     model: request.model,
     facets: request.facets,
     fields: request.fields,
@@ -2379,7 +2425,7 @@ async function getPluginTaskForClient(taskId) {
     try {
       await pollPluginTaskOnce(taskId, plugin, context);
     } catch (error) {
-      console.warn(`[plugin-task] 前端触发的轮询失败 taskId=${taskId}:`, error?.message || error);
+      if (!pauseForCredential(taskId,error)) console.warn(`[plugin-task] 前端触发的轮询失败 taskId=${taskId}:`,desktopSession.isDesktopMode()?'UPSTREAM_POLL_FAILED':error?.message || error);
     } finally {
       const entry = pluginTaskCache.get(taskId);
       if (entry) entry.inFlightPromise = null;
@@ -2742,9 +2788,12 @@ function ackTask(res, taskId) {
 }
 
 const handleStorage = createStorageHttp({getStore:()=>workbenchStore,readRawBody,sendJson});
+const handleConnections = createConnectionHttp({getService:()=>connectionService,readJsonBody,sendJson});
 async function handleApi(req, res, pathname, searchParams) {
   try {
     const apiPathname = pathname.replace(/\/+$/, '');
+    if (desktopSession.isDesktopMode() && (apiPathname.startsWith('/api/nova/proxy/') || req.headers['x-nova-api-key'] || searchParams.has('apiKey'))) throw createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','桌面请求请使用连接版本。');
+    if (await handleConnections(req,res,apiPathname)) return true;
     if (await handleStorage(req,res,apiPathname,searchParams)) return true;
 
     if (req.method === 'GET' && apiPathname === '/api/nova/queue-status') {
@@ -3569,13 +3618,14 @@ const startServer = () => {
   httpServerRef = httpServer;
 };
 
-module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; } };
+module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; }, get connections() { return connectionService; } };
 
 registerShutdownHandlers();
 
 async function initializeServer() {
   if (desktopSession.isDesktopMode()) {
     await migrateDatabase({db,dbPath:DB_PATH});
+    connectionService=createConnectionService({db,vault:createHostVault(db)});
     workbenchStore=createWorkbenchStore({db,rootDirectory:process.env.NOVA_STORAGE_DIR || path.join(path.dirname(DB_PATH),'storage')});
   }
   initDatabase();

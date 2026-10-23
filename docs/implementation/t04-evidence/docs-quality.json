@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "markdownFiles": [
+    "docs/Nova-Studio落地任务清单.md",
+    "docs/acceptance/workbench-61.md",
+    "docs/desktop-runtime.md",
+    "docs/implementation/T03-持久存储与资产基础.md",
+    "docs/storage-v1.md",
+    "docs/connections-v1.md",
+    "docs/implementation/T04-连接凭据与能力配置.md"
+  ],
+  "localLinksChecked": 174,
+  "ledgerEntries": 61,
+  "acceptedProductEntries": 0,
+  "realServiceEvidenceEntries": 0,
+  "trackedWhitespaceCheck": "passed",
+  "sourceFileCount": 39,
+  "syntaxFileCount": 21,
+  "stage": "approved precommit snapshot",
+  "baseCommit": "b9f7647a70110a7b6ca1ca4c713326f7d96fde2a"
+}

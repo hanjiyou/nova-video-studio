@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, Menu, dialog, ipcMain, session, net: electronNet } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, session, safeStorage, net: electronNet } = require('electron');
 const fs = require('node:fs');
 const path = require('node:path');
 const { randomBytes } = require('node:crypto');
@@ -7,6 +7,8 @@ const { resolveDataPolicy, resolveBackendPort } = require('./runtime.cjs');
 const { installNetworkPolicy } = require('./network.cjs');
 const { createSessionPolicy, constrainNavigation } = require('./session-policy.cjs');
 const { registerDesktopIpc } = require('./ipc.cjs');
+const { createCredentialVault } = require('./credential-vault.cjs');
+const { configureConnectionHost } = require('../backend/connections/host');
 const { SESSION_HEADER, configureDesktopSession, revokeDesktopSession } = require('../backend/desktop-session');
 
 const dataPolicy = resolveDataPolicy({ systemUserData: app.getPath('userData') });
@@ -70,7 +72,8 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready;
   const response = await fetch(origin + '/api/nova/config', { headers: { [SESSION_HEADER]: token }, signal: AbortSignal.timeout(30000) });

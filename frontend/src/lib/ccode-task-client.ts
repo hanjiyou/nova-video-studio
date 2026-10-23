@@ -1,3 +1,4 @@
+import { desktopTaskPayload, isDesktopConnectionMode } from '@/lib/connection-client';
 import type { AspectRatio, OutputSize } from '@/lib/gemini-config';
 import type { GptImageBackground, GptImageQuality, GptImageStyle } from '@/lib/model-capabilities';
 import {
@@ -31,12 +32,13 @@ const TASK_REQUEST_TIMEOUT = 30000;
 const CREATE_TASK_TIMEOUT = 60000;
 
 export type NovaTaskMode = 'text-to-image' | 'image-to-image';
-export type NovaTaskStatus = 'queued' | '排队中' | 'processing' | 'completed' | 'failed' | 'expired';
+export type NovaTaskStatus = 'queued' | '排队中' | 'processing' | 'polling_paused' | 'completed' | 'failed' | 'expired';
 
 export interface CreateNovaTaskInput {
-  apiKey: string;
-  baseUrl: string;
-  protocol: ProviderProtocol;
+  connectionVersionId?: string;
+  apiKey?: string;
+  baseUrl?: string;
+  protocol?: ProviderProtocol;
   mode: NovaTaskMode;
   prompt: string;
   outputSize: OutputSize;
@@ -192,7 +194,7 @@ export async function createNovaTask(input: CreateNovaTaskInput): Promise<string
   const response = await fetchWithTimeout('/api/nova/tasks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
+    body: JSON.stringify(isDesktopConnectionMode() ? await desktopTaskPayload(input) : input),
   }, CREATE_TASK_TIMEOUT);
   const data = await parseTaskResponse<CreateTaskResponse>(response);
   if (!data?.taskId) throw new Error('创建任务失败：后端未返回任务 ID');

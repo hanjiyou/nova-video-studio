@@ -136,6 +136,7 @@ export function subscribePluginCredentials(listener: () => void): () => void {
 
 function readCredentialMap(): CredentialMap {
   if (typeof window === 'undefined') return {};
+  if (window.novaDesktop) return {};
   try {
     const raw = localStorage.getItem(CREDENTIALS_KEY);
     if (!raw) return {};
@@ -156,7 +157,7 @@ export function getPluginCredential(plugin: InstalledPlugin): PluginCredential {
 }
 
 export function setPluginCredential(pluginId: string, credential: Partial<PluginCredential>): void {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined' || window.novaDesktop) return;
   const map = readCredentialMap();
   const current = map[pluginId] || { apiKey: '', baseUrl: '' };
   map[pluginId] = {

@@ -1,0 +1,2 @@
+Command: node node_modules/eslint/bin/eslint.js src/lib/connection-client.ts src/lib/ccode-task-client.ts src/lib/plugin-task-client.ts src/lib/provider-models-client.ts src/lib/plugin-registry-client.ts src/lib/nova-models.ts src/lib/__tests__/connection-client.test.ts src/types/nova-desktop.d.ts src/components/canvas/canvas-video-generation-service.ts
+CWD: E:\Learn\AI\nova-image-studio\frontend

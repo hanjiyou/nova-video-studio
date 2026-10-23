@@ -1,3 +1,4 @@
+import { desktopTaskPayload, isDesktopConnectionMode } from '@/lib/connection-client';
 /**
  * 插件任务与素材上传的 HTTP 客户端。
  *
@@ -9,8 +10,9 @@ import type { FacetValues, FieldValues, MediaKind } from '@/lib/plugin-schema';
 
 export interface CreatePluginTaskPayload {
   pluginId: string;
-  apiKey: string;
-  baseUrl: string;
+  connectionVersionId?: string;
+  apiKey?: string;
+  baseUrl?: string;
   model: string;
   facets: FacetValues;
   fields: FieldValues;
@@ -30,7 +32,7 @@ export interface PluginAsset {
 export interface PluginTaskResponse {
   id: string;
   /** 本机队列状态：排队中 = 在等本机并发名额，processing = 已交给上游 */
-  status: 'queued' | '排队中' | 'processing' | 'completed' | 'failed' | 'expired';
+  status: 'queued' | '排队中' | 'processing' | 'polling_paused' | 'completed' | 'failed' | 'expired';
   /** 上游返回的真实进度（0-100）。上游没给这个字段时为 undefined，不要用时间估算顶替 */
   progress?: number;
   /** 上游归一化后的状态。上游自己也会排队，那时 status 还是 processing */
@@ -63,7 +65,7 @@ export async function createPluginTask(payload: CreatePluginTaskPayload): Promis
   const response = await fetchWithTimeout('/api/nova/plugin-tasks', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(isDesktopConnectionMode() ? await desktopTaskPayload(payload) : payload),
   });
 
   if (!response.ok) {

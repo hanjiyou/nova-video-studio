@@ -1,0 +1,332 @@
+[
+  {
+    "name": "storage-connections-targeted-initial",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "test/workbench-connections.test.js",
+      "test/workbench-connections-http.test.js",
+      "test/workbench-storage.test.js",
+      "test/workbench-storage-http.test.js",
+      "test/desktop-boundary.test.js"
+    ],
+    "startedAt": "2026-10-23T09:24:03.072Z",
+    "finishedAt": "2026-10-23T09:24:08.358Z",
+    "exitCode": 1,
+    "log": "initial-storage-connections-targeted.log"
+  },
+  {
+    "name": "backend-regression-initial",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test"
+    ],
+    "startedAt": "2026-10-23T09:24:08.359Z",
+    "finishedAt": "2026-10-23T09:24:32.064Z",
+    "exitCode": 1,
+    "log": "initial-backend-regression.log"
+  },
+  {
+    "name": "frontend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/vitest/vitest.mjs",
+      "run",
+      "--reporter=dot"
+    ],
+    "startedAt": "2026-10-23T09:24:03.086Z",
+    "finishedAt": "2026-10-23T09:24:41.857Z",
+    "exitCode": 0,
+    "log": "frontend-regression.log"
+  },
+  {
+    "name": "frontend-build-pause-dto-initial",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T09:36:47.758Z",
+    "finishedAt": "2026-10-23T09:37:25.091Z",
+    "exitCode": 1,
+    "log": "initial-pause-dto-build.log"
+  },
+  {
+    "name": "frontend-build",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack"
+    ],
+    "startedAt": "2026-10-23T09:49:44.304Z",
+    "finishedAt": "2026-10-23T09:50:31.336Z",
+    "exitCode": 0,
+    "log": "frontend-build.log"
+  },
+  {
+    "name": "frontend-full-typecheck",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit",
+      "--incremental",
+      "false"
+    ],
+    "startedAt": "2026-10-23T09:50:37.746Z",
+    "finishedAt": "2026-10-23T09:50:59.419Z",
+    "exitCode": 2,
+    "log": "frontend-full-typecheck.log"
+  },
+  {
+    "name": "baseline-typecheck-comparison",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "temp/t04-type-baseline-compare.cjs"
+    ],
+    "startedAt": "2026-10-23T09:50:59.419Z",
+    "finishedAt": "2026-10-23T09:51:15.279Z",
+    "exitCode": 0,
+    "log": "baseline-typecheck-comparison.log"
+  },
+  {
+    "name": "native-connections",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-connections.cjs",
+      "temp/t04-native-connections-final"
+    ],
+    "startedAt": "2026-10-23T09:51:15.280Z",
+    "finishedAt": "2026-10-23T09:51:19.535Z",
+    "exitCode": 0,
+    "log": "native-connections.log"
+  },
+  {
+    "name": "native-storage-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-storage.cjs",
+      "temp/t04-native-storage-final"
+    ],
+    "startedAt": "2026-10-23T09:51:19.536Z",
+    "finishedAt": "2026-10-23T09:51:23.240Z",
+    "exitCode": 0,
+    "log": "native-storage-regression.log"
+  },
+  {
+    "name": "native-boundary-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-boundary.cjs",
+      "temp/t04-native-boundary-final"
+    ],
+    "startedAt": "2026-10-23T09:51:23.241Z",
+    "finishedAt": "2026-10-23T09:51:26.475Z",
+    "exitCode": 0,
+    "log": "native-boundary-regression.log"
+  },
+  {
+    "name": "encoded-error-fixture-initial",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio/backend",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "--test-name-pattern=percent-encoded|percent-encoding",
+      "test/workbench-connections-http.test.js"
+    ],
+    "startedAt": "2026-10-23T10:15:21.519Z",
+    "finishedAt": "2026-10-23T10:16:04.685Z",
+    "exitCode": 1,
+    "expectedFailure": true,
+    "log": "encoded-error-fixture-initial.log",
+    "observation": "Initial fixture omitted WS subscription and legacy Web protocol; not evidence of the production leak."
+  },
+  {
+    "name": "encoded-error-reproduction",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "--test-name-pattern=percent-encoded|percent-encoding",
+      "test/workbench-connections-http.test.js"
+    ],
+    "startedAt": "2026-10-23T10:16:42.410Z",
+    "finishedAt": "2026-10-23T10:16:45.252Z",
+    "exitCode": 1,
+    "expectedFailure": true,
+    "log": "encoded-error-reproduction.log"
+  },
+  {
+    "name": "encoded-error-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "--test-name-pattern=percent-encoded|percent-encoding",
+      "test/workbench-connections-http.test.js"
+    ],
+    "startedAt": "2026-10-23T10:17:18.805Z",
+    "finishedAt": "2026-10-23T10:17:21.543Z",
+    "exitCode": 0,
+    "log": "encoded-error-regression.log"
+  },
+  {
+    "name": "storage-connections-targeted",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1",
+      "test/workbench-connections.test.js",
+      "test/workbench-connections-http.test.js",
+      "test/workbench-storage.test.js",
+      "test/workbench-storage-http.test.js",
+      "test/desktop-boundary.test.js"
+    ],
+    "startedAt": "2026-10-23T10:17:21.617Z",
+    "finishedAt": "2026-10-23T10:17:30.924Z",
+    "exitCode": 0,
+    "log": "storage-connections-targeted.log"
+  },
+  {
+    "name": "backend-regression",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "--test",
+      "--test-concurrency=1"
+    ],
+    "startedAt": "2026-10-23T10:17:30.925Z",
+    "finishedAt": "2026-10-23T10:18:23.413Z",
+    "exitCode": 0,
+    "log": "backend-regression.log"
+  },
+  {
+    "name": "backend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\backend",
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "server.js",
+      "plugin-runtime/executor.js",
+      "connections",
+      "storage/migrations.js",
+      "test/workbench-connections.test.js",
+      "test/workbench-connections-http.test.js",
+      "test/workbench-storage.test.js",
+      "test/workbench-storage-http.test.js",
+      "test/desktop-boundary.test.js"
+    ],
+    "startedAt": "2026-10-23T10:18:23.415Z",
+    "finishedAt": "2026-10-23T10:18:25.085Z",
+    "exitCode": 0,
+    "log": "backend-lint.log"
+  },
+  {
+    "name": "unpacked-windows-package",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "node_modules/electron-builder/cli.js",
+      "--win",
+      "--x64",
+      "--dir",
+      "--config",
+      "temp/electron-builder-t04.yml"
+    ],
+    "startedAt": "2026-10-23T10:19:15.185Z",
+    "finishedAt": "2026-10-23T10:19:28.042Z",
+    "exitCode": 0,
+    "log": "unpacked-windows-package.log"
+  },
+  {
+    "name": "packaged-connections-storage",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "scripts/verify-desktop-package.cjs",
+      "release-t04/win-unpacked/Nova Image Studio.exe",
+      "override",
+      "temp/t04-packaged-encoded-errors",
+      "--storage",
+      "--connections",
+      "--credential-errors"
+    ],
+    "startedAt": "2026-10-23T10:19:28.163Z",
+    "finishedAt": "2026-10-23T10:19:35.789Z",
+    "exitCode": 0,
+    "log": "packaged-connections-storage.log"
+  },
+  {
+    "name": "frontend-lint",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio\\frontend",
+    "command": [
+      "node",
+      "node_modules/eslint/bin/eslint.js",
+      "src/lib/connection-client.ts",
+      "src/lib/ccode-task-client.ts",
+      "src/lib/plugin-task-client.ts",
+      "src/lib/provider-models-client.ts",
+      "src/lib/plugin-registry-client.ts",
+      "src/lib/nova-models.ts",
+      "src/lib/__tests__/connection-client.test.ts",
+      "src/types/nova-desktop.d.ts",
+      "src/components/canvas/canvas-video-generation-service.ts"
+    ],
+    "startedAt": "2026-10-23T10:19:37.712Z",
+    "finishedAt": "2026-10-23T10:19:44.425Z",
+    "exitCode": 0,
+    "log": "frontend-lint.log"
+  },
+  {
+    "name": "contract-ledger",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "--test",
+      "backend/test/workbench-contracts.test.js"
+    ],
+    "startedAt": "2026-10-23T10:30:37.900Z",
+    "finishedAt": "2026-10-23T10:30:38.114Z",
+    "exitCode": 0,
+    "log": "contract-ledger.log"
+  },
+  {
+    "name": "package-audit",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "temp/t04-audit.cjs"
+    ],
+    "startedAt": "2026-10-23T10:30:38.115Z",
+    "finishedAt": "2026-10-23T10:30:39.228Z",
+    "exitCode": 0,
+    "log": "package-audit.log"
+  },
+  {
+    "name": "review-manifest",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "command": [
+      "node",
+      "temp/t04-review-manifest.cjs"
+    ],
+    "startedAt": "2026-10-23T10:30:39.228Z",
+    "finishedAt": "2026-10-23T10:30:41.619Z",
+    "exitCode": 0,
+    "log": "review-manifest.log"
+  }
+]

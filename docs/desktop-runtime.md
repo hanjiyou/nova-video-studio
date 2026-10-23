@@ -1,10 +1,10 @@
 # 桌面运行边界
 
-T02 提供 Electron 运行与会话边界，T03 接入持久资产/草稿存储。Web 部署继续使用现有服务入口；后续凭据、任务恢复和资产持久化分别在 T04、T05、T03/T08 接入。
+T02提供Electron运行与会话边界，T03接入持久资产/草稿，T04接入系统加密凭据和连接版本。Web保留旧服务入口；完整任务恢复及媒体下载留T05/T08。
 
 ## 数据和进程
 
-数据目录优先级为 NOVA_DATA_DIR 显式覆盖、PORTABLE_EXECUTABLE_DIR/data、Electron 系统 userData。Windows 当前包名对应 %APPDATA%/nova-image。安装目录不再作为默认数据目录。旧版相邻 data 的自动迁移属于 T03，本阶段不搬动已有文件。
+数据目录优先级为 NOVA_DATA_DIR 显式覆盖、PORTABLE_EXECUTABLE_DIR/data、Electron 系统 userData。Windows 当前包名对应 %APPDATA%/nova-image。安装目录不再作为默认数据目录。用户确认从未使用过原版Nova，按全新安装处理；不检测、导入或复制旧版相邻data与浏览器资料。已有APPDATA测试目录保留。
 
 单实例锁在加载后端和打开 SQLite 前取得，按 userData 配置目录隔离。同配置第二进程退出并恢复/聚焦已有主窗口。默认从 31207 尝试最多 10 个相邻回环端口，冲突后使用系统分配端口；NOVA_BACKEND_PORT 可指定起始值，0 表示直接分配。
 
@@ -28,16 +28,21 @@ window.novaDesktop 只暴露公开 versions/features 与以下操作，每个 IP
 
 | 方法 | 返回/限制 |
 | --- | --- |
+| saveConnection(input) | T04：主frame窄IPC瞬时接收Key，safeStorage加密；只返回脱敏摘要，更新须精确expectedVersionId |
+| clearConnectionCredential(input) | T04：按稳定connectionId撤销全部版本凭据，保留任务/上游ID/素材 |
+| selectConnection(input) | T04：选择图片/视频共享默认连接，不改变旧任务绑定 |
 | importReferenceAssets() | T03：宿主选择PNG/JPEG并复制为受管资产，只返回摘要；无任意路径参数 |
 | getRuntimeInfo() | 版本、存储策略名称、功能开关；无实际路径/会话 |
 | chooseOutputDirectory() | 系统目录选择框，取消状态或不透明 selectionId 和目录显示名；宿主 realpath 与写探针验证 |
 | saveAssetCopy(assetId) | 仅 UUID；当前明确返回 ASSET_SERVICE_NOT_READY |
 | revealAsset(assetId) | 仅 UUID；当前明确返回 ASSET_SERVICE_NOT_READY |
 
-页面不能传路径打开或写入任意本机文件。选中的真实目录只保存在宿主的有界会话表中，最多16项，退出后清空。T03/T08 将通过资产ID和宿主选择引用接入，不将文件服务未完成伪装为成功。没有通用 invoke、shell、文件读取或会话读取接口。
+页面不能传路径打开或写入任意本机文件。选中的真实目录只保存在宿主的有界会话表中，最多16项，退出后清空。另存/定位仍由T08/T13通过资产ID和宿主选择引用接入，不将文件服务未完成伪装为成功。没有通用 invoke、shell、文件读取或会话读取接口。
 
 ## 退出和验证
 
 退出先撤销会话，停止接收请求，取消仍等待响应头的网络请求，关闭 HTTP/WS、定时器及 IPC，checkpoint/关闭 SQLite 后退出。响应头返回后的正文流及远端任务恢复/下载验证仍由 T05/T08 完成；本阶段不承诺远端取消或恢复状态机。
 
 运行 node scripts/verify-desktop-boundary.cjs <全新输出目录> 可使用真实 Electron 验证开发态边界；测试包装器加载实际 desktop/main.cjs，只在测试中制造重定向、缓存和独立Web环境，既不打印会话也不进入安装包。安装包探针为 node scripts/verify-desktop-package.cjs <exe> <system|override|portable> <全新输出目录>；system 拒绝使用已有系统配置目录，避免覆盖用户资料。
+
+T04连接细节见[连接契约](connections-v1.md)。node scripts/verify-desktop-connections.cjs <全新输出目录>使用真实Windows safeStorage/IPC验证两次启动、坏密文及清除；只向loopback模拟服务GET模型，不调用供应商。打包探针可在override模式追加--storage --connections，所有测试包装器与加密替身均不入包。

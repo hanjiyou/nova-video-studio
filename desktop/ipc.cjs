@@ -3,17 +3,25 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, getAssetService = () => null }) {
+function registerDesktopIpc({ ipcMain, dialog, getWindow, policy, runtimeInfo, getAssetService = () => null, getConnectionService = () => null }) {
   const selections = new Map();
   const channels = [];
   function register(channel, handler) {
     channels.push(channel);
     ipcMain.handle(channel, async (event, ...args) => {
       if (!policy.isTrustedSender(event)) return { ok: false, code: 'IPC_FORBIDDEN' };
-      try { return await handler(...args); } catch { return { ok: false, code: 'DESKTOP_OPERATION_FAILED' }; }
+      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
     });
   }
   register('nova:runtime-info', (...args) => args.length ? { ok: false, code: 'INVALID_ARGUMENT' } : { ok: true, ...runtimeInfo() });
+  for (const [channel, method] of [['nova:save-connection','save'],['nova:clear-connection-credential','clear'],['nova:select-connection','select']]) {
+    register(channel, (...args) => {
+      if (args.length !== 1) return {ok:false,code:'INVALID_ARGUMENT'};
+      const service=getConnectionService();
+      if (!service) return {ok:false,code:'CONNECTION_SERVICE_NOT_READY'};
+      return {ok:true,connection:service[method](args[0])};
+    });
+  }
   register('nova:choose-output-directory', async (...args) => {
     if (args.length) return { ok: false, code: 'INVALID_ARGUMENT' };
     const result = await dialog.showOpenDialog(getWindow(), { properties: ['openDirectory', 'createDirectory'] });

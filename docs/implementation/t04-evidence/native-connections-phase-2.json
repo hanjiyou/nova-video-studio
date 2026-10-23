@@ -1,0 +1,30 @@
+{
+  "startedAt": "2026-10-23T09:51:18.316Z",
+  "phase": 2,
+  "platform": "win32",
+  "providerRequests": "read-only loopback GET /v1/models only",
+  "checks": {
+    "real OS encryption is available": true,
+    "restart changes backend port": true,
+    "encrypted current connection survives native restart": true,
+    "old task keeps original destination and credential": true,
+    "old task snapshot and upstream ID survive unchanged": true,
+    "real OS decryption failure returns recoverable summary": true,
+    "fresh credential repairs current connection with a new version": true,
+    "broken old version never falls forward to replacement key": true,
+    "actual IPC clear removes current credential": true,
+    "clear revokes historical credentials without redirecting old task": true,
+    "clear preserves task/upstream ID and shared asset": true,
+    "HTTP summaries expose no key/ciphertext/credentialRef": true,
+    "renderer browser storage contains no credentials": true,
+    "database stores only OS ciphertext": true,
+    "schema version 3 applied": true
+  },
+  "connectionVersionIds": [
+    "aeb73528-471b-4d4a-af31-9bdb07318c5b",
+    "0704223d-e509-45cd-8182-d5fd9832b8ed"
+  ],
+  "origin": "http://127.0.0.1:56892",
+  "status": "passed",
+  "finishedAt": "2026-10-23T09:51:19.280Z"
+}

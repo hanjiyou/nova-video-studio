@@ -1,0 +1,14 @@
+{
+  "baselineCommit": "b9f7647a70110a7b6ca1ca4c713326f7d96fde2a",
+  "baselineExitCode": 2,
+  "currentExitCode": 2,
+  "identicalDiagnostics": true,
+  "diagnosticCount": 60,
+  "files": [
+    "src/lib/__tests__/agent-chat-client.test.ts",
+    "src/lib/__tests__/antigravity-gemini-preset.test.ts",
+    "src/lib/__tests__/protocol-layout-contracts.test.ts"
+  ],
+  "productionBuild": "passed; see frontend-build.log",
+  "handling": "No unrelated test types changed. Full tsc remains a known pre-existing limitation; T04 production build and its new tests pass."
+}

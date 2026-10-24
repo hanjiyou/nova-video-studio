@@ -59,7 +59,7 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
     const referenceBytes=count===1?[fixture('reference-a.png')]:[fixture('reference-single.jpg'),fixture('reference-a.png')];
     assert.deepEqual(post.parts.slice(4).map(item=>item.name),Array(count).fill('input_reference'));
     post.parts.slice(4).forEach((item,index)=>assert.deepEqual(item.bytes,referenceBytes[index]));
-    const snapshot=JSON.parse(post.dispatch.input_snapshot_json);assert.equal(snapshot.prompt,prompt);assert.deepEqual(snapshot.inputAssets,input.inputAssets);assert.equal(snapshot.adapterVersion,'1.0.0');assert.equal(snapshot.capabilityVersionId,input.capabilityVersionId);
+    const snapshot=JSON.parse(post.dispatch.input_snapshot_json);assert.equal(snapshot.prompt,prompt);assert.deepEqual(snapshot.inputAssets,input.inputAssets);assert.equal(snapshot.adapterVersion,'1.1.0');assert.equal(snapshot.capabilityVersionId,input.capabilityVersionId);
     assert.equal(await f.create(input),id);
     await f.runtime.saveConnection({connectionId:f.connection.connectionId,expectedVersionId:f.connection.connectionVersionId,baseUrl:'https://other.invalid/v1',apiKey:'synthetic-new-b1'});
     await f.restart();await until(async()=>(await f.task(id)).status==='completed');
@@ -78,8 +78,8 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
 test('canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request',async t=>{
     const f=await rig(t);
     for(const extra of [
-        {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare'},
-        {mode:'video.text'},{mode:'video.text',model:'grok-imagine-video-6s'},{model:'grok-imagine-video-6s'},
+        {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare',inputAssets:f.refs.slice(0,1),capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.reference'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
+        {mode:'video.text',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'video.text',model:'grok-imagine-video-6s',parameters:{seconds:6}},{model:'grok-imagine-video-6s'},
     ]){const response=await f.post('/api/nova/workbench/tasks',f.input(extra));assert.equal(response.status,400);assert.equal((await response.json()).code,'CAPABILITY_UNVERIFIED');}
     for(const extra of [{inputAssets:f.refs.slice(0,1)},{inputAssets:[{...f.refs[1],position:1},f.refs[0]]},{parameters:{seconds:6,size:'720x1280'}},{apiKey:KEY},
         {inputAssets:[{...f.refs[0],filePath:'private.png'},f.refs[1]]},{capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL).capabilityVersionId}]){

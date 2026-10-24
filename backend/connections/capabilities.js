@@ -1,5 +1,7 @@
 'use strict';
 const { randomUUID } = require('node:crypto');
+const multiReference = require('../tasks/multi-reference-policy');
+const imagePolicy = require('../tasks/image-policy');
 const OPENSOSEN_URL = 'https://newapi.opensosen.com/v1';
 const PRESET_MODELS = Object.freeze(['gpt-image-2.5-flare', 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s']);
 const EVIDENCE_VERSION = 'opensosen-evidence-v1';
@@ -63,6 +65,11 @@ function seedCapabilities(db, provider, baseUrl) {
         insert.run(randomUUID(), provider, baseUrl, capability.model, capability.mode, 'openai', JSON.stringify(capability.parameters),
             'application_verified', APPLICATION_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
+    seedMultiReferenceCapability(db, provider, baseUrl);
+    if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) for (const mode of ['image.text','image.reference']) {
+        insert.run(randomUUID(), provider, baseUrl, imagePolicy.POLICY.model, mode, imagePolicy.POLICY.protocol, JSON.stringify(imagePolicy.parametersFor(mode)),
+            'unverified', imagePolicy.POLICY.evidenceVersion, JSON.stringify(imagePolicy.EVIDENCE), new Date().toISOString());
+    }
     if (provider === 'opensosen' && baseUrl === OPENSOSEN_URL) {
         const capability = TEXT_VIDEO_CAPABILITY;
         const evidence = { sourceIds: capability.sourceIds, applicationVerified: true, outputSha256: capability.outputSha256,
@@ -73,6 +80,12 @@ function seedCapabilities(db, provider, baseUrl) {
         insert.run(randomUUID(), provider, baseUrl, capability.model, capability.mode, 'openai', JSON.stringify(capability.parameters),
             'application_verified', TEXT_VIDEO_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
+}
+function seedMultiReferenceCapability(db, provider, baseUrl) {
+    const { POLICY, PARAMETERS, EVIDENCE } = multiReference;
+    if (provider !== POLICY.provider || baseUrl !== POLICY.baseUrl) return;
+    db.prepare('INSERT OR IGNORE INTO model_capabilities(id,provider,base_url,model,mode,protocol,parameters_json,evidence_level,evidence_version,evidence_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)')
+        .run(randomUUID(), provider, baseUrl, POLICY.model, POLICY.mode, POLICY.protocol, JSON.stringify(PARAMETERS), 'unverified', POLICY.evidenceVersion, JSON.stringify(EVIDENCE), new Date().toISOString());
 }
 function listCapabilities(db, provider, baseUrl) {
     const rows = db.prepare('SELECT * FROM model_capabilities WHERE provider=? AND base_url=?').all(provider, baseUrl);

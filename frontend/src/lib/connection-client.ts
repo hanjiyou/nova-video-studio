@@ -34,7 +34,7 @@ export interface ConnectionResult { ok: boolean; connection?: ConnectionSummary;
 export interface CapabilitySummary {
   capabilityVersionId: string; provider: string; baseUrl: string; model: string; mode: string; protocol: string;
   parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean;
-  evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string };
+  evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string; submissionPolicy?: string; supplierMaximumReferences?: number | null };
 }
 export interface ConnectionModels {
   connectionVersionId: string; modelsFetchedAt: string | null;

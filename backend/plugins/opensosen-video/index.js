@@ -1,16 +1,20 @@
 'use strict';
 const { isQueryableUpstreamTaskId, encodeUpstreamTaskId } = require('../../plugin-runtime/upstream-id');
 const { controlledVideoTextValidation } = require('../../tasks/controlled-video-text-validation');
+const multiReference = require('../../tasks/multi-reference-policy');
+const { MAX_VIDEO_REFERENCE_ASSETS } = require('../../storage/application-limits');
 const BASE_URL = 'https://newapi.opensosen.com/v1';
 const MODELS = ['grok-imagine-video-6s', 'grok-imagine-video-1.5-6s'];
 function failure(code) { return Object.assign(new Error(code === 'CAPABILITY_UNVERIFIED' ? '当前服务、模型与模式组合缺少协议证据。' : '视频输入无效。'), { code, statusCode: 400 }); }
 function validate(context) {
-    const counts = { 'video.text': 0, 'video.single_reference': 1, 'video.dual_reference': 2 };
+    const counts = { 'video.text': 0, 'video.single_reference': 1, 'video.dual_reference': 2, 'video.multi_reference': null };
+    const multi = context.mode === 'video.multi_reference';
     const input = context.inputAssets;
     if (!MODELS.includes(context.model) || !Object.hasOwn(counts, context.mode) || typeof context.fields?.prompt !== 'string' ||
-        !context.fields.prompt.trim() || !Array.isArray(input) || input.length !== counts[context.mode] ||
+        !context.fields.prompt.trim() || !Array.isArray(input) || (multi ? input.length < 3 || input.length > MAX_VIDEO_REFERENCE_ASSETS : input.length !== counts[context.mode]) ||
         input.some((item, index) => item.position !== index || item.role !== 'reference')) throw failure('INPUT_INVALID');
     if (context.baseUrl !== BASE_URL || context.model !== MODELS[1] || (context.mode === 'video.text' && !controlledVideoTextValidation.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
+    if (multi && !multiReference.isAuthorizedContext(context)) throw failure('CAPABILITY_UNVERIFIED');
     if (!context.connectionVersionId) throw failure('INPUT_INVALID');
     const parameters = context.parameters;
     const withoutSize = controlledVideoTextValidation.candidateFor(context) === 'without-size';

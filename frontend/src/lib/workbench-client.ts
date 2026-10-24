@@ -1,3 +1,4 @@
+import { MAX_REFERENCE_ASSETS } from './reference-policy';
 import type { AssetSummary, WorkbenchTaskResponse, WorkbenchTaskInput } from './workbench-task-client';
 export const DRAFT_MODES = ['image.text', 'video.text', 'video.single_reference', 'video.dual_reference'] as const;
 export type DraftMode = typeof DRAFT_MODES[number];
@@ -71,7 +72,7 @@ export function localErrorMessage(error: unknown) {
     CREDENTIAL_PROTECTION_UNAVAILABLE: 'Windows 系统保护暂不可用，未保存凭据。', CREDENTIAL_ENCRYPTION_FAILED: '凭据加密失败，未保存配置。',
     DIRECTORY_NOT_WRITABLE: '目录不可写或已失效，请重新选择文件夹。', DESKTOP_OPERATION_FAILED: '本机操作失败，已有配置和文件仍保留。',
     DRAFT_REVISION_CONFLICT: '草稿已被其他操作更新，未覆盖。请重新读取草稿。', SETTING_REVISION_CONFLICT: '设置已更新，请重新打开设置。',
-    ASSET_TYPE_INVALID: '参考图支持 PNG、JPEG。', ASSET_SIZE_INVALID: '图片为空或超过应用的 100 MiB 导入限制。',
+    TOO_MANY_ASSETS: `本应用一次最多添加 ${MAX_REFERENCE_ASSETS} 张；已保留全部素材，请减少选择后再试。`, ASSET_TYPE_INVALID: '参考图支持 PNG、JPEG。', ASSET_SIZE_INVALID: '图片为空或超过应用的 100 MiB 导入限制。',
     CONNECTION_INPUT_INVALID: '连接参数无效，请检查名称、地址与型号。', CONNECTION_MODEL_INVALID: '请输入完整模型名。',
     CONNECTION_SERVICE_NOT_READY: '本机连接服务尚未就绪，请重试。',
     CAPABILITY_UNVERIFIED: '当前完整模型、模式或规格尚未验证，未提交生成。', INPUT_INVALID: '提示词、模式、规格或参考图不符合要求。',

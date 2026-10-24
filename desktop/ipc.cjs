@@ -1,4 +1,5 @@
 'use strict';
+const { MAX_REFERENCE_ASSETS } = require('../backend/storage/application-limits');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
@@ -61,7 +62,7 @@ function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtime
     const service=getAssetService();if(!service)return {ok:false,code:'ASSET_SERVICE_NOT_READY'};
     const result=await dialog.showOpenDialog(getWindow(),{properties:['openFile','multiSelections'],filters:[{name:'参考图片',extensions:['png','jpg','jpeg']}]});
     if(result.canceled)return {ok:true,cancelled:true,assets:[]};
-    if(result.filePaths.length>32)return {ok:false,code:'TOO_MANY_ASSETS'};
+    if(result.filePaths.length>MAX_REFERENCE_ASSETS)return {ok:false,code:'TOO_MANY_ASSETS'};
     const assets=service.importFiles(result.filePaths);
     return {ok:true,cancelled:false,assets};
   });

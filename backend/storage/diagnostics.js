@@ -3,7 +3,7 @@
 const { DETAILS } = require('./download-errors');
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const STATES = new Set('local_queued submitting submission_unknown remote_queued generating polling_paused remote_completed downloading download_failed completed failed local_cancelled remote_cancelled'.split(' '));
-const MODES = new Set(['image.text','image.reference','video.text','video.single_reference','video.dual_reference']);
+const MODES = new Set(['image.text','image.reference','video.text','video.single_reference','video.dual_reference','video.multi_reference']);
 const MODELS = new Set(['gpt-image-2.5-flare','grok-imagine-video-6s','grok-imagine-video-1.5-6s']);
 const ERRORS = new Set([...Object.keys(DETAILS),'INPUT_INVALID','CAPABILITY_UNVERIFIED','LOCAL_REQUEST_CONFLICT','SUBMISSION_UNKNOWN','REMOTE_REJECTED','POLL_TRANSIENT','REMOTE_STATUS_UNKNOWN','REMOTE_FAILED','REMOTE_CANCELLED','CREDENTIAL_REQUIRED','CREDENTIAL_UNAVAILABLE']);
 const PHASES = new Set(['validation','credential','submit','poll','download','storage','media']);

@@ -7,7 +7,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
     const id = value => { if (!UUID.test(value || '')) throw fail('INVALID_ID'); return value; };
     function prepareSubmission(input, auth, store) {
         const boundary = require('../tasks/workbench-input');
-        const snapshot = freeze(boundary.snapshotFor(input, '1.0.0'));
+        const snapshot = freeze(boundary.snapshotFor(input, require('../plugins/opensosen-video/manifest.json').version));
         boundary.validateInputs(snapshot, auth, store);
         boundary.validateCapability(db, snapshot, auth);
         const frozen = Object.fromEntries(['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef'].map(key => [key,snapshot[key]]));

@@ -781,6 +781,10 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-library-filters { display:grid; grid-template-columns:minmax(180px,2fr) 1fr 1fr; align-items:end; gap:15px; margin:20px 0; }
 .wb-library-selection { display:flex; flex-wrap:wrap; gap:12px; align-items:center; padding:14px; background:#252130; border:1px solid #4e3c64; border-radius:9px; font-size:12px; }
 .wb-library-selection p { flex:1; min-width:180px; overflow-wrap:anywhere; }
+.wb-library-picked { display:flex; flex-wrap:wrap; gap:8px; padding:0; margin:10px 0 18px; list-style:none; }
+.wb-library-picked li { display:flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:100%; padding:8px; border:1px solid #4e3c64; border-radius:8px; }
+.wb-library-picked span { overflow-wrap:anywhere; }
+.nova-workbench .wb-library-picked button { padding:3px 7px; font-size:12px; }
 .nova-workbench .wb-card-open { display:block; border:0; padding:0; width:100%; border-radius:5px; background:transparent; text-align:left; }
 .wb-card-open small { display:block; overflow-wrap:anywhere; margin-top:7px; }
 .wb-card-open img,.wb-card-open video { width:100%; height:150px; object-fit:contain; background:#101117; margin-bottom:10px; }

@@ -16,7 +16,7 @@
   "modelSelector": {
     "label": "模型选择",
     "familyLabel": "OpenSosen 视频",
-    "familyDescription": "有序参考图协议。仅1.5单图/双图有历史证据，文生及其他组合待验证。",
+    "familyDescription": "有序多图参考；3张及以上未真实实测，供应商最大数量未知。",
     "facets": [
       {
         "key": "targetModel",
@@ -69,6 +69,10 @@
         {
           "value": "video.dual_reference",
           "label": "双图有序参考"
+        },
+        {
+          "value": "video.multi_reference",
+          "label": "多图有序参考（3张及以上，未实测）"
         }
       ]
     },
@@ -108,7 +112,7 @@
       "label": "参考图片",
       "hint": "可拖入垫图辅助构图或人物设定",
       "style": "chip",
-      "maxCount": 2
+      "maxCount": 7
     },
     {
       "key": "prompt",

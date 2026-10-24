@@ -64,6 +64,23 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "partial",
+        "disposition": "release_pending",
+        "externalItems": [
+          "6.7",
+          "6.8",
+          "6.9",
+          "6.10"
+        ],
+        "criteriaSatisfied": false,
+        "scope": "外部安装态已观察最小化、最大化/还原及关闭；标题栏拖动未确认，同实例最小化后的恢复未可靠证实。",
+        "remaining": "原生窗口行为是组合标准，本轮仅局部；6.7作为非阻断遗留，不转整项通过。",
+        "reviewStatus": "partial_scope_acknowledged_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -353,6 +370,21 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "partial",
+        "disposition": "release_pending",
+        "externalItems": [
+          "4.2",
+          "6.4"
+        ],
+        "criteriaSatisfied": false,
+        "scope": "外部数据快照确认隔离存储根，应用打开Explorer并选中实际源图片/视频；文件定位有证据。",
+        "remaining": "未完整证实应用显示实际输出根目录并允许打开该根的组合要求；不能以选中结果文件替代整项。",
+        "reviewStatus": "partial_scope_acknowledged_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -1143,6 +1175,22 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "accepted",
+        "disposition": "installation_accepted",
+        "externalItems": [
+          "6.1",
+          "6.2",
+          "6.3"
+        ],
+        "criteriaSatisfied": true,
+        "scope": "原生另存对话框选中文/空格目标；图片同名拒绝/确认覆盖及取消均有窗口、文件摘要/时间/无新增文件交叉证据。",
+        "remaining": "",
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -1213,6 +1261,20 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "accepted",
+        "disposition": "installation_accepted",
+        "externalItems": [
+          "6.4"
+        ],
+        "criteriaSatisfied": true,
+        "scope": "从应用打开Explorer，激活后实际选中当前源图片1项；路径含中文/空格，尺寸和文件位置相符。",
+        "remaining": "",
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -2200,6 +2262,25 @@
           "../implementation/t16-followup-evidence/package-audit.json",
           "../implementation/t16-followup-evidence/approval-review.json"
         ]
+      },
+      "t16ExternalVerification": {
+        "status": "supplemental",
+        "externalItems": [
+          "5.2",
+          "5.3",
+          "5.4",
+          "5.5",
+          "5.6",
+          "5.7",
+          "5.8"
+        ],
+        "doesNotChangePriorAcceptance": true,
+        "scope": "外部实际窗口补充三视频播放、拖至中间、音量控件、全屏及元数据；5.3稳定暂停和5.6听觉响度仍待确认。既有开发机安装态API验收及V11主审接受保持，不能把外部两项补记通过。",
+        "remaining": "外部5.3/5.6为本轮非阻断遗留；不新增暂停稳定性或听觉证明。",
+        "reviewStatus": "supplemental_evidence_received",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -2270,6 +2351,24 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "accepted",
+        "disposition": "installation_accepted",
+        "externalItems": [
+          "3.3",
+          "6.1",
+          "6.2",
+          "6.3"
+        ],
+        "criteriaSatisfied": true,
+        "scope": "原生另存已落盘双参考视频，覆盖/拒绝/取消和文件摘要证实；本次未点击生成。结合既有T14/B4/B2下载失败与另存失败分离的离线证据，主审接受安装原生步骤补齐；本轮未重新注入下载/另存故障。",
+        "remaining": "",
+        "combinesExistingOfflineEvidence": true,
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -2340,6 +2439,21 @@
           "../implementation/t16-evidence/after-upgrade-evidence.json"
         ],
         "manualAccepted": false
+      },
+      "t16ExternalVerification": {
+        "status": "accepted",
+        "disposition": "installation_accepted",
+        "externalItems": [
+          "6.4"
+        ],
+        "criteriaSatisfied": true,
+        "scope": "从应用打开Explorer并选中实际源视频1项，文件属性相符；结合既有T14/B4/B2未下载/缺失资产防护证据，主审接受安装原生定位补齐；本轮未重新制造未下载/缺失场景。",
+        "remaining": "",
+        "combinesExistingOfflineEvidence": true,
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -2549,6 +2663,26 @@
           "../implementation/t16-followup-evidence/package-audit.json",
           "../implementation/t16-followup-evidence/approval-review.json",
           "../implementation/T05-任务状态机与重启恢复.md"
+        ]
+      },
+      "t16ExternalVerification": {
+        "status": "supplemental",
+        "externalItems": [
+          "7.1",
+          "7.2",
+          "7.3",
+          "7.4",
+          "8.1",
+          "8.2",
+          "8.3",
+          "8.4"
+        ],
+        "doesNotChangePriorAcceptance": true,
+        "scope": "外部强退、同3.4.0.17覆盖、卸载重装后重建的4条离线样例记录/草稿/媒体保留，数据库完整性ok；最终测试版已卸载，资料保留。原V16接受及开发机原任务恢复证据保持。",
+        "remaining": "外部记录无远端ID/分发时间，非本机新生成或原始远端任务恢复；未验证跨版本/schema迁移。",
+        "reviewStatus": "supplemental_evidence_received",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
         ]
       }
     },
@@ -3228,6 +3362,20 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t16ExternalVerification": {
+        "status": "supplemental",
+        "externalItems": [
+          "6.5",
+          "6.6"
+        ],
+        "doesNotChangePriorAcceptance": true,
+        "scope": "原生诊断保存与取消补齐；本次5718字节、4任务空凭据诊断递归检查未见指定秘密/路径/URL/草稿泄漏。既有离线白名单/安全测试接受保持。",
+        "remaining": "空凭据样本不是含秘密数据的脱敏挑战，不证明带真实Key/原始响应时一定正确脱敏。",
+        "reviewStatus": "supplemental_evidence_received",
+        "evidence": [
+          "../implementation/T16-外部离线验收接收记录.md"
+        ]
       }
     },
     {
@@ -4045,5 +4193,170 @@
     "finalT16Accepted": false,
     "milestoneM5Accepted": false,
     "publicDistributionAllowed": false
+  },
+  "t16ExternalAcceptance": {
+    "status": "accepted_local_offline_scope_with_nonblocking_residuals",
+    "sourceDirectory": "docs/验收/T16 验收结果 20261024-133630/T16 验收结果 20261024-133630",
+    "sourceAccess": "Local untracked user-provided materials; raw screenshots, databases, media and reports are not copied into this tracked reception record or uploaded.",
+    "externalChecklist": {
+      "total": 40,
+      "passed": 33,
+      "failed": 0,
+      "pending": 7,
+      "pendingIds": [
+        "1.2",
+        "1.4",
+        "2.2",
+        "4.3",
+        "5.3",
+        "5.6",
+        "6.7"
+      ],
+      "pendingDisposition": "Nonblocking for this user-approved offline closeout only; no retest this round, verification remains pending.",
+      "notEquivalentToOriginalRequirements": true
+    },
+    "environment": {
+      "windows": "Windows 11 Pro 25H2 / 26200.9711 / x64",
+      "tokenIntegrity": "Medium / S-1-16-8192",
+      "effectiveAdministrator": false,
+      "accountMemberOfAdministrators": true,
+      "administratorGroupDenyOnly": true,
+      "nodePresent": "22.22.2",
+      "pythonPresent": "3.12",
+      "trueNonAdministratorAccountVerified": false,
+      "noDevelopmentToolsEnvironmentVerified": false,
+      "virtualMachineStatusIndependentlyVerified": false
+    },
+    "acceptedRequirements": [
+      "I10",
+      "I11",
+      "V12",
+      "V13"
+    ],
+    "currentDispositions": {
+      "offline_passed": 39,
+      "real_service_accepted": 11,
+      "installation_accepted": 4,
+      "real_service_pending": 5,
+      "release_pending": 2,
+      "not_passed": 0
+    },
+    "acceptedTotal": 54,
+    "pendingTotal": 7,
+    "historicalStatusPolicy": "原entry.status、evidence和t14/t15/t16/t16Followup保留当时快照；本次四项接受看t16ExternalVerification及本接收摘要。40项外部测试清单不替代原61需求。",
+    "partialCombinedRequirements": [
+      "G01",
+      "G06"
+    ],
+    "parentReview": {
+      "acceptedRequirements": [
+        "I10",
+        "I11",
+        "V12",
+        "V13"
+      ],
+      "scope": "Main session explicitly accepted the native installed interaction completion, combining prior offline fault boundaries for V12/V13. No new application test or source modification in this receipt.",
+      "sourceIntegrityCheck": {
+        "source": "Direct main-session report of independent checks",
+        "filesListed": 400,
+        "filesFound": 400,
+        "sha256Matched": 400,
+        "screenshotsCount": 89,
+        "isApplicationRetest": false
+      }
+    },
+    "defaultDirectoryObservation": {
+      "directory": "%APPDATA%/nova-image",
+      "baselineExists": false,
+      "finallyExists": true,
+      "topLevelEntryCount": 0,
+      "causeConfirmed": false,
+      "fileContentsRead": false,
+      "deleted": false,
+      "disposition": "Record only; user retains it. No deletion or investigation this round."
+    },
+    "externalFinalState": {
+      "checkedAt": "2026-10-24T14:34:16.3910182+08:00",
+      "testExecutableExists": false,
+      "testRegistrationExists": false,
+      "matchingProcesses": 0,
+      "cleanProfileRetained": true,
+      "testProfileRetained": true
+    },
+    "sameVersionOnly": true,
+    "crossVersionOrSchemaMigrationVerified": false,
+    "realSecretsRedactionChallengePerformed": false,
+    "realCredentialReads": 0,
+    "generationRequestsSent": 0,
+    "newApplicationTestsByReceivingAgent": 0,
+    "report": "../implementation/T16-外部离线验收接收记录.md",
+    "sourceFiles": [
+      {
+        "file": "验收报告.md",
+        "bytes": 13527,
+        "sha256": "dcefaf2dee9c517cd4724fdfd334bac426dd754ba3f7238e96b9685c67de7a33"
+      },
+      {
+        "file": "验收清单.md",
+        "bytes": 9133,
+        "sha256": "bddb60e9fe8106b1b56fbbb8a9d12b3e280bb70ed2820c1d7f37901d7654aed1"
+      },
+      {
+        "file": "验收清单.json",
+        "bytes": 14486,
+        "sha256": "19eef83517b268a770c2674353b6e5da366a20c33c8f5e29bb7fcbe86e116918"
+      },
+      {
+        "file": "证据/用户确认的本轮收口范围.json",
+        "bytes": 491,
+        "sha256": "edf48feba66dc4675f9c0109dece534c5a4b22000e461a2bae0fcd8e5fbe88ab"
+      },
+      {
+        "file": "证据/环境.json",
+        "bytes": 831,
+        "sha256": "a03b19aa68471b20b224a2c2fd38e8d12739dab59b87a22dea96fb815bbcf601"
+      },
+      {
+        "file": "证据/执行令牌.txt",
+        "bytes": 2505,
+        "sha256": "8182602f466c74405a867d5a5f7305db13462b04b73d31f1662db0bacdc66db6"
+      },
+      {
+        "file": "证据/报告交付前最终状态.json",
+        "bytes": 221,
+        "sha256": "04de25a5d411cee74aaf422f71fb4cc5e7012f253ac0f9932e26513421306abe"
+      },
+      {
+        "file": "证据/生命周期逐阶段成对比较.json",
+        "bytes": 4660,
+        "sha256": "25758a19717203bd5e87387b001ceb4902f9b2828169522f7beb23529e3268e8"
+      },
+      {
+        "file": "证据/默认Nova目录残留元数据.json",
+        "bytes": 390,
+        "sha256": "e0806df60ad99704765b596d6b18d552fdad379cd8bcd9a65e2c8c08d52f4687"
+      },
+      {
+        "file": "证据/08-最终卸载后-数据快照.json",
+        "bytes": 9492,
+        "sha256": "ac928b143999630985c22718511730c65c478f7f4175b37ff6104e25efda410d"
+      },
+      {
+        "file": "证据/交付文件SHA256.csv",
+        "bytes": 48853,
+        "sha256": "843b63b8317adc933f1529bb54fd0481e9173089594a3d78df9a4d2a02d00c01"
+      }
+    ],
+    "finalT15Accepted": false,
+    "finalT16Accepted": false,
+    "milestoneM5Accepted": false,
+    "publicDistributionAllowed": false,
+    "remainingReleaseGates": [
+      "Historical NSIS 0xc0000409/0x23 root cause",
+      "Complete corresponding FFmpeg source/patch/build/toolchain materials",
+      "Other real-service modes/specifications",
+      "Cross-version and schema migration",
+      "Unverified deployment environments and retained partial combined requirements"
+    ]
   }
 }

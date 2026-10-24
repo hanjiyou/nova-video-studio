@@ -2,10 +2,10 @@
   "apiVersion": 1,
   "id": "opensosen-video",
   "name": "OpenSosen 视频",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "kind": "video",
   "mode": "script",
-  "description": "有序参考图协议。仅1.5单图/双图有历史证据，文生及其他组合待验证。",
+  "description": "1.5文生、单图和双图已有本应用实测；三张及以上有序参考允许用户主动提交但未真实实测，应用素材预算不代表供应商上限。",
   "outputs": [
     "video"
   ],
@@ -21,7 +21,7 @@
   },
   "media": {
     "images": {
-      "maxCount": 2
+      "maxCount": 7
     }
   },
   "runtime": {
@@ -52,6 +52,10 @@
       {
         "value": "video.dual_reference",
         "label": "双图有序参考"
+      },
+      {
+        "value": "video.multi_reference",
+        "label": "多图有序参考（3张及以上，未实测）"
       }
     ],
     "aspectRatios": [

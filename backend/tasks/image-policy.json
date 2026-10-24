@@ -1,0 +1,20 @@
+{
+  "evidenceVersion": "opensosen-image-controls-unverified-2026-10-24-v1",
+  "submissionPolicy": "explicit-user-action-unverified-image-controls-v1",
+  "provider": "opensosen",
+  "baseUrl": "https://newapi.opensosen.com/v1",
+  "model": "gpt-image-2.5-flare",
+  "protocol": "openai",
+  "sizes": [
+    "1024x1024",
+    "1536x1024",
+    "1024x1536"
+  ],
+  "qualities": [
+    "low",
+    "medium",
+    "high",
+    "xhigh",
+    "max"
+  ]
+}

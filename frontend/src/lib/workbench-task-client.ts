@@ -65,7 +65,7 @@ export interface WorkbenchTaskInput {
   localRequestId: string;
   connectionVersionId: string;
   capabilityVersionId: string;
-  mode: 'image.text' | 'image.reference' | 'video.text' | 'video.single_reference' | 'video.dual_reference';
+  mode: 'image.text' | 'image.reference' | 'video.text' | 'video.single_reference' | 'video.dual_reference' | 'video.multi_reference';
   model: string;
   prompt: string;
   parameters: Record<string, string | number | boolean>;

@@ -5,9 +5,10 @@ const { createHash, randomUUID } = require('node:crypto');
 const { createOutputDirectories } = require('./output-directories');
 const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const MODES = new Set(['image.text', 'image.reference', 'video.text', 'video.single_reference', 'video.dual_reference']);
+const MODES = new Set(['image.text', 'image.reference', 'video.text', 'video.single_reference', 'video.dual_reference', 'video.multi_reference']);
 const MIME_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif',
     'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/mp4': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac' };
+const { MAX_REFERENCE_ASSETS } = require('./application-limits');
 const MAX_ASSET_BYTES = 100 * 1024 * 1024; // Application budget, not a provider capability.
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 function fail(code, message = '存储请求无效。', statusCode = 400) { return Object.assign(new Error(message), { code, statusCode }); }
@@ -172,7 +173,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         return { bytes, asset: summary(asset) };
     }
     function references(items) {
-        if (!Array.isArray(items) || items.length > 32)
+        if (!Array.isArray(items) || items.length > MAX_REFERENCE_ASSETS)
             throw fail('INVALID_ASSET_ORDER');
         return items.map((item, index) => {
             exactKeys(item, ['assetId', 'position', 'role']);
@@ -369,7 +370,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         const clause = ' WHERE '+where.join(' AND ');
         return { items: db.prepare('SELECT * FROM tasks'+clause+' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(...args,limit,offset).map(record), total: db.prepare('SELECT count(*) AS n FROM tasks'+clause).get(...args).n, unfilteredTotal: db.prepare('SELECT count(*) AS n FROM tasks WHERE '+where[0]).get().n };
     }
-    const importFiles = files => { if (!Array.isArray(files) || files.length > 32)
+    const importFiles = files => { if (!Array.isArray(files) || files.length > MAX_REFERENCE_ASSETS)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
     const service = { importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
         outputDirectory: () => outputDirectories.current(), checkOutputDirectory: () => outputDirectories.checkCurrent(), selectOutputDirectory: directory => outputDirectories.select(directory),

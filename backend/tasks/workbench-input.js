@@ -6,7 +6,10 @@ const { controlledImageValidation } = require('./controlled-image-validation');
 const { controlledVideoTextValidation } = require('./controlled-video-text-validation');
 const { generationEvidenceVerified } = require('../connections/capabilities');
 const MODELS = require('../plugins/opensosen-video').MODELS;
-const COUNTS = { 'image.text': [0,0], 'image.reference': [1,32], 'video.text': [0,0], 'video.single_reference': [1,1], 'video.dual_reference': [2,2] };
+const multiReference = require('./multi-reference-policy');
+const imagePolicy = require('./image-policy');
+const { MAX_VIDEO_REFERENCE_ASSETS } = require('../storage/application-limits');
+const COUNTS = { 'image.text': [0,0], 'image.reference': [1,1], 'video.text': [0,0], 'video.single_reference': [1,1], 'video.dual_reference': [2,2], 'video.multi_reference': [3,MAX_VIDEO_REFERENCE_ASSETS] };
 function invalid() { return fail('INPUT_INVALID', '模式、参数或有序素材引用无效。'); }
 function snapshotFor(body, videoVersion) {
     const keys = ['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef'];
@@ -17,6 +20,7 @@ function snapshotFor(body, videoVersion) {
         if ((['localRequestId','connectionVersionId','capabilityVersionId'].includes(key) || body[key] !== undefined) &&
             (typeof body[key] !== 'string' || !UUID.test(body[key]))) throw invalid();
     }
+    if (body.mode === 'video.multi_reference' && videoVersion !== '1.1.0') throw invalid();
     const [min,max] = COUNTS[body.mode];
     if (body.inputAssets.length < min || body.inputAssets.length > max) throw invalid();
     const inputAssets = body.inputAssets.map((item,position) => {
@@ -27,7 +31,7 @@ function snapshotFor(body, videoVersion) {
     const image = body.mode.startsWith('image.');
     if (image ? body.model !== MODEL : !MODELS.includes(body.model)) throw invalid();
     if (image) {
-        if (Object.keys(body.parameters).length) throw fail('CAPABILITY_UNVERIFIED','图片尺寸、质量及编辑协议尚待验证。');
+        if (!imagePolicy.validParameters(body.parameters)) throw invalid();
     } else if (body.mode === 'video.text') {
         if (!controlledVideoTextValidation.allowsInput(body) && (body.parameters.seconds !== 6 || Object.keys(body.parameters).length !== 1)) throw invalid();
     } else if (Object.keys(body.parameters).some(key => !['seconds','size'].includes(key)) || body.parameters.seconds !== 6 || body.parameters.size !== '1280x720') throw invalid();
@@ -42,13 +46,17 @@ function validateCapability(db, snapshot, auth) {
     if (!capability || capability.provider !== auth.provider || capability.base_url !== auth.baseUrl ||
         capability.model !== snapshot.model || capability.mode !== snapshot.mode || capability.protocol !== auth.protocol) throw fail('CAPABILITY_UNVERIFIED','该能力版本与任务连接、模型或模式不匹配。');
     const controlledText = controlledVideoTextValidation.allows(snapshot, auth, capability);
-    if (!generationEvidenceVerified(capability) && !controlledImageValidation.allows(snapshot, auth, capability) && !controlledText) throw fail('CAPABILITY_UNVERIFIED','当前组合尚未取得成功协议证据；保留需求，待受控验证。');
+    const unverifiedMulti = multiReference.allowsUnverifiedSubmission(capability, snapshot, auth);
+    const unverifiedImage = imagePolicy.allowsUnverifiedSubmission(capability, snapshot, auth);
+    if (!generationEvidenceVerified(capability) && !controlledImageValidation.allows(snapshot, auth, capability) && !controlledText && !unverifiedMulti && !unverifiedImage) throw fail('CAPABILITY_UNVERIFIED','当前组合尚未取得成功协议证据；保留需求，待受控验证。');
     const parameters = JSON.parse(capability.parameters_json);
-    if (snapshot.mode === 'image.text' && (Object.keys(parameters).length || Object.keys(snapshot.parameters || {}).length || snapshot.inputAssets?.length)) throw invalid();
+    if (snapshot.mode.startsWith('image.') && !unverifiedImage && (snapshot.mode !== 'image.text' ||
+        Object.keys(parameters).length || Object.keys(snapshot.parameters || {}).length || snapshot.inputAssets?.length)) throw invalid();
     if (snapshot.mode === 'video.text' && !controlledText && (parameters.encoding !== 'multipart' || parameters.referenceCount !== 0 ||
         parameters.seconds !== 6 || Object.keys(parameters).length !== 3 || snapshot.parameters.seconds !== 6 ||
         Object.keys(snapshot.parameters).length !== 1 || snapshot.inputAssets.length)) throw invalid();
-    if (snapshot.mode.startsWith('video.') && snapshot.mode !== 'video.text' && !controlledText && (parameters.encoding !== 'multipart' || parameters.inputReferenceName !== 'input_reference' ||
+    if (snapshot.mode === 'video.multi_reference' && (!unverifiedMulti || snapshot.parameters.seconds !== parameters.seconds || snapshot.parameters.size !== parameters.size)) throw invalid();
+    if (snapshot.mode.startsWith('video.') && !['video.text','video.multi_reference'].includes(snapshot.mode) && !controlledText && (parameters.encoding !== 'multipart' || parameters.inputReferenceName !== 'input_reference' ||
         parameters.referenceCount !== snapshot.inputAssets.length || parameters.seconds !== snapshot.parameters.seconds || parameters.size !== snapshot.parameters.size)) throw invalid();
     return capability;
 }

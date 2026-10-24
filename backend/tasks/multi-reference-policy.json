@@ -1,0 +1,11 @@
+{
+  "evidenceVersion": "opensosen-multi-reference-unverified-2026-10-24-v1",
+  "provider": "opensosen",
+  "baseUrl": "https://newapi.opensosen.com/v1",
+  "model": "grok-imagine-video-1.5-6s",
+  "protocol": "openai",
+  "mode": "video.multi_reference",
+  "minimumReferences": 3,
+  "seconds": 6,
+  "size": "1280x720"
+}

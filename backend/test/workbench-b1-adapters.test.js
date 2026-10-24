@@ -23,7 +23,7 @@ test('new package registers both exact models, with only fixed application contr
     assert.deepEqual(plugin.manifest.models.map(item=>item.id),driver.MODELS);
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='seconds').options.map(item=>item.value),[6]);
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='aspectRatio').options.map(item=>item.value),['16:9']);
-    assert.equal(plugin.manifest.media.images.maxCount,2);
+    assert.equal(plugin.manifest.media.images.maxCount,7);
 });
 for (const count of [1,2]) test('production driver builds '+count+' repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt',async()=>{
     const ctx=context({mode:count===1?'video.single_reference':'video.dual_reference',inputAssets:context().inputAssets.slice(0,count)});
@@ -84,12 +84,12 @@ test('unknown video status is not invented as complete/failure; empty create ID 
 test('flare candidate is a precise nonstream minimum and preserves prompt without extra size/quality fields',()=>{
     const snapshot={mode:'image.text',model:image.MODEL,prompt,parameters:{},inputAssets:[]},request=image.buildSubmit(snapshot,auth);
     assert.equal(request.url,auth.baseUrl+'/images/generations');assert.deepEqual(request.json,{model:'gpt-image-2.5-flare',prompt,n:1});
-    for(const parameters of [{size:'1024x1024'},{quality:'high'}]) assert.throws(()=>image.buildSubmit({...snapshot,parameters},auth),{code:'CAPABILITY_UNVERIFIED'});
+    for(const parameters of [{size:'1024x1024'},{quality:'high'}]) assert.deepEqual(image.buildSubmit({...snapshot,parameters},auth).json,{model:image.MODEL,prompt,n:1,...parameters});
     assert.throws(()=>image.buildSubmit({...snapshot,model:'gpt-image-2'},auth),{code:'INPUT_INVALID'});
 });
-test('flare reference boundary cannot silently fall back, and candidate production preflight stays gated by evidence',()=>{
-    const snapshot={mode:'image.reference',model:image.MODEL,prompt,parameters:{},inputAssets:[{assetId:refs[0].asset.assetId}]};
-    assert.throws(()=>image.buildSubmit(snapshot,auth),{code:'CAPABILITY_UNVERIFIED'});
+test('flare reference builds only the edit path, and production preflight remains gated by the selected capability',()=>{
+    const snapshot={mode:'image.reference',model:image.MODEL,prompt,parameters:{},inputAssets:[{assetId:refs[0].asset.assetId,position:0,role:'reference'}]};
+    const request=image.buildSubmit(snapshot,auth,id=>readAsset(id).asset);assert.equal(request.url,auth.baseUrl+'/images/edits');assert.equal(request.parts.at(-1).name,'image');
     const adapter=image.createFlareImageAdapter({validateCapability:()=>{throw Object.assign(new Error('unverified'),{code:'CAPABILITY_UNVERIFIED'});}});
     assert.throws(()=>adapter.preflight({}, {...snapshot,mode:'image.text',inputAssets:[]},auth),{code:'CAPABILITY_UNVERIFIED'});
 });

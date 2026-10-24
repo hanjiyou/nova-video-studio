@@ -1,23 +1,36 @@
 'use strict';
 const { containsCredential } = require('../connections/redaction');
 const { buildRequestInit } = require('../plugin-runtime/request-body');
-const MODEL = 'gpt-image-2.5-flare';
-const BASE_URL = 'https://newapi.opensosen.com/v1';
-const VERSION = '1.0.0';
+const { POLICY, validParameters } = require('./image-policy');
+const MODEL = POLICY.model;
+const BASE_URL = POLICY.baseUrl;
+const VERSION = '1.1.0';
 function failure(code, fields = {}) { return Object.assign(new Error(code), { code, ...fields }); }
-/** Minimum text protocol. Admission requires immutable evidence; reference edits remain unverified. */
-function buildReferenceSubmit(snapshot) {
-    if (snapshot.model !== MODEL || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets) || !snapshot.inputAssets.length) throw failure('INPUT_INVALID');
-    throw failure('CAPABILITY_UNVERIFIED'); // Independent boundary; no guessed edit endpoint or fields.
+function validateSnapshot(snapshot, auth) {
+    if (snapshot.model !== MODEL || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets) ||
+        !validParameters(snapshot.parameters || {})) throw failure('INPUT_INVALID');
+    if (auth.baseUrl !== BASE_URL || auth.provider !== POLICY.provider || auth.protocol !== POLICY.protocol) throw failure('CAPABILITY_UNVERIFIED');
+    if (snapshot.adapterVersion === '1.0.0' && (snapshot.mode !== 'image.text' || snapshot.inputAssets.length || Object.keys(snapshot.parameters || {}).length)) throw failure('INPUT_INVALID');
 }
-function buildSubmit(snapshot, auth) {
-    if (snapshot.mode === 'image.reference') return buildReferenceSubmit(snapshot, auth);
-    if (snapshot.model !== MODEL || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets)) throw failure('INPUT_INVALID');
+/** The host alone resolves a single original PNG/JPEG; FormData owns its boundary. */
+function buildReferenceSubmit(snapshot, auth, getAsset) {
+    validateSnapshot(snapshot, auth);
+    if (snapshot.mode !== 'image.reference' || snapshot.inputAssets.length !== 1) throw failure('INPUT_INVALID');
+    const input = snapshot.inputAssets[0], asset = getAsset?.(input.assetId);
+    if (input.position !== 0 || input.role !== 'reference' || asset?.kind !== 'image' || !['image/png','image/jpeg'].includes(asset.mimeType)) throw failure('INPUT_INVALID');
+    return { method: 'POST', url: auth.baseUrl + '/images/edits', encoding: 'multipart',
+        parts: [{ kind: 'field', name: 'model', value: MODEL }, { kind: 'field', name: 'prompt', value: snapshot.prompt },
+            { kind: 'field', name: 'n', value: '1' }, ...['size','quality'].filter(name => snapshot.parameters?.[name] !== undefined).map(name => ({ kind: 'field', name, value: snapshot.parameters[name] })),
+            { kind: 'file', name: 'image', assetId: input.assetId, fileName: 'reference.' + (asset.mimeType === 'image/png' ? 'png' : 'jpg'), mimeType: asset.mimeType }],
+        auth: { connectionVersionId: auth.connectionVersionId } };
+}
+function buildSubmit(snapshot, auth, getAsset) {
+    if (snapshot.mode === 'image.reference') return buildReferenceSubmit(snapshot, auth, getAsset);
+    validateSnapshot(snapshot, auth);
     if (snapshot.mode !== 'image.text' || snapshot.inputAssets.length) throw failure('INPUT_INVALID');
-    if (auth.baseUrl !== BASE_URL || Object.keys(snapshot.parameters || {}).length) throw failure('CAPABILITY_UNVERIFIED');
-    // No size/quality/style/background, streaming, implicit model selection or retry parameters.
+    // With automatic controls this stays byte-for-byte the proven minimum JSON shape.
     return { method: 'POST', url: auth.baseUrl + '/images/generations', encoding: 'json',
-        json: { model: MODEL, prompt: snapshot.prompt, n: 1 }, auth: { connectionVersionId: auth.connectionVersionId } };
+        json: { model: MODEL, prompt: snapshot.prompt, n: 1, ...snapshot.parameters }, auth: { connectionVersionId: auth.connectionVersionId } };
 }
 function parseSubmit(payload, auth) {
     if (containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });
@@ -43,18 +56,23 @@ function parseSubmit(payload, auth) {
     });
     return { resultSources };
 }
-function createFlareImageAdapter({ validateCapability }) {
-    return { id: 'opensosen-flare-image', version: VERSION,
-        preflight(_task, snapshot, auth) { buildSubmit(snapshot, auth); validateCapability(snapshot, auth); },
+function createFlareImageAdapter({ validateCapability, readAsset, getAsset, version = VERSION }) {
+    if (![VERSION, '1.0.0'].includes(version)) throw failure('ADAPTER_UNAVAILABLE');
+    return { id: 'opensosen-flare-image', version,
+        preflight(_task, snapshot, auth) {
+            const request = buildSubmit(snapshot, auth, getAsset);
+            validateCapability(snapshot, auth);
+            buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset);
+        },
         async submit(_task, snapshot, auth) {
-            const request = buildSubmit(snapshot, auth);
+            const request = buildSubmit(snapshot, auth, getAsset);
             validateCapability(snapshot, auth);
             const controller = new AbortController(), abort = () => controller.abort();
             auth.signal?.addEventListener('abort', abort, { once: true });
             if (auth.signal?.aborted) controller.abort();
             const timer = setTimeout(abort, 30 * 60 * 1000);
             try {
-                const response = await fetch(request.url, { ...buildRequestInit(request, auth), signal: controller.signal });
+                const response = await fetch(request.url, { ...buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset), signal: controller.signal });
                 const text = await response.text(); // Includes the complete body in the request deadline.
                 let payload;
                 try { payload = JSON.parse(text); } catch { throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status }); }

@@ -35,6 +35,12 @@ UI 读取 ConnectionSummary：connectionId、connectionVersionId、displayName�
 
 规范模式：image.text（0 图）、image.reference（至少 1 图，具体能力待验证）、video.text（0 图）、video.single_reference（恰好 1 图）、video.dual_reference（首版恰好 2 图）。切模式分别保存草稿，不能为了适配新模式静默裁掉参考素材。
 
+2026-10-24 用户授权扩展：UI 将原双图入口改名“多图参考”，继续使用原 `video.dual_reference` 草稿槽；2 张仍提交原模式与已验证能力，3 至应用预算张数在提交时解析为新增 `video.multi_reference`，不改写历史“双图恰好 2 张”证据。视频多图预算独立集中于 `backend/storage/application-limits.json` 的 `maxVideoReferenceAssets`，按用户要求设为 7，允许配置范围 3..7；通用素材导入/存储的 `maxReferenceAssets` 保持原 32，不裁减历史素材。7 张是应用限制，供应商最大张数仍未知。
+
+新模式仅允许 `opensosen` / `https://newapi.opensosen.com/v1` / `openai` / `grok-imagine-video-1.5-6s` / 插件 1.1.0 下，独立版本 `opensosen-multi-reference-unverified-2026-10-24-v1` 的明确用户操作提交；能力继续标记 unverified、applicationVerified=false，显示未实测与可能失败/计费提示。此窄例外不放宽通用证据判定。原图按顺序使用同名 `input_reference` multipart 文件部件。
+
+1.0.0 旧任务仅原文生/单图/双图模式允许精确兼容恢复和同 localRequestId 重放，保存的快照字节不变；1.0.0 不支持新增多图模式。实现与离线验证见 [多图参考扩展记录](../implementation/多图参考扩展-离线实现与验证.md)。
+
 `inputAssets` 是有序数组：`{assetId, role:'reference', position:0..n-1}`，position 连续且不重复。界面序号为 position+1，数据库、请求部件和预览使用同一顺序。草稿/快照的提示词保留原始文本。WHATWG FormData 的普通文本字段按 multipart 规则将行结束符规范为 CRLF，传输测试核对这一表示及逻辑换行/中文/引号；不得丢行、删改对白，协议规范化不回写草稿。原始 JPEG/PNG 字节直接进入 multipart；缩略图不代替原图，不能自动压 WebP。张数/字节/像素限制明确属于 applicationLimits，不能假称供应商上限。
 
 AssetSummary 返回 assetId、kind、mimeType、byteLength、sha256、width/height、durationSeconds（视频可选）、availability 和受控 previewUrl。真实路径只在宿主/库层保存。媒体缺失保留任务和元数据，标记 missing，不能假装任务从未存在。
@@ -108,3 +114,12 @@ POST 429 与 GET 策略分开：不按 Retry-After 自动重新创建。有完�
 见 [OpenSosen 协议证据](opensosen-evidence-v1.md)。historically_verified 表示历史成功记录，unverified 表示无原始成功证据，rejected_combination 只表示该请求组合被拒绝。mock_passed 仅证明测试支撑有效，不能把上游能力升级成已验证。
 
 所有能力绑定 provider/baseUrl + 完整model + 模式 + 协议 + 精确参数 + 证据版本；切换服务源不继承别处的验证。flare参考图、两个型号的文生原始请求等缺口保持 unverified，T15执行真实线路验收后才能记录本应用链路通过。
+
+
+## 8. 图片规格与单图编辑（2026-10-24 增量）
+
+图片适配器为 `opensosen-flare-image@1.1.0`。无参考图、`parameters={}` 仍绑定原已验证最小生图能力，只提交 `model/prompt/n=1`。指定尺寸或质量时选择新增独立能力；有一张参考图时选择单图编辑能力。新增能力限定 `opensosen` / `https://newapi.opensosen.com/v1` / `openai` / `gpt-image-2.5-flare`，版本为 `opensosen-image-controls-unverified-2026-10-24-v1`，始终为 unverified、applicationVerified=false；通用证据判定及原最小能力排序不变。
+
+尺寸仅支持 1024x1024、1536x1024、1024x1536，质量提供自动、low、medium、high、xhigh、max。自动在任务参数中省略；比例按钮与尺寸共用同一个 size。文生图为 JSON `/images/generations`，参考图编辑为 multipart `/images/edits`，固定一个 `image` 原始 PNG/JPEG 文件部件，不重编码、不缩图、不尝试 `image[]` 或其他格式回退。未知参数、额外参考图、错误参数组合在派发前拒绝，草稿不静默删改。
+
+只对精确 1.0.0 最小图片快照兼容恢复；同 localRequestId、同输入返回原任务，不修改已保存快照，不因升级重发。请求结果未知时保留占位；图片同步结果不虚构上游 ID。结果沿用原 Base64/URL 安全落盘和媒体校验链路，可预览、另存并带入图片编辑草稿。详细验证见 [图片参数与单图编辑记录](../implementation/图片参数与单图编辑-离线实现与验证.md)。

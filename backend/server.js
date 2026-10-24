@@ -1207,7 +1207,9 @@ function createWorkbenchTask(body, req) {
   if (!taskService) throw createHttpError(404,'NOT_FOUND','工作台任务需要桌面宿主。');
   workbenchStore.validateSubmissionInput(body);
   const plugin=pluginRegistry.getPlugin('opensosen-video');
-  const snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable');
+  let snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable');
+  const prior=db.prepare('SELECT input_snapshot_json FROM tasks WHERE local_request_id=?').get(snapshot.localRequestId);
+  if(prior){let saved;try{saved=JSON.parse(prior.input_snapshot_json);}catch{saved=null;}snapshot=require('./tasks/plugin-compatibility').replaySnapshot(snapshot,saved);}
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
   const auth=connectionService.getAuth(snapshot.connectionVersionId);
   workbenchInput.validateInputs(snapshot,auth,workbenchStore);
@@ -1219,10 +1221,13 @@ function createWorkbenchTask(body, req) {
 }
 function resolveDesktopTaskAdapter(task) {
   const validateCapability=(snapshot,auth)=>workbenchInput.validateCapability(db,snapshot,auth);
-  if (task.adapter_id==='opensosen-flare-image') return createFlareImageAdapter({validateCapability});
-  if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=pluginRegistry.getPlugin(request.pluginId);return plugin?createPluginAdapter(plugin,
+  if (task.adapter_id==='opensosen-flare-image') {
+    const version=require('./tasks/plugin-compatibility').compatibleImageVersion(task);
+    return version?createFlareImageAdapter({validateCapability,version,readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id)}):null;
+  }
+  if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=require('./tasks/plugin-compatibility').compatiblePlugin(pluginRegistry.getPlugin(request.pluginId),task);return plugin?createPluginAdapter(plugin,
     plugin.id==='opensosen-video'?{readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id),validateCapability,
-      authorizeContext:(context,snapshot,auth)=>{if(snapshot.mode==='video.text')require('./tasks/controlled-video-text-validation').controlledVideoTextValidation.authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));}}:{}):null;}
+      authorizeContext:(context,snapshot,auth)=>{if(snapshot.mode==='video.multi_reference')require('./tasks/multi-reference-policy').authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));if(snapshot.mode==='video.text')require('./tasks/controlled-video-text-validation').controlledVideoTextValidation.authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));}}:{}):null;}
   if (task.adapter_id!=='legacy-image') return null;
   const requestFor=(snapshot,auth)=>({mode:snapshot.mode==='image.reference'?'image-to-image':'text-to-image',model:snapshot.model,prompt:snapshot.prompt,...snapshot.parameters,
     protocol:auth.protocol,baseUrl:normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl),images:snapshot.inputAssets.map(item=>{const {bytes,asset}=workbenchStore.readAsset(item.assetId);return {data:bytes.toString('base64'),mimeType:asset.mimeType};})});

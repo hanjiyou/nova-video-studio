@@ -1,0 +1,213 @@
+{
+  "phase": "after-force",
+  "startedAt": "2026-10-24T04:50:53.298Z",
+  "scope": "Actual installed sandboxed application with isolated copies of completed T15 tasks and real media; no Key reads, no generation or mock dialog acceptance",
+  "checks": {
+    "prelaunch persisted task IDs snapshots files draft and empty vault preserved": true,
+    "installed sandboxed renderer has no Node": true,
+    "isolated override and actual application version": true,
+    "four-mode qualification visible": true,
+    "sessionless local HTTP denied": true,
+    "four original real completed task IDs and verified outputs restored": true,
+    "no credentials and no active generation": true,
+    "actual real image displayed": true,
+    "video.single_reference real playback pause seek volume fullscreen and media duration": true,
+    "video.single_reference actual local range": true,
+    "video.dual_reference real playback pause seek volume fullscreen and media duration": true,
+    "video.dual_reference actual local range": true,
+    "video.text real playback pause seek volume fullscreen and media duration": true,
+    "video.text actual local range": true,
+    "running app preserves all original snapshots IDs and media bytes": true,
+    "normal app exit": true,
+    "post-exit real completed states files and Chinese draft preserved": true
+  },
+  "controller": "nspc-hanjiyou\\administrator",
+  "tokenGroups": "\r\nGROUP INFORMATION\r\n-----------------\r\n\r\nGroup Name                           Type             SID          Attributes                                                     \r\n==================================== ================ ============ ===============================================================\r\nEveryone                             Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户和管理员组成员  Well-known group S-1-5-114    Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Administrators               Alias            S-1-5-32-544 Mandatory group, Enabled by default, Enabled group, Group owner\r\nBUILTIN\\Performance Log Users        Alias            S-1-5-32-559 Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Users                        Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\INTERACTIVE             Well-known group S-1-5-4      Mandatory group, Enabled by default, Enabled group             \r\nCONSOLE LOGON                        Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Authenticated Users     Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\This Organization       Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户                Well-known group S-1-5-113    Mandatory group, Enabled by default, Enabled group             \r\nLOCAL                                Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\NTLM Authentication     Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group             \r\nMandatory Label\\High Mandatory Level Label            S-1-16-12288                                                                \r\n",
+  "scrubbedPath": "C:\\Windows\\System32;C:\\Windows",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格\\Nova Studio T16 Followup.exe",
+  "packageHashes": {
+    "exe": "e486413d0617ffa7e6815aa00f579c45d832d65da5ef9ac56620cc34213fff9a",
+    "asar": "6f52057b89a59b32833f46a188e9220bbacb70a904adf2f0458386ffa5c32043"
+  },
+  "pid": 17884,
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "videos": [
+    {
+      "mode": "video.single_reference",
+      "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "time": 2,
+      "paused": true,
+      "volume": 0.4,
+      "fullscreenEntered": true,
+      "fullscreenExited": true,
+      "totalVideoFrames": 80,
+      "droppedVideoFrames": 0,
+      "error": null
+    },
+    {
+      "mode": "video.dual_reference",
+      "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "time": 2,
+      "paused": true,
+      "volume": 0.4,
+      "fullscreenEntered": true,
+      "fullscreenExited": true,
+      "totalVideoFrames": 76,
+      "droppedVideoFrames": 0,
+      "error": null
+    },
+    {
+      "mode": "video.text",
+      "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "time": 2,
+      "paused": true,
+      "volume": 0.4,
+      "fullscreenEntered": true,
+      "fullscreenExited": true,
+      "totalVideoFrames": 76,
+      "droppedVideoFrames": 0,
+      "error": null
+    }
+  ],
+  "persisted": {
+    "tasks": [
+      {
+        "taskSha256": "f08a275fff9da8f3f8c1b34b7321174db3bc31256ffcbc9a78ee5b2c38effa6c",
+        "id": "1624354f-5416-4a0c-b0a9-3d66c90944d7",
+        "status": "completed",
+        "upstreamIdSha256": null,
+        "assets": [
+          {
+            "id": "740cc7ce-8a31-4b22-8d73-b06a0ba842a2",
+            "storage_key": "30\\30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f.png",
+            "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+            "validation_state": "verified",
+            "width": 1448,
+            "height": 1086,
+            "duration_seconds": null,
+            "actualSha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f"
+          }
+        ]
+      },
+      {
+        "taskSha256": "7543b1b193d8cd8a25295ced47f3f501c1026c72fac7e596ea0e89cbdb6adff4",
+        "id": "b745fd89-5a7e-4196-99c4-dd743657c13e",
+        "status": "completed",
+        "upstreamIdSha256": "279ee896cbdea3b41d2fbd926af4391808348ffb55585f23c02c5cd3108453f2",
+        "assets": [
+          {
+            "id": "adef4250-ee2d-4f9d-b146-c9644e04b260",
+            "storage_key": "8e\\8e8fe2c3e332e1b8d4363e666a2bff81da6e8f5c70cbe898ef770472f9a12afb.png",
+            "sha256": "8e8fe2c3e332e1b8d4363e666a2bff81da6e8f5c70cbe898ef770472f9a12afb",
+            "validation_state": "unverified",
+            "width": 1672,
+            "height": 941,
+            "duration_seconds": null,
+            "actualSha256": "8e8fe2c3e332e1b8d4363e666a2bff81da6e8f5c70cbe898ef770472f9a12afb"
+          },
+          {
+            "id": "18dda6e4-2f44-4fd0-8e36-630b444eca76",
+            "storage_key": "37\\3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd.mp4",
+            "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+            "validation_state": "verified",
+            "width": 1280,
+            "height": 720,
+            "duration_seconds": 6.041666666666666,
+            "actualSha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd"
+          }
+        ]
+      },
+      {
+        "taskSha256": "009c2fe08e126ede59faea5fe5dec034067e30ef89e14d78f8ab4c20100f68a8",
+        "id": "c96c1d5f-67b4-4a23-b61e-23e4a285fbdb",
+        "status": "completed",
+        "upstreamIdSha256": "bfccb37ac768d4cce66786a26afcfca2f3f602db94b979b3d094eff930f602aa",
+        "assets": [
+          {
+            "id": "5a2e4159-662e-4edd-8438-c849b2d789c0",
+            "storage_key": "07\\07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e.png",
+            "sha256": "07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e",
+            "validation_state": "unverified",
+            "width": 1672,
+            "height": 941,
+            "duration_seconds": null,
+            "actualSha256": "07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e"
+          },
+          {
+            "id": "2ba637a9-5ecb-4708-859e-80172231d7c7",
+            "storage_key": "a7\\a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7.png",
+            "sha256": "a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7",
+            "validation_state": "unverified",
+            "width": 1672,
+            "height": 941,
+            "duration_seconds": null,
+            "actualSha256": "a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7"
+          },
+          {
+            "id": "4b42e4f7-b204-4318-bd13-40285f5cedd9",
+            "storage_key": "49\\49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025.mp4",
+            "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+            "validation_state": "verified",
+            "width": 1280,
+            "height": 720,
+            "duration_seconds": 6.041666666666666,
+            "actualSha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025"
+          }
+        ]
+      },
+      {
+        "taskSha256": "f753c70155036e9ee28806e1602f82a57b3ff35af2028ac06fa80ea943e51bac",
+        "id": "eac6a1f5-ea89-4480-81ce-60a691e38266",
+        "status": "completed",
+        "upstreamIdSha256": "0d2bbffca7eceb36813eef5a7df14fc2343e8d744650ae613a58d2bd7c6aadb3",
+        "assets": [
+          {
+            "id": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+            "storage_key": "25\\251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75.mp4",
+            "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+            "validation_state": "verified",
+            "width": 1280,
+            "height": 720,
+            "duration_seconds": 6.041666666666666,
+            "actualSha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75"
+          }
+        ]
+      }
+    ],
+    "draft": {
+      "mode": "image.text",
+      "prompt": "T16 中文草稿\n\"保留输入\"",
+      "model": "gpt-image-2.5-flare",
+      "parameters_json": "{}",
+      "revision": 1,
+      "updated_at": "2026-10-24T04:46:11.948Z"
+    },
+    "integrity": "ok",
+    "foreignKeys": [],
+    "credentials": 0
+  },
+  "exit": {
+    "code": 0,
+    "signal": null
+  },
+  "status": "passed",
+  "finishedAt": "2026-10-24T04:50:57.667Z"
+}

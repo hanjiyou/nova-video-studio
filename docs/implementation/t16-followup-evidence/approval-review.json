@@ -1,0 +1,44 @@
+{
+  "status": "accepted_partial_scope",
+  "reviewer": "parent main session",
+  "basis": "Main session directly reported independent review of the follow-up configuration, installed actual-main CDP verifier, package audit (25), update/same-version records, first/force/after-force/after-same-version evidence, and independent installer/test-kit SHA-256 checks.",
+  "acceptedRequirements": [
+    "V11",
+    "V16"
+  ],
+  "scope": {
+    "V11": "Actual installed package plays the three previously generated real videos and reads media duration; pause, seek, volume, fullscreen API enter/exit and local Range also passed.",
+    "V16": "Isolated copies of four actual completed T15 task rows, original task IDs/immutable bindings/upstream-ID hashes and media files survive forced process-tree termination and restart. Combined with prior T05 synthetic intermediate-state recovery evidence; no paid task was force-stopped mid-generation."
+  },
+  "ordinaryAccountAndCleanMachineAccepted": false,
+  "manualSystemInteractionsAccepted": false,
+  "finalT15Accepted": false,
+  "finalT16Accepted": false,
+  "milestoneM5Accepted": false,
+  "publicDistributionAllowed": false,
+  "commitPushAuthorized": true,
+  "gitScope": "Only this reviewed T16 source/documentation/evidence manifest, normal commit/push origin/dev; no exe/zip/temp/media/Key, main merge or force push.",
+  "parentIndependentAcceptanceCheck": {
+    "status": "passed",
+    "source": "Direct parent-session report, not a local raw log",
+    "requirements": 61,
+    "historicalLayersPreserved": [
+      "T14",
+      "T15",
+      "T16"
+    ],
+    "acceptedRequirements": [
+      "V11",
+      "V16"
+    ],
+    "currentDispositions": {
+      "offline_passed": 39,
+      "real_service_accepted": 11,
+      "real_service_pending": 5,
+      "release_pending": 6,
+      "not_passed": 0
+    },
+    "ordinaryAccountAndCleanMachineAccepted": false,
+    "finalProductAccepted": false
+  }
+}

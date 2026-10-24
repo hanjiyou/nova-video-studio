@@ -1,0 +1,24 @@
+{
+  "observations": [
+    {
+      "stage": "first invocation",
+      "result": "Initial local Node template interpolated an undefined arch variable and builder CLI override invocation failed. No configuration or installer was produced by that invocation. Corrected before the actual builds."
+    },
+    {
+      "stage": "baseline registration",
+      "evidence": "install-baseline.json",
+      "result": "Installer exit 0 and bytes retained; verifier initially decoded PowerShell Chinese path with the wrong output encoding. baseline-registration-inspection.json confirms exact isolated registration after explicit UTF-8 output."
+    },
+    {
+      "stage": "first actual media verifier",
+      "evidence": "first-initial-task-dto-evidence.json",
+      "result": "Used task service DTO lacking prompt, so UI card matching timed out. Corrected to production storage-history DTO, no product change; actual replay passed."
+    },
+    {
+      "stage": "package audit",
+      "evidence": "package-audit-initial-path-error.json",
+      "result": "Audit referenced nonexistent module filenames. Corrected to existing workbench-input.js and opensosen-video/index.js; final installed audit passed 25 checks."
+    }
+  ],
+  "productFixesForTheseObservations": 0
+}

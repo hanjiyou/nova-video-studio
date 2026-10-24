@@ -1,0 +1,48 @@
+{
+  "version": "3.4.0",
+  "installerBuildVersion": "3.4.0.17",
+  "baselineCommit": "fdc40fcd081aeed1b4f24e49c2e63ff4fbcd6bf1",
+  "installerSha256": "28af3e8068fd7af6c3c41014ae3274b4054b509c4c851d7d2be15762d6fbae5c",
+  "samples": [
+    {
+      "mode": "image.text",
+      "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+      "bytes": 1797541,
+      "width": 1448,
+      "height": 1086,
+      "durationSeconds": null
+    },
+    {
+      "mode": "video.dual_reference",
+      "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+      "bytes": 1681464,
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666
+    },
+    {
+      "mode": "video.single_reference",
+      "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+      "bytes": 4059325,
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666
+    },
+    {
+      "mode": "video.text",
+      "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+      "bytes": 3872058,
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666
+    }
+  ],
+  "profileIsPortableBeforeFirstStart": true,
+  "containsCredentials": false,
+  "containsOriginalRemoteTaskIds": false,
+  "containsConnectionProfiles": false,
+  "sampleRecordsAreReconstructedForOfflineTesting": true,
+  "ordinaryAccountAndCleanMachineAccepted": false,
+  "publicDistributionAllowed": false,
+  "FFmpegCorrespondingSourceComplete": false
+}

@@ -1,0 +1,18 @@
+{
+  "startedAt": "2026-10-24T04:52:29.605Z",
+  "checks": {
+    "current installed source desktop/main.cjs": true,
+    "current installed source desktop/preload.cjs": true,
+    "current installed source desktop/ipc.cjs": true,
+    "current installed source desktop/asset-actions.cjs": true,
+    "current installed source desktop/diagnostic-actions.cjs": true,
+    "current installed source desktop/runtime.cjs": true,
+    "current installed source backend/storage/media-validator.js": true,
+    "current installed source backend/storage/store.js": true,
+    "current installed source backend/tasks/service.js": true,
+    "current installed source backend/connections/capabilities.js": true
+  },
+  "status": "failed",
+  "error": "Error: \"backend\\tasks\\workbench-submission.js\" was not found in this archive\n    at Filesystem.getFile (E:\\Learn\\AI\\nova-image-studio\\node_modules\\@electron\\asar\\lib\\filesystem.js:187:19)\n    at Object.extractFile (E:\\Learn\\AI\\nova-image-studio\\node_modules\\@electron\\asar\\lib\\asar.js:256:33)\n    at Object.<anonymous> (E:\\Learn\\AI\\nova-image-studio\\scripts\\verify-t16-followup-package.cjs:5:424)\n    at Module._compile (node:internal/modules/cjs/loader:1812:14)\n    at Object..js (node:internal/modules/cjs/loader:1943:10)\n    at Module.load (node:internal/modules/cjs/loader:1533:32)\n    at Module._load (node:internal/modules/cjs/loader:1335:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:255:19)\n    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)\n    at node:internal/main/run_main_module:33:47",
+  "finishedAt": "2026-10-24T04:52:29.608Z"
+}

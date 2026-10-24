@@ -1,0 +1,46 @@
+{
+  "action": "update",
+  "startedAt": "2026-10-24T04:48:39.793Z",
+  "controller": "nspc-hanjiyou\\administrator",
+  "installer": "E:\\Learn\\AI\\nova-image-studio\\release-t16-followup\\Nova-Studio-3.4.0.17-offline-test-x64.exe",
+  "installerSha256": "28af3e8068fd7af6c3c41014ae3274b4054b509c4c851d7d2be15762d6fbae5c",
+  "install": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格",
+  "profile": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-installed\\隔离数据 中文 空格",
+  "registrationBefore": [
+    {
+      "DisplayName": "Nova Studio 3.4.0.17 - T16 Follow-up Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格\\Uninstall Nova Studio T16 Followup.exe\" /currentuser",
+      "PSChildName": "3e5d42e7-0190-508b-80e7-1e99104f9b23"
+    },
+    {
+      "DisplayName": "Nova Studio 3.4.0 - Local Offline Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\程序 中文 空格\\Uninstall Nova Studio Offline Test.exe\" /currentuser",
+      "PSChildName": "54918c94-e9da-55b0-97dc-31504e3d4b4c"
+    }
+  ],
+  "exitCode": 0,
+  "error": null,
+  "profileBytesUnchanged": true,
+  "registrationAfter": [
+    {
+      "DisplayName": "Nova Studio 3.4.0.17 - T16 Follow-up Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格\\Uninstall Nova Studio T16 Followup.exe\" /currentuser",
+      "PSChildName": "3e5d42e7-0190-508b-80e7-1e99104f9b23"
+    },
+    {
+      "DisplayName": "Nova Studio 3.4.0 - Local Offline Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\程序 中文 空格\\Uninstall Nova Studio Offline Test.exe\" /currentuser",
+      "PSChildName": "54918c94-e9da-55b0-97dc-31504e3d4b4c"
+    }
+  ],
+  "exePresent": true,
+  "otherNovaRegistrationsUnchanged": true,
+  "asarSha256": "6f52057b89a59b32833f46a188e9220bbacb70a904adf2f0458386ffa5c32043",
+  "installedRegistrationMatches": true,
+  "status": "passed",
+  "finishedAt": "2026-10-24T04:48:51.829Z"
+}

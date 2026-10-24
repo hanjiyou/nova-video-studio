@@ -1,0 +1,10 @@
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.offline-followup.yml
+  • loaded parent configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.offline.yml
+  • loaded parent configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  • building        target=nsis file=release-t16-followup-baseline-isolated\Nova-Studio-3.4.0.16-followup-baseline-x64.exe archs=x64 oneClick=false perMachine=false
+  • default Electron icon is used  reason=application icon is not set
+  • signing with signtool.exe  path=release-t16-followup-baseline-isolated\Nova-Studio-3.4.0.16-followup-baseline-x64.__uninstaller.exe
+  • signing with signtool.exe  path=release-t16-followup-baseline-isolated\Nova-Studio-3.4.0.16-followup-baseline-x64.exe
+  • building block map  blockMapFile=release-t16-followup-baseline-isolated\Nova-Studio-3.4.0.16-followup-baseline-x64.exe.blockmap

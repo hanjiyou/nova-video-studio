@@ -1,0 +1,56 @@
+{
+  "scope": "Targeted T16 delivery checks only; full tsc/full lint not rerun or asserted clean",
+  "observedResults": [
+    {
+      "check": "frontend production build",
+      "exitCode": 0,
+      "log": "frontend-build.log"
+    },
+    {
+      "check": "scoped desktop/new-script lint",
+      "exitCode": 0,
+      "log": "host-lint.log"
+    },
+    {
+      "check": "WorkbenchShell lint",
+      "exitCode": 0,
+      "log": "frontend-lint.log"
+    },
+    {
+      "check": "existing B3+B5 UI tests",
+      "exitCode": 0,
+      "passed": 16,
+      "log": "frontend-tests.log"
+    },
+    {
+      "check": "actual installed package audit",
+      "status": "passed",
+      "checks": 25,
+      "evidence": "package-audit.json"
+    },
+    {
+      "check": "installed SQLite/production complete decoding/diagnostics",
+      "status": "passed",
+      "realOutputs": 4,
+      "evidence": "bundled-runtime.json"
+    },
+    {
+      "check": "follow-up acceptance ledger",
+      "status": "passed",
+      "requirements": 61,
+      "historicalLayersPreserved": true,
+      "currentDispositions": "39/11/5/6"
+    },
+    {
+      "check": "existing T16 acceptance/dependency manifest preservation",
+      "status": "passed",
+      "dependencyFilesUnchanged": 6
+    },
+    {
+      "check": "main-session independent follow-up acceptance",
+      "status": "passed",
+      "source": "Direct parent-session report"
+    }
+  ],
+  "repeatedInstallationOrBroadTestsAfterApproval": false
+}

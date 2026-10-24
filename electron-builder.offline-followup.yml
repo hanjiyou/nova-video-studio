@@ -1,0 +1,11 @@
+extends: ./electron-builder.offline.yml
+# Dedicated follow-up identity: never replaces the previous T16 installation.
+appId: com.novaimage.studio.offline-test.followup-20261024
+productName: Nova Studio T16 Followup
+buildVersion: 3.4.0.17
+directories:
+  output: release-t16-followup
+win:
+  artifactName: Nova-Studio-3.4.0.17-offline-test-x64.exe
+nsis:
+  uninstallDisplayName: Nova Studio 3.4.0.17 - T16 Follow-up Test

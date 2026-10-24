@@ -1,0 +1,47 @@
+{
+  "baselineCommit": "fdc40fcd081aeed1b4f24e49c2e63ff4fbcd6bf1",
+  "version": "3.4.0",
+  "installerBuildVersion": "3.4.0.17",
+  "appId": "com.novaimage.studio.offline-test.followup-20261024",
+  "productName": "Nova Studio T16 Followup",
+  "builtFromUncommittedWorkingTree": true,
+  "artifacts": [
+    {
+      "kind": "installer",
+      "file": "release-t16-followup/Nova-Studio-3.4.0.17-offline-test-x64.exe",
+      "bytes": 133452552,
+      "sha256": "28af3e8068fd7af6c3c41014ae3274b4054b509c4c851d7d2be15762d6fbae5c"
+    },
+    {
+      "kind": "windows-test-kit",
+      "file": "release-t16-followup/Nova-Studio-3.4.0.17-Windows-test-kit.zip",
+      "bytes": 144652764,
+      "sha256": "255ba2ec60a2829e368bef44921771a22a1497e20fb4d71b664330d510eca649"
+    },
+    {
+      "kind": "installed-asar",
+      "file": "temp/t16-followup-install/程序 中文 空格/resources/app.asar",
+      "bytes": 9068110,
+      "sha256": "6f52057b89a59b32833f46a188e9220bbacb70a904adf2f0458386ffa5c32043"
+    },
+    {
+      "kind": "installed-exe",
+      "file": "temp/t16-followup-install/程序 中文 空格/Nova Studio T16 Followup.exe",
+      "bytes": 225533952,
+      "sha256": "e486413d0617ffa7e6815aa00f579c45d832d65da5ef9ac56620cc34213fff9a"
+    },
+    {
+      "kind": "old-asar-baseline-installer",
+      "file": "release-t16-followup-baseline-isolated/Nova-Studio-3.4.0.16-followup-baseline-x64.exe",
+      "bytes": 133449315,
+      "sha256": "99200e33defa5bbab656ff0bc38cffc42733d9a8b8d4e130a4122711dca1df5f"
+    }
+  ],
+  "oldInstallerPreserved": {
+    "file": "release-t16/Nova-Studio-3.4.0-offline-test-x64.exe",
+    "sha256": "68fea9929c93d09b66df528e29eb9c357d7f69360a9db655bdea4a72151b81dd"
+  },
+  "ordinaryAccountAndCleanMachineAccepted": false,
+  "publicDistributionAllowed": false,
+  "FFmpegCorrespondingSourceComplete": false
+}

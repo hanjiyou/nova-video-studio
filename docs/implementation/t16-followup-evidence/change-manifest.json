@@ -1,0 +1,295 @@
+{
+  "baselineCommit": "fdc40fcd081aeed1b4f24e49c2e63ff4fbcd6bf1",
+  "branch": "dev",
+  "approval": "approval-review.json",
+  "scope": "Only reviewed T16 source, docs and bounded evidence; no installers/test-kit archives/temp/media/credentials",
+  "files": [
+    {
+      "file": "desktop/installer/LOCAL-TEST-NOTICE.txt",
+      "workingBytes": 2034,
+      "workingSha256": "742d7b0886e2c28e91a2d804c4d25ecb519c0efe851f521aac38496a7492fbe3",
+      "gitBlobId": "833b16a4bd36e1b6c690bc8d4c85883646e221c8"
+    },
+    {
+      "file": "desktop/main.cjs",
+      "workingBytes": 6665,
+      "workingSha256": "37e3577f50ee0e5002ebe188c7bd5238675a22ec4003d921b60629e324ea39bd",
+      "gitBlobId": "726c0b58577047de33b3db0c58621c32d6efd6dd"
+    },
+    {
+      "file": "desktop/third-party/THIRD-PARTY-NOTICES.md",
+      "workingBytes": 1285,
+      "workingSha256": "b4c119cf3dc6ccbaeedaeea32230ebc1ee0ee46665a3ed756146cf93ac7d68be",
+      "gitBlobId": "74487b5e84e11e238d0c45e46e8e119b06095a9d"
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "workingBytes": 29250,
+      "workingSha256": "fce400195fe207a49fd1546db0fa30b85a076f784a7c7079859e0d02c4f1c4d3",
+      "gitBlobId": "21bc34a12b2013dd16c278c0e1c500ab8302bb9b"
+    },
+    {
+      "file": "docs/T16-另一台Windows电脑验收步骤.md",
+      "workingBytes": 4271,
+      "workingSha256": "471ddc3a7ff283080b590f06d185255842561f15b305441d373f6234a5a1b4b9",
+      "gitBlobId": "3cb8b9ee75f3e3838eb13b8d38d6306b17e6a6b3"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "workingBytes": 242322,
+      "workingSha256": "3ab7f65975cf1b9abd40872941a239925a2fefedfb8c6ecb85d28be0ac1e084d",
+      "gitBlobId": "b5fe97a0fc87c93659d51dd30c31e71af74dfe65"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "workingBytes": 17483,
+      "workingSha256": "61734dc34e80a950311ea265a6b99828418c405d34d66f01dacb9c610a6d10dd",
+      "gitBlobId": "09f4a0124dec6c298e97eab02ff92d87a89863e8"
+    },
+    {
+      "file": "docs/implementation/T16-新版离线包与真实媒体安装验收.md",
+      "workingBytes": 5898,
+      "workingSha256": "ab9f507c10b183fd11b81853f1ae76b900ec80e23b66ec6f9dda6ffea870cec6",
+      "gitBlobId": "5be0544dfac9db2415532c62891bdbfb93d6c853"
+    },
+    {
+      "file": "docs/implementation/T16-本地离线安装交付准备.md",
+      "workingBytes": 13906,
+      "workingSha256": "e468e0f964bd7f23a228d390221a19311785f20f85916d5829ddbdcf7bca2ac9",
+      "gitBlobId": "486c1497bb25ccb1d385cc7e92af6d21893a8b59"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/after-force-evidence.json",
+      "workingBytes": 10596,
+      "workingSha256": "e62bea8fb7c04251e70b0f22a438ab81f7310407bd40d808f090870dfdd8d680",
+      "gitBlobId": "41f55c4dd8e4a3a9e6482e418ec61b52f8971f32"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/after-same-version-evidence.json",
+      "workingBytes": 8888,
+      "workingSha256": "37ab85cc0198264d629e853a5690bfa324a19314469643cb86359886b58f45d6",
+      "gitBlobId": "01650f003d98d00f6c752ee7a3116fe3b90a1ba7"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/approval-review.json",
+      "workingBytes": 1929,
+      "workingSha256": "b609d2f1ed496aff54dd3860785f7e563c8f8ab2e2a1a906e589cf9237ef4712",
+      "gitBlobId": "faf8d0b26688b2b62cbd9a54267dfbc84399c78a"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/artifact-manifest.json",
+      "workingBytes": 1835,
+      "workingSha256": "4022382b052e0fa6fdc8684ab287c5c2b0ad29021989976855807ab4e145c479",
+      "gitBlobId": "d957fdffa1a2b1e82875a3492e531a52e7f7c9f3"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/baseline-evidence.json",
+      "workingBytes": 8832,
+      "workingSha256": "032c78ef8356d2cd80f270ad937288da2119692c6d18166990013cfa36844417",
+      "gitBlobId": "4f691b40155156670784e2004fa1ace89179bac8"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/baseline-installer-build.log",
+      "workingBytes": 1092,
+      "workingSha256": "083cefc231bdcf699b0e54d81f774df3ed6330fdcd3ba68303a152ce4a22717f",
+      "gitBlobId": "f62c130df2124f4c3e9b40ff31455871cf411cc4"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/baseline-registration-inspection.json",
+      "workingBytes": 770,
+      "workingSha256": "68d4ea676ecaa3f7b2849027d3e730cfa45e0e64789fe710dac90398212bc137",
+      "gitBlobId": "90d74a44aeac2c464f34b6022c10affbbf2ad13d"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/bundled-runtime-stderr.log",
+      "workingBytes": 0,
+      "workingSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobId": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/bundled-runtime.json",
+      "workingBytes": 9358,
+      "workingSha256": "76aa7c33466966db42f9bf50602fb0464a770f64969555968bdfbd9df696597c",
+      "gitBlobId": "4d0cd4bc18a94a16a8fa648d1b8325cf8dddae79"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/change-manifest.json",
+      "selfReference": true
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/first-evidence.json",
+      "workingBytes": 10590,
+      "workingSha256": "9494ed3d6b2f6c2dd6d3614774a135df59a5c2d2f55894921afa2e7090dfebef",
+      "gitBlobId": "5f17c458be6d9e7642e79412e6c62a8e531d6932"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/first-initial-task-dto-evidence.json",
+      "workingBytes": 3767,
+      "workingSha256": "96f2236305421f6ddc1d15fb9865100bfd329d7a4ee01c3d68c359ab955a8757",
+      "gitBlobId": "fb7a28d243a26d279913c59cbac133a1457f0ea7"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/force-evidence.json",
+      "workingBytes": 8983,
+      "workingSha256": "d654f5f3046ef8271332179a2024ce343b953058e2ade59e00028c0560bc7be5",
+      "gitBlobId": "56a453e3c50d060c1672ca422669f0158602c118"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/frontend-build.log",
+      "workingBytes": 986,
+      "workingSha256": "0d501130df9ed1132c20f24522ca14bd0370b2c256e2d32f65f4cbaa1580cfb2",
+      "gitBlobId": "494666dca5eee31ae6008e6c5c4c2cb6fde3513c"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/frontend-lint.log",
+      "workingBytes": 0,
+      "workingSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobId": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/frontend-tests.log",
+      "workingBytes": 412,
+      "workingSha256": "d99984917173ac38499456bb4f19aded5039d68de4f1376d411ff83ed44619c6",
+      "gitBlobId": "46ad95099c130418e3d79fa39c397c211d1f7200"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/git-whitespace-observation.json",
+      "workingBytes": 533,
+      "workingSha256": "0d45f3296f6b3a4f9f594766e5f93d1e92204e8bdabf785a165b0b80449e70da",
+      "gitBlobId": "25c950e16a75e2ce08a4c3858e7f94ef174af724"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/handoff-manifest.json",
+      "workingBytes": 1533,
+      "workingSha256": "4609d18f0611e01107e9b1199f4066c321b7924f270e5d801bd821fdd5b57371",
+      "gitBlobId": "88b9924fa98a0bf6eb959acfbd87ff0c8e34f6e3"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/host-lint.log",
+      "workingBytes": 0,
+      "workingSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gitBlobId": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/initial-observations.json",
+      "workingBytes": 1253,
+      "workingSha256": "681c1af63c8156e70f044dac3cbea2460c3e8d508169aabcccb4676953dd9b6f",
+      "gitBlobId": "1b847627eacef7d5d038f41e6a04ffb0f4c669dc"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/install-baseline.json",
+      "workingBytes": 1984,
+      "workingSha256": "31ef683803ba9737af32d6f58eba9dcdfb434c3674905ab0a28f61ca5df3e67c",
+      "gitBlobId": "509859d8794b82ece4dda5ecca50cc67c8424e41"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/install-same-version.json",
+      "workingBytes": 2262,
+      "workingSha256": "237dd1ced8c4641d8dd220c9f0db9773db046707b74aa2aba56aacb3c6aedd5b",
+      "gitBlobId": "e9db1ba968399ba47e08e5c43aaab0a8b4da04da"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/install-update.json",
+      "workingBytes": 2256,
+      "workingSha256": "90371e18881386485db5286b804631d5a07a37ab48e4093fb5b6797de9f5071c",
+      "gitBlobId": "d190763aacb32fe66dd800a8e0dd4016f02f0b28"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/installer-build.log",
+      "workingBytes": 1991,
+      "workingSha256": "788a0a5264dbd15840d5e076a59df267ccfb93ce4dda0878f53a5638305063c9",
+      "gitBlobId": "3fa276b644474cdf228f905f869c2c42a26f040c"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/package-audit-initial-path-error.json",
+      "workingBytes": 1659,
+      "workingSha256": "a1d3ba2d00a4fc41beefb217f390c37e3fcb968ee310a51772844df10be0dc06",
+      "gitBlobId": "e368bc70620008d090d3dcd6253f30b1290585e3"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/package-audit.json",
+      "workingBytes": 1917,
+      "workingSha256": "f3831fd332a541fcd12f16c5ff3b45fe8ea7720e043f33b5ff7005a0cd67e99a",
+      "gitBlobId": "9f9d69a6061671f88ae6a6843663ad2b40661b6e"
+    },
+    {
+      "file": "docs/implementation/t16-followup-evidence/verification-results.json",
+      "workingBytes": 1463,
+      "workingSha256": "bbebe1172e8eeef84c6ad3788a8edfaf07dd05845e2db612eeafc9af08301597",
+      "gitBlobId": "9c386f226ad982d3911a1055ed485e30c63c9756"
+    },
+    {
+      "file": "docs/本地离线测试版使用说明.md",
+      "workingBytes": 6675,
+      "workingSha256": "77374118a102c0a300aeffd1195fe4532fad545436de26357e5987059fad35c4",
+      "gitBlobId": "a201de167fe4e1a7745c002f86116a6a9d7e7f9c"
+    },
+    {
+      "file": "electron-builder.offline-followup.yml",
+      "workingBytes": 417,
+      "workingSha256": "df6ff236dd58d92edecf92d898c928ffe08b5ac454c71c68f0d74fe2bb4c4a95",
+      "gitBlobId": "c3f81d9d42af6cfc3efb031bb17bab6976913344"
+    },
+    {
+      "file": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "workingBytes": 20083,
+      "workingSha256": "2f634ae7a9464a46103f78fd30838b39cbab1514ca0ae5ee913f6bdf5fcbf327",
+      "gitBlobId": "24e27cbd3e9e610aadfa97df47cdacd0763ea9d5"
+    },
+    {
+      "file": "scripts/prepare-t16-followup-handoff.cjs",
+      "workingBytes": 4999,
+      "workingSha256": "a2f18388dfe56e5eb3b2d2ef7dcdc751fd52f5410bc63d048ddc9d2a599c1f28",
+      "gitBlobId": "ff81c6da714ab97407dd2a468f3a9df41a8cd38f"
+    },
+    {
+      "file": "scripts/t16-followup-payload.cjs",
+      "workingBytes": 1905,
+      "workingSha256": "7f04e9cc06730849c2175e9d76318f40adfb102c8aec5686c29310e134d8b3ec",
+      "gitBlobId": "5b33b340665e71b9570d78114aba0f8b98ad8b96"
+    },
+    {
+      "file": "scripts/test-t16-followup-install.cjs",
+      "workingBytes": 3947,
+      "workingSha256": "bd97f6a8f8b94f9d0f36c6dffd4dd39f531576934b293a599d02d409251f7cad",
+      "gitBlobId": "60613fcaf6454ef8eb74e1f8529a27c1847267f5"
+    },
+    {
+      "file": "scripts/verify-b5-acceptance.cjs",
+      "workingBytes": 2013,
+      "workingSha256": "f8944c228e6b9d77484d5a8cec6b182d3ea6e664b9caa78f1db4b4e3995cf473",
+      "gitBlobId": "3f3731585fab5f723e681cb09036e7571d3b4d8e"
+    },
+    {
+      "file": "scripts/verify-desktop-t16-followup.cjs",
+      "workingBytes": 14678,
+      "workingSha256": "f6bf37bc19b4c3361b9ba2f097b2232cdbed6250891a93ddc72490570c7672c7",
+      "gitBlobId": "68325e67eb6cdd4c525eef4ceda1916a5abfbd6c"
+    },
+    {
+      "file": "scripts/verify-t15-acceptance.cjs",
+      "workingBytes": 6831,
+      "workingSha256": "e3e64166493309f7741514be6bf46a9211645f64904a2f0a0a3220f564bb6478",
+      "gitBlobId": "2057c45c86d990a73b727ede1540b47a05079de9"
+    },
+    {
+      "file": "scripts/verify-t16-acceptance.cjs",
+      "workingBytes": 2870,
+      "workingSha256": "30e5608f8b93ddf45a09439b00e694b3f99e8149f7c7b0d32827e73d9362d712",
+      "gitBlobId": "b185a50b4600e5dcdeb3f48ff83dcb6429f8084c"
+    },
+    {
+      "file": "scripts/verify-t16-followup-acceptance.cjs",
+      "workingBytes": 5263,
+      "workingSha256": "e7a395e53f02970384a956a77211ecc0701143d7af4be67233424d26cd607669",
+      "gitBlobId": "29f924cdb1334d109b51bc3d433c092be8d1f59c"
+    },
+    {
+      "file": "scripts/verify-t16-followup-package.cjs",
+      "workingBytes": 4038,
+      "workingSha256": "7648c1224f60a8d1ac0e93481f9bdbb5e83fa4a1b07ce49f2871460b792abf9c",
+      "gitBlobId": "1d1b1329f9d0f89561c99a3aba26e6f410c3b86b"
+    }
+  ],
+  "hashNote": "Working-tree SHA-256 records original bytes; Git may normalize text EOL. gitBlobId identifies normalized repository content. Self-reference is identified by the final Git tree."
+}

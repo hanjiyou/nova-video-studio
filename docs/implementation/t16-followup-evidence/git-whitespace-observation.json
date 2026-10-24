@@ -1,0 +1,18 @@
+{
+  "command": "git diff --cached --check",
+  "exitCode": 2,
+  "sourceCodeWhitespaceDiagnostics": 0,
+  "observations": [
+    {
+      "file": "frontend-build.log",
+      "line": 35,
+      "kind": "new blank line at EOF"
+    },
+    {
+      "file": "frontend-tests.log",
+      "line": 11,
+      "kind": "new blank line at EOF"
+    }
+  ],
+  "interpretation": "Two original command-output logs retain their exact EOF bytes. This Git whitespace check is not reported as exit 0; no product/source-code whitespace diagnostic was emitted."
+}

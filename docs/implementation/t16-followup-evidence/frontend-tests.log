@@ -1,0 +1,11 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/workbench-b5.test.tsx (5 tests) 190ms
+ ✓ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests) 734ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
+   Start at  12:54:00
+   Duration  1.94s (transform 167ms, setup 139ms, collect 461ms, tests 924ms, environment 875ms, prepare 260ms)
+

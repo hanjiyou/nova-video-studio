@@ -1,0 +1,36 @@
+{
+  "startedAt": "2026-10-24T04:52:48.464Z",
+  "checks": {
+    "current installed source desktop/main.cjs": true,
+    "current installed source desktop/preload.cjs": true,
+    "current installed source desktop/ipc.cjs": true,
+    "current installed source desktop/asset-actions.cjs": true,
+    "current installed source desktop/diagnostic-actions.cjs": true,
+    "current installed source desktop/runtime.cjs": true,
+    "current installed source backend/storage/media-validator.js": true,
+    "current installed source backend/storage/store.js": true,
+    "current installed source backend/tasks/service.js": true,
+    "current installed source backend/connections/capabilities.js": true,
+    "current installed source backend/tasks/workbench-input.js": true,
+    "current installed source backend/plugins/opensosen-video/index.js": true,
+    "current installed resource 本地离线测试版使用说明.md": true,
+    "current installed resource LOCAL-TEST-NOTICE.txt": true,
+    "current installed resource licenses/notices/FFmpeg-SOURCE-STATUS.json": true,
+    "current installed resource licenses/notices/THIRD-PARTY-NOTICES.md": true,
+    "current installed resource licenses/FFmpeg-GPLv3.txt": true,
+    "current installed resource licenses/FFmpeg-build.txt": true,
+    "current installed resource licenses/Nova-AGPL-3.0.txt": true,
+    "installed archive equals final build": true,
+    "no test scripts or user data in ASAR": true,
+    "audited GPL FFmpeg retained": true,
+    "Electron Chromium licenses retained": true,
+    "partial 33 source materials do not unlock distribution": true,
+    "installed bundled SQLite full media decoding diagnostics": true
+  },
+  "hashes": {
+    "exe": "e486413d0617ffa7e6815aa00f579c45d832d65da5ef9ac56620cc34213fff9a",
+    "asar": "6f52057b89a59b32833f46a188e9220bbacb70a904adf2f0458386ffa5c32043"
+  },
+  "status": "passed",
+  "finishedAt": "2026-10-24T04:52:51.108Z"
+}

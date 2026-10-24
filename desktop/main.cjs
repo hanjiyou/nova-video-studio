@@ -52,7 +52,7 @@ async function cleanup() {
   network?.dispose();
 }
 function createWindow(origin, features) {
-  mainWindow = new BrowserWindow({ width: 1440, height: 900, title: '影像工作台 · 本地离线测试版 · 真实生成待验证', webPreferences: {
+  mainWindow = new BrowserWindow({ width: 1440, height: 900, title: '影像工作台 · 本地离线测试版 · 完整功能验收中', webPreferences: {
     preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true,
     additionalArguments: ['--nova-agent-enabled=' + features.agent, '--nova-cdp-enabled=' + features.browserAutomation],
   } });

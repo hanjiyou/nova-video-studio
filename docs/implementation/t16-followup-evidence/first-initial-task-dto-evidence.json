@@ -1,0 +1,38 @@
+{
+  "phase": "first",
+  "startedAt": "2026-10-24T04:48:51.918Z",
+  "scope": "Actual installed sandboxed application with isolated copies of completed T15 tasks and real media; no Key reads, no generation or mock dialog acceptance",
+  "checks": {
+    "prelaunch persisted task IDs snapshots files draft and empty vault preserved": true,
+    "installed sandboxed renderer has no Node": true,
+    "isolated override and actual application version": true,
+    "four-mode qualification visible": true,
+    "sessionless local HTTP denied": true,
+    "four original real completed task IDs and verified outputs restored": true,
+    "no credentials and no active generation": true,
+    "actual real image displayed": true
+  },
+  "controller": "nspc-hanjiyou\\administrator",
+  "tokenGroups": "\r\nGROUP INFORMATION\r\n-----------------\r\n\r\nGroup Name                           Type             SID          Attributes                                                     \r\n==================================== ================ ============ ===============================================================\r\nEveryone                             Well-known group S-1-1-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户和管理员组成员  Well-known group S-1-5-114    Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Administrators               Alias            S-1-5-32-544 Mandatory group, Enabled by default, Enabled group, Group owner\r\nBUILTIN\\Performance Log Users        Alias            S-1-5-32-559 Mandatory group, Enabled by default, Enabled group             \r\nBUILTIN\\Users                        Alias            S-1-5-32-545 Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\INTERACTIVE             Well-known group S-1-5-4      Mandatory group, Enabled by default, Enabled group             \r\nCONSOLE LOGON                        Well-known group S-1-2-1      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\Authenticated Users     Well-known group S-1-5-11     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\This Organization       Well-known group S-1-5-15     Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\本地帐户                Well-known group S-1-5-113    Mandatory group, Enabled by default, Enabled group             \r\nLOCAL                                Well-known group S-1-2-0      Mandatory group, Enabled by default, Enabled group             \r\nNT AUTHORITY\\NTLM Authentication     Well-known group S-1-5-64-10  Mandatory group, Enabled by default, Enabled group             \r\nMandatory Label\\High Mandatory Level Label            S-1-16-12288                                                                \r\n",
+  "scrubbedPath": "C:\\Windows\\System32;C:\\Windows",
+  "executable": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格\\Nova Studio T16 Followup.exe",
+  "packageHashes": {
+    "exe": "e486413d0617ffa7e6815aa00f579c45d832d65da5ef9ac56620cc34213fff9a",
+    "asar": "6f52057b89a59b32833f46a188e9220bbacb70a904adf2f0458386ffa5c32043"
+  },
+  "pid": 22912,
+  "runtime": {
+    "ok": true,
+    "version": "3.4.0",
+    "storageMode": "override",
+    "features": {
+      "agent": false,
+      "browserAutomation": false,
+      "serviceWorker": false
+    }
+  },
+  "videos": [],
+  "status": "failed",
+  "error": "Error: Timed out\n    at until (E:\\Learn\\AI\\nova-image-studio\\scripts\\verify-desktop-t16-followup.cjs:17:268)\n    at async E:\\Learn\\AI\\nova-image-studio\\scripts\\verify-desktop-t16-followup.cjs:50:67",
+  "finishedAt": "2026-10-24T04:49:33.279Z"
+}

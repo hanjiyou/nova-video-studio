@@ -1,0 +1,40 @@
+{
+  "action": "baseline",
+  "startedAt": "2026-10-24T04:47:50.804Z",
+  "controller": "nspc-hanjiyou\\administrator",
+  "installer": "E:\\Learn\\AI\\nova-image-studio\\release-t16-followup-baseline-isolated\\Nova-Studio-3.4.0.16-followup-baseline-x64.exe",
+  "installerSha256": "99200e33defa5bbab656ff0bc38cffc42733d9a8b8d4e130a4122711dca1df5f",
+  "install": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格",
+  "profile": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-installed\\隔离数据 中文 空格",
+  "registrationBefore": [
+    {
+      "DisplayName": "Nova Studio 3.4.0 - Local Offline Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\���� ���� �ո�\\Uninstall Nova Studio Offline Test.exe\" /currentuser",
+      "PSChildName": "54918c94-e9da-55b0-97dc-31504e3d4b4c"
+    }
+  ],
+  "exitCode": 0,
+  "error": null,
+  "profileBytesUnchanged": true,
+  "registrationAfter": [
+    {
+      "DisplayName": "Nova Studio 3.4.0.17 - T16 Follow-up Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\���� ���� �ո�\\Uninstall Nova Studio T16 Followup.exe\" /currentuser",
+      "PSChildName": "3e5d42e7-0190-508b-80e7-1e99104f9b23"
+    },
+    {
+      "DisplayName": "Nova Studio 3.4.0 - Local Offline Test",
+      "DisplayVersion": "3.4.0",
+      "UninstallString": "\"E:\\Learn\\AI\\nova-image-studio\\temp\\t16-admin-install\\���� ���� �ո�\\Uninstall Nova Studio Offline Test.exe\" /currentuser",
+      "PSChildName": "54918c94-e9da-55b0-97dc-31504e3d4b4c"
+    }
+  ],
+  "exePresent": true,
+  "otherNovaRegistrationsUnchanged": true,
+  "asarSha256": "b1128d1c4b17f191cc96c10e18ac70237bd603ab7e3f277bd27127ab1e50e324",
+  "installedRegistrationMatches": false,
+  "status": "failed",
+  "finishedAt": "2026-10-24T04:47:59.581Z"
+}

@@ -2101,7 +2101,7 @@
         "T12",
         "T16"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/b2-evidence/targeted.log",
@@ -2131,7 +2131,13 @@
           "../implementation/b4-evidence/approval-review.json",
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json",
-          "../implementation/b2-evidence/windows-file-lock.json"
+          "../implementation/b2-evidence/windows-file-lock.json",
+          "../implementation/t16-followup-evidence/first-evidence.json",
+          "../implementation/t16-followup-evidence/force-evidence.json",
+          "../implementation/t16-followup-evidence/after-force-evidence.json",
+          "../implementation/t16-followup-evidence/after-same-version-evidence.json",
+          "../implementation/t16-followup-evidence/package-audit.json",
+          "../implementation/t16-followup-evidence/approval-review.json"
         ]
       },
       "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。 非阻断视觉待办留B5：04-local-video-playback.png预览下沿的媒体尺寸/时长说明有裁切，需窗口/缩放针对验收。",
@@ -2178,6 +2184,22 @@
           "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
         ],
         "reviewStatus": "incomplete"
+      },
+      "t16FollowupVerification": {
+        "status": "accepted",
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "Actual installed package plays the three previously generated real videos and reads media duration; pause, seek, volume, fullscreen API enter/exit and local Range also passed.",
+        "remaining": "",
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/t16-followup-evidence/first-evidence.json",
+          "../implementation/t16-followup-evidence/force-evidence.json",
+          "../implementation/t16-followup-evidence/after-force-evidence.json",
+          "../implementation/t16-followup-evidence/after-same-version-evidence.json",
+          "../implementation/t16-followup-evidence/package-audit.json",
+          "../implementation/t16-followup-evidence/approval-review.json"
+        ]
       }
     },
     {
@@ -2431,7 +2453,7 @@
         "T08",
         "T12"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t05-evidence/tasks-targeted.log",
@@ -2463,7 +2485,13 @@
           "../implementation/b4-evidence/approval-review.json",
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json",
-          "../implementation/b2-evidence/windows-file-lock.json"
+          "../implementation/b2-evidence/windows-file-lock.json",
+          "../implementation/t16-followup-evidence/first-evidence.json",
+          "../implementation/t16-followup-evidence/force-evidence.json",
+          "../implementation/t16-followup-evidence/after-force-evidence.json",
+          "../implementation/t16-followup-evidence/after-same-version-evidence.json",
+          "../implementation/t16-followup-evidence/package-audit.json",
+          "../implementation/t16-followup-evidence/approval-review.json"
         ]
       },
       "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 T05基础范围已由主会话验收并明确批准提交推送：持久本地去重、派发/ID、保守占位和重启/API基础已离线验证；完整界面、T08下载和真实线路未验收，不把 mock/原生API验证当作产品项整体通过。 B1 原生两次启动保留原ID/连接，恢复只GET；候选下载排队不冒充已保存媒体，文件恢复待 T08。 B1审核补修统一拒绝不可查询的纯点段ID，保留未知/暂停任务占位，正常opaque ID仍按单段查询；不重POST。 B2/T08实现基础已由主会话审核接受：下载/完整媒体校验、目录冻结、Range及assetId文件动作有离线和真实本地原生证据；完整UI、手工系统对话框、真实供应商及发布未验收。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。",
@@ -2505,6 +2533,23 @@
           "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
         ],
         "reviewStatus": "incomplete"
+      },
+      "t16FollowupVerification": {
+        "status": "accepted",
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "Isolated copies of four actual completed T15 task rows, original task IDs/immutable bindings/upstream-ID hashes and media files survive forced process-tree termination and restart. Combined with prior T05 synthetic intermediate-state recovery evidence; no paid task was force-stopped mid-generation.",
+        "remaining": "",
+        "reviewStatus": "accepted_by_parent",
+        "evidence": [
+          "../implementation/t16-followup-evidence/first-evidence.json",
+          "../implementation/t16-followup-evidence/force-evidence.json",
+          "../implementation/t16-followup-evidence/after-force-evidence.json",
+          "../implementation/t16-followup-evidence/after-same-version-evidence.json",
+          "../implementation/t16-followup-evidence/package-audit.json",
+          "../implementation/t16-followup-evidence/approval-review.json",
+          "../implementation/T05-任务状态机与重启恢复.md"
+        ]
       }
     },
     {
@@ -3975,5 +4020,30 @@
       "opensosen-text-video-evidence-2026-10-24-v1"
     ],
     "totalGenerationRequestsSent": 7
+  },
+  "t16Followup": {
+    "status": "accepted_partial_scope",
+    "baselineCommit": "fdc40fcd081aeed1b4f24e49c2e63ff4fbcd6bf1",
+    "acceptedRequirements": [
+      "V11",
+      "V16"
+    ],
+    "currentDispositions": {
+      "offline_passed": 39,
+      "real_service_accepted": 11,
+      "real_service_pending": 5,
+      "release_pending": 6,
+      "not_passed": 0
+    },
+    "report": "../implementation/T16-新版离线包与真实媒体安装验收.md",
+    "parentReview": "../implementation/t16-followup-evidence/approval-review.json",
+    "generationRequestsSent": 0,
+    "realCredentialReads": 0,
+    "ordinaryAccountAndCleanMachineAccepted": false,
+    "manualSystemInteractionsAccepted": false,
+    "finalT15Accepted": false,
+    "finalT16Accepted": false,
+    "milestoneM5Accepted": false,
+    "publicDistributionAllowed": false
   }
 }

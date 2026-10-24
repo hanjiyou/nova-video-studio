@@ -1,0 +1,276 @@
+{
+  "status": "passed",
+  "scope": "Installed Electron Node mode, actual packaged SQLite/validator/diagnostics, full decode of the four authorized real outputs. No system SaveDialog claim.",
+  "electron": "43.4.0",
+  "decoder": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格\\resources\\app.asar.unpacked\\node_modules\\ffmpeg-static\\ffmpeg.exe",
+  "results": [
+    {
+      "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666,
+      "decodedFrames": 145
+    },
+    {
+      "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+      "width": 1448,
+      "height": 1086,
+      "durationSeconds": null,
+      "decodedFrames": 1
+    },
+    {
+      "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666,
+      "decodedFrames": 145
+    },
+    {
+      "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+      "width": 1280,
+      "height": 720,
+      "durationSeconds": 6.041666666666666,
+      "decodedFrames": 145
+    }
+  ],
+  "diagnostics": {
+    "format": "nova-diagnostics-v1",
+    "createdAt": "2026-10-24T04:52:50.913Z",
+    "privacy": {
+      "promptText": false,
+      "rawResponses": false,
+      "credentials": false,
+      "urls": false,
+      "paths": false,
+      "mediaBytes": false,
+      "scope": "latest_1000_tasks_including_hidden"
+    },
+    "application": {
+      "version": "3.4.0",
+      "electron": "43.4.0",
+      "node": "24.18.1",
+      "platform": "win32",
+      "arch": "x64"
+    },
+    "schemaVersion": 6,
+    "counts": {
+      "tasks": 4,
+      "exported": 4,
+      "omitted": 0,
+      "pendingSubmissionIntents": 0
+    },
+    "tasks": [
+      {
+        "localTaskId": "eac6a1f5-ea89-4480-81ce-60a691e38266",
+        "localRequestId": "c11182a6-d63e-4331-b8f9-40559d69fd66",
+        "connectionVersionId": "6bb72bde-e460-46df-852d-1c1396845d3e",
+        "capabilityVersionId": "556e8188-b7f0-4dbd-bd06-9eb536d723e1",
+        "outputDirectoryVersionId": "00000000-0000-4000-8000-000000000001",
+        "state": "completed",
+        "mode": "video.text",
+        "model": "grok-imagine-video-1.5-6s",
+        "parameters": {
+          "seconds": 6
+        },
+        "promptCharacters": 101,
+        "createdAt": "2026-10-24T04:29:28.519Z",
+        "completedAt": "2026-10-24T04:30:39.403Z",
+        "dispatched": true,
+        "upstreamIdPresent": true,
+        "remoteState": "completed",
+        "requiresContinue": false,
+        "notBeforeAt": null,
+        "responseSummary": {
+          "remoteIdReceived": true,
+          "httpStatus": null
+        },
+        "error": null,
+        "assets": [
+          {
+            "assetId": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+            "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+            "kind": "video",
+            "mimeType": "video/mp4",
+            "byteLength": 3872058,
+            "width": 1280,
+            "height": 720,
+            "durationSeconds": 6.041666666666666,
+            "availability": "available",
+            "role": "output",
+            "position": 0
+          }
+        ],
+        "eventCount": 1,
+        "hidden": false
+      },
+      {
+        "localTaskId": "c96c1d5f-67b4-4a23-b61e-23e4a285fbdb",
+        "localRequestId": "6836f541-6005-40da-b417-67b36ed57a9b",
+        "connectionVersionId": "da6d9494-80d4-4222-9c00-8cbd7bfdf053",
+        "capabilityVersionId": "ac436da9-0fe0-42fa-95e2-c480e6478fae",
+        "outputDirectoryVersionId": "00000000-0000-4000-8000-000000000001",
+        "state": "completed",
+        "mode": "video.dual_reference",
+        "model": "grok-imagine-video-1.5-6s",
+        "parameters": {
+          "seconds": 6,
+          "size": "1280x720"
+        },
+        "promptCharacters": 147,
+        "createdAt": "2026-10-24T03:21:15.211Z",
+        "completedAt": "2026-10-24T03:22:48.837Z",
+        "dispatched": true,
+        "upstreamIdPresent": true,
+        "remoteState": "completed",
+        "requiresContinue": false,
+        "notBeforeAt": null,
+        "responseSummary": {
+          "remoteIdReceived": true,
+          "httpStatus": null
+        },
+        "error": null,
+        "assets": [
+          {
+            "assetId": "5a2e4159-662e-4edd-8438-c849b2d789c0",
+            "sha256": "07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e",
+            "kind": "image",
+            "mimeType": "image/png",
+            "byteLength": 1514260,
+            "width": 1672,
+            "height": 941,
+            "durationSeconds": null,
+            "availability": "available",
+            "role": "input",
+            "position": 0
+          },
+          {
+            "assetId": "2ba637a9-5ecb-4708-859e-80172231d7c7",
+            "sha256": "a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7",
+            "kind": "image",
+            "mimeType": "image/png",
+            "byteLength": 1671548,
+            "width": 1672,
+            "height": 941,
+            "durationSeconds": null,
+            "availability": "available",
+            "role": "input",
+            "position": 1
+          },
+          {
+            "assetId": "4b42e4f7-b204-4318-bd13-40285f5cedd9",
+            "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+            "kind": "video",
+            "mimeType": "video/mp4",
+            "byteLength": 1681464,
+            "width": 1280,
+            "height": 720,
+            "durationSeconds": 6.041666666666666,
+            "availability": "available",
+            "role": "output",
+            "position": 0
+          }
+        ],
+        "eventCount": 1,
+        "hidden": false
+      },
+      {
+        "localTaskId": "b745fd89-5a7e-4196-99c4-dd743657c13e",
+        "localRequestId": "04fb2cbe-2efc-442a-8b20-41ee2e413a11",
+        "connectionVersionId": "da6d9494-80d4-4222-9c00-8cbd7bfdf053",
+        "capabilityVersionId": "08016091-cd7c-4a20-9f92-24e4bb4a3f5b",
+        "outputDirectoryVersionId": "00000000-0000-4000-8000-000000000001",
+        "state": "completed",
+        "mode": "video.single_reference",
+        "model": "grok-imagine-video-1.5-6s",
+        "parameters": {
+          "seconds": 6,
+          "size": "1280x720"
+        },
+        "promptCharacters": 121,
+        "createdAt": "2026-10-24T03:19:38.213Z",
+        "completedAt": "2026-10-24T03:21:14.489Z",
+        "dispatched": true,
+        "upstreamIdPresent": true,
+        "remoteState": "completed",
+        "requiresContinue": false,
+        "notBeforeAt": null,
+        "responseSummary": {
+          "remoteIdReceived": true,
+          "httpStatus": null
+        },
+        "error": null,
+        "assets": [
+          {
+            "assetId": "adef4250-ee2d-4f9d-b146-c9644e04b260",
+            "sha256": "8e8fe2c3e332e1b8d4363e666a2bff81da6e8f5c70cbe898ef770472f9a12afb",
+            "kind": "image",
+            "mimeType": "image/png",
+            "byteLength": 1894345,
+            "width": 1672,
+            "height": 941,
+            "durationSeconds": null,
+            "availability": "available",
+            "role": "input",
+            "position": 0
+          },
+          {
+            "assetId": "18dda6e4-2f44-4fd0-8e36-630b444eca76",
+            "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+            "kind": "video",
+            "mimeType": "video/mp4",
+            "byteLength": 4059325,
+            "width": 1280,
+            "height": 720,
+            "durationSeconds": 6.041666666666666,
+            "availability": "available",
+            "role": "output",
+            "position": 0
+          }
+        ],
+        "eventCount": 1,
+        "hidden": false
+      },
+      {
+        "localTaskId": "1624354f-5416-4a0c-b0a9-3d66c90944d7",
+        "localRequestId": "14076974-dab2-47bd-9531-0d28ada3a224",
+        "connectionVersionId": "06e21309-78c7-4f50-9b5a-000f2fb60678",
+        "capabilityVersionId": "4fd6f4bc-62e1-43c5-b9af-260bea6160be",
+        "outputDirectoryVersionId": "00000000-0000-4000-8000-000000000001",
+        "state": "completed",
+        "mode": "image.text",
+        "model": "gpt-image-2.5-flare",
+        "parameters": {},
+        "promptCharacters": 76,
+        "createdAt": "2026-10-24T02:34:06.805Z",
+        "completedAt": "2026-10-24T02:34:53.956Z",
+        "dispatched": true,
+        "upstreamIdPresent": false,
+        "remoteState": "completed",
+        "requiresContinue": false,
+        "notBeforeAt": null,
+        "responseSummary": {
+          "remoteIdReceived": false,
+          "httpStatus": null
+        },
+        "error": null,
+        "assets": [
+          {
+            "assetId": "740cc7ce-8a31-4b22-8d73-b06a0ba842a2",
+            "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+            "kind": "image",
+            "mimeType": "image/png",
+            "byteLength": 1797541,
+            "width": 1448,
+            "height": 1086,
+            "durationSeconds": null,
+            "availability": "available",
+            "role": "output",
+            "position": 0
+          }
+        ],
+        "eventCount": 1,
+        "hidden": false
+      }
+    ]
+  }
+}

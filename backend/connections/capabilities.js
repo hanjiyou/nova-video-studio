@@ -4,6 +4,10 @@ const OPENSOSEN_URL = 'https://newapi.opensosen.com/v1';
 const PRESET_MODELS = Object.freeze(['gpt-image-2.5-flare', 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s']);
 const EVIDENCE_VERSION = 'opensosen-evidence-v1';
 const APPLICATION_EVIDENCE_VERSION = 'opensosen-application-evidence-2026-10-24-v1';
+const TEXT_VIDEO_EVIDENCE_VERSION = 'opensosen-text-video-evidence-2026-10-24-v1';
+const TEXT_VIDEO_CAPABILITY = Object.freeze({ model: PRESET_MODELS[2], mode: 'video.text',
+    parameters: { seconds: 6, encoding: 'multipart', referenceCount: 0 }, sourceIds: ['T15-TEXT-NO-SIZE-20261024'],
+    outputSha256: '251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75' });
 // Reviewed actual application runs. Add a new version for new evidence; never rewrite a saved row.
 const APPLICATION_CAPABILITIES = Object.freeze([
     { model: PRESET_MODELS[0], mode: 'image.text', parameters: {}, sourceIds: ['T15-FLARE-MINIMUM-20261024'],
@@ -59,6 +63,16 @@ function seedCapabilities(db, provider, baseUrl) {
         insert.run(randomUUID(), provider, baseUrl, capability.model, capability.mode, 'openai', JSON.stringify(capability.parameters),
             'application_verified', APPLICATION_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
+    if (provider === 'opensosen' && baseUrl === OPENSOSEN_URL) {
+        const capability = TEXT_VIDEO_CAPABILITY;
+        const evidence = { sourceIds: capability.sourceIds, applicationVerified: true, outputSha256: capability.outputSha256,
+            localMediaVerified: true, nativePlaybackVerified: true, dimensions: 'provider_decides',
+            submit: { method: 'POST', path: '/videos', encoding: 'multipart', fields: ['model', 'prompt', 'seconds'], seconds: '6', fileParts: 0 },
+            observedOutput: { width: 1280, height: 720, durationSeconds: 6.041666666666666 },
+            limits: 'text_only_6s_no_size_no_files; observed dimensions are not a request guarantee' };
+        insert.run(randomUUID(), provider, baseUrl, capability.model, capability.mode, 'openai', JSON.stringify(capability.parameters),
+            'application_verified', TEXT_VIDEO_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
+    }
 }
 function listCapabilities(db, provider, baseUrl) {
     const rows = db.prepare('SELECT * FROM model_capabilities WHERE provider=? AND base_url=?').all(provider, baseUrl);
@@ -70,4 +84,4 @@ function listCapabilities(db, provider, baseUrl) {
             parameters: JSON.parse(row.parameters_json), evidenceLevel: row.evidence_level, evidenceVersion: row.evidence_version, evidence: JSON.parse(row.evidence_json), isCurrent };
     });
 }
-module.exports = { OPENSOSEN_URL, PRESET_MODELS, EVIDENCE_VERSION, APPLICATION_EVIDENCE_VERSION, APPLICATION_CAPABILITIES, generationEvidenceVerified, normalizeBaseUrl, seedCapabilities, listCapabilities };
+module.exports = { OPENSOSEN_URL, PRESET_MODELS, EVIDENCE_VERSION, APPLICATION_EVIDENCE_VERSION, APPLICATION_CAPABILITIES, TEXT_VIDEO_EVIDENCE_VERSION, TEXT_VIDEO_CAPABILITY, generationEvidenceVerified, normalizeBaseUrl, seedCapabilities, listCapabilities };

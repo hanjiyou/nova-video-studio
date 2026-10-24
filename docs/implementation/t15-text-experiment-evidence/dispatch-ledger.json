@@ -1,0 +1,22 @@
+{
+  "authorization": "2026-10-24-original-video-text-once-candidate",
+  "allowanceSource": "original unused video.text allowance; not a new budget",
+  "maxTotal": 1,
+  "mode": "video.text",
+  "localRequestId": "ebf704eb-9d30-4b27-9e94-48406a1b6c14",
+  "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+  "posts": 1,
+  "state": "failed",
+  "dispatchReservedAt": "2026-10-24T04:06:31.913Z",
+  "taskId": "4f875c34-47f3-4471-a2ae-dec3779b53aa",
+  "httpStatus": 400,
+  "lastProviderError": {
+    "httpStatus": 400,
+    "code": "fail_to_fetch_task",
+    "message": "{\"code\":\"fail_to_fetch_task\",\"message\":\"{\\\"error\\\":{\\\"code\\\":\\\"invalid_request\\\",\\\"message\\\":\\\"视频生成 JSON 请求无效: json: unknown field \\\\\\\"size\\\\\\\"\\\",\\\"param\\\":null,\\\"type\\\":\\\"invalid_request_error\\\"}}\",\"data\":null}",
+    "requestId": "202610240406346737242988268d9d65ecOmN6P",
+    "bodyTruncated": false,
+    "bodyTimedOut": false,
+    "credentialEchoSuppressed": false
+  }
+}

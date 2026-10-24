@@ -1,0 +1,26 @@
+✔ startup adds immutable application versions idempotently, preserving legacy rows and historical task bindings (52.1886ms)
+✔ only exact provider scope upgrades and minimum image parameters remain strict; old unverified image ID stays blocked (29.1748ms)
+✔ normal production HTTP image entry succeeds without a controlled grant and still rejects legacy ID/edit/extra fields before dispatch (391.9694ms)
+✔ unverified text defaults to denial at both gates; renderer flags cannot authorize it (1.4167ms)
+✔ exact host permit rejects tuple, prompt, reference, parameter and budget mismatches (1.1293ms)
+✔ canonical adapter preflight and submit require host authority; one refused POST is never retried (21.307ms)
+✔ actual ProxyAgent wire preserves 0 ordered PNG references and all scalar fields (66.8562ms)
+ℹ {"referenceCount":0,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":459}
+✔ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (10.4589ms)
+ℹ {"referenceCount":1,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":704}
+✔ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (9.7821ms)
+ℹ {"referenceCount":2,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":947}
+✔ proxy transport leaves exact JSON bytes and GET methods intact (10.9047ms)
+✔ no-size candidate needs exact host grant; every other request keeps ordinary parameter rules (2.2227ms)
+✔ canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once (50.9719ms)
+ℹ {"candidate":"without-size","postCount":1,"proxyConnects":1,"scalarCount":3,"fileParts":0,"sizeParts":0,"inputReferenceParts":0}
+✔ text capability upgrades additively with no size guarantee, preserving old immutable text rows and task snapshots (47.1852ms)
+✔ normal authenticated production HTTP text entry uses new evidence without an experiment grant and sends only three scalars once (20429.6935ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20586.0728

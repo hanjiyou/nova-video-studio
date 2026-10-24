@@ -1,0 +1,25 @@
+{
+  "scope": "actual sandboxed Electron production workbench, one real generated text video, no credential loaded, all external requests denied",
+  "checks": {
+    "oneVerifiedLocalTextVideo": true,
+    "video.textPlayedActualFrames": true,
+    "textRecordVisibleInLibrary": true,
+    "textCapabilityStillUnverified": true
+  },
+  "electron": "43.4.0",
+  "stage": "complete",
+  "videos": [
+    {
+      "mode": "video.text",
+      "assetId": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "currentTime": 0.756313,
+      "totalVideoFrames": 22,
+      "droppedVideoFrames": 0,
+      "error": null
+    }
+  ],
+  "status": "passed"
+}

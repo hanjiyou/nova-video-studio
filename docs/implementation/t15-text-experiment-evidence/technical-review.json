@@ -1,0 +1,39 @@
+{
+  "status": "approved",
+  "authorizationId": "2026-10-24-original-video-text-once-candidate",
+  "reviewer": "/root",
+  "request": {
+    "method": "POST",
+    "url": "https://newapi.opensosen.com/v1/videos",
+    "model": "grok-imagine-video-1.5-6s",
+    "encoding": "multipart",
+    "fields": [
+      "model",
+      "prompt",
+      "seconds",
+      "size"
+    ],
+    "seconds": "6",
+    "size": "1280x720",
+    "fileParts": 0,
+    "inputReferenceParts": 0
+  },
+  "maxTotalGenerationRequests": 1,
+  "allowanceSource": "original unused video.text allowance; not a new budget",
+  "localRequestId": "ebf704eb-9d30-4b27-9e94-48406a1b6c14",
+  "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+  "requirement": "Explicit parent technical approval before reading credential or making the unique real POST.",
+  "previousLedgers": [
+    {
+      "path": "temp/t15-live-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280"
+    },
+    {
+      "path": "temp/t15-reference-retest-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "e18bcc477fdf165cdc20de775af994de362c5aa0763177d81c6bc61084df07fa"
+    }
+  ],
+  "approvedAt": "2026-10-24T04:06:31.674Z",
+  "approvalSource": "Parent /root explicitly approved this exact one-request candidate after reviewing the full diff and runner and independently passing controlled-video-text plus wire 7/7.",
+  "scope": "Original unused video.text allowance only, at most one POST, four scalar multipart fields, no files, no input_reference, no retry, original-ID GET only."
+}

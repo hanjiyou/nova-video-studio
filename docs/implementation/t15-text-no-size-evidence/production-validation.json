@@ -1,0 +1,23 @@
+{
+  "backend": {
+    "passed": 14,
+    "failed": 0,
+    "log": "production-backend-tests.log"
+  },
+  "frontend": {
+    "passed": 6,
+    "failed": 0,
+    "log": "production-frontend-tests.log"
+  },
+  "parentIndependent": {
+    "backend": 4,
+    "frontend": 6
+  },
+  "typecheck": "typecheck.json",
+  "newVersion": "opensosen-text-video-evidence-2026-10-24-v1",
+  "ordinaryGrokStillUnverified": true,
+  "legacyTextIdsStillDenied": true,
+  "oldRowsAndTaskSnapshotsPreserved": true,
+  "noNewRealRequests": true,
+  "noNewCredentialReads": true
+}

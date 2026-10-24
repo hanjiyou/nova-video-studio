@@ -1,0 +1,14 @@
+{
+  "authorization": "2026-10-24-user-video-text-without-size-once",
+  "allowanceSource": "User explicitly authorized one additional no-size text-video experiment",
+  "candidate": "without-size",
+  "maxTotal": 1,
+  "mode": "video.text",
+  "localRequestId": "c11182a6-d63e-4331-b8f9-40559d69fd66",
+  "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+  "posts": 1,
+  "state": "completed",
+  "dispatchReservedAt": "2026-10-24T04:29:28.525Z",
+  "taskId": "eac6a1f5-ea89-4480-81ce-60a691e38266",
+  "httpStatus": 200
+}

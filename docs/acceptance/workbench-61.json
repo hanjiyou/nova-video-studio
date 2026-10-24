@@ -1377,7 +1377,7 @@
         "T07",
         "T12"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/b1-evidence/b1-targeted.log",
@@ -1394,7 +1394,12 @@
         ],
         "realService": [
           "../implementation/t15-retest-evidence/live-retest.json",
-          "../implementation/t15-retest-evidence/playback-report.json"
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
@@ -1408,7 +1413,7 @@
           "../implementation/b5-evidence/phase-2.json"
         ]
       },
-      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 在宿主校验文生0图、单图1图、双图2图；未验证模式明确阻止派发，完整模式页面待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。",
+      "notes": "T01仅建立契约和离线支撑，产品功能尚未验收。 B1 在宿主校验文生0图、单图1图、双图2图；未验证模式明确阻止派发，完整模式页面待 T12。 B3/T09+T10本批界面范围已由主会话审核接受并明确批准记录后提交推送origin/dev；独立后端40/40、前端21/21均0跳过，原生60项为实施代理证据。宿主先只读检查成功后加密保存，operationId与版本闸门防晚到写入；四类草稿、配置返回与引导恢复已接通。生成、完整作品库及真实供应商能力不在本批验收范围，不把fixture升级为真实线路通过。 B4/T11–T13（2026-10-24）本地实现与定向验证已完成，待主会话审核，尚未提交：后端123/123、前端30/30、实际Electron两阶段31项。工作台/详情/作品库分页与复用已接真实本地服务，提交意图先持久再创建一次，回执丢失只读核对；记录/文件分离删除保留共享引用和去重事实。离线fixture不升级供应商能力或完整61项验收；精确flare文生/编辑/尺寸质量、两个视频文生及普通参考组合仍待T15；新打包及全面视觉/故障验收仍属后续批次。 最新主审：B4本批离线实现范围已复审接受并明确批准记录后提交推送origin/dev，独立后端57/57、前端30/30均0失败0跳过；物理文件别名误删已修复并保留红绿证据。此为阶段接受，不代表61项完整产品/真实线路通过。 最新T15主审明确接受V01：既有独立草稿/数量预检，加本次1.5无图文字成功及单/双参考真实样本；普通型号未验证、安装播放和最终T15仍保留边界。",
       "t14Verification": {
         "offline": "passed",
         "disposition": "real_service_pending",
@@ -1429,22 +1434,31 @@
         "parentReview": "../implementation/b5-evidence/approval-review.json"
       },
       "t15Verification": {
-        "disposition": "real_service_pending",
-        "criteriaSatisfied": false,
-        "scope": "单图和双图真实传输各1/2张有序原图已通过；三模式草稿/数量校验保留。",
-        "remaining": "文生视频精确协议未确认，无图真实传输尚未验证。",
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "真实1.5文生无图、单图1张与双图2张均成功；提交前数量/能力预检及三模式独立草稿保留，切换不裁图。",
+        "remaining": "",
         "evidence": [
           "../implementation/t15-retest-evidence/live-retest.json",
           "../implementation/t15-retest-evidence/playback-report.json",
           "../implementation/t15-capability-evidence/verification-results.json",
-          "../implementation/T15-能力版本与验收收尾.md"
+          "../implementation/T15-能力版本与验收收尾.md",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "testFiles": [
           "backend/test/capability-upgrade.test.js",
           "backend/test/controlled-image-validation.test.js",
-          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx",
+          "backend/test/video-text-capability.test.js",
+          "backend/test/t15-video-text-no-size.test.js",
+          "frontend/src/components/workbench/__tests__/workbench-b4.test.tsx"
         ],
-        "reviewStatus": "incomplete"
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-text-no-size-evidence/approval-review.json"
       }
     },
     {
@@ -1472,7 +1486,12 @@
         ],
         "realService": [
           "../implementation/t15-retest-evidence/live-retest.json",
-          "../implementation/t15-retest-evidence/playback-report.json"
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
@@ -1510,13 +1529,18 @@
       "t15Verification": {
         "disposition": "real_service_accepted",
         "criteriaSatisfied": true,
-        "scope": "两个完整型号仍可选；普通版/文生组合保持明确原因且不静默换型，原服务1.5参考组合有应用验证版本。",
+        "scope": "两个完整型号仍可选；普通grok-6s组合明确未验证且不静默换型，原服务1.5文生/单图/双图均有精确应用验证版本。",
         "remaining": "",
         "evidence": [
           "../implementation/t15-retest-evidence/live-retest.json",
           "../implementation/t15-retest-evidence/playback-report.json",
           "../implementation/t15-capability-evidence/verification-results.json",
-          "../implementation/T15-能力版本与验收收尾.md"
+          "../implementation/T15-能力版本与验收收尾.md",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "testFiles": [
           "backend/test/capability-upgrade.test.js",
@@ -1917,7 +1941,12 @@
         ],
         "realService": [
           "../implementation/t15-retest-evidence/live-retest.json",
-          "../implementation/t15-retest-evidence/playback-report.json"
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
@@ -1952,13 +1981,18 @@
       "t15Verification": {
         "disposition": "real_service_accepted",
         "criteriaSatisfied": true,
-        "scope": "视频规格控件读取所选能力的seconds/size并计算比例；已验证1.5参考显示固定6秒/1280×720/16:9，其他组合不伪装可用。",
+        "scope": "1.5参考视频固定6秒/1280×720；文字视频只请求6秒，界面显示分辨率由服务决定且不提供size选择。本次1280×720仅为实测输出，不作保证。",
         "remaining": "",
         "evidence": [
           "../implementation/t15-retest-evidence/live-retest.json",
           "../implementation/t15-retest-evidence/playback-report.json",
           "../implementation/t15-capability-evidence/verification-results.json",
-          "../implementation/T15-能力版本与验收收尾.md"
+          "../implementation/T15-能力版本与验收收尾.md",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "testFiles": [
           "backend/test/capability-upgrade.test.js",
@@ -1995,7 +2029,12 @@
         ],
         "realService": [
           "../implementation/t15-retest-evidence/live-retest.json",
-          "../implementation/t15-retest-evidence/playback-report.json"
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
@@ -2030,13 +2069,18 @@
       "t15Verification": {
         "disposition": "real_service_accepted",
         "criteriaSatisfied": true,
-        "scope": "新授权每模式仅1次POST，远端ID即时持久化，查询与下载沿用同一ID；生产单队列及未知提交不重发保持。",
+        "scope": "所有本地任务最多自动创建一次；两次文字尝试各有独立/关联授权账本，首次400不重试，第二次仅沿原ID查询下载，正常入口重复请求返回同一任务。",
         "remaining": "",
         "evidence": [
           "../implementation/t15-retest-evidence/live-retest.json",
           "../implementation/t15-retest-evidence/playback-report.json",
           "../implementation/t15-capability-evidence/verification-results.json",
-          "../implementation/T15-能力版本与验收收尾.md"
+          "../implementation/T15-能力版本与验收收尾.md",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "testFiles": [
           "backend/test/capability-upgrade.test.js",
@@ -2072,7 +2116,12 @@
         ],
         "realService": [
           "../implementation/t15-retest-evidence/live-retest.json",
-          "../implementation/t15-retest-evidence/playback-report.json"
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
@@ -2110,13 +2159,18 @@
       "t15Verification": {
         "disposition": "release_pending",
         "criteriaSatisfied": false,
-        "scope": "真实两段本地MP4均在源码运行的Electron43.4沙盒中播放并读取实际媒体元数据。",
+        "scope": "三段真实本地MP4均在源码运行的Electron43.4沙盒中实际播放并读取媒体元数据。",
         "remaining": "原验收标准要求打包应用播放真实样本；本轮未重打包安装，仍待T16。",
         "evidence": [
           "../implementation/t15-retest-evidence/live-retest.json",
           "../implementation/t15-retest-evidence/playback-report.json",
           "../implementation/t15-capability-evidence/verification-results.json",
-          "../implementation/T15-能力版本与验收收尾.md"
+          "../implementation/T15-能力版本与验收收尾.md",
+          "../implementation/t15-text-experiment-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/experiment-result.json",
+          "../implementation/t15-text-no-size-evidence/playback-report.json",
+          "../implementation/t15-text-no-size-evidence/production-validation.json",
+          "../implementation/t15-text-no-size-evidence/request-lineage.json"
         ],
         "testFiles": [
           "backend/test/capability-upgrade.test.js",
@@ -3860,13 +3914,13 @@
   "t15": {
     "status": "accepted_partial_scope",
     "evidenceVersion": "opensosen-application-evidence-2026-10-24-v1",
-    "successfulApplicationSamples": 3,
-    "generationRequestsSentThisSubphase": 0,
-    "textVideoRequestsSent": 0,
+    "successfulApplicationSamples": 4,
+    "generationRequestsSentThisSubphase": 2,
+    "textVideoRequestsSent": 2,
     "currentDispositions": {
       "offline_passed": 39,
-      "real_service_accepted": 8,
-      "real_service_pending": 7,
+      "real_service_accepted": 9,
+      "real_service_pending": 6,
       "release_pending": 7,
       "not_passed": 0
     },
@@ -3879,11 +3933,47 @@
       "I07",
       "I08",
       "I09",
+      "V01",
       "V02",
       "V03",
       "V09",
       "V10"
     ],
-    "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
+    "parentReview": "../implementation/t15-text-no-size-evidence/approval-review.json",
+    "initialCapabilityCloseout": {
+      "status": "accepted_partial_scope",
+      "evidenceVersion": "opensosen-application-evidence-2026-10-24-v1",
+      "successfulApplicationSamples": 3,
+      "generationRequestsSentThisSubphase": 0,
+      "textVideoRequestsSent": 0,
+      "currentDispositions": {
+        "offline_passed": 39,
+        "real_service_accepted": 8,
+        "real_service_pending": 7,
+        "release_pending": 7,
+        "not_passed": 0
+      },
+      "report": "../implementation/T15-能力版本与验收收尾.md",
+      "finalT15Accepted": false,
+      "finalProductAccepted": false,
+      "publicDistributionAllowed": false,
+      "acceptedRequirements": [
+        "I01",
+        "I07",
+        "I08",
+        "I09",
+        "V02",
+        "V03",
+        "V09",
+        "V10"
+      ],
+      "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
+    },
+    "textVideoEvidenceVersion": "opensosen-text-video-evidence-2026-10-24-v1",
+    "evidenceVersions": [
+      "opensosen-application-evidence-2026-10-24-v1",
+      "opensosen-text-video-evidence-2026-10-24-v1"
+    ],
+    "totalGenerationRequestsSent": 7
   }
 }

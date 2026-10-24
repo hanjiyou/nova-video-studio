@@ -1,0 +1,32 @@
+{
+  "status": "approved",
+  "authorizationId": "2026-10-24-user-video-text-without-size-once",
+  "reviewer": "/root",
+  "request": {
+    "method": "POST",
+    "url": "https://newapi.opensosen.com/v1/videos",
+    "model": "grok-imagine-video-1.5-6s",
+    "encoding": "multipart",
+    "fields": [
+      "model",
+      "prompt",
+      "seconds"
+    ],
+    "seconds": "6",
+    "sizeOmitted": true,
+    "fileParts": 0,
+    "inputReferenceParts": 0
+  },
+  "maxTotalGenerationRequests": 1,
+  "candidate": "without-size",
+  "localRequestId": "c11182a6-d63e-4331-b8f9-40559d69fd66",
+  "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+  "requirement": "Explicit parent technical approval before credential read or the unique new POST. The previous rejected request remains consumed.",
+  "priorTextLedger": {
+    "path": "temp/t15-video-text-experiment-2026-10-24/dispatch-ledger.json",
+    "sha256": "ee1e43072f02e85b97d61286ddb2226760c763ede37c7fe1658973f765d650c0"
+  },
+  "approvedAt": "2026-10-24T04:29:28.228Z",
+  "approvalSource": "Parent /root explicitly approved the new authorized one-POST no-size candidate after reviewing permit/driver/snapshot changes and runner and independently passing all 9 related tests.",
+  "scope": "One additional user-authorized video.text POST: grok-imagine-video-1.5-6s, multipart model/prompt/seconds=6 only, no size, no files, no input_reference. No POST retry or further field changes; follow original ID only."
+}

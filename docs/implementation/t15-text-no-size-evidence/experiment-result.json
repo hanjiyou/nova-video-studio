@@ -1,0 +1,57 @@
+{
+  "scope": "successful exact 1.5 text-video no-size protocol",
+  "sourceId": "T15-TEXT-NO-SIZE-20261024",
+  "authorization": "2026-10-24-user-video-text-without-size-once",
+  "request": {
+    "method": "POST",
+    "url": "https://newapi.opensosen.com/v1/videos",
+    "model": "grok-imagine-video-1.5-6s",
+    "encoding": "multipart",
+    "fields": [
+      "model",
+      "prompt",
+      "seconds"
+    ],
+    "seconds": "6",
+    "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+    "sizeOmitted": true,
+    "inputReferenceParts": 0,
+    "fileParts": 0,
+    "preDispatchValidated": true
+  },
+  "generationRequests": 1,
+  "automaticPostRetries": 0,
+  "httpStatus": 200,
+  "status": "completed",
+  "upstreamIdSha256": "0d2bbffca7eceb36813eef5a7df14fc2343e8d744650ae613a58d2bd7c6aadb3",
+  "output": {
+    "assetId": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+    "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+    "byteLength": 3872058,
+    "width": 1280,
+    "height": 720,
+    "durationSeconds": 6.041666666666666,
+    "validationState": "verified",
+    "mimeType": "video/mp4"
+  },
+  "observedDimensionsAreRequestGuarantee": false,
+  "productionMediaValidation": "complete local framehash decode, original-ID content download",
+  "nativePlayback": {
+    "status": "passed",
+    "mode": "video.text",
+    "assetId": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+    "width": 1280,
+    "height": 720,
+    "duration": 6.041667,
+    "currentTime": 0.756313,
+    "totalVideoFrames": 22,
+    "droppedVideoFrames": 0,
+    "error": null,
+    "externalNetworkDenied": true,
+    "credentialLoaded": false,
+    "screenshotCount": 0
+  },
+  "productionCapabilityVersion": "opensosen-text-video-evidence-2026-10-24-v1",
+  "additionalRealRequestsAfterSuccess": 0,
+  "additionalCredentialReadsAfterSuccess": 0
+}

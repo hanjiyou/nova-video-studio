@@ -1,0 +1,34 @@
+{
+  "totalGenerationRequestsSent": 7,
+  "textGenerationRequestsSent": 2,
+  "successfulApplicationSamples": 4,
+  "automaticPostRetries": 0,
+  "ledgers": [
+    {
+      "path": "temp/t15-live-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+      "generationRequests": 3,
+      "scope": "original four-mode allowance: three sent; historical unused text slot later consumed by first text experiment"
+    },
+    {
+      "path": "temp/t15-reference-retest-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "e18bcc477fdf165cdc20de775af994de362c5aa0763177d81c6bc61084df07fa",
+      "generationRequests": 2,
+      "scope": "separately authorized single/dual reference retest"
+    },
+    {
+      "path": "temp/t15-video-text-experiment-2026-10-24/dispatch-ledger.json",
+      "sha256": "ee1e43072f02e85b97d61286ddb2226760c763ede37c7fe1658973f765d650c0",
+      "generationRequests": 1,
+      "scope": "first with-size text candidate consumes original unused text allowance; HTTP400 unknown size, no ID"
+    },
+    {
+      "path": "temp\\t15-video-text-no-size-2026-10-24\\dispatch-ledger.json",
+      "sha256": "0c73561a273ab80cc6294f741ae16698e8098e1248400d6097e892c792d83980",
+      "generationRequests": 1,
+      "scope": "new separately authorized no-size text candidate succeeds; one POST"
+    }
+  ],
+  "originalLedgersRewritten": false,
+  "warning": "The two early malformed reference requests are counted as generation requests sent, not accepted remote task creations."
+}

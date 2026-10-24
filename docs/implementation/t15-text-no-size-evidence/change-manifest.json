@@ -1,0 +1,229 @@
+{
+  "status": "parent_approved_delivery_scope",
+  "baseCommit": "f0c5080b2bc8f29c96cba9c3149ed8f84c4d2d40",
+  "branch": "dev",
+  "scope": "Both authorized text attempts, successful exact no-size text capability, corresponding evidence and V01 acceptance; no T16 packaging changes.",
+  "review": "approval-review.json",
+  "files": [
+    {
+      "file": "backend/connections/capabilities.js",
+      "sha256": "7b27c1ba603a35c3d1fc86310134e2065e38997e2441cffc3c25e35fa5bd42c1",
+      "bytes": 7681
+    },
+    {
+      "file": "backend/plugins/opensosen-video/index.js",
+      "sha256": "8e114bac044e289342e3647bceb298e6a444d11777670e484cf5376258b80086",
+      "bytes": 4811
+    },
+    {
+      "file": "backend/server.js",
+      "sha256": "fafa5f9643f98bded212524e4916f4138cf4c62df40de36790280d56f1509152",
+      "bytes": 163180
+    },
+    {
+      "file": "backend/tasks/controlled-video-text-validation.js",
+      "sha256": "e869baf7ec2c67d1d7c921374be8f8d42a39af291c7b5b1e7b8a5bacc7e3048d",
+      "bytes": 5890
+    },
+    {
+      "file": "backend/tasks/plugin-adapter.js",
+      "sha256": "7160ec5ed2265811b701a63cf64722635ddf97e2c794a8d808a67023ab37f994",
+      "bytes": 9624
+    },
+    {
+      "file": "backend/tasks/workbench-input.js",
+      "sha256": "b0380106b27a9777f29b92fa5995ff358893c2d03167247a261abfeebc354fbf",
+      "bytes": 5920
+    },
+    {
+      "file": "backend/test/capability-upgrade.test.js",
+      "sha256": "6a54cbafa3d63ceb1ec347e73c533d4dac5daf8ea45997fec7d906a415192bbb",
+      "bytes": 9550
+    },
+    {
+      "file": "backend/test/controlled-video-text-validation.test.js",
+      "sha256": "12b5e12c64590efc7d2810cc75be1bbac51168f54fcc744188d6e49e100fcaec",
+      "bytes": 5532
+    },
+    {
+      "file": "backend/test/t15-proxy-wire.test.js",
+      "sha256": "05b6f74123a77634e7c2f82806093cd109e60ba43032c74f20c2ceda3f9238be",
+      "bytes": 5913
+    },
+    {
+      "file": "backend/test/t15-video-text-no-size.test.js",
+      "sha256": "8d920f1d241dd1b13c225ef92e0967c03f17ca2f23e33c90d4bebc8ef0beaaa9",
+      "bytes": 7823
+    },
+    {
+      "file": "backend/test/video-text-capability.test.js",
+      "sha256": "69b0799b9af90def219503fd867769cd9990be36948a7e96c293e3b9657a05e3",
+      "bytes": 9010
+    },
+    {
+      "file": "docs/Nova-Studio落地任务清单.md",
+      "sha256": "5d30c7e30ec9e6efa32e3a8fcbb4fd93d5b089e0a1b409c0511dd3faa9f49261",
+      "bytes": 28386
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "sha256": "414dd59edffb7fb2f929b5c7ef9d867effae629039f732da08239de6259a2dc6",
+      "bytes": 242535
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "sha256": "acd341986671ddb74f1ef3495f31d257227dcca3042e66477cca0b5cc3711776",
+      "bytes": 17470
+    },
+    {
+      "file": "docs/implementation/T15-能力版本与验收收尾.md",
+      "sha256": "2c8ab136af8dcd88eba4cca1e683b46033383f50a39f1552e712af99fbdaefe1",
+      "bytes": 8871
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/approval-guard.json",
+      "sha256": "c366f10829413f1eebc4c3ac781e24e04e10f455b219f9f493392e2d55ecf2b1",
+      "bytes": 129
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/dispatch-ledger.json",
+      "sha256": "ee1e43072f02e85b97d61286ddb2226760c763ede37c7fe1658973f765d650c0",
+      "bytes": 1033
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/experiment-result.json",
+      "sha256": "e60e71bf3fb7fa11a5232d77d5ac710cf362448d24d2d1df832af0e033ea38dc",
+      "bytes": 2317
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/local-tests.log",
+      "sha256": "45cff21a0427ad08ef524e7884b0e21c283538aea008e7ef85762de9b1f671cf",
+      "bytes": 1705
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/safe-run-report.json",
+      "sha256": "49e469a8ac0854375b4bd3ac140ba278d230fb4853e1c2de85f18593f2d75434",
+      "bytes": 965
+    },
+    {
+      "file": "docs/implementation/t15-text-experiment-evidence/technical-review.json",
+      "sha256": "548ccb5939f8ea32822bd21254ea6c5cff66e5e75fc83f79daa896bec62036e5",
+      "bytes": 1619
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/acceptance-validation.json",
+      "sha256": "8aaa3da8df82de8c7230deaf09ee90b8b2ad7ff1adc926a1c08dc9ed05ae20dc",
+      "bytes": 416
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/approval-review.json",
+      "sha256": "a8f6ac9ea1ceaed1a3c3804fede5c10eca15047022062e0958f38608a60f3f3c",
+      "bytes": 1237
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/dispatch-ledger.json",
+      "sha256": "0c73561a273ab80cc6294f741ae16698e8098e1248400d6097e892c792d83980",
+      "bytes": 547
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/experiment-result.json",
+      "sha256": "8b41e50e98e59c97bab61197e6b3a1c1972720b9ac4e52da473852c075b84587",
+      "bytes": 1853
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/local-validation.json",
+      "sha256": "8c32fc68cb9cdb89442bfa40bdad3c64a6dd71d3e3f59b4f471eb5014741a168",
+      "bytes": 1227
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/playback-report.json",
+      "sha256": "79daaee8a3ce00201b1c98a8add5c499ce8a27f73fe661877b34bc760c9c778e",
+      "bytes": 696
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/production-backend-tests.log",
+      "sha256": "3f2ae068db372977a2541a98bcbfcae5225334f28b8462175e2c0d98c3016850",
+      "bytes": 2185
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/production-frontend-tests.log",
+      "sha256": "4911393b2da2280fd1822d8d06072c064daf90e85145a8ecc15c80a724aba4a0",
+      "bytes": 322
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/production-validation.json",
+      "sha256": "748b5bdd739b65652f01687391c16e94c7536e909a17784ef09d6d58df190e30",
+      "bytes": 540
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/request-lineage.json",
+      "sha256": "409b3920de1a1d4f541f0f1a6b48637893fc460c430cb36372d1ed82466155f8",
+      "bytes": 1560
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/safe-run-report.json",
+      "sha256": "613749c31c8d7afabc5d01ab20cba3890e12336aaad6349fa4cc1bc032657c5b",
+      "bytes": 880
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/technical-review.json",
+      "sha256": "f33b99bf9af0ccbfa458217627d75e3300fce5cd821342e56522d98df37943dd",
+      "bytes": 1481
+    },
+    {
+      "file": "docs/implementation/t15-text-no-size-evidence/typecheck.json",
+      "sha256": "114c6fa0fe891060dc64a6f98c0112a79b822dc6ca4743147aa41a8d384b0da5",
+      "bytes": 306
+    },
+    {
+      "file": "frontend/src/components/workbench/DraftEditor.tsx",
+      "sha256": "46dba658f3b10259547ae391bcf08b9423727f4f4b2b189bf607e7dd8c2fe5bb",
+      "bytes": 12340
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx",
+      "sha256": "558402c14e2c2d3da3e77d3fb9dc6e0ace0e0e750ba89bd1a8d44ce31c8248ad",
+      "bytes": 8249
+    },
+    {
+      "file": "frontend/src/lib/workbench-generation.ts",
+      "sha256": "990457172f419f374d235c4e17ac3706ee802abb742e77d89473c837d7217859",
+      "bytes": 5149
+    },
+    {
+      "file": "scripts/electron-t15-text-preview.cjs",
+      "sha256": "45a7693a9935687add73c9424ae6d4ac002c495925d157ac9b0f3b62317e136d",
+      "bytes": 5926
+    },
+    {
+      "file": "scripts/t15-video-text-experiment.cjs",
+      "sha256": "80fc7b1e23ff510f120e6be95519d5718cffa2fa8d24fe5da3964faa41828b18",
+      "bytes": 9385
+    },
+    {
+      "file": "scripts/t15-video-text-no-size.cjs",
+      "sha256": "2c5d768e8689b85a58180cfea2c728a33e3aa878ef921f4af8fc4b3955c3f3a8",
+      "bytes": 9621
+    },
+    {
+      "file": "scripts/verify-t15-acceptance.cjs",
+      "sha256": "bc5f0d3e60ded460f0cd5e6c4280170f297a80b5b7c6837cfcc729586452ef19",
+      "bytes": 6512
+    }
+  ],
+  "self": "docs/implementation/t15-text-no-size-evidence/change-manifest.json",
+  "fileCountIncludingSelf": 42,
+  "checks": {
+    "noCredentialPattern": true,
+    "noTemp": true,
+    "noOriginalImages": true,
+    "noLargeMedia": true,
+    "noT16BuildFiles": true,
+    "previousLedgersHashPreserved": true
+  },
+  "delivery": {
+    "target": "origin/dev",
+    "normalPushOnly": true,
+    "commitPushApprovedBy": "/root"
+  }
+}

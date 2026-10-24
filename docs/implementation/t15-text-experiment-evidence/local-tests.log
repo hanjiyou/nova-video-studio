@@ -1,0 +1,24 @@
+✔ legacy unverified capability stays denied with no explicit host grant (0.9193ms)
+✔ grant validates exact identifiers and rejects configuration through data alone (1.054ms)
+✔ only exact candidate minimum image request matches; other models modes inputs and prompts stay denied (0.1996ms)
+✔ dispatch reservation immediately closes the grant and callback failures fail closed (0.1533ms)
+✔ revocation cannot be configured again (0.1119ms)
+✔ production validator uses the host grant without mutating evidence and rejects mismatch or exhausted budget (0.1447ms)
+✔ unverified text defaults to denial at both gates; renderer flags cannot authorize it (1.2038ms)
+✔ exact host permit rejects tuple, prompt, reference, parameter and budget mismatches (0.7712ms)
+✔ canonical adapter preflight and submit require host authority; one refused POST is never retried (16.8882ms)
+✔ actual ProxyAgent wire preserves 0 ordered PNG references and all scalar fields (42.6303ms)
+ℹ {"referenceCount":0,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":459}
+✔ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (7.6049ms)
+ℹ {"referenceCount":1,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":704}
+✔ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (6.906ms)
+ℹ {"referenceCount":2,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":947}
+✔ proxy transport leaves exact JSON bytes and GET methods intact (6.9573ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 203.3447

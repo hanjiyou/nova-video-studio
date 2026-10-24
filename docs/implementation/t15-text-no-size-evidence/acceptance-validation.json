@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "command": "node scripts/verify-t16-acceptance.cjs",
+  "requirementIdentitiesPreserved": 61,
+  "taskIdsPreserved": 17,
+  "historicalT14T16Preserved": true,
+  "dependencyFilesUnchanged": 6,
+  "currentDispositions": {
+    "offline_passed": 39,
+    "real_service_accepted": 9,
+    "real_service_pending": 6,
+    "release_pending": 7,
+    "not_passed": 0
+  },
+  "finalProductAccepted": false
+}

@@ -1221,7 +1221,8 @@ function resolveDesktopTaskAdapter(task) {
   const validateCapability=(snapshot,auth)=>workbenchInput.validateCapability(db,snapshot,auth);
   if (task.adapter_id==='opensosen-flare-image') return createFlareImageAdapter({validateCapability});
   if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=pluginRegistry.getPlugin(request.pluginId);return plugin?createPluginAdapter(plugin,
-    plugin.id==='opensosen-video'?{readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id),validateCapability}:{}):null;}
+    plugin.id==='opensosen-video'?{readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id),validateCapability,
+      authorizeContext:(context,snapshot,auth)=>{if(snapshot.mode==='video.text')require('./tasks/controlled-video-text-validation').controlledVideoTextValidation.authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));}}:{}):null;}
   if (task.adapter_id!=='legacy-image') return null;
   const requestFor=(snapshot,auth)=>({mode:snapshot.mode==='image.reference'?'image-to-image':'text-to-image',model:snapshot.model,prompt:snapshot.prompt,...snapshot.parameters,
     protocol:auth.protocol,baseUrl:normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl),images:snapshot.inputAssets.map(item=>{const {bytes,asset}=workbenchStore.readAsset(item.assetId);return {data:bytes.toString('base64'),mimeType:asset.mimeType};})});

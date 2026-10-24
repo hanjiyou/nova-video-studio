@@ -1,0 +1,29 @@
+{
+  "run": "t15-video-text-no-size-2026-10-24",
+  "candidateProtocol": true,
+  "startedAt": "2026-10-24T04:29:28.543Z",
+  "task": {
+    "mode": "video.text",
+    "localTaskId": "eac6a1f5-ea89-4480-81ce-60a691e38266",
+    "status": "completed",
+    "remoteState": "completed",
+    "progress": 100,
+    "generationReserved": false,
+    "errorCode": null,
+    "httpStatus": null,
+    "providerError": null,
+    "upstreamIdSha256": "0d2bbffca7eceb36813eef5a7df14fc2343e8d744650ae613a58d2bd7c6aadb3",
+    "outputs": [
+      {
+        "assetId": "69b7f271-c362-4ba0-967a-49d46d3d597d",
+        "sha256": "251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75",
+        "byteLength": 3872058,
+        "width": 1280,
+        "height": 720,
+        "durationSeconds": 6.041666666666666,
+        "validationState": "verified",
+        "mimeType": "video/mp4"
+      }
+    ]
+  }
+}

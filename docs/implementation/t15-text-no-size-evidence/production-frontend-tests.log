@@ -1,0 +1,9 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/capability-upgrade.test.tsx (6 tests) 181ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  12:35:45
+   Duration  1.39s (transform 73ms, setup 70ms, collect 207ms, tests 181ms, environment 466ms, prepare 66ms)

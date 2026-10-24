@@ -1,0 +1,43 @@
+{
+  "tests": {
+    "command": "node --test backend/test/t15-video-text-no-size.test.js backend/test/controlled-video-text-validation.test.js backend/test/t15-proxy-wire.test.js",
+    "passed": 9,
+    "failed": 0
+  },
+  "actualWire": {
+    "postCount": 1,
+    "connectCount": 1,
+    "fields": [
+      "model",
+      "prompt",
+      "seconds"
+    ],
+    "sizeParts": 0,
+    "fileParts": 0,
+    "inputReferenceParts": 0,
+    "syntheticCredentialOnly": true
+  },
+  "pendingReviewGuard": {
+    "deniedBeforeCredentialRead": true,
+    "exitCode": 1
+  },
+  "previousLedgers": [
+    {
+      "path": "temp/t15-live-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+      "unchanged": true
+    },
+    {
+      "path": "temp/t15-reference-retest-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "e18bcc477fdf165cdc20de775af994de362c5aa0763177d81c6bc61084df07fa",
+      "unchanged": true
+    },
+    {
+      "path": "temp/t15-video-text-experiment-2026-10-24/dispatch-ledger.json",
+      "sha256": "ee1e43072f02e85b97d61286ddb2226760c763ede37c7fe1658973f765d650c0",
+      "unchanged": true
+    }
+  ],
+  "realRequests": 0,
+  "credentialRead": false
+}

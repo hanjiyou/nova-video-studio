@@ -1,0 +1,6 @@
+{
+  "scope": "all production files and changed capability UI test; unrelated existing test files excluded",
+  "status": "passed",
+  "diagnosticCount": 0,
+  "fullProjectTypecheck": "reports existing unrelated test-type errors in agent-chat-client, antigravity-gemini-preset and protocol-layout-contracts"
+}

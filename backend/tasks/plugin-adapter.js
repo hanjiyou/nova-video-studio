@@ -19,7 +19,12 @@ function contextFor(plugin, task, auth, getAsset) {
 function sources(assets, context) {
     return (assets || []).map(asset => ({ kind: 'url', url: asset.url, mediaKind: asset.kind, authScope: context && new URL(asset.url).origin === new URL(context.baseUrl).origin ? 'connection' : 'none' }));
 }
-function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability } = {}) {
+function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, authorizeContext } = {}) {
+    function submitContext(task, auth, extras = {}) {
+        const context = Object.assign(contextFor(plugin, task, auth, getAsset), extras);
+        authorizeContext?.(context, JSON.parse(task.input_snapshot_json || '{}'), auth);
+        return context;
+    }
     function checkMethod(method, expected) { if (String(method).toUpperCase() !== expected) throw failure('ADAPTER_UNAVAILABLE'); }
     async function build(context, polling) {
         let request;
@@ -65,9 +70,9 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability }
     }
     return {
         id: 'plugin:' + plugin.id, version: plugin.manifest.version,
-        async preflight(task, snapshot, auth) { validateCapability?.(snapshot, auth); await build(contextFor(plugin, task, auth, getAsset), false); },
+        async preflight(task, snapshot, auth) { validateCapability?.(snapshot, auth); await build(submitContext(task, auth), false); },
         async submit(task, _snapshot, auth) {
-            const context = { ...contextFor(plugin, task, auth, getAsset), signal: auth.signal, onAccepted:auth.onAccepted }, payload = await send(context, false);
+            const context = submitContext(task, auth, { signal: auth.signal, onAccepted: auth.onAccepted }), payload = await send(context, false);
             let accepted;
             if (plugin.driver?.parseSubmitResponse) {
                 const parsed = await plugin.driver.parseSubmitResponse(payload, context);

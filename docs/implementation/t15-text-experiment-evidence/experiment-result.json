@@ -1,0 +1,60 @@
+{
+  "scope": "one authorized candidate experiment; not a confirmed text-video protocol",
+  "authorization": "2026-10-24-original-video-text-once-candidate",
+  "allowanceSource": "original unused video.text allowance; not a new budget",
+  "request": {
+    "method": "POST",
+    "url": "https://newapi.opensosen.com/v1/videos",
+    "model": "grok-imagine-video-1.5-6s",
+    "encoding": "multipart",
+    "scalarFields": [
+      "model",
+      "prompt",
+      "seconds",
+      "size"
+    ],
+    "seconds": "6",
+    "size": "1280x720",
+    "promptSha256": "90dc39522ba9bb1bf3be57487edcc8cc6d8c718baf5a7421f90e2d5473b2eaf7",
+    "inputReferenceParts": 0,
+    "fileParts": 0,
+    "preDispatchValidated": true
+  },
+  "outcome": {
+    "generationRequests": 1,
+    "automaticPostRetries": 0,
+    "httpStatus": 400,
+    "status": "failed",
+    "upstreamIdReceived": false,
+    "outputCount": 0,
+    "providerError": {
+      "httpStatus": 400,
+      "code": "fail_to_fetch_task",
+      "message": "{\"code\":\"fail_to_fetch_task\",\"message\":\"{\\\"error\\\":{\\\"code\\\":\\\"invalid_request\\\",\\\"message\\\":\\\"视频生成 JSON 请求无效: json: unknown field \\\\\\\"size\\\\\\\"\\\",\\\"param\\\":null,\\\"type\\\":\\\"invalid_request_error\\\"}}\",\"data\":null}",
+      "requestId": "202610240406346737242988268d9d65ecOmN6P",
+      "bodyTruncated": false,
+      "bodyTimedOut": false,
+      "credentialEchoSuppressed": false
+    }
+  },
+  "production": {
+    "textCapabilityAdded": false,
+    "textCapabilityRemainsUnverified": true,
+    "capabilityEvidenceFileUnchanged": true,
+    "acceptanceLedgerUnchanged": true
+  },
+  "credentialHandling": "read only inside host memory; no credential persisted or logged",
+  "previousLedgers": [
+    {
+      "path": "temp/t15-live-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+      "unchanged": true
+    },
+    {
+      "path": "temp/t15-reference-retest-authorized-2026-10-24/dispatch-ledger.json",
+      "sha256": "e18bcc477fdf165cdc20de775af994de362c5aa0763177d81c6bc61084df07fa",
+      "unchanged": true
+    }
+  ],
+  "followUp": "No query, download or playback is possible without an accepted task ID. Original text allowance is consumed. No further generation authorized or attempted."
+}

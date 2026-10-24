@@ -54,7 +54,7 @@ function errorDto(code, phase, task, extra = {}) {
  */
 function createTaskService({ db, store, connections, resolveAdapter, onChange = () => {}, now = Date.now, random = Math.random, policy = {}, downloadWorker = null }) {
     const rules = { ...DEFAULT_POLICY, ...policy }, timers = new Map(), inFlight = new Map(), controllers = new Set(), ephemeralSources = new Map();
-    let closed = false, pumping = false, downloadsRunning = 0, schedulerError = null;
+    let closed = false, updatePaused = false, pumping = false, downloadsRunning = 0, schedulerError = null;
     function background(promise) { promise.catch(() => { schedulerError = 'STORAGE_OPERATION_FAILED'; closed = true; for (const timer of timers.values()) clearTimeout(timer); timers.clear(); for (const controller of controllers) controller.abort(); }); }
     const iso = ms => new Date(Math.min(8640000000000000, ms ?? now())).toISOString();
     const row = id => db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id));
@@ -81,7 +81,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     function cancelTimer(id) { const timer = timers.get(id); if (timer) clearTimeout(timer); timers.delete(id); }
     function schedule(id, when) {
         cancelTimer(id);
-        if (closed) return;
+        if (closed || updatePaused) return;
         const delay = Math.max(0, when - now());
         const timer = setTimeout(() => { timers.delete(id); background(poll(id)); }, Math.min(delay, 2147483647));
         timer.unref?.(); timers.set(id, timer);
@@ -110,7 +110,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         return existing.id;
     }
     function enqueue({ snapshot: input, request, mode }) {
-        if (closed) throw fail('SERVER_NOT_ACCEPTING_TASKS', '服务正在关闭。', 503);
+        if (closed || updatePaused) throw fail('SERVER_NOT_ACCEPTING_TASKS', '服务正在关闭或准备更新。', 503);
         let snapshot = snapshotFor(input); const duplicate = findDuplicate(snapshot);
         if (duplicate) return duplicate;
         snapshot = store.freezeOutputDirectory(snapshot);
@@ -204,7 +204,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         }
     }
     async function pump() {
-        if (closed || pumping) return;
+        if (closed || updatePaused || pumping) return;
         pumping = true;
         try {
             if (db.prepare("SELECT 1 FROM tasks WHERE status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused') AND (dispatch_started_at IS NOT NULL OR upstream_task_id IS NOT NULL) LIMIT 1").get()) return;
@@ -242,7 +242,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         schedule(id, next);
     }
     async function poll(id) {
-        if (closed || inFlight.has(id)) return;
+        if (closed || updatePaused || inFlight.has(id)) return;
         let task = row(id);
         if (!task || !REMOTE_ACTIVE.has(task.status) || !task.upstream_task_id) return;
         if (!isQueryableUpstreamTaskId(task.upstream_task_id)) { pause(id, 'upstream_id_unqueryable', 'REMOTE_STATUS_UNKNOWN'); return; }
@@ -276,7 +276,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         try { await promise; } finally { inFlight.delete(id); if (!closed) background(pump()); }
     }
     function action(id, name, input = {}) {
-        if (closed) throw fail('TASK_SERVICE_PAUSED', '任务服务已停止，现有记录保留。', 503);
+        if (closed || updatePaused) throw fail('TASK_SERVICE_PAUSED', '任务服务已停止或准备更新，现有记录保留。', 503);
         const task = row(id); if (!task) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
         if (!input || Object.keys(input).some(key => name !== 'attach-upstream-id' || key !== 'upstreamTaskId')) throw fail('INVALID_TASK_ACTION');
         if (name === 'cancel-queued') {
@@ -353,7 +353,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             inputAssets: store.taskAssets(task.id), outputAssets: store.taskAssets(task.id, 'output') };
     }
     async function drainDownloads() {
-        if (closed || !downloadWorker || downloadsRunning >= 1) return;
+        if (closed || updatePaused || !downloadWorker || downloadsRunning >= 1) return;
         const job = db.prepare("SELECT * FROM task_downloads WHERE state='waiting' ORDER BY created_at,rowid LIMIT 1").get();
         if (!job) return;
         downloadsRunning++;
@@ -413,11 +413,35 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const counts = Object.fromEntries(db.prepare('SELECT status,count(*) AS n FROM tasks GROUP BY status').all().map(item => [item.status, item.n]));
         const processing = [...RESERVING].reduce((sum, state) => sum + (counts[state] || 0), 0), queued = counts.local_queued || 0;
         return { concurrencyLimit: 1, configuredConcurrency: 1, processingCount: processing, queuedCount: queued, pendingCount: processing + queued,
-            displayConcurrency: Math.min(1, processing), displayQueued: queued, downloadConcurrency: 1, downloadsRunning, schedulerError, acceptingNewTasks:!closed && !schedulerError,
+            displayConcurrency: Math.min(1, processing), displayQueued: queued, downloadConcurrency: 1, downloadsRunning, schedulerError, acceptingNewTasks:!closed && !updatePaused && !schedulerError,
             downloadQueued: db.prepare("SELECT count(*) AS n FROM task_downloads WHERE state='waiting'").get().n, pausedCount: counts.polling_paused || 0,
             awaitingContinueCount: db.prepare("SELECT count(*) AS n FROM tasks WHERE status='local_queued' AND requires_continue=1").get().n };
     }
+    function prepareUpdate() {
+        if (closed || schedulerError || updatePaused) throw fail('UPDATE_BUSY', '任务仍在处理中，请稍后更新。', 503);
+        updatePaused = true;
+        // Synchronous admission barrier: neither queued microtasks nor timers can start work now.
+        if (inFlight.size || pumping || downloadsRunning) { updatePaused = false; throw fail('UPDATE_BUSY', '任务或媒体仍在处理中，请稍后更新。', 503); }
+        if (ephemeralSources.size) { updatePaused = false; throw fail('UPDATE_UNSAVED_RESULT', '仍有仅在本次运行中可取回的结果，请先完成结果保存。', 503); }
+        if (db.prepare('SELECT 1 FROM workbench_submission_intents i WHERE NOT EXISTS (SELECT 1 FROM tasks t WHERE t.local_request_id=i.local_request_id) LIMIT 1').get()) { updatePaused = false; throw fail('UPDATE_SUBMISSION_PENDING', '请先核对未完成的本地提交意图。', 503); }
+        for (const timer of timers.values()) clearTimeout(timer); timers.clear();
+        return { remoteMayContinue: !!db.prepare("SELECT 1 FROM tasks WHERE status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused') AND (dispatch_started_at IS NOT NULL OR upstream_task_id IS NOT NULL) LIMIT 1").get() };
+    }
+    function releaseUpdate() {
+        if (closed || !updatePaused) return;
+        updatePaused = false;
+        for (const task of db.prepare("SELECT * FROM tasks WHERE status IN ('remote_queued','generating')").all()) schedule(task.id, Math.max(Date.parse(task.next_poll_at || '') || now(), Date.parse(task.not_before_at || '') || 0));
+        background(pump()); background(drainDownloads());
+    }
+    function persistUpdatePause() {
+        if (!updatePaused || closed || inFlight.size || pumping || downloadsRunning) throw fail('UPDATE_BUSY');
+        db.transaction(() => {
+            for (const task of db.prepare("SELECT id FROM tasks WHERE status IN ('remote_queued','generating')").all()) pause(task.id, 'application_update');
+            db.prepare("UPDATE tasks SET requires_continue=1 WHERE status='local_queued' AND dispatch_started_at IS NULL AND upstream_task_id IS NULL").run();
+        })();
+    }
+    function finishUpdate() { closed = true; ephemeralSources.clear(); }
     async function close() { closed = true; for (const controller of controllers) controller.abort(); for (const timer of timers.values()) clearTimeout(timer); timers.clear(); await Promise.allSettled([...inFlight.values()]); ephemeralSources.clear(); }
-    return { enqueue, findDuplicate, action, recover, stats, close, get: id => publicTask(row(id)), poll, pump, drainDownloads };
+    return { enqueue, findDuplicate, action, recover, stats, close, prepareUpdate, releaseUpdate, persistUpdatePause, finishUpdate, get: id => publicTask(row(id)), poll, pump, drainDownloads };
 }
 module.exports = { createTaskService, canonical, retryAfter, DEFAULT_POLICY, STATES };

@@ -1,0 +1,59 @@
+{
+  "name": "http-timeout",
+  "success": false,
+  "expectedSuccess": false,
+  "errorCode": "HTTP_ERROR_408",
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 0,
+  "allBodyBytes": 31,
+  "wireBytes": 139,
+  "range206Count": 0,
+  "full200Count": 0,
+  "fallback": false,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": null,
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": 408,
+      "contentRange": null,
+      "bodyBytes": 31,
+      "finished": true,
+      "wireBytes": 139
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "error",
+      "code": "HTTP_ERROR_408"
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: bd245a66-7617-548c-907f-5604bb635300"
+    },
+    {
+      "level": "error",
+      "message": "Error: HttpError: 408 Request Timeout\n\"method: GET url: http://127.0.0.1:55954/latest.yml?noCache=1k5mrdm62\\n\\n          Data:\\n          Isolated server request timeout\\n          \"\nHeaders: {\n  \"connection\": \"close\",\n  \"content-length\": \"31\",\n  \"date\": \"Sat, 24 Oct 2026 11:41:02 GMT\"\n}\n    at createHttpError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:53:12)\n    at IncomingMessage.<anonymous> (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:188:28)\n    at IncomingMessage.emit (node:events:509:28)\n    at endReadableNT (node:internal/streams/readable:1729:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)"
+    },
+    {
+      "level": "caught",
+      "message": "408 Request Timeout\n\"method: GET url: http://127.0.0.1:55954/latest.yml?noCache=1k5mrdm62\\n\\n          Data:\\n          Isolated server request timeout\\n          \"\nHeaders: {\n  \"connection\": \"close\",\n  \"content-length\": \"31\",\n  \"date\": \"Sat, 24 Oct 2026 11:41:02 GMT\"\n}"
+    }
+  ],
+  "installerLaunched": false
+}

@@ -11,6 +11,8 @@ const desktopSession = require('./desktop-session');
 const { migrateDatabase } = require('./storage/migrations');
 const { createWorkbenchStore } = require('./storage/store');
 const { createStorageHttp } = require('./storage/http');
+const { createUpdateGate, strictCloseDatabase, updateError } = require('./storage/update-gate');
+const updateGate = createUpdateGate();
 let workbenchStore = null;
 let connectionService = null;
 let taskService = null;
@@ -2874,6 +2876,31 @@ async function shutdown({ drain = true, timeoutMs = 2000 } = {}) {
   })();
   return shutdownPromise;
 }
+function prepareForUpdate() {
+  if (isShuttingDown || runningTaskPromises.size || activeRequestControllers.size) throw updateError('UPDATE_BUSY');
+  updateGate.begin();
+  try { return taskService.prepareUpdate(); }
+  catch (error) { updateGate.release(); throw error; }
+}
+function releaseUpdate() { updateGate.release(); taskService?.releaseUpdate(); }
+async function shutdownForUpdate() {
+  updateGate.commit();
+  try {
+    if (runningTaskPromises.size || activeRequestControllers.size) throw updateError('UPDATE_BUSY');
+    taskService.persistUpdatePause();
+    const proof = strictCloseDatabase(db);
+    updateGate.closed(); taskService.finishUpdate(); isShuttingDown = true;
+    for (const timer of lifecycleTimers) clearInterval(timer); lifecycleTimers.clear();
+    if (queueBroadcastTimer) clearTimeout(queueBroadcastTimer);
+    let deadline;
+    try { await Promise.race([Promise.all([closeHttpServer(httpServerRef), closeWebSocketServer(wsServerRef)]), new Promise((_, reject) => { deadline = setTimeout(() => reject(updateError('UPDATE_CLOSE_FAILED')), 5000); })]); }
+    finally { clearTimeout(deadline); }
+    return proof;
+  } catch (error) {
+    if (!db.open) { updateGate.fault(); throw Object.assign(updateError('UPDATE_CLOSE_FAILED'), { closed: true }); }
+    releaseUpdate(); throw error;
+  }
+}
 function registerShutdownHandlers() {
   for (const signal of ['SIGTERM', 'SIGINT']) process.on(signal, () => {
     void shutdown({ drain: !desktopSession.isDesktopMode() }).then(() => process.exit(0)).catch(() => process.exit(1));
@@ -3690,6 +3717,15 @@ const startServer = () => {
     try { parsedUrl = new URL(req.url || '/', 'http://127.0.0.1'); } catch { res.writeHead(400); res.end(); return; }
     const authorization = desktopSession.authorizeDesktopRequest(req, { sensitive: parsedUrl.pathname.startsWith('/api/') || !['GET', 'HEAD'].includes(req.method) });
     if (!authorization.ok) { sendJson(res, authorization.status, { code: authorization.code, error: 'Desktop session required' }); return; }
+    let leaveUpdateActivity;
+    if (parsedUrl.pathname.startsWith('/api/')) {
+      const flush = req.method === 'PUT' && /^\/api\/nova\/storage\/(drafts|settings)\//.test(parsedUrl.pathname);
+      // GET connection checks can update the database after asynchronous I/O.
+      const read = ['GET', 'HEAD'].includes(req.method) && !parsedUrl.pathname.includes('/connections/');
+      try { leaveUpdateActivity = updateGate.enter({ flush, read }); }
+      catch (error) { sendJson(res, 503, { code: error.code, error: '应用正在准备更新，请稍后再试。' }); return; }
+    }
+    try {
     if (parsedUrl.pathname?.startsWith('/api/nova/')) {
       const handled = await handleApi(req, res, parsedUrl.pathname, parsedUrl.searchParams);
       if (handled || res.headersSent || res.writableEnded) return;
@@ -3701,6 +3737,7 @@ const startServer = () => {
       return;
     }
     handle(req, res, req.url || '/');
+    } finally { leaveUpdateActivity?.(); }
   });
 
   const nextUpgradeHandler = IS_DEV && typeof app.getUpgradeHandler === 'function'
@@ -3743,7 +3780,7 @@ const startServer = () => {
   httpServerRef = httpServer;
 };
 
-module.exports = { isLoopbackAddress, ready, shutdown, get storage() { return workbenchStore; }, get connections() { return connectionService; }, get tasks() { return taskService; } };
+module.exports = { isLoopbackAddress, ready, shutdown, updateGate, prepareForUpdate, releaseUpdate, shutdownForUpdate, get storage() { return workbenchStore; }, get connections() { return connectionService; }, get tasks() { return taskService; } };
 
 registerShutdownHandlers();
 

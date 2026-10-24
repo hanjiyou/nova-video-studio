@@ -813,3 +813,10 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-reconcile>label { margin-top:12px; }
 @media(min-width:1121px) { .wb-editor { max-height:var(--wb-panel-height,calc(100vh - 300px)); min-height:min(560px,var(--wb-panel-height,560px)); overflow:auto; } .wb-editor-footer { position:sticky; bottom:-23px; padding-bottom:14px; background:var(--wb-panel); z-index:2; flex-shrink:0; } .wb-preview { max-height:var(--wb-panel-height,calc(100vh - 300px)); min-height:min(510px,var(--wb-panel-height,510px)); overflow:auto; } }
 @media(max-width:850px) { .wb-library-filters { grid-template-columns:1fr; } .wb-recent-list article { width:calc(50% - 6px); } .wb-task-metadata { grid-template-columns:1fr; gap:6px; } .wb-task-metadata dd { margin-bottom:9px; } }
+
+.wb-update-notice { display:flex; align-items:center; gap:12px; }
+.wb-update-notice>div { flex:1; }
+.wb-update-notes { white-space:pre-wrap; overflow-wrap:anywhere; max-height:240px; overflow:auto; color:var(--wb-muted); }
+.wb-app-update progress { width:100%; accent-color:#a78bfa; }
+.wb-update-overlay { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; background:#080712dd; padding:24px; }
+.wb-update-overlay .wb-panel { max-width:520px; }

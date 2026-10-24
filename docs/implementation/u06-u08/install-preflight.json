@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "packageVersion": "3.5.4",
+  "packageSha512": "QifaYA/HbaSR4wR4wK34PKYIj0rNN1KDhFaFup42j0GJI13Qn6q8rPuA6T5KI9TTZ+uN5/xpwv9UrE5ZuSFxdw==",
+  "appId": "com.novaimage.studio.offline-test.followup-20261024",
+  "exactRegistryKey": "Software\\3e5d42e7-0190-508b-80e7-1e99104f9b23",
+  "registry": [
+    {
+      "hive": "HKCU",
+      "installDirectory": "E:\\Learn\\AI\\nova-image-studio\\temp\\t16-followup-install\\程序 中文 空格",
+      "executablePresent": true,
+      "exactInstalledNsis": true
+    },
+    {
+      "hive": "HKLM",
+      "registrationPresent": false
+    }
+  ],
+  "runningTestProcesses": [],
+  "dataModeContract": {
+    "system": {
+      "supported": true,
+      "installSupported": true,
+      "reason": null
+    },
+    "override": {
+      "supported": true,
+      "installSupported": false,
+      "reason": "DATA_DIRECTORY_RESTART_UNPROVEN"
+    },
+    "portable": {
+      "supported": false,
+      "installSupported": false,
+      "reason": "INSTALLATION_UNSUPPORTED"
+    }
+  },
+  "isolatedWindowsAccountAndSystemData": "not-established",
+  "installationAllowedByThisPreflight": false,
+  "status": "REAL_END_TO_END_INSTALL_PENDING",
+  "reason": "A separately authorized isolated Windows account/system data environment has not been established. No installer is launched and no existing AppData directory is inspected or modified."
+}

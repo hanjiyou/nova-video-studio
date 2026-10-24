@@ -1,0 +1,13 @@
+extends: ./electron-builder.yml
+# Invoked only through build-windows-update.cjs, which supplies the version/identity/feed.
+# Metadata remains edited in local tests; only signing is disabled there.
+electronDist: node_modules/electron/dist
+win:
+  target:
+    - nsis
+  signAndEditExecutable: true
+nsis:
+  differentialPackage: true
+  createDesktopShortcut: false
+  createStartMenuShortcut: false
+  deleteAppDataOnUninstall: false

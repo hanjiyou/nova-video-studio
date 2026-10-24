@@ -12,6 +12,10 @@ const { configureConnectionHost } = require('../backend/connections/host');
 const { SESSION_HEADER, configureDesktopSession, revokeDesktopSession } = require('../backend/desktop-session');
 
 const { reportStartupFailure } = require('./startup.cjs');
+const { readRuntimePolicy } = require('./update-policy.cjs');
+const { createUpdateService } = require('./update-service.cjs');
+const { attachInstallerLaunchProof } = require('./update-launcher.cjs');
+const { createUpdateQuitHandler } = require('./update-quit.cjs');
 let dataPolicy, primary = false, initializationFailure;
 try {
   dataPolicy = resolveDataPolicy({ systemUserData: app.getPath('userData') });
@@ -28,6 +32,16 @@ let detachSession;
 let stopping = false;
 let allowQuit = false;
 let exitCode = 0;
+let updates, installerLaunch, updateFailureVisible = false;
+
+async function reportUpdateFailure() {
+  if (updateFailureVisible) return;
+  updateFailureVisible = true;
+  const options = { type: 'error', title: '更新尚未安装', message: '应用数据已关闭，更新尚未完成。', detail: '已下载更新和原有资料仍保留。请重新打开应用后重试，或关闭应用后手动更新。此时不能继续创作。', buttons: ['重新打开应用', '关闭应用'], defaultId: 0, cancelId: 1 };
+  const result = await (mainWindow ? dialog.showMessageBox(mainWindow, options) : dialog.showMessageBox(options));
+  if (result.response === 0) app.relaunch();
+  allowQuit = true; app.exit(0);
+}
 
 function prepareBackendEnv(port) {
   process.env.PORT = String(port);
@@ -63,6 +77,7 @@ function createWindow(origin, features) {
     if (choice === 0) event.preventDefault();
   });
   mainWindow.on('closed', () => { mainWindow = null; });
+  mainWindow.on('close', event => { if (updates?.preparing && !allowQuit) event.preventDefault(); });
   void mainWindow.loadURL(origin + '/');
 }
 async function start() {
@@ -77,21 +92,32 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, runtimeInfo: () => ({ version: require('../package.json').version, storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, getUpdateService: () => updates, getUpdateGate: () => backend?.updateGate, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready;
+  updates = createUpdateService({ policy: readRuntimePolicy({ app, dataMode: dataPolicy.mode }), currentVersion: app.getVersion(),
+    createUpdater() { const updater = new (require('electron-updater').NsisUpdater)(); installerLaunch = attachInstallerLaunchProof(updater); return updater; },
+    send(channel, value) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send(channel, value); },
+    prepareBackend: () => backend.prepareForUpdate(), releaseBackend: () => backend.releaseUpdate(), closeBackend: () => backend.shutdownForUpdate(), onClosedFailure: () => { void reportUpdateFailure(); },
+  });
   const response = await fetch(origin + '/api/nova/config', { headers: { [SESSION_HEADER]: token }, signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error('Desktop backend authorization failed');
   await response.arrayBuffer();
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
   createWindow(origin, features);
+  // One service per primary process. Window recreation and second-instance never call startup.
+  setImmediate(() => { if (!stopping) void updates.startup(); });
   app.on('activate', () => { if (!stopping && BrowserWindow.getAllWindows().length === 0) createWindow(origin, features); });
 }
 if (initializationFailure) {
   void app.whenReady().then(() => { reportStartupFailure({dialog,error:initializationFailure}); app.exit(1); });
 } else if (!primary) app.exit(0);
 else {
+  const updateQuit = createUpdateQuitHandler({ getUpdates: () => updates, getLaunchProof: () => installerLaunch,
+    closeHost() { stopping = true; revokeDesktopSession(); network?.abortPending(); ipc?.dispose(); detachSession?.(); network?.dispose(); },
+    quit() { allowQuit = true; app.quit(); }, onFailure() { void reportUpdateFailure(); },
+  });
   // Desktop DevTools remains an explicit loopback-only test/debug switch.
   if (String(process.env.NOVA_ELECTRON_CDP_ENABLED || 'false').toLowerCase() === 'true') {
     const port = Number(process.env.NOVA_ELECTRON_CDP_PORT || 9333);
@@ -103,9 +129,11 @@ else {
   app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
   app.on('before-quit', event => {
     if (allowQuit) return;
+    if (updateQuit.handle(event)) return;
     event.preventDefault();
     if (stopping) return;
     stopping = true;
+    updates?.dispose();
     void cleanup().catch(() => { exitCode = 1; console.error('Desktop resource cleanup failed'); }).finally(() => { allowQuit = true; app.exit(exitCode); });
   });
   app.whenReady().then(() => { if(initializationFailure) throw initializationFailure; return start(); }).catch(error => { exitCode = 1; reportStartupFailure({dialog,error}); app.quit(); });

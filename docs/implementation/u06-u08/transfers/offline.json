@@ -1,0 +1,59 @@
+{
+  "name": "offline",
+  "success": false,
+  "expectedSuccess": false,
+  "errorCode": "Error",
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 0,
+  "allBodyBytes": 0,
+  "wireBytes": 0,
+  "range206Count": 0,
+  "full200Count": 0,
+  "fallback": false,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": null,
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": null,
+      "contentRange": null,
+      "bodyBytes": 0,
+      "finished": false,
+      "wireBytes": 0
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "error",
+      "code": null
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: 74960d82-eea9-521c-b49d-cd9b5e7e791e"
+    },
+    {
+      "level": "error",
+      "message": "Error: Error: net::ERR_EMPTY_RESPONSE\n    at SimpleURLLoaderWrapper.<anonymous> (node:electron/js2c/browser_init:2:138489)\n    at SimpleURLLoaderWrapper.emit (node:events:509:28)"
+    },
+    {
+      "level": "caught",
+      "message": "net::ERR_EMPTY_RESPONSE"
+    }
+  ],
+  "installerLaunched": false
+}

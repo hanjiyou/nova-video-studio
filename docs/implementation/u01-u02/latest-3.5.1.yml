@@ -1,0 +1,8 @@
+version: 3.5.1
+files:
+  - url: Nova-Studio-3.5.1-update-test-x64.exe
+    sha512: RrueTt8d7DV1YSRoxbs4QcADe66omX0bF4zPgQhTWg+o2npa64bjfM+H9+8k74Zm3dKNPhKiXS9Kw0LiLONERQ==
+    size: 133744956
+path: Nova-Studio-3.5.1-update-test-x64.exe
+sha512: RrueTt8d7DV1YSRoxbs4QcADe66omX0bF4zPgQhTWg+o2npa64bjfM+H9+8k74Zm3dKNPhKiXS9Kw0LiLONERQ==
+releaseDate: '2026-10-24T10:55:17.053Z'

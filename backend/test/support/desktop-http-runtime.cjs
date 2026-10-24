@@ -71,6 +71,9 @@ function runChild() {
                 process.disconnect();
             }
             else if (message.action==='response-reads') process.send({id:message.id,result:responseReads});
+            else if (message.action==='prepare-update') process.send({id:message.id,result:server.prepareForUpdate()});
+            else if (message.action==='release-update') {server.releaseUpdate();process.send({id:message.id,result:{ok:true}});}
+            else if (message.action==='close-update') process.send({id:message.id,result:await server.shutdownForUpdate()});
             else if (['save', 'clear', 'select'].includes(message.action))
                 process.send({ id: message.id, result: server.connections[message.action](message.input) });
             else
@@ -108,6 +111,7 @@ async function start(directory, { desktop = true, imageStream = false, pluginOri
     return { origin, secret: token, headers, request: (route, options = {}) => fetch(origin + route, { ...options, headers: { ...headers, ...options.headers } }), output: () => output,
         openWebSocket: () => new (require('ws'))(origin.replace('http:', 'ws:') + '/api/nova/ws', { headers: { ...headers, Origin: origin } }),
         responseReads:()=>rpc('response-reads'),
+        prepareUpdate:()=>rpc('prepare-update'), releaseUpdate:()=>rpc('release-update'), closeUpdate:()=>rpc('close-update'),
         saveConnection: input => rpc('save', input), clearConnectionCredential: input => rpc('clear', input), selectConnection: input => rpc('select', input),
         async crash() {
             const exit=await new Promise(resolve=>{child.once('exit',(code,signal)=>resolve({code,signal}));child.kill('SIGKILL');});

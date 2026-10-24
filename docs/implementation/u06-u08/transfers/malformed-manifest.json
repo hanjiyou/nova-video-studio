@@ -1,0 +1,59 @@
+{
+  "name": "malformed-manifest",
+  "success": false,
+  "expectedSuccess": false,
+  "errorCode": "ERR_UPDATER_INVALID_UPDATE_INFO",
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 0,
+  "allBodyBytes": 21,
+  "wireBytes": 116,
+  "range206Count": 0,
+  "full200Count": 0,
+  "fallback": false,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": null,
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 21,
+      "finished": true,
+      "wireBytes": 116
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "error",
+      "code": "ERR_UPDATER_INVALID_UPDATE_INFO"
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: 46827044-b242-572c-86ed-f6c785a516d1"
+    },
+    {
+      "level": "error",
+      "message": "Error: Error: Cannot parse update info from latest.yml in the latest release artifacts (http://127.0.0.1:64037/latest.yml?noCache=1k5mrdm6a): YAMLException: unexpected end of the stream within a flow collection (2:1)\n\n 1 | files: [invalid: yaml\n 2 | \n-----^\n    at generateError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:197:10)\n    at throwError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:201:9)\n    at readFlowCollection (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:866:3)\n    at composeNode (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1508:11)\n    at readBlockMapping (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1201:11)\n    at composeNode (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1507:53)\n    at readDocument (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1697:3)\n    at loadDocuments (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1755:5)\n    at load (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1779:21)\n    at parseUpdateInfo (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\providers\\Provider.js:97:37), rawData: files: [invalid: yaml\n    at newError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\error.js:5:19)\n    at parseUpdateInfo (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\providers\\Provider.js:100:51)\n    at GenericProvider.getLatestVersion (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\providers\\GenericProvider.js:23:55)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async NsisUpdater.getUpdateInfoAndProvider (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\AppUpdater.js:389:19)\n    at async NsisUpdater.doCheckForUpdates (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\AppUpdater.js:402:24)\n    at async scenario (E:\\Learn\\AI\\nova-image-studio\\scripts\\test-windows-update-transfer.cjs:108:5)\n    at async main (E:\\Learn\\AI\\nova-image-studio\\scripts\\test-windows-update-transfer.cjs:148:219)"
+    },
+    {
+      "level": "caught",
+      "message": "Cannot parse update info from latest.yml in the latest release artifacts (http://127.0.0.1:64037/latest.yml?noCache=1k5mrdm6a): YAMLException: unexpected end of the stream within a flow collection (2:1)\n\n 1 | files: [invalid: yaml\n 2 | \n-----^\n    at generateError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:197:10)\n    at throwError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:201:9)\n    at readFlowCollection (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:866:3)\n    at composeNode (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1508:11)\n    at readBlockMapping (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1201:11)\n    at composeNode (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1507:53)\n    at readDocument (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1697:3)\n    at loadDocuments (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1755:5)\n    at load (E:\\Learn\\AI\\nova-image-studio\\node_modules\\js-yaml\\lib\\loader.js:1779:21)\n    at parseUpdateInfo (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\providers\\Provider.js:97:37), rawData: files: [invalid: yaml"
+    }
+  ],
+  "installerLaunched": false
+}

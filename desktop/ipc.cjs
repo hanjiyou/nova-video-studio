@@ -6,17 +6,24 @@ const { randomUUID } = require('node:crypto');
 const { createAssetActions } = require('./asset-actions.cjs');
 const { DETAILS } = require('../backend/storage/download-errors');
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
-function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtimeInfo, getAssetService = () => null, getConnectionService = () => null }) {
+function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtimeInfo, getAssetService = () => null, getConnectionService = () => null, getUpdateService = () => null, getUpdateGate = () => null }) {
   const selections = new Map();
   const channels = [];
   function register(channel, handler) {
     channels.push(channel);
     ipcMain.handle(channel, async (event, ...args) => {
       if (!policy.isTrustedSender(event)) return { ok: false, code: 'IPC_FORBIDDEN' };
-      try { return await handler(...args); } catch (error) { return { ok: false, code: error.connectionError || error.statusCode || DETAILS[error.code] ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
+      try {
+        const gate = getUpdateGate();
+        return gate && channel !== 'nova:runtime-info' && !channel.startsWith('nova:update-') ? await gate.run(() => handler(...args)) : await handler(...args);
+      } catch (error) { return { ok: false, code: error.connectionError || error.statusCode || DETAILS[error.code] ? error.code : 'DESKTOP_OPERATION_FAILED' }; }
     });
   }
   register('nova:runtime-info', (...args) => args.length ? { ok: false, code: 'INVALID_ARGUMENT' } : { ok: true, ...runtimeInfo() });
+  for (const [channel, method] of [['nova:update-state','snapshot'], ['nova:update-check','check'], ['nova:update-download','download'], ['nova:update-install','install'], ['nova:update-dismiss','dismiss']]) {
+    register(channel, (...args) => args.length ? { ok: false, code: 'INVALID_ARGUMENT' } : getUpdateService()?.[method]() || { ok: false, code: 'UPDATE_UNSUPPORTED' });
+  }
+  register('nova:update-flush-result', (...args) => args.length !== 1 ? { ok: false, code: 'INVALID_ARGUMENT' } : getUpdateService()?.acknowledgeFlush(args[0]) || { ok: false, code: 'UPDATE_UNSUPPORTED' });
   for (const [channel, method] of [['nova:save-connection','save'],['nova:clear-connection-credential','clear'],['nova:select-connection','select']]) {
     register(channel, (...args) => {
       if (args.length !== 1) return {ok:false,code:'INVALID_ARGUMENT'};

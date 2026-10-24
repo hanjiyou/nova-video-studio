@@ -1,0 +1,140 @@
+✔ activity barrier admits only save/read during preparation and refuses commit until every operation settles (1.1103ms)
+✔ strict SQLite checkpoint/close refuses busy/failure/false proof (0.2159ms)
+✔ real HTTP active body blocks prepare; controlled draft PUT works, generation/import actions are locked, release resumes (412.2445ms)
+✔ live POST blocks prepare and unknown records survive strict close without another POST (61.9847ms)
+✔ live POST blocks prepare and paused records survive strict close without another POST (61.9826ms)
+✔ active media save and only-memory signed result both refuse install without dropping retry data (70.9066ms)
+✔ once-per-process startup merges manual concurrency; no automatic download or quit installation (4.7155ms)
+✔ availability survives late subscription through snapshot, dismisses and deduplicates same version (0.6637ms)
+✔ silent startup failures have no notice and fixed errors expose no source error text (0.2886ms)
+✔ download deduplicates, sanitizes progress, and completion never triggers installation (0.8736ms)
+✔ safe install orders prepare, acknowledged save, strict close, then explicit install (2.0438ms)
+✔ install refuses busy and retains downloaded state (0.6495ms)
+✔ install refuses save and retains downloaded state (0.4391ms)
+✔ install refuses timeout and retains downloaded state (14.2451ms)
+✔ install refuses close and retains downloaded state (0.6532ms)
+✔ install refuses unproven-close and retains downloaded state (0.3656ms)
+✔ partial close failure uses visible restart path and cannot claim normal usage resumed (0.4295ms)
+✔ async installer error keeps closed-error authoritative and forbids refresh/download from overwriting it (0.3995ms)
+✔ override and portable/disabled policies never install/check unintentionally (0.185ms)
+✔ metadata validates full immutable identity/feed/signature/version and disables old/uninstalled/portable (1.9129ms)
+✔ release feed cannot select other github or turn off publisher verification (0.2258ms)
+✔ exact installed NSIS probe preserves Chinese paths/spaces and rejects other registry identities (2.2287ms)
+✔ update IPC rejects foreign/main-frame lookalikes and arbitrary URL/path inputs; activity IPC cannot bypass gate (1.1634ms)
+✔ installer launch proof spawn waits for actual process start (2.1751ms)
+✔ installer launch proof async-error waits for actual process start (0.5766ms)
+✔ installer launch proof sync-throw waits for actual process start (0.3308ms)
+✔ ordinary quit never takes update path; update quit waits for spawn proof and handles reentry exactly once (0.7393ms)
+✔ failed launch never quits and uses visible recovery, while preparation blocks ordinary shutdown (0.3238ms)
+✔ formal record requires source commit and builder binds it outside runtime metadata (7.8297ms)
+✔ prepare/publish without execute never invokes a remote API or needs token (11.181ms)
+✔ wrong supplied commit, draft target or tag commit is rejected before write (16.4197ms)
+✔ annotated tag is dereferenced to reviewed source and verify stays draft (7.8341ms)
+✔ upload resumes a partial draft, checks existing bytes first and only adds missing assets (7.7254ms)
+✔ existing wrong draft bytes block all uploads and are never replaced (5.8321ms)
+✔ same-version draft prevents new release creation even without tag (8.6241ms)
+Draft 42 created. A failure retains this draft; resume with --phase upload --release-id 42.
+✔ new draft uploads the complete asset set and verifies while remaining unpublished (9.1822ms)
+✔ pending license gate rejects execute before API or token access (6.5089ms)
+✔ publish requires explicit matching tag and complete remote assets (13.161ms)
+✔ duplicate phase and arbitrary repository arguments are rejected (0.4162ms)
+✔ single mapping separates old four-part packaging, app SemVer, Windows version and test/release identities (2.9665ms)
+✔ reject unsupported update version 3.4.0.18 (0.2022ms)
+✔ reject unsupported update version 03.5.0 (0.0662ms)
+✔ reject unsupported update version v3.5.0 (0.0604ms)
+✔ reject unsupported update version 3.5.0+2 (0.0833ms)
+✔ reject unsupported update version 3.5.0-beta.1 (0.05ms)
+✔ reject unsupported update version 65536.0.0 (0.0672ms)
+✔ reject unsupported update version ../3.5.0 (0.0783ms)
+✔ reject absent/untrusted generic test feed undefined (0.2952ms)
+✔ reject absent/untrusted generic test feed https://example.com/ (0.1383ms)
+✔ reject absent/untrusted generic test feed http://localhost:18888/ (0.0753ms)
+✔ reject absent/untrusted generic test feed http://127.0.0.1.evil.test:18888/ (0.0565ms)
+✔ reject absent/untrusted generic test feed http://127.0.0.1:18888/ (0.0554ms)
+✔ reject absent/untrusted generic test feed http://127.0.0.1:18888/?token=x (0.0721ms)
+✔ reject absent/untrusted generic test feed http://127.0.0.1:18888/feed (0.0415ms)
+✔ release remains gated by signing, fixed public GitHub feed cannot be overridden by test URL (0.9234ms)
+✔ build config keeps edited version resources, test signing disabled, exact metadata/feed and differential NSIS (0.3139ms)
+✔ CLI rejects unknown/repeated/missing arguments (0.1521ms)
+✔ two builder-generated fixture manifests/blockmaps parse and validate in pinned updater (69.6108ms)
+✔ reject missing installer (12.7195ms)
+✔ reject missing blockmap (15.1439ms)
+✔ reject tampered installer (13.8866ms)
+✔ reject wrong manifest hash (14.8499ms)
+✔ reject mixed manifest version (17.1822ms)
+✔ reject absolute manifest URL (15.4908ms)
+✔ reject wrong manifest path (17.9797ms)
+✔ reject same-length tampered blockmap (16.7612ms)
+✔ reject wrong packaged version (17.5213ms)
+✔ reject changed packaged feed (18.9423ms)
+✔ reject unexpected token field (18.6366ms)
+{
+  "schemaVersion": 1,
+  "profile": "local-test",
+  "version": "3.5.0",
+  "windowsVersion": "3.5.0.0",
+  "minimumUpdatableVersion": "3.5.0",
+  "appId": "com.novaimage.studio.offline-test.followup-20261024",
+  "productName": "Nova Studio T16 Followup",
+  "updaterCacheDirName": "com.novaimage.studio.offline-test.followup-20261024-updater",
+  "feed": {
+    "provider": "generic",
+    "url": "http://127.0.0.1:18888/",
+    "channel": "latest",
+    "useMultipleRangeRequest": false
+  },
+  "signature": {
+    "mode": "unsigned-local-test",
+    "publisherNames": []
+  },
+  "runtimeReady": false,
+  "metadata": {
+    "schemaVersion": 1,
+    "profile": "local-test",
+    "version": "3.5.0",
+    "windowsVersion": "3.5.0.0",
+    "minimumUpdatableVersion": "3.5.0",
+    "appId": "com.novaimage.studio.offline-test.followup-20261024",
+    "productName": "Nova Studio T16 Followup",
+    "updaterCacheDirName": "com.novaimage.studio.offline-test.followup-20261024-updater",
+    "feed": {
+      "provider": "generic",
+      "url": "http://127.0.0.1:18888/",
+      "channel": "latest",
+      "useMultipleRangeRequest": false
+    },
+    "signature": {
+      "mode": "unsigned-local-test",
+      "publisherNames": []
+    },
+    "runtimeReady": false
+  },
+  "artifactName": "Nova-Studio-3.5.0-update-test-x64.exe",
+  "tag": "v3.5.0",
+  "root": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\nova-update-fixture-EvRfsA\\release-updates",
+  "output": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\nova-update-fixture-EvRfsA\\release-updates\\local-test\\3.5.0",
+  "checkOnly": true,
+  "publication": "never",
+  "note": "No files created; no version reserved. Test runtime enablement does not approve release signing or publication."
+}
+✔ reject unsigned-test signature errors and inconsistent PE versions (24.8156ms)
+Validated build saved: C:\Users\ADMINI~1\AppData\Local\Temp\nova-update-fixture-EvRfsA\release-updates\local-test\3.5.0
+Unsigned local test only. No installation or publication performed.
+Attempt retained: C:\Users\ADMINI~1\AppData\Local\Temp\nova-update-fixture-eRYRKr\release-updates\local-test\.attempt-3.5.0-rd3sP4
+✔ check-only creates nothing; success is atomic and version output cannot be reused (25.205ms)
+✔ build failure retains logs and allows same version retry; lock prevents parallel mutation (6.3985ms)
+✔ publisher matching follows stable updater CN/DN semantics, including field order (0.2497ms)
+✔ only explicit new local-test builds may enable test runtime, never release signing (0.5579ms)
+✔ history permits only runtime boolean difference; record cannot change fixed policy (0.5823ms)
+✔ history compares actual packaged metadata and complete saved summary (50.3754ms)
+✔ release defaults to local dry-run and lists unresolved gates (0.6614ms)
+✔ release cannot change GitHub source even with approved signing fixture (0.1878ms)
+✔ formal source record must equal the source embedded in the signed application package (33.1874ms)
+ℹ tests 79
+ℹ suites 0
+ℹ pass 79
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 944.7255

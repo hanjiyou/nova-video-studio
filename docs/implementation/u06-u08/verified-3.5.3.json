@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "profile": "local-test",
+  "version": "3.5.3",
+  "windowsVersion": "3.5.3.0",
+  "appId": "com.novaimage.studio.offline-test.followup-20261024",
+  "productName": "Nova Studio T16 Followup",
+  "tag": "v3.5.3",
+  "installer": "Nova-Studio-3.5.3-update-test-x64.exe",
+  "size": 133755858,
+  "sha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "blockmap": {
+    "name": "Nova-Studio-3.5.3-update-test-x64.exe.blockmap",
+    "sha512": "cDylT07HllHPCjgfh4/NZJkan9WeKqpgKmhWMuZKJ+ucqtLPpjSeCGZkvfXhaCpCCNDOlWLHGCp4aGXL3NDYHg==",
+    "chunks": 6371,
+    "size": 133755858
+  },
+  "manifest": {
+    "name": "latest.yml",
+    "sha512": "R2RMUjJvr5wsyixrngSrjhuLXK7MkaTctm/WYWoTKT2KjBWAmt8MMwvg0cS10r5RpXwLjgVaP04UbjiyC/sFgA=="
+  },
+  "feed": {
+    "provider": "generic",
+    "url": "http://127.0.0.1:18888/",
+    "channel": "latest",
+    "useMultipleRangeRequest": false
+  },
+  "signature": {
+    "mode": "unsigned-local-test",
+    "results": [
+      {
+        "status": "NotSigned",
+        "subject": "",
+        "fileVersion": "3.5.3.0",
+        "productVersion": "3.5.3"
+      },
+      {
+        "status": "NotSigned",
+        "subject": "",
+        "fileVersion": "3.5.3.0",
+        "productVersion": "3.5.3.0"
+      }
+    ]
+  },
+  "runtimeReady": true,
+  "publication": "not-published"
+}

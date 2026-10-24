@@ -1,0 +1,59 @@
+{
+  "name": "rate-limit",
+  "success": false,
+  "expectedSuccess": false,
+  "errorCode": "HTTP_ERROR_429",
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 0,
+  "allBodyBytes": 27,
+  "wireBytes": 154,
+  "range206Count": 0,
+  "full200Count": 0,
+  "fallback": false,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": null,
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": 429,
+      "contentRange": null,
+      "bodyBytes": 27,
+      "finished": true,
+      "wireBytes": 154
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "error",
+      "code": "HTTP_ERROR_429"
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: e3bdf272-60bd-573b-8fb9-6bbb3c9e68fc"
+    },
+    {
+      "level": "error",
+      "message": "Error: HttpError: 429 Too Many Requests\n\"method: GET url: http://127.0.0.1:51200/latest.yml?noCache=1k5mrdm5m\\n\\n          Data:\\n          Isolated rate limit fixture\\n          \"\nHeaders: {\n  \"connection\": \"close\",\n  \"content-length\": \"27\",\n  \"date\": \"Sat, 24 Oct 2026 11:41:02 GMT\",\n  \"retry-after\": \"60\"\n}\n    at createHttpError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:53:12)\n    at IncomingMessage.<anonymous> (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:188:28)\n    at IncomingMessage.emit (node:events:509:28)\n    at endReadableNT (node:internal/streams/readable:1729:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)"
+    },
+    {
+      "level": "caught",
+      "message": "429 Too Many Requests\n\"method: GET url: http://127.0.0.1:51200/latest.yml?noCache=1k5mrdm5m\\n\\n          Data:\\n          Isolated rate limit fixture\\n          \"\nHeaders: {\n  \"connection\": \"close\",\n  \"content-length\": \"27\",\n  \"date\": \"Sat, 24 Oct 2026 11:41:02 GMT\",\n  \"retry-after\": \"60\"\n}"
+    }
+  ],
+  "installerLaunched": false
+}

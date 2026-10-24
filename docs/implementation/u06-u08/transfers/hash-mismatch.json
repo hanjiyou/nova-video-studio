@@ -1,0 +1,134 @@
+{
+  "name": "hash-mismatch",
+  "success": false,
+  "expectedSuccess": false,
+  "errorCode": "ERR_CHECKSUM_MISMATCH",
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 133755858,
+  "allBodyBytes": 134036096,
+  "wireBytes": 134036678,
+  "range206Count": 0,
+  "full200Count": 1,
+  "fallback": true,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": null,
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 385,
+      "finished": true,
+      "wireBytes": 481
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe.blockmap",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 140039,
+      "finished": true,
+      "wireBytes": 140200
+    },
+    {
+      "path": "/Nova-Studio-3.5.2-update-test-x64.exe.blockmap",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 139814,
+      "finished": true,
+      "wireBytes": 139975
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 133755858,
+      "finished": true,
+      "wireBytes": 133756022
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "update-available",
+      "code": null
+    },
+    {
+      "event": "error",
+      "code": "ERR_CHECKSUM_MISMATCH"
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: b170e377-ee34-5e39-b964-695a8c6b81f0"
+    },
+    {
+      "level": "info",
+      "message": "Found version 3.5.3 (url: Nova-Studio-3.5.3-update-test-x64.exe)"
+    },
+    {
+      "level": "info",
+      "message": "Downloading update from Nova-Studio-3.5.3-update-test-x64.exe"
+    },
+    {
+      "level": "info",
+      "message": "Downloading update (already in progress)"
+    },
+    {
+      "level": "debug",
+      "message": "updater cache dir: E:\\Learn\\AI\\nova-image-studio\\release-updates\\local-verification\\u07-transfer-20261024-b\\hash-mismatch\\cache\\com.novaimage.studio.offline-test.followup-20261024-updater"
+    },
+    {
+      "level": "info",
+      "message": "Download block maps (old: \"http://127.0.0.1:53211/Nova-Studio-3.5.2-update-test-x64.exe.blockmap\", new: http://127.0.0.1:53211/Nova-Studio-3.5.3-update-test-x64.exe.blockmap)"
+    },
+    {
+      "level": "info",
+      "message": "No cached blockmap for the old installer, downloading it from \"http://127.0.0.1:53211/Nova-Studio-3.5.2-update-test-x64.exe.blockmap\""
+    },
+    {
+      "level": "info",
+      "message": "File has 170 changed blocks"
+    },
+    {
+      "level": "debug",
+      "message": "[\n  {\n    \"kind\": 0,\n    \"start\": 0,\n    \"end\": 23693\n  },\n  {\n    \"kind\": 1,\n    \"start\": 23693,\n    \"end\": 119445\n  },\n  {\n    \"kind\": 0,\n    \"start\": 119444,\n    \"end\": 174590\n  },\n  {\n    \"kind\": 1,\n    \"start\": 174591,\n    \"end\": 189227\n  },\n  {\n    \"kind\": 0,\n    \"start\": 189226,\n    \"end\": 13145283\n  },\n  {\n    \"kind\": 1,\n    \"start\": 13145284,\n    \"end\": 13159175\n  },\n  {\n    \"kind\": 0,\n    \"start\": 13159174,\n    \"end\": 13187282\n  },\n  {\n    \"kind\": 1,\n    \"start\": 13187283,\n    \"end\": 13859323\n  },\n  {\n    \"kind\": 0,\n    \"start\": 13859384,\n    \"end\": 14005106\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14005045,\n    \"end\": 14013321\n  },\n  {\n    \"kind\": 0,\n    \"start\": 14013382,\n    \"end\": 14046150\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14046089,\n    \"end\": 14838064\n  },\n  {\n    \"kind\": 0,\n    \"start\": 14838164,\n    \"end\": 14930123\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14930023,\n    \"end\": 16599593\n  },\n  {\n    \"kind\": 0,\n    \"start\": 16599692,\n    \"end\": 104137769\n  },\n  {\n    \"kind\": 1,\n    \"start\": 104137670,\n    \"end\": 104212641\n  },\n  {\n    \"kind\": 0,\n    \"start\": 104212718,\n    \"end\": 133341885\n  },\n  {\n    \"kind\": 1,\n    \"start\": 133341808,\n    \"end\": 133392670\n  },\n  {\n    \"kind\": 0,\n    \"start\": 133392746,\n    \"end\": 133606896\n  },\n  {\n    \"kind\": 1,\n    \"start\": 133606820,\n    \"end\": 133755858\n  }\n]"
+    },
+    {
+      "level": "info",
+      "message": "Full: 130,620.96 KB, To download: 3,458.02 KB (3%)"
+    },
+    {
+      "level": "error",
+      "message": "Cannot download differentially, fallback to full download: Error: ENOENT: no such file or directory, open 'E:\\Learn\\AI\\nova-image-studio\\release-updates\\local-verification\\u07-transfer-20261024-b\\hash-mismatch\\cache\\com.novaimage.studio.offline-test.followup-20261024-updater\\installer.exe'"
+    },
+    {
+      "level": "warn",
+      "message": "sha512 checksum mismatch after full download of Nova-Studio-3.5.3-update-test-x64.exe: the downloaded file is corrupted or the published update metadata does not match the uploaded file"
+    },
+    {
+      "level": "error",
+      "message": "Error: Error: sha512 checksum mismatch, expected RERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERA==, got aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==\n    at newError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\error.js:5:19)\n    at DigestTransform.validate (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:431:40)\n    at DigestTransform._flush (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:417:22)\n    at DigestTransform.final [as _final] (node:internal/streams/transform:128:10)\n    at prefinish (node:internal/streams/writable:914:14)\n    at finishMaybe (node:internal/streams/writable:928:5)\n    at Writable.end (node:internal/streams/writable:843:5)\n    at IncomingMessage.onend (node:internal/streams/readable:950:10)\n    at Object.onceWrapper (node:events:630:28)\n    at IncomingMessage.emit (node:events:509:28)"
+    },
+    {
+      "level": "caught",
+      "message": "sha512 checksum mismatch, expected RERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERA==, got aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA=="
+    }
+  ],
+  "installerLaunched": false
+}

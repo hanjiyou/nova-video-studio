@@ -1,10 +1,11 @@
 'use client';
 import { useCallback, useRef, useState } from 'react';
 import { DRAFT_MODES, Draft, DraftMode, getDraft, putDraft } from '@/lib/workbench-client';
+import { isUpdateFrozen } from '@/lib/update-readiness';
 export function useWorkbenchDrafts() {
   const values = useRef<Partial<Record<DraftMode, Draft>>>({});
   const dirty = useRef(new Set<DraftMode>());
-  const running = useRef(new Set<DraftMode>());
+  const running = useRef(new Map<DraftMode, Promise<boolean>>());
   const [drafts, setDrafts] = useState<Partial<Record<DraftMode, Draft>>>({});
   const [saving, setSaving] = useState<Partial<Record<DraftMode, boolean>>>({});
   const [errors, setErrors] = useState<Partial<Record<DraftMode, unknown>>>({});
@@ -14,11 +15,11 @@ export function useWorkbenchDrafts() {
     values.current = Object.fromEntries(loaded.map(draft => [draft.mode, draft]));
     publish();
   }, [publish]);
-  const persist = useCallback(async (mode: DraftMode) => {
-    if (running.current.has(mode)) return;
-    running.current.add(mode);
+  const persist = useCallback((mode: DraftMode): Promise<boolean> => {
+    const existing = running.current.get(mode); if (existing) return existing;
     setSaving(old => ({ ...old, [mode]: true }));
     setErrors(old => ({ ...old, [mode]: undefined }));
+    const operation = Promise.resolve().then(async () => {
     try {
       while (dirty.current.has(mode)) {
         dirty.current.delete(mode);
@@ -28,11 +29,14 @@ export function useWorkbenchDrafts() {
         values.current[mode] = values.current[mode] === sent ? saved : { ...values.current[mode]!, revision: saved.revision, updatedAt: saved.updatedAt };
         publish();
       }
-    } catch (error) { dirty.current.add(mode); setErrors(old => ({ ...old, [mode]: error })); }
+      return true;
+    } catch (error) { dirty.current.add(mode); setErrors(old => ({ ...old, [mode]: error })); return false; }
     finally { running.current.delete(mode); setSaving(old => ({ ...old, [mode]: false })); }
+    });
+    running.current.set(mode, operation); return operation;
   }, [publish]);
   const update = useCallback((mode: DraftMode, patch: Partial<Pick<Draft, 'prompt' | 'model' | 'parameters' | 'inputAssets'>>, defaultModel?: string) => {
-    if (!values.current[mode]) return;
+    if (isUpdateFrozen() || !values.current[mode]) return;
     values.current[mode] = { ...values.current[mode]!, model: values.current[mode]!.model || defaultModel || '', ...patch };
     dirty.current.add(mode); publish(); void persist(mode);
   }, [persist, publish]);
@@ -41,5 +45,10 @@ export function useWorkbenchDrafts() {
     values.current[mode] = await getDraft(mode); dirty.current.delete(mode);
     setErrors(old => ({ ...old, [mode]: undefined })); publish();
   }, [publish]);
-  return { drafts, saving, errors, load, update, retry: persist, reload };
+  const flush = useCallback(async () => {
+    if (DRAFT_MODES.some(mode => !values.current[mode])) throw Error('UPDATE_SAVE_FAILED');
+    const saved = await Promise.all(DRAFT_MODES.map(persist));
+    if (saved.some(ok => !ok) || dirty.current.size || running.current.size) throw Error('UPDATE_SAVE_FAILED');
+  }, [persist]);
+  return { drafts, saving, errors, load, update, retry: persist, reload, flush };
 }

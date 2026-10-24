@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "bootstrapVersion": "3.5.0",
+  "minimumUpdatableVersion": "3.5.0",
+  "updaterVersion": "6.8.11",
+  "builderVersion": "26.15.3",
+  "electronVersion": "43.4.0",
+  "identities": {
+    "local-test": {
+      "appId": "com.novaimage.studio.offline-test.followup-20261024",
+      "productName": "Nova Studio T16 Followup"
+    },
+    "release": {
+      "appId": "com.novaimage.studio",
+      "productName": "Nova Image Studio"
+    }
+  },
+  "githubFeed": {
+    "provider": "github",
+    "owner": "hanjiyou",
+    "repo": "nova-video-studio",
+    "private": false,
+    "channel": "latest",
+    "releaseType": "release"
+  },
+  "signing": {
+    "status": "pending",
+    "publisherNames": []
+  },
+  "runtimeReady": false
+}

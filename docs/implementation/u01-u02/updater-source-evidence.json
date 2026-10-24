@@ -1,0 +1,74 @@
+{
+  "checkedOn": "2026-10-24",
+  "registry": "https://registry.npmjs.org/",
+  "distTags": {
+    "latest": "6.8.11",
+    "v26": "6.8.11",
+    "next": "7.0.0-alpha.11"
+  },
+  "updater": {
+    "version": "6.8.11",
+    "integrity": "sha512-12U/mbzaIKQS3Q543aQ7DjyAZMXeVJy1Wpu0qdq5ne4RXpIQDpWYm25zRjgXngAoo6swMrm4C4owGyiIipelsg=="
+  },
+  "builder": "26.15.3",
+  "builderUtilRuntime": "9.7.0",
+  "electron": "43.4.0",
+  "scope": "Installed npm stable package source inspection; not master; runtime/installer execution not performed.",
+  "source": [
+    {
+      "packageRelativePath": "electron-updater/package.json",
+      "sha256": "c06c6ec339843de1fb4248271f95bf954f86c38700d4f6126a613fc832f910ef",
+      "bytes": 1112
+    },
+    {
+      "packageRelativePath": "electron-updater/out/AppUpdater.js",
+      "sha256": "8a744ad4b0921f1a6c2804037eda31ddec5486cf8b797a37fa9ba7089c07a923",
+      "bytes": 35599
+    },
+    {
+      "packageRelativePath": "electron-updater/out/BaseUpdater.js",
+      "sha256": "9cff8b894ed709f6d9a5b938614fc377be89e1ea5bd1cc1f4cd6143048d918a3",
+      "bytes": 6035
+    },
+    {
+      "packageRelativePath": "electron-updater/out/NsisUpdater.js",
+      "sha256": "31f36b4ef5cadd35a93df91d9454aa70044e41c0e6b4c799783dca4302cd03b6",
+      "bytes": 9416
+    },
+    {
+      "packageRelativePath": "electron-updater/out/providers/Provider.js",
+      "sha256": "48601c5ceb7aaaeec096b84186a1155964128e64bbe8c009dd2d9cb9afccda37",
+      "bytes": 6002
+    },
+    {
+      "packageRelativePath": "electron-updater/out/providers/GitHubProvider.js",
+      "sha256": "17c0ae98c1fb7943057fe88c0cc951a84acc81988813dba1aca20e911f82f601",
+      "bytes": 11423
+    },
+    {
+      "packageRelativePath": "electron-updater/out/windowsExecutableCodeSignatureVerifier.js",
+      "sha256": "4738e446904710a2497fd3408fdf6416c5515d9177c0add0f2427bd725969c21",
+      "bytes": 7539
+    },
+    {
+      "packageRelativePath": "app-builder-lib/out/publish/PublishManager.js",
+      "sha256": "4a05af67b54b0e41369ddd80be89440870ccb2e7cf57373d3916ccc8c9bff4ae",
+      "bytes": 25041
+    },
+    {
+      "packageRelativePath": "app-builder-lib/out/publish/updateInfoBuilder.js",
+      "sha256": "e0d01c7e9496dfea814a76661c1ffc664610ce8446c6d9639efca1267715fa29",
+      "bytes": 11092
+    },
+    {
+      "packageRelativePath": "app-builder-lib/out/targets/blockmap/blockmap.js",
+      "sha256": "3681fc85bae69106c98d39c299242311a3e4f33b4b1a7786d1c0033fb4b1c0e5",
+      "bytes": 18388
+    },
+    {
+      "packageRelativePath": "app-builder-lib/out/util/asyncEventEmitter.js",
+      "sha256": "3c653e1ef3b2857c4a3a4000578446e28f634d60b1a135df246842623fe0320a",
+      "bytes": 2548
+    }
+  ]
+}

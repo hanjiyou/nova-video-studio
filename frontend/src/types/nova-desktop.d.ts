@@ -15,6 +15,14 @@ declare global {
       checkOutputDirectory: () => Promise<{ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string}>;
       exportDiagnostics: () => Promise<{ok:boolean;cancelled?:boolean;code?:string;exportedTasks?:number;omittedTasks?:number}>;
       getRuntimeInfo: () => Promise<{ ok: boolean; version?: string; storageMode?: 'system' | 'portable' | 'override'; code?: string }>;
+      getUpdateState: () => Promise<import('@/lib/app-update').AppUpdateState>;
+      checkForUpdates: () => Promise<import('@/lib/app-update').UpdateResult>;
+      downloadUpdate: () => Promise<import('@/lib/app-update').UpdateResult>;
+      installUpdate: () => Promise<import('@/lib/app-update').UpdateResult>;
+      dismissUpdateNotice: () => Promise<import('@/lib/app-update').UpdateResult>;
+      acknowledgeUpdateFlush: (value: {id: string; ok: boolean}) => Promise<import('@/lib/app-update').UpdateResult>;
+      onUpdateState: (listener: (value: import('@/lib/app-update').AppUpdateState) => void) => () => void;
+      onUpdateFlush: (listener: (value: {id: string}) => void) => () => void;
       chooseOutputDirectory: () => Promise<{ ok: boolean; cancelled?: boolean; selectionId?: string; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;
       getOutputDirectory: () => Promise<{ ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;
       saveAssetCopy: (assetId: string) => Promise<{ ok: boolean; cancelled?: boolean; assetId?: string; code?: string }>;

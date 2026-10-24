@@ -5,12 +5,15 @@ import { dismissSubmission, Draft, getHistoryTask, getLocalHistory, getSubmissio
 import { createWorkbenchTask } from '@/lib/workbench-task-client';
 import { generationPlan } from '@/lib/workbench-generation';
 import { generateUUID } from '@/lib/uuid';
+import { isUpdateFrozen } from '@/lib/update-readiness';
+import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', connection: ConnectionSummary | null, models: ConnectionModels | null) {
   const [history,setHistory] = useState<Awaited<ReturnType<typeof getLocalHistory>> | null>(null), [error,setError] = useState(''), [notice,setNotice] = useState(''), [now,setNow] = useState(() => Date.now());
   const [selected,setSelected] = useState<Partial<Record<'image'|'video',HistoryTask>>>({}), [submitting,setSubmitting] = useState(false), [intents,setIntents] = useState<SubmissionIntent[]>([]), [consumed,setConsumed] = useState<Partial<Record<string,string>>>({});
   const [reconciliationReady,setReconciliationReady] = useState(false);
   const [reconciliationError,setReconciliationError] = useState(''), [historyKind,setHistoryKind] = useState(kind);
   const busy = useRef(false), selection = useRef(selected), activeKind = useRef(kind), mounted = useRef(true), loading = useRef(false), fingerprints = useRef(consumed);
+  useUpdateBlocker(() => busy.current || intents.length > 0 || (ready && !reconciliationReady));
   useEffect(() => { selection.current = selected; }, [selected]);
   useEffect(() => { activeKind.current = kind; }, [kind]);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -35,7 +38,7 @@ export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', conne
   const fingerprint = (draft: Draft) => { const plan = generationPlan(draft,connection,models); return JSON.stringify([connection?.connectionVersionId,plan.capability?.capabilityVersionId,plan.mode,plan.model,draft.prompt,plan.parameters,draft.inputAssets.map(item => item.assetId)]); };
   async function submit(draft: Draft) {
     const plan = generationPlan(draft,connection,models), signature = fingerprint(draft);
-    if (busy.current || !reconciliationReady || plan.blocked || !connection || !plan.capability || fingerprints.current[draft.mode] === signature || intents.length) return;
+    if (isUpdateFrozen() || busy.current || !reconciliationReady || plan.blocked || !connection || !plan.capability || fingerprints.current[draft.mode] === signature || intents.length) return;
     busy.current = true; setSubmitting(true); setNotice('');
     let prepared = false, attempting = false;
     try {

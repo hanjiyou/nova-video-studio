@@ -4,6 +4,7 @@ import { generateUUID } from '@/lib/uuid';
 import { Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { clearConnectionCredential, ConnectionModels, ConnectionSummary, getConnectionModels, saveConnection } from '@/lib/connection-client';
 import { connectionMessage, localErrorMessage, OPENSOSEN_BASE, validateBaseUrl } from '@/lib/workbench-client';
+import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 interface Props {
   connection: ConnectionSummary | null;
   onboarding?: boolean;
@@ -40,6 +41,8 @@ export function ConnectionForm({ connection, onboarding, onboardingRevision, onS
   const normalized = validateBaseUrl(address);
   const needsKey = !saved?.hasCredential || saved.credentialState !== 'ready' || normalized.canonical !== saved.baseUrl;
   const dirty = !saved || provider !== saved.provider || name !== saved.displayName || normalized.canonical !== saved.baseUrl || apiKey.length > 0;
+  const unsaved = saved ? dirty : provider !== 'opensosen' || name !== '我的创作服务' || address !== OPENSOSEN_BASE || apiKey.length > 0;
+  useUpdateBlocker(() => unsaved || busy || checking || !!currentCheck.current);
   const valid = Boolean(name.trim() && name.length <= 100 && normalized.canonical && (apiKey.trim() || !needsKey));
   async function persist(): Promise<ConnectionSummary> {
     if (!dirty && saved) return saved;

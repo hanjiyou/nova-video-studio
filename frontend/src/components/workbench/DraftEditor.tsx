@@ -8,12 +8,14 @@ import { generationPlan, generationEvidenceVerified } from '@/lib/workbench-gene
 import { MAX_VIDEO_REFERENCE_ASSETS } from '@/lib/reference-policy';
 import { IMAGE_QUALITY_LABELS } from '@/lib/image-policy';
 import { useWorkbenchPanelHeight } from '@/hooks/useWorkbenchPanelHeight';
+import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 function videoRatio(size: string) { const [width,height] = size.split('x').map(Number); if (!width || !height) return ''; let a = width, b = height; while (b) [a,b] = [b,a % b]; return `${width/a}:${height/a}`; }
 export function DraftEditor({ draft, connection, models, saving, error, onChange, onConfigure, onRetry, onReload, onSubmit, submitting = false, submitDisabled = false, onChooseLibrary }: { draft: Draft; connection: ConnectionSummary | null; models: ConnectionModels | null; saving: boolean; error?: unknown; onChange: (patch: Partial<Draft>) => void; onConfigure: () => void; onRetry: () => void; onReload: () => void; onSubmit?: () => void; submitting?: boolean; submitDisabled?: boolean; onChooseLibrary?: () => void }) {
   const [importing, setImporting] = useState(false), [importError, setImportError] = useState('');
   const input = useRef<HTMLInputElement | null>(null);
   const panel = useWorkbenchPanelHeight();
   const importBusy = useRef(false);
+  useUpdateBlocker(() => importBusy.current);
   const image = draft.mode === 'image.text', multiDraft = draft.mode === 'video.dual_reference', count = multiDraft ? MAX_VIDEO_REFERENCE_ASSETS : 1;
   const refs = useRef(draft.inputAssets); useEffect(() => { refs.current = draft.inputAssets; }, [draft.inputAssets]);
   const referenceMode = image || draft.mode !== 'video.text';

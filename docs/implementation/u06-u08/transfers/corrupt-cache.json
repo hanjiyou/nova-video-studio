@@ -1,0 +1,251 @@
+{
+  "name": "corrupt-cache",
+  "success": true,
+  "expectedSuccess": true,
+  "errorCode": null,
+  "fullInstallerBytes": 133755858,
+  "installerBodyBytes": 137296869,
+  "allBodyBytes": 137437279,
+  "wireBytes": 137439931,
+  "range206Count": 10,
+  "full200Count": 1,
+  "fallback": true,
+  "expectedSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "resultSha512": "aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==",
+  "requests": [
+    {
+      "path": "/latest.yml",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 371,
+      "finished": true,
+      "wireBytes": 467
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe.blockmap",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 140039,
+      "finished": true,
+      "wireBytes": 140200
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=23693-119444",
+      "status": 206,
+      "contentRange": "bytes 23693-119444/133755858",
+      "bodyBytes": 95752,
+      "finished": true,
+      "wireBytes": 95970
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=174591-189226",
+      "status": 206,
+      "contentRange": "bytes 174591-189226/133755858",
+      "bodyBytes": 14636,
+      "finished": true,
+      "wireBytes": 14855
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=13145284-13159174",
+      "status": 206,
+      "contentRange": "bytes 13145284-13159174/133755858",
+      "bodyBytes": 13891,
+      "finished": true,
+      "wireBytes": 14114
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=13187283-13859322",
+      "status": 206,
+      "contentRange": "bytes 13187283-13859322/133755858",
+      "bodyBytes": 672040,
+      "finished": true,
+      "wireBytes": 672264
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=14005045-14013320",
+      "status": 206,
+      "contentRange": "bytes 14005045-14013320/133755858",
+      "bodyBytes": 8276,
+      "finished": true,
+      "wireBytes": 8498
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=14046089-14838063",
+      "status": 206,
+      "contentRange": "bytes 14046089-14838063/133755858",
+      "bodyBytes": 791975,
+      "finished": true,
+      "wireBytes": 792199
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=14930023-16599592",
+      "status": 206,
+      "contentRange": "bytes 14930023-16599592/133755858",
+      "bodyBytes": 1669570,
+      "finished": true,
+      "wireBytes": 1669795
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=104137670-104212640",
+      "status": 206,
+      "contentRange": "bytes 104137670-104212640/133755858",
+      "bodyBytes": 74971,
+      "finished": true,
+      "wireBytes": 75196
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=133341808-133392669",
+      "status": 206,
+      "contentRange": "bytes 133341808-133392669/133755858",
+      "bodyBytes": 50862,
+      "finished": true,
+      "wireBytes": 51087
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": "bytes=133606820-133755857",
+      "status": 206,
+      "contentRange": "bytes 133606820-133755857/133755858",
+      "bodyBytes": 149038,
+      "finished": true,
+      "wireBytes": 149264
+    },
+    {
+      "path": "/Nova-Studio-3.5.3-update-test-x64.exe",
+      "range": null,
+      "status": 200,
+      "contentRange": null,
+      "bodyBytes": 133755858,
+      "finished": true,
+      "wireBytes": 133756022
+    }
+  ],
+  "events": [
+    {
+      "event": "checking-for-update",
+      "code": null
+    },
+    {
+      "event": "update-available",
+      "code": null
+    },
+    {
+      "event": "update-downloaded",
+      "code": null
+    }
+  ],
+  "logs": [
+    {
+      "level": "info",
+      "message": "Checking for update"
+    },
+    {
+      "level": "info",
+      "message": "Checking for update (already in progress)"
+    },
+    {
+      "level": "info",
+      "message": "Generated new staging user ID: 6fc4fbf6-9af7-54f1-bd32-ef0e700dde08"
+    },
+    {
+      "level": "info",
+      "message": "Found version 3.5.3 (url: Nova-Studio-3.5.3-update-test-x64.exe)"
+    },
+    {
+      "level": "info",
+      "message": "Downloading update from Nova-Studio-3.5.3-update-test-x64.exe"
+    },
+    {
+      "level": "info",
+      "message": "Downloading update (already in progress)"
+    },
+    {
+      "level": "debug",
+      "message": "updater cache dir: E:\\Learn\\AI\\nova-image-studio\\release-updates\\local-verification\\u07-transfer-20261024-b\\corrupt-cache\\cache\\com.novaimage.studio.offline-test.followup-20261024-updater"
+    },
+    {
+      "level": "info",
+      "message": "Download block maps (old: \"http://127.0.0.1:57891/Nova-Studio-3.5.2-update-test-x64.exe.blockmap\", new: http://127.0.0.1:57891/Nova-Studio-3.5.3-update-test-x64.exe.blockmap)"
+    },
+    {
+      "level": "info",
+      "message": "File has 170 changed blocks"
+    },
+    {
+      "level": "debug",
+      "message": "[\n  {\n    \"kind\": 0,\n    \"start\": 0,\n    \"end\": 23693\n  },\n  {\n    \"kind\": 1,\n    \"start\": 23693,\n    \"end\": 119445\n  },\n  {\n    \"kind\": 0,\n    \"start\": 119444,\n    \"end\": 174590\n  },\n  {\n    \"kind\": 1,\n    \"start\": 174591,\n    \"end\": 189227\n  },\n  {\n    \"kind\": 0,\n    \"start\": 189226,\n    \"end\": 13145283\n  },\n  {\n    \"kind\": 1,\n    \"start\": 13145284,\n    \"end\": 13159175\n  },\n  {\n    \"kind\": 0,\n    \"start\": 13159174,\n    \"end\": 13187282\n  },\n  {\n    \"kind\": 1,\n    \"start\": 13187283,\n    \"end\": 13859323\n  },\n  {\n    \"kind\": 0,\n    \"start\": 13859384,\n    \"end\": 14005106\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14005045,\n    \"end\": 14013321\n  },\n  {\n    \"kind\": 0,\n    \"start\": 14013382,\n    \"end\": 14046150\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14046089,\n    \"end\": 14838064\n  },\n  {\n    \"kind\": 0,\n    \"start\": 14838164,\n    \"end\": 14930123\n  },\n  {\n    \"kind\": 1,\n    \"start\": 14930023,\n    \"end\": 16599593\n  },\n  {\n    \"kind\": 0,\n    \"start\": 16599692,\n    \"end\": 104137769\n  },\n  {\n    \"kind\": 1,\n    \"start\": 104137670,\n    \"end\": 104212641\n  },\n  {\n    \"kind\": 0,\n    \"start\": 104212718,\n    \"end\": 133341885\n  },\n  {\n    \"kind\": 1,\n    \"start\": 133341808,\n    \"end\": 133392670\n  },\n  {\n    \"kind\": 0,\n    \"start\": 133392746,\n    \"end\": 133606896\n  },\n  {\n    \"kind\": 1,\n    \"start\": 133606820,\n    \"end\": 133755858\n  }\n]"
+    },
+    {
+      "level": "info",
+      "message": "Full: 130,620.96 KB, To download: 3,458.02 KB (3%)"
+    },
+    {
+      "level": "info",
+      "message": "Differential download: http://127.0.0.1:57891/Nova-Studio-3.5.3-update-test-x64.exe"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=23693-119444"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=174591-189226"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=13145284-13159174"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=13187283-13859322"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=14005045-14013320"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=14046089-14838063"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=14930023-16599592"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=104137670-104212640"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=133341808-133392669"
+    },
+    {
+      "level": "debug",
+      "message": "download range: bytes=133606820-133755857"
+    },
+    {
+      "level": "warn",
+      "message": "sha512 checksum mismatch after differential download (old blockmap was read from the local cache): cached \"installer.exe\" is likely out of sync with the old blockmap, e.g. because one of them was replaced or evicted independently of the other"
+    },
+    {
+      "level": "error",
+      "message": "Cannot download differentially, fallback to full download: Error: sha512 checksum mismatch, expected aVsAeimNB4qscLdDOHJvOTua6vz/pvTr5dPxwgBOkvRrOcX1+ULUBINxGPIAsYCG0Tdk/aEPq5A9JCmhgBYYcA==, got PPkSlu46EAEZkBBxN0mB3rBldNK238wt74Uw/sEdpYDCWX93DrcMvh4YDc/gxT4kRRhKPUqXR7ukX/zX+rA0lA==\n    at newError (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\error.js:5:19)\n    at DigestTransform.validate (E:\\Learn\\AI\\nova-image-studio\\node_modules\\builder-util-runtime\\out\\httpExecutor.js:431:40)\n    at WriteStream.<anonymous> (E:\\Learn\\AI\\nova-image-studio\\node_modules\\electron-updater\\out\\differentialDownloader\\DifferentialDownloader.js:132:41)\n    at WriteStream.emit (node:events:509:28)\n    at emitCloseNT (node:internal/streams/destroy:148:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)"
+    },
+    {
+      "level": "info",
+      "message": "New version 3.5.3 has been downloaded to E:\\Learn\\AI\\nova-image-studio\\release-updates\\local-verification\\u07-transfer-20261024-b\\corrupt-cache\\cache\\com.novaimage.studio.offline-test.followup-20261024-updater\\pending\\Nova-Studio-3.5.3-update-test-x64.exe"
+    }
+  ],
+  "installerLaunched": false
+}

@@ -1,0 +1,58 @@
+Source: current workspace, including uncommitted changes. Build only; publish never.
+
+--- Frontend production build ---
+
+> nova-image@3.4.0 build
+> cd frontend && npm run build
+
+
+> nova-image-frontend@3.4.0 build
+> next build --webpack
+
+▲ Next.js 16.2.6 (webpack)
+
+  Creating an optimized production build ...
+> [PWA] Compile server
+> [PWA] Compile server
+> [PWA] Compile client (static)
+> [PWA] Auto register service worker is disabled, please call following code in componentDidMount callback or useEffect hook
+> [PWA]   window.workbox.register()
+> [PWA] Service worker: E:\Learn\AI\nova-image-studio\frontend\public\sw.js
+> [PWA]   url: /sw.js
+> [PWA]   scope: /
+✓ Compiled successfully in 3.4s
+  Running TypeScript ...
+  Finished TypeScript in 8.0s ...
+  Collecting page data using 4 workers ...
+  Generating static pages using 4 workers (0/3) ...
+✓ Generating static pages using 4 workers (3/3) in 399ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+
+--- Windows NSIS update build ---
+  • electron-builder  version=26.15.3 os=10.0.22631
+  • loaded configuration  file=E:\Learn\AI\nova-image-studio\release-updates\local-test\.attempt-3.5.4-P0xilR\builder-config.json
+  • loaded parent configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.update.yml
+  • loaded parent configuration  file=E:\Learn\AI\nova-image-studio\electron-builder.yml
+  • author is missed in the package.json  appPackageFile=E:\Learn\AI\nova-image-studio\package.json
+  • skipped dependencies rebuild  reason=npmRebuild is set to false
+  • packaging       platform=win32 arch=x64 electron=43.4.0 appOutDir=release-updates\local-test\.attempt-3.5.4-P0xilR\win-unpacked
+  • using custom unpacked Electron distribution  electronDist=node_modules\electron\dist
+  • copying unpacked Electron  source=E:\Learn\AI\nova-image-studio\node_modules\electron\dist destination=E:\Learn\AI\nova-image-studio\release-updates\local-test\.attempt-3.5.4-P0xilR\win-unpacked
+  • searching for node modules  pm=npm searchDir=E:\Learn\AI\nova-image-studio
+  • duplicate dependency references  dependencies=["debug@4.4.3","debug@4.4.3"]
+  • updating asar integrity executable resource  executablePath=release-updates\local-test\.attempt-3.5.4-P0xilR\win-unpacked\Nova Studio T16 Followup.exe
+  • default Electron icon is used  reason=application icon is not set
+  • file signing skipped via signExecutable configuration  file=release-updates\local-test\.attempt-3.5.4-P0xilR\win-unpacked\Nova Studio T16 Followup.exe
+  • building        target=nsis file=release-updates\local-test\.attempt-3.5.4-P0xilR\Nova-Studio-3.5.4-update-test-x64.exe archs=x64 oneClick=false perMachine=false
+  • file signing skipped via signExecutable configuration  file=release-updates\local-test\.attempt-3.5.4-P0xilR\Nova-Studio-3.5.4-update-test-x64.__uninstaller.exe
+  • file signing skipped via signExecutable configuration  file=release-updates\local-test\.attempt-3.5.4-P0xilR\Nova-Studio-3.5.4-update-test-x64.exe
+  • building block map  blockMapFile=release-updates\local-test\.attempt-3.5.4-P0xilR\Nova-Studio-3.5.4-update-test-x64.exe.blockmap

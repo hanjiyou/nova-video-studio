@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "repository": "hanjiyou/nova-video-studio",
+  "sourceAndLicenseDelivery": { "status": "pending", "evidence": "" },
+  "ffmpegCorrespondingSource": { "status": "pending", "evidence": "" },
+  "t15RemainingModes": { "status": "pending", "evidence": "" },
+  "m5ReleaseAcceptance": { "status": "pending", "evidence": "" },
+  "isolatedInstalledUpdate": { "status": "pending", "evidence": "" },
+  "t16": { "status": "accepted-nonblocking", "evidence": "33 pass / 7 pending accepted by user; not promoted to full pass." },
+  "historicalNsisCrash": { "status": "unresolved", "evidence": "0xc0000409 root cause remains unknown; installer spawn is not installation success." }
+}

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { ConnectionModels, ConnectionSummary } from '@/lib/connection-client';
 import { localErrorMessage, PRESET_MODELS } from '@/lib/workbench-client';
+import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 export interface OutputDirectory { ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string; cancelled?: boolean }
 export function DefaultSettings({ connection, models, onboarding, onComplete, onBack }: { connection: ConnectionSummary; models: ConnectionModels | null; onboarding?: boolean; onComplete: (image: string, video: string) => Promise<void>; onBack?: () => void }) {
   const [image, setImage] = useState(connection.defaultImageModel);
@@ -11,6 +12,7 @@ export function DefaultSettings({ connection, models, onboarding, onComplete, on
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [observedAt] = useState(() => Date.now());
+  useUpdateBlocker(() => busy || image !== connection.defaultImageModel || video !== connection.defaultVideoModel);
   useEffect(() => { let active = true; void window.novaDesktop?.getOutputDirectory().then(result => { if (active) { if (!result.ok) setDirectoryError(localErrorMessage(Error(result.code))); else setDirectory(result); } }).catch(() => { if (active) setDirectoryError('读取保存目录失败，请重试。'); }); return () => { active = false; }; }, []);
   async function choose() {
     setBusy(true); setDirectoryError('');

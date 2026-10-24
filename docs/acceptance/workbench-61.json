@@ -422,7 +422,7 @@
         "T06",
         "T11"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
@@ -435,7 +435,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
@@ -466,6 +469,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "真实 flare 最小请求及正常HTTP入口均使用完整选定型号；缺失型号、其他连接和旧未验证版本不替换或放行。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -548,7 +570,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/b4-evidence/phase-1.json",
           "../implementation/b4-evidence/phase-2.json",
@@ -576,6 +601,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "真实自动尺寸图片与等比预览已观察；没有选择横/方/竖三种规格的精确成功证据。",
+        "remaining": "需取得相应尺寸/比例协议与成功证据，当前只开放服务自动。",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -600,7 +643,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/b4-evidence/phase-1.json",
           "../implementation/b4-evidence/phase-2.json",
@@ -628,6 +674,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "最小文生图不传尺寸，任意 size 仍在前后端拒绝；没有已确认可选尺寸枚举。",
+        "remaining": "需确认并验证该模型的允许尺寸配置。",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -652,7 +716,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/b4-evidence/phase-1.json",
           "../implementation/b4-evidence/phase-2.json",
@@ -680,6 +747,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "自动质量通过省略字段实现；没有已确认 quality 枚举，额外 quality 仍拒绝。",
+        "remaining": "需确认并验证质量选项。",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -742,6 +827,22 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "有图仍明确选择 image.reference 且阻止未验证编辑；未忽略图片回退文生。",
+        "remaining": "参考编辑精确协议和真实成功尚未取得。",
+        "evidence": [
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -753,7 +854,7 @@
         "T05",
         "T11"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t05-evidence/tasks-targeted.log",
@@ -765,7 +866,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/t05-evidence/native-tasks-phase-1.json",
           "../implementation/t05-evidence/native-tasks-phase-2.json",
@@ -795,6 +899,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "已有一次真实最小文生请求；正常生产入口无实验许可即可验证/持久化/派发一次，重复本地请求返回同一任务；失败操作和回执不明由既有回归覆盖。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -806,7 +929,7 @@
         "T08",
         "T11"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/b2-evidence/targeted.log",
@@ -818,7 +941,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
           "../implementation/b2-evidence/packaged-evidence.json",
@@ -848,6 +974,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "真实 PNG 在实际 Electron 工作台显示、等比适配、放大与还原；空态、等待、失败和缺失由既有回归覆盖。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -859,7 +1004,7 @@
         "T08",
         "T11"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/b1-evidence/b1-targeted.log",
@@ -873,7 +1018,10 @@
           "../implementation/b5-evidence/phase-2.json",
           "../implementation/b2-evidence/windows-file-lock.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json"
+        ],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
           "../implementation/b2-evidence/packaged-evidence.json",
@@ -906,6 +1054,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "真实 PNG 已落盘、SHA一致并完整解码 verified 后才 completed；200空结果/坏媒体仍不完成。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -1225,7 +1392,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
@@ -1257,6 +1427,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "单图和双图真实传输各1/2张有序原图已通过；三模式草稿/数量校验保留。",
+        "remaining": "文生视频精确协议未确认，无图真实传输尚未验证。",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -1269,7 +1457,7 @@
         "T07",
         "T12"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
@@ -1282,7 +1470,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
@@ -1315,6 +1506,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "两个完整型号仍可选；普通版/文生组合保持明确原因且不静默换型，原服务1.5参考组合有应用验证版本。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -1328,7 +1538,7 @@
         "T12",
         "T15"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t04-evidence/storage-connections-targeted.log",
@@ -1341,7 +1551,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
@@ -1374,6 +1587,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "单/双参考应用证据按精确provider/base/model/mode版本化；界面只选当前匹配版本，换连接重新匹配，旧任务不重绑。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -1671,7 +1903,7 @@
         "T07",
         "T12"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/b1-evidence/b1-targeted.log",
@@ -1683,7 +1915,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
@@ -1713,6 +1948,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "视频规格控件读取所选能力的seconds/size并计算比例；已验证1.5参考显示固定6秒/1280×720/16:9，其他组合不伪装可用。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -1725,7 +1979,7 @@
         "T07",
         "T12"
       ],
-      "status": "in_progress",
+      "status": "accepted",
       "evidence": {
         "offline": [
           "../implementation/t05-evidence/tasks-targeted.log",
@@ -1739,7 +1993,10 @@
           "../implementation/b5-evidence/phase-1.json",
           "../implementation/b5-evidence/phase-2.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/b1-evidence/native-b1-phase-1.json",
           "../implementation/b1-evidence/native-b1-phase-2.json",
@@ -1769,6 +2026,25 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_accepted",
+        "criteriaSatisfied": true,
+        "scope": "新授权每模式仅1次POST，远端ID即时持久化，查询与下载沿用同一ID；生产单队列及未知提交不重发保持。",
+        "remaining": "",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "accepted_by_parent",
+        "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
       }
     },
     {
@@ -1794,7 +2070,10 @@
           "../implementation/b5-evidence/phase-2.json",
           "../implementation/b2-evidence/windows-file-lock.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/b2-evidence/native-phase-2.json",
           "../implementation/b2-evidence/packaged-evidence.json",
@@ -1827,6 +2106,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "release_pending",
+        "criteriaSatisfied": false,
+        "scope": "真实两段本地MP4均在源码运行的Electron43.4沙盒中播放并读取实际媒体元数据。",
+        "remaining": "原验收标准要求打包应用播放真实样本；本轮未重打包安装，仍待T16。",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -2096,7 +2393,10 @@
           "../implementation/b5-evidence/phase-2.json",
           "../implementation/b2-evidence/windows-file-lock.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/t05-evidence/native-tasks-phase-1.json",
           "../implementation/t05-evidence/native-tasks-phase-2.json",
@@ -2133,6 +2433,24 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "真实任务/ID/已验证结果已持久化，另一进程可读取并播放；合成强退/同ID恢复回归继续通过。",
+        "remaining": "本轮没有强退真实生成中的任务，完整真实强退恢复标准尚未覆盖。",
+        "evidence": [
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -2651,7 +2969,12 @@
           "../implementation/b3-evidence/phase-3.json",
           "../implementation/b3-evidence/phase-4.json"
         ],
-        "realService": [],
+        "realService": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json"
+        ],
         "desktop": [
           "../implementation/t04-evidence/native-connections-phase-1.json",
           "../implementation/t04-evidence/native-connections-phase-2.json",
@@ -2683,6 +3006,26 @@
         ],
         "reviewStatus": "accepted_offline_scope",
         "parentReview": "../implementation/b5-evidence/approval-review.json"
+      },
+      "t15Verification": {
+        "disposition": "real_service_pending",
+        "criteriaSatisfied": false,
+        "scope": "默认flare/1.5与目录版本行为保留；最小图及固定参考视频已验证。",
+        "remaining": "比例/尺寸/质量的可配置已验证范围仍不足。",
+        "evidence": [
+          "../implementation/t15-evidence/live-run.json",
+          "../implementation/t15-evidence/preview-report.json",
+          "../implementation/t15-retest-evidence/live-retest.json",
+          "../implementation/t15-retest-evidence/playback-report.json",
+          "../implementation/t15-capability-evidence/verification-results.json",
+          "../implementation/T15-能力版本与验收收尾.md"
+        ],
+        "testFiles": [
+          "backend/test/capability-upgrade.test.js",
+          "backend/test/controlled-image-validation.test.js",
+          "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx"
+        ],
+        "reviewStatus": "incomplete"
       }
     },
     {
@@ -3513,5 +3856,34 @@
     ],
     "reviewScope": "local_preparation_only_not_final_T16_or_M5",
     "parentReview": "../implementation/t16-evidence/approval-review.json"
+  },
+  "t15": {
+    "status": "accepted_partial_scope",
+    "evidenceVersion": "opensosen-application-evidence-2026-10-24-v1",
+    "successfulApplicationSamples": 3,
+    "generationRequestsSentThisSubphase": 0,
+    "textVideoRequestsSent": 0,
+    "currentDispositions": {
+      "offline_passed": 39,
+      "real_service_accepted": 8,
+      "real_service_pending": 7,
+      "release_pending": 7,
+      "not_passed": 0
+    },
+    "report": "../implementation/T15-能力版本与验收收尾.md",
+    "finalT15Accepted": false,
+    "finalProductAccepted": false,
+    "publicDistributionAllowed": false,
+    "acceptedRequirements": [
+      "I01",
+      "I07",
+      "I08",
+      "I09",
+      "V02",
+      "V03",
+      "V09",
+      "V10"
+    ],
+    "parentReview": "../implementation/t15-capability-evidence/approval-review.json"
   }
 }

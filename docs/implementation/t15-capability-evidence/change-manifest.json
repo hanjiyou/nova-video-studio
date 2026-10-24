@@ -1,0 +1,345 @@
+{
+  "status": "approved_for_normal_commit_push_origin_dev",
+  "baseline": "bfde19d6e769e516697cd36bffda070e78b4d135",
+  "scope": "Complete currently uncommitted T15 code, earlier transport/live evidence, capability upgrade, acceptance ledger and review documents.",
+  "selfHashExcluded": true,
+  "files": [
+    {
+      "file": "backend/connections/capabilities.js",
+      "byteLength": 6216,
+      "sha256": "874bfc2b3447eef97f9c10dcc38dd0e50b971af24f9953b9e3b5dc5c5ed25b7c"
+    },
+    {
+      "file": "backend/connections/service.js",
+      "byteLength": 22879,
+      "sha256": "3cb35c2d12c0a1f159d8c2e25bb2817642d809ee935019dff8d235323b665cde"
+    },
+    {
+      "file": "backend/tasks/controlled-image-validation.js",
+      "byteLength": 2395,
+      "sha256": "0733fe82fc0bfcd4ae478d922237b47e3673b97edda3955a9c88620b9e7cb84c"
+    },
+    {
+      "file": "backend/tasks/flare-image-adapter.js",
+      "byteLength": 5142,
+      "sha256": "05511353d7a824f2e56c609e7e3ec609e01100f3162e16307884b63fb8ba91ad"
+    },
+    {
+      "file": "backend/tasks/workbench-input.js",
+      "byteLength": 5047,
+      "sha256": "e85da91fc83e64d72d1a3d8d021b5128d907e46b4cb7d99a3bd9c70583fb9250"
+    },
+    {
+      "file": "backend/test/capability-upgrade.test.js",
+      "byteLength": 9565,
+      "sha256": "12814eeb063071eecab062300ba123e142b25d62f9d601ed4b14d355a6848c4b"
+    },
+    {
+      "file": "backend/test/controlled-image-validation.test.js",
+      "byteLength": 4042,
+      "sha256": "27ad927cb904a67837b4232ff1b86a70d7ddf5fd846b2f04aa60c4dafb0ef4bd"
+    },
+    {
+      "file": "backend/test/t15-proxy-wire.test.js",
+      "byteLength": 5076,
+      "sha256": "458deaaf9ca47eb03aa3560f5093b23b8a16dff6e86a83ad34729a66bb60e45e"
+    },
+    {
+      "file": "backend/test/t15-safe-response.test.js",
+      "byteLength": 2730,
+      "sha256": "78a30c417024e1a81fb813e232dfc7adad64ddc319a68942e0a32f70ff77fbd5"
+    },
+    {
+      "file": "backend/test/workbench-b1-http.test.js",
+      "byteLength": 19411,
+      "sha256": "f81d84be752b7b364b74f81b9d6ed27c47ddf95ea6fb19cb6def7b7441e99923"
+    },
+    {
+      "file": "backend/test/workbench-connections.test.js",
+      "byteLength": 25392,
+      "sha256": "1c9f0970b9a925546cea6fe7aecfe83d2a70fc90d2d88f2efd9436856307ec8b"
+    },
+    {
+      "file": "docs/acceptance/T15-真实线路验收前置清单.md",
+      "byteLength": 4619,
+      "sha256": "764387e08c9a3f6388ee6b1fe75f4fef53cc18c061d639636a5606669bef8ad3"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.json",
+      "byteLength": 232796,
+      "sha256": "d18fd08bc652518093ee9bff089266da8a34d7bad90a2a4a36953b6c66a4d008"
+    },
+    {
+      "file": "docs/acceptance/workbench-61.md",
+      "byteLength": 17308,
+      "sha256": "d746b9856837c47da03a86112ca2277c1a3386ea3f099544dc081e63dcdc6785"
+    },
+    {
+      "file": "docs/contracts/opensosen-evidence-v1.md",
+      "byteLength": 7474,
+      "sha256": "6704c1dc16e43464f0c1c9ce519d7a0e75c646d09aa28ae0082ccfc7d4fc41f9"
+    },
+    {
+      "file": "docs/implementation/T15-参考视频传输修复与授权复测.md",
+      "byteLength": 4803,
+      "sha256": "d408e1e125f6261df152a43b1c1197af9346ef7a605951ae56d4f24c6d8db10d"
+    },
+    {
+      "file": "docs/implementation/T15-真实线路受控验证.md",
+      "byteLength": 8046,
+      "sha256": "d43cd858099f2f6ff084e02f164af2a01a095a6293199b133d9e9c0c30a33183"
+    },
+    {
+      "file": "docs/implementation/T15-能力版本与验收收尾.md",
+      "byteLength": 5467,
+      "sha256": "62ee50abe84ddb4e1c81e9e5ba2c152e30c6a0260515840a93abb2694f463e10"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/approval-review.json",
+      "byteLength": 1393,
+      "sha256": "b2f4f5055623619a59942c890c79a76e27151e4e4193276f97d0d4b34c82b166"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/contracts.log",
+      "byteLength": 652,
+      "sha256": "1c763da81ea499012530068ae697191a8fa3001c429708d18a20e5cec8955c93"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/final-checks.json",
+      "byteLength": 1962,
+      "sha256": "3a97769da480ae3d9ae2c0522b1824cb91ee7e5f5680f0d928a819cbcdb049c3"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/frontend-final-boundary.log",
+      "byteLength": 322,
+      "sha256": "9b6c8d542ce343b26e4fc89c0eaed35ac30424a87097b04a21141db10c0da707"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/frontend-lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/ledger.log",
+      "byteLength": 414,
+      "sha256": "df48ecc692f59e41906e6c18e80d51298b019fdba24c204c7436a643ad9fd169"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/text-video-protocol-readonly.json",
+      "byteLength": 804,
+      "sha256": "7266b2d786c8f9e093ec6966a258f7123b22d4f76473df27e61cbe7ff3b6ad70"
+    },
+    {
+      "file": "docs/implementation/t15-capability-evidence/verification-results.json",
+      "byteLength": 1383,
+      "sha256": "8c18cb1357dd7fc739c85fac14ac7a172b3aaa6e06f55d305bb882709a4dc759"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/01-real-image-workbench.png",
+      "byteLength": 730500,
+      "sha256": "520c3ef789985b83c81d28bd475a1193a411aa6fd37a8f74a0817982ada6c57b"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/02-real-image-enlarged.png",
+      "byteLength": 1006047,
+      "sha256": "6da54febaf7da380dea9dc1bef4d67fa5c0ea0fae3d58cf0fcb51b6161f14629"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/03-rejected-video-tasks.png",
+      "byteLength": 281909,
+      "sha256": "e6da52f99ed1b963014212835b1cf48dbe5dc080e4b77901f00b9676c6064e6c"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/04-real-attempt-library.png",
+      "byteLength": 391005,
+      "sha256": "fb8f2bd95b43c55f264331f5908e9d2516ad0efc3316b0711dca7c3e5a97c458"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/backend-regression.log",
+      "byteLength": 7961,
+      "sha256": "76a380b0297a093ebca0e6046071fdb89824b10be236020eceffda21231d9e24"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/change-manifest.json",
+      "byteLength": 3658,
+      "sha256": "fea2a6157976e85bed80644f5de496b93c6e1baf7e779d5b21c1aca09cb117aa"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/final-checks.json",
+      "byteLength": 1277,
+      "sha256": "d9af6bab84554c8664e71c3baba2d48a8eb36755ce8318e74d17d94964f9358b"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/live-run.json",
+      "byteLength": 7164,
+      "sha256": "e28c49f385829563f9ab20c8b20a36060a8241b9853d18aa8ff488ab1caf0f29"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/preview-report.json",
+      "byteLength": 586,
+      "sha256": "d8a70e6aad6d3469ac50cb0666fbbdf09831da220c7ed0e6fedbd28a2186670f"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/privacy-audit.json",
+      "byteLength": 345,
+      "sha256": "008fe195f7fd0e4706b26ee5a7a148c68643f95753f426c88caab651d00a9a67"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/scoped-lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/backend-regression.log",
+      "byteLength": 8957,
+      "sha256": "84b9e2d11ca8e71d97be56664b6138f4d114cc91256613f72e89e4213a36e2f7"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/change-manifest.json",
+      "byteLength": 7952,
+      "sha256": "8a772168732364172dcc26e9e3b23072f8d0db06edffb4b5c0cef9a497e502d9"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/live-retest.json",
+      "byteLength": 4405,
+      "sha256": "3bef301a3625a41e69534ae42da4a31e563c8cc974e869da084700a449c7a547"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/native-wire.json",
+      "byteLength": 941,
+      "sha256": "61f8d1f2a27ddb2fc228108a5918bf406389f0547c6cde18892e6e58d963b4de"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/original-ledger-preserved.json",
+      "byteLength": 299,
+      "sha256": "b94db6c51a44329218cd9b721bf2cc4e56dddf4d1ae37314daec43788245ffde"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/playback-report.json",
+      "byteLength": 1077,
+      "sha256": "a4250b66cf522987f8538bb7002806cd076dd2a21e9058de7613198764423089"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/privacy-audit.json",
+      "byteLength": 312,
+      "sha256": "77e58f31d8ede9de3aca269dc09d6cf9bb9645aebcb1442b1641bf1c12777e9f"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/scoped-lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/technical-review.json",
+      "byteLength": 880,
+      "sha256": "2bdb73dc98330b576fc645d6245e832c8cba7239e8605cf2c885e59a43f6837b"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/video.dual_reference.jpg",
+      "byteLength": 36360,
+      "sha256": "73b8871ea8d2b5ab2585924cab5f1380baabe997bfe654597b4ecf5491be6462"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/video.single_reference.jpg",
+      "byteLength": 79677,
+      "sha256": "248e9260a02aab524b6239b295aeb5690da8638daad113c06863eb6493b3c1de"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/wire-after-fix.log",
+      "byteLength": 1119,
+      "sha256": "b19961352453a47d30c6682d62efcd6591a40b45e30f7ac2504b3a25cfc3d57c"
+    },
+    {
+      "file": "docs/implementation/t15-retest-evidence/wire-before-fix.log",
+      "byteLength": 2099,
+      "sha256": "5381c4b692b8ef1a11f0dd383667c4d8ef3ab00f973a45a559ca64957d52bfe0"
+    },
+    {
+      "file": "frontend/src/components/workbench/DraftEditor.tsx",
+      "byteLength": 11980,
+      "sha256": "bdff87bc196defde593fb7c9d6b8ea8d694a51e7e2554f3363606e55a817ac05"
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx",
+      "byteLength": 5626,
+      "sha256": "13049c4b5426f3cae8ae80cb9cae7a63bd83a304ee225717ff3fa12d15a965ad"
+    },
+    {
+      "file": "frontend/src/lib/connection-client.ts",
+      "byteLength": 5591,
+      "sha256": "d35623a57cdb69a5c47a5546197053fd7cf840028b8db06d4f505262b31e7e9b"
+    },
+    {
+      "file": "frontend/src/lib/workbench-generation.ts",
+      "byteLength": 4949,
+      "sha256": "78a4e02520b5449454bcfa24b45596a9bceca1bf0d8136fbfa479fdd6a2b466a"
+    },
+    {
+      "file": "scripts/electron-t15-preview-entry.cjs",
+      "byteLength": 5788,
+      "sha256": "a0b6f7c3e2482fb0d9bd2daf5a9ba982b2526854751e44f3ab323a4fed445b27"
+    },
+    {
+      "file": "scripts/electron-t15-reference-preview.cjs",
+      "byteLength": 6242,
+      "sha256": "feb1a92456ebeafe42cd53e300e659467c19a804680672c83ec8ffb0824d28bc"
+    },
+    {
+      "file": "scripts/electron-t15-wire-entry.cjs",
+      "byteLength": 4183,
+      "sha256": "b4faf2c05bf5c03841191c9a0993b92f3eb8b608e1ec067d7b93049f4b664e85"
+    },
+    {
+      "file": "scripts/lib/t15-proxy-transport.cjs",
+      "byteLength": 1451,
+      "sha256": "79df33f6e32537f95f41ef7a16265ff422f7a7a11a57e2321ab96a52c5d3be80"
+    },
+    {
+      "file": "scripts/lib/t15-safe-response.cjs",
+      "byteLength": 2764,
+      "sha256": "5c7bb455276afbd0426297cd3ebaa96bccea1d63993621efead909b0fb8752b5"
+    },
+    {
+      "file": "scripts/t15-authorized-live.cjs",
+      "byteLength": 11675,
+      "sha256": "c6cde02d13eeab480dddbf1b0edbb2e1a9948ce2362b3f486f6b2d7aa2dbcf70"
+    },
+    {
+      "file": "scripts/t15-reference-contact-sheets.cjs",
+      "byteLength": 1352,
+      "sha256": "337b31e8b747f5ab23ecf2f249a1e597b2e830368913aca208b969a42f505ab6"
+    },
+    {
+      "file": "scripts/t15-reference-retest.cjs",
+      "byteLength": 11127,
+      "sha256": "4ea4116ecd557564982481b54bd3b55c2f0312d6d5a9b01336f27d5ba67fbbf3"
+    },
+    {
+      "file": "scripts/verify-b5-acceptance.cjs",
+      "byteLength": 1972,
+      "sha256": "db694f602c266d16495e2f3597cab450b027f33f0e914f00bad0665662844f6b"
+    },
+    {
+      "file": "scripts/verify-t15-acceptance.cjs",
+      "byteLength": 4664,
+      "sha256": "093158cc1dc00f67625c66811e06e357b04c76ada3915c62c01c61231bc401dc"
+    },
+    {
+      "file": "scripts/verify-t16-acceptance.cjs",
+      "byteLength": 2783,
+      "sha256": "e4770e683f959d787c7bcf639552a42051b52d59c47e033233d0b4efd70feb67"
+    }
+  ],
+  "runtimeArtifactsExcluded": "Both fixed ignored temp run roots retain SQLite, original input copies, private remote IDs and generated PNG/MP4. No credential file is copied or included.",
+  "generationRequestsSentThisSubphase": 0,
+  "realKeyReadThisSubphase": false,
+  "requirementsAcceptance": {
+    "offline_passed": 39,
+    "real_service_accepted": 8,
+    "real_service_pending": 7,
+    "release_pending": 7,
+    "not_passed": 0
+  },
+  "finalT15T16M5Accepted": false,
+  "approvalRecord": "approval-review.json"
+}

@@ -5,7 +5,7 @@ const MODEL = 'gpt-image-2.5-flare';
 const BASE_URL = 'https://newapi.opensosen.com/v1';
 const VERSION = '1.0.0';
 function failure(code, fields = {}) { return Object.assign(new Error(code), { code, ...fields }); }
-/** Candidate minimum text protocol from the historical client, not a verified upstream claim. */
+/** Minimum text protocol. Admission requires immutable evidence; reference edits remain unverified. */
 function buildReferenceSubmit(snapshot) {
     if (snapshot.model !== MODEL || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets) || !snapshot.inputAssets.length) throw failure('INPUT_INVALID');
     throw failure('CAPABILITY_UNVERIFIED'); // Independent boundary; no guessed edit endpoint or fields.

@@ -56,3 +56,9 @@ mock 的 JSON 文生传输测试只证明 JSON 捕获可用。它不使文生协
 B1 对 1.5 已归档模式使用原服务 /videos/{id}/content 稳定候选交给 T08，不持久保存返回的 CDN/签名 URL；未执行新下载或新生成来升级证据。原文件 wire MIME 的历史观察仍为 application/octet-stream，离线传输测试的 image/png/jpeg 声明并不构成新的真实供应商 MIME 接受记录。
 
 flare 的 JSON/base64/URL 合成响应放在 backend/test/fixtures/b1，明确 synthetic_offline_only；只证明候选适配和安全分支。两个视频型号文生、flare 参考编辑及尺寸/质量仍未取得精确成功协议。实现边界见 [B1 接口](../b1-adapters-v1.md)，T15 仍须有效配置与明确费用/预算后进行受控真实验证。
+
+## T15 应用验证版本（2026-10-24，追加）
+
+`opensosen-application-evidence-2026-10-24-v1` 仅为原 OpenSosen 精确 URL 的 flare 最小文生图、1.5 单参考和双参考追加 `application_verified` 记录。正常应用启动为已有连接幂等补登，新连接同样登记；旧 v1 行和历史任务 UUID/快照不改。真实图片完整解码/预览、视频下载/完整解码/实际播放及参考特征证据见 [T15 能力收尾](../implementation/T15-能力版本与验收收尾.md)。
+
+flare 只开放无图、无额外参数的 `{model,prompt,n:1}`；不代表编辑、尺寸、比例或质量枚举成功。视频文生、普通版参考及其他服务保持未验证。早期关于“尚无成功”的段落为各历史批次当时结论，本追加记录不改写原来源与摘要。首轮跨 FormData 品牌错误已本地复现并另行授权复测，成功证据来自修复后的两个新请求，不来自原 HTTP 400。

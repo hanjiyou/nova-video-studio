@@ -1,0 +1,10 @@
+{
+  "status": "passed",
+  "scope": "This T15 source, evidence, isolated runtime only; original protected application data not inspected",
+  "filesScanned": 102,
+  "bytesScanned": 22768380,
+  "rawOrEncodedCredentialMatches": 0,
+  "credentialEntries": 0,
+  "credentialInInheritedEnvironment": false,
+  "credentialStorage": "process_memory_only"
+}

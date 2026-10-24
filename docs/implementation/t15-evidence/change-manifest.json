@@ -1,0 +1,97 @@
+{
+  "baseline": "bfde19d6e769e516697cd36bffda070e78b4d135",
+  "status": "historical_prior_phase_snapshot_superseded_for_current_review",
+  "excludes": [
+    "Ignored runtime SQLite, original reference copies and generated image remain in fixed temp run directory.",
+    "Credential file is never copied.",
+    "Manifest does not hash itself."
+  ],
+  "files": [
+    {
+      "file": "backend/tasks/workbench-input.js",
+      "byteLength": 4808,
+      "sha256": "2561cb8f6874eaf4b8b9938ae6d86472a7acd2371667dc3761c55d6001babdc8"
+    },
+    {
+      "file": "backend/tasks/controlled-image-validation.js",
+      "byteLength": 2395,
+      "sha256": "0733fe82fc0bfcd4ae478d922237b47e3673b97edda3955a9c88620b9e7cb84c"
+    },
+    {
+      "file": "backend/test/controlled-image-validation.test.js",
+      "byteLength": 4033,
+      "sha256": "e6f9b0eb8ac0545c849a8734c4a06655e384f659e8fd5f4e64ae74c9a376bcba"
+    },
+    {
+      "file": "scripts/t15-authorized-live.cjs",
+      "byteLength": 12202,
+      "sha256": "7c29c5e84b1dc95ce48a9485fea8921ecfae2e89e9312d29a27dd2713a6d92a4"
+    },
+    {
+      "file": "scripts/electron-t15-preview-entry.cjs",
+      "byteLength": 5743,
+      "sha256": "e8e59e914605e1f85344aa2f3e95a97b2e85c88e8b43143d705783969c32b369"
+    },
+    {
+      "file": "docs/implementation/T15-真实线路受控验证.md",
+      "byteLength": 6584,
+      "sha256": "273b2de03c4dbf9c830c4b724fcc34c4449db305b38f1f3202cf4c146cdd800e"
+    },
+    {
+      "file": "docs/acceptance/T15-真实线路验收前置清单.md",
+      "byteLength": 3799,
+      "sha256": "8c0e867d5154b2bdbbee903c4cc097a3c9ffc31c51ee33a20db0226cde76628d"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/01-real-image-workbench.png",
+      "byteLength": 730500,
+      "sha256": "520c3ef789985b83c81d28bd475a1193a411aa6fd37a8f74a0817982ada6c57b"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/02-real-image-enlarged.png",
+      "byteLength": 1006047,
+      "sha256": "6da54febaf7da380dea9dc1bef4d67fa5c0ea0fae3d58cf0fcb51b6161f14629"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/03-rejected-video-tasks.png",
+      "byteLength": 281909,
+      "sha256": "e6da52f99ed1b963014212835b1cf48dbe5dc080e4b77901f00b9676c6064e6c"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/04-real-attempt-library.png",
+      "byteLength": 391005,
+      "sha256": "fb8f2bd95b43c55f264331f5908e9d2516ad0efc3316b0711dca7c3e5a97c458"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/backend-regression.log",
+      "byteLength": 7961,
+      "sha256": "76a380b0297a093ebca0e6046071fdb89824b10be236020eceffda21231d9e24"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/final-checks.json",
+      "byteLength": 1083,
+      "sha256": "4e7f88bcddd086389d51b61022b102c7b89a4767e07bb49d452fe7db2fe0b81f"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/live-run.json",
+      "byteLength": 6970,
+      "sha256": "da3abbda6984931cca4034c3b5957206c92a622b8d963dfa514c602c1cb9a2bd"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/preview-report.json",
+      "byteLength": 586,
+      "sha256": "d8a70e6aad6d3469ac50cb0666fbbdf09831da220c7ed0e6fedbd28a2186670f"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/privacy-audit.json",
+      "byteLength": 345,
+      "sha256": "008fe195f7fd0e4706b26ee5a7a148c68643f95753f426c88caab651d00a9a67"
+    },
+    {
+      "file": "docs/implementation/t15-evidence/scoped-lint.log",
+      "byteLength": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "supersededBy": "../t15-capability-evidence/change-manifest.json"
+}

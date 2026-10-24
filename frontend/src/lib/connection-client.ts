@@ -33,7 +33,7 @@ export interface ConnectionVersionInput { connectionId: string; expectedVersionI
 export interface ConnectionResult { ok: boolean; connection?: ConnectionSummary; code?: string }
 export interface CapabilitySummary {
   capabilityVersionId: string; provider: string; baseUrl: string; model: string; mode: string; protocol: string;
-  parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string;
+  parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean;
   evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string };
 }
 export interface ConnectionModels {

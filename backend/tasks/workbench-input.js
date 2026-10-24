@@ -2,6 +2,8 @@
 const { UUID, fail } = require('../storage/store');
 const { containsCredential } = require('../connections/redaction');
 const { MODEL, VERSION } = require('./flare-image-adapter');
+const { controlledImageValidation } = require('./controlled-image-validation');
+const { generationEvidenceVerified } = require('../connections/capabilities');
 const MODELS = require('../plugins/opensosen-video').MODELS;
 const COUNTS = { 'image.text': [0,0], 'image.reference': [1,32], 'video.text': [0,0], 'video.single_reference': [1,1], 'video.dual_reference': [2,2] };
 function invalid() { return fail('INPUT_INVALID', '模式、参数或有序素材引用无效。'); }
@@ -36,8 +38,9 @@ function validateCapability(db, snapshot, auth) {
     const capability = db.prepare('SELECT * FROM model_capabilities WHERE id=?').get(snapshot.capabilityVersionId);
     if (!capability || capability.provider !== auth.provider || capability.base_url !== auth.baseUrl ||
         capability.model !== snapshot.model || capability.mode !== snapshot.mode || capability.protocol !== auth.protocol) throw fail('CAPABILITY_UNVERIFIED','该能力版本与任务连接、模型或模式不匹配。');
-    if (capability.evidence_level !== 'historically_verified') throw fail('CAPABILITY_UNVERIFIED','当前组合尚未取得成功协议证据；保留需求，待受控验证。');
+    if (!generationEvidenceVerified(capability) && !controlledImageValidation.allows(snapshot, auth, capability)) throw fail('CAPABILITY_UNVERIFIED','当前组合尚未取得成功协议证据；保留需求，待受控验证。');
     const parameters = JSON.parse(capability.parameters_json);
+    if (snapshot.mode === 'image.text' && (Object.keys(parameters).length || Object.keys(snapshot.parameters || {}).length || snapshot.inputAssets?.length)) throw invalid();
     if (snapshot.mode.startsWith('video.') && (parameters.encoding !== 'multipart' || parameters.inputReferenceName !== 'input_reference' ||
         parameters.referenceCount !== snapshot.inputAssets.length || parameters.seconds !== snapshot.parameters.seconds || parameters.size !== snapshot.parameters.size)) throw invalid();
     return capability;

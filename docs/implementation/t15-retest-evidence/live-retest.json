@@ -1,0 +1,122 @@
+{
+  "authorizationId": "2026-10-24-user-continue-after-wire-fix",
+  "generationRequestsSent": 2,
+  "originalGenerationRequestsSent": 3,
+  "totalAcrossTwoExplicitAuthorizations": 5,
+  "originalLedgerSha256Unchanged": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+  "modes": {
+    "video.single_reference": {
+      "generationRequestsSent": 1,
+      "status": "completed",
+      "httpStatus": 200,
+      "localTaskId": "b745fd89-5a7e-4196-99c4-dd743657c13e",
+      "providerError": null
+    },
+    "video.dual_reference": {
+      "generationRequestsSent": 1,
+      "status": "completed",
+      "httpStatus": 200,
+      "localTaskId": "c96c1d5f-67b4-4a23-b61e-23e4a285fbdb",
+      "providerError": null
+    }
+  },
+  "tasks": [
+    {
+      "mode": "video.single_reference",
+      "localTaskId": "b745fd89-5a7e-4196-99c4-dd743657c13e",
+      "status": "completed",
+      "remoteState": "completed",
+      "progress": 100,
+      "generationReserved": false,
+      "errorCode": null,
+      "httpStatus": null,
+      "providerError": null,
+      "upstreamIdSha256": "279ee896cbdea3b41d2fbd926af4391808348ffb55585f23c02c5cd3108453f2",
+      "outputs": [
+        {
+          "assetId": "18dda6e4-2f44-4fd0-8e36-630b444eca76",
+          "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+          "byteLength": 4059325,
+          "width": 1280,
+          "height": 720,
+          "durationSeconds": 6.041666666666666,
+          "validationState": "verified",
+          "mimeType": "video/mp4"
+        }
+      ]
+    },
+    {
+      "mode": "video.dual_reference",
+      "localTaskId": "c96c1d5f-67b4-4a23-b61e-23e4a285fbdb",
+      "status": "completed",
+      "remoteState": "completed",
+      "progress": 100,
+      "generationReserved": false,
+      "errorCode": null,
+      "httpStatus": null,
+      "providerError": null,
+      "upstreamIdSha256": "bfccb37ac768d4cce66786a26afcfca2f3f602db94b979b3d094eff930f602aa",
+      "outputs": [
+        {
+          "assetId": "4b42e4f7-b204-4318-bd13-40285f5cedd9",
+          "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+          "byteLength": 1681464,
+          "width": 1280,
+          "height": 720,
+          "durationSeconds": 6.041666666666666,
+          "validationState": "verified",
+          "mimeType": "video/mp4"
+        }
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "mode": "video.single_reference",
+      "created_at": "2026-10-24T03:19:38.213Z",
+      "dispatch_started_at": "2026-10-24T03:19:38.220Z",
+      "completed_at": "2026-10-24T03:21:14.489Z",
+      "sha256": "3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd",
+      "byte_length": 4059325,
+      "width": 1280,
+      "height": 720,
+      "duration_seconds": 6.041666666666666,
+      "validation_state": "verified",
+      "localFile": "temp/t15-reference-retest-authorized-2026-10-24/storage/assets/37/3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd.mp4"
+    },
+    {
+      "mode": "video.dual_reference",
+      "created_at": "2026-10-24T03:21:15.211Z",
+      "dispatch_started_at": "2026-10-24T03:21:15.217Z",
+      "completed_at": "2026-10-24T03:22:48.837Z",
+      "sha256": "49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025",
+      "byte_length": 1681464,
+      "width": 1280,
+      "height": 720,
+      "duration_seconds": 6.041666666666666,
+      "validation_state": "verified",
+      "localFile": "temp/t15-reference-retest-authorized-2026-10-24/storage/assets/49/49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025.mp4"
+    }
+  ],
+  "textVideoRequestsSent": 0,
+  "imageRequestsSentThisRound": 0,
+  "queryAndDownload": "Production adapter queried and downloaded using each original accepted ID; no new generation for recovery.",
+  "visualReferenceCheck": {
+    "single": "Green VELORA bottle, green apples, ice and bright window scene retained; camera pushes in.",
+    "dual": "Peephole gray corridor and dark-coated man precede interior woman with phone; features of both references visible.",
+    "firstLastFrameLockClaimed": false
+  },
+  "credentialDatabaseRows": 0,
+  "activeRemoteReservations": 0,
+  "backendRegression": {
+    "passed": 66,
+    "failed": 0,
+    "skipped": 0
+  },
+  "productionNetworkModified": false,
+  "t15FinalAccepted": false,
+  "t16FinalAccepted": false,
+  "m5Passed": false,
+  "committed": false,
+  "pushed": false
+}

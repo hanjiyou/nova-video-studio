@@ -1,0 +1,62 @@
+{
+  "status": "passed",
+  "head": "bfde19d6e769e516697cd36bffda070e78b4d135",
+  "branch": "dev",
+  "stagedFiles": 0,
+  "committed": false,
+  "pushed": false,
+  "requirementIdentitiesPreserved": 61,
+  "taskIdsPreserved": 17,
+  "currentDispositions": {
+    "offline_passed": 39,
+    "real_service_accepted": 8,
+    "real_service_pending": 7,
+    "release_pending": 7,
+    "not_passed": 0
+  },
+  "parentAcceptedRequirements": [
+    "I01",
+    "I07",
+    "I08",
+    "I09",
+    "V02",
+    "V03",
+    "V09",
+    "V10"
+  ],
+  "applicationCapabilityVersion": "opensosen-application-evidence-2026-10-24-v1",
+  "applicationVerifiedModes": 3,
+  "backendSelectedPassed": 75,
+  "frontendSelectedPassed": 13,
+  "finalEmptyEvidenceBoundaryPassed": 4,
+  "contractsPassed": 5,
+  "scopedLint": "passed",
+  "originalLedgerSha256Unchanged": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+  "generationRequestsSent": {
+    "firstAuthorization": 3,
+    "secondAuthorization": 2,
+    "thisSubphase": 0,
+    "textVideoTotal": 0
+  },
+  "realKeyReadThisSubphase": false,
+  "providerResearch": "Public unauthenticated read-only GET; exact text-video protocol remains unconfirmed.",
+  "finalT15Accepted": false,
+  "finalT16Accepted": false,
+  "m5Passed": false,
+  "publicDistributionAllowed": false,
+  "limitations": [
+    "No new packaged installer in this closeout.",
+    "Existing full tsc/lint baseline not claimed clean.",
+    "Seven real-function and seven installation/package/manual requirements remain incomplete."
+  ],
+  "recordStage": "pre_commit_verification",
+  "commitPushApprovedByParent": true,
+  "actualGitDeliveryReceipt": "temp/t15-git-delivery.json",
+  "logWhitespaceNormalization": {
+    "scope": "Trailing spaces and extra EOF blank lines only; test results unchanged.",
+    "files": [
+      "docs/implementation/t15-capability-evidence/frontend-final-boundary.log",
+      "docs/implementation/t15-retest-evidence/wire-before-fix.log"
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+✔ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (51.7788ms)
+ℹ {"referenceCount":1,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":704}
+✔ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (9.2644ms)
+ℹ {"referenceCount":2,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":947}
+✔ proxy transport leaves exact JSON bytes and GET methods intact (9.6241ms)
+✔ safe structured error keeps bounded code message and request ID without raw response (18.2365ms)
+✔ known raw percent double-percent base64 and hex credential echoes are suppressed (1.667ms)
+✔ messages IDs URLs bearer tokens and control characters stay bounded and sanitized (0.1217ms)
+✔ oversized or non-JSON responses do not persist their raw prefix and leave original response readable (1.4636ms)
+✔ stalled clone diagnostics end on the independent short deadline (36.9488ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 217.5226

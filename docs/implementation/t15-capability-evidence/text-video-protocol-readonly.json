@@ -1,0 +1,29 @@
+{
+  "source": "Original provider public status and pricing, read-only unauthenticated GET",
+  "checkedAt": "2026-10-24T03:49:20.619Z",
+  "docsLink": "",
+  "videoModels": [
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "endpoints": [
+        "openai"
+      ]
+    },
+    {
+      "model": "grok-imagine-video-6s",
+      "endpoints": [
+        "openai"
+      ]
+    }
+  ],
+  "endpointDeclarations": {
+    "openai": {
+      "path": "/v1/chat/completions",
+      "method": "POST"
+    }
+  },
+  "exactTextVideoSchemaConfirmed": false,
+  "reason": "Generic chat endpoint declarations do not specify exact text-video message shape or asynchronous query/download semantics. Existing Desktop reference-video document covers reference modes only.",
+  "generationRequestsSent": 0,
+  "credentialRead": false
+}

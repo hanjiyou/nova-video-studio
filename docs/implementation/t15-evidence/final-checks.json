@@ -1,0 +1,39 @@
+{
+  "status": "passed",
+  "requirementRecordsUnchanged": 61,
+  "taskIdsPreserved": 17,
+  "dispositions": {
+    "offline_passed": 39,
+    "real_service_pending": 16,
+    "release_pending": 6,
+    "not_passed": 0
+  },
+  "maxCreatesPerModeObserved": 1,
+  "unverifiedTextVideoCreates": 0,
+  "activeRemoteReservations": 0,
+  "verifiedImage": {
+    "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+    "width": 1448,
+    "height": 1086,
+    "byteLength": 1797541,
+    "localFile": "temp/t15-live-authorized-2026-10-24/storage/assets/30/30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f.png"
+  },
+  "actualElectronPreview": "passed",
+  "productionImageCapability": "unverified_pending_parent_review",
+  "backendRegression": {
+    "passed": 58,
+    "failed": 0,
+    "skipped": 0
+  },
+  "scopedLintExitCode": 0,
+  "stagedFiles": 0,
+  "head": "bfde19d6e769e516697cd36bffda070e78b4d135",
+  "branch": "dev",
+  "committed": false,
+  "pushed": false,
+  "t15FinalAccepted": false,
+  "t16FinalAccepted": false,
+  "m5Passed": false,
+  "generationRequestsSent": 3,
+  "followupCorrection": "Client FormData/undici encoding defect reproduced after first run; first-run remote error bodies unavailable, so not claimed as exhaustive cause of HTTP 400."
+}

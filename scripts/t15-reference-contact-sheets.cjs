@@ -1,0 +1,6 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process'),Database=require('better-sqlite3');
+const ROOT=path.resolve(__dirname,'..'),RUN=path.join(ROOT,'temp/t15-reference-retest-authorized-2026-10-24'),OUT=path.join(RUN,'frames');fs.mkdirSync(OUT,{recursive:true});
+const db=new Database(path.join(RUN,'nova-tasks.sqlite'),{readonly:true});const rows=db.prepare("SELECT t.mode,a.storage_key,a.sha256 FROM tasks t JOIN task_assets ta ON ta.task_id=t.id JOIN assets a ON a.id=ta.asset_id WHERE t.status='completed' AND ta.role='output' AND a.validation_state='verified'").all();db.close();
+const ffmpeg=path.join(path.dirname(require.resolve('ffmpeg-static/package.json')),'ffmpeg.exe');
+for(const row of rows){if(!/^[a-f0-9]{2}[\\/][a-f0-9]{64}\.mp4$/.test(row.storage_key))throw Error('LOCAL_MEDIA_PATH_REJECTED');const source=path.join(RUN,'storage/assets',row.storage_key),output=path.join(OUT,row.mode+'.jpg');execFileSync(ffmpeg,['-y','-nostdin','-hide_banner','-loglevel','error','-protocol_whitelist','file','-f','mov','-enable_drefs','0','-i',source,'-vf','fps=1,scale=426:240,tile=3x2:padding=4:margin=4','-frames:v','1',output],{windowsHide:true,stdio:['ignore','ignore','pipe']});process.stdout.write(JSON.stringify({mode:row.mode,contactSheet:output,sourceSha256:row.sha256})+'\n')}

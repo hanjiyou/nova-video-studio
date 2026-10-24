@@ -1,0 +1,221 @@
+{
+  "date": "2026-10-24",
+  "baseline": "bfde19d6e769e516697cd36bffda070e78b4d135",
+  "branch": "dev",
+  "authorization": {
+    "maxTotalCreates": 4,
+    "maxCreatesPerMode": 1,
+    "separateFeeCapWaived": true,
+    "threeNamedReferenceUploadsAuthorized": true,
+    "unknownSubmissionsNeverRecreated": true
+  },
+  "modes": {
+    "image.text": {
+      "createCount": 1,
+      "status": "completed",
+      "localRequestId": "14076974-dab2-47bd-9531-0d28ada3a224",
+      "localTaskId": "1624354f-5416-4a0c-b0a9-3d66c90944d7",
+      "dispatchReservedAt": "2026-10-24T02:34:06.812Z",
+      "httpStatus": 200
+    },
+    "video.text": {
+      "createCount": 0,
+      "status": "not_dispatched",
+      "localRequestId": "b177a3dd-d123-432d-a9c0-4720c9a24beb",
+      "localTaskId": null,
+      "dispatchReservedAt": null,
+      "httpStatus": null,
+      "reason": "Exact text-to-video protocol not confirmed; no create issued."
+    },
+    "video.single_reference": {
+      "createCount": 1,
+      "status": "failed",
+      "localRequestId": "3b00b007-1bc9-46a5-aa55-ea5b3ba82c6b",
+      "localTaskId": "8abcc8ab-c7e0-449a-8082-03f1932d07d7",
+      "dispatchReservedAt": "2026-10-24T02:30:49.808Z",
+      "httpStatus": 400
+    },
+    "video.dual_reference": {
+      "createCount": 1,
+      "status": "failed",
+      "localRequestId": "4825b4ba-c9c0-46f9-a971-ecc37ece9b85",
+      "localTaskId": "4598f50b-1a31-426e-ac8d-6867ed0e80d3",
+      "dispatchReservedAt": "2026-10-24T02:30:50.879Z",
+      "httpStatus": 400
+    }
+  },
+  "originalInputs": [
+    {
+      "name": "guanggao.png",
+      "assetId": "73e2fc90-7041-4ade-82c1-5a3f19a5a77a",
+      "sha256": "8e8fe2c3e332e1b8d4363e666a2bff81da6e8f5c70cbe898ef770472f9a12afb",
+      "byteLength": 1894345,
+      "mimeType": "image/png"
+    },
+    {
+      "name": "3_1.png",
+      "assetId": "088cef8a-20e9-4187-bd6a-340d46b6a1c8",
+      "sha256": "07c8b977476513f227a711a4e3b33d6d2b92f75970ea7b271a963d1572f1c40e",
+      "byteLength": 1514260,
+      "mimeType": "image/png"
+    },
+    {
+      "name": "3_2.png",
+      "assetId": "24cee29b-3cbb-4392-b345-f4cf65bf30c8",
+      "sha256": "a7146330bf4ab109e93e86f8acdf006dd4a202a9928b65872892ce78e7ddc9a7",
+      "byteLength": 1671548,
+      "mimeType": "image/png"
+    }
+  ],
+  "tasks": [
+    {
+      "mode": "image.text",
+      "localTaskId": "1624354f-5416-4a0c-b0a9-3d66c90944d7",
+      "status": "completed",
+      "remoteState": "completed",
+      "progress": 100,
+      "generationReserved": false,
+      "errorCode": null,
+      "httpStatus": null,
+      "upstreamIdSha256": null,
+      "outputs": [
+        {
+          "assetId": "740cc7ce-8a31-4b22-8d73-b06a0ba842a2",
+          "sha256": "30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f",
+          "byteLength": 1797541,
+          "width": 1448,
+          "height": 1086,
+          "durationSeconds": null,
+          "validationState": "verified",
+          "mimeType": "image/png"
+        }
+      ],
+      "created_at": "2026-10-24T02:34:06.805Z",
+      "dispatch_started_at": "2026-10-24T02:34:06.810Z",
+      "completed_at": "2026-10-24T02:34:53.956Z"
+    },
+    {
+      "mode": "video.single_reference",
+      "localTaskId": "8abcc8ab-c7e0-449a-8082-03f1932d07d7",
+      "status": "failed",
+      "remoteState": null,
+      "generationReserved": false,
+      "errorCode": "REMOTE_REJECTED",
+      "httpStatus": 400,
+      "upstreamIdSha256": null,
+      "outputs": [],
+      "created_at": "2026-10-24T02:30:49.787Z",
+      "dispatch_started_at": "2026-10-24T02:30:49.799Z",
+      "completed_at": "2026-10-24T02:30:50.346Z"
+    },
+    {
+      "mode": "video.dual_reference",
+      "localTaskId": "4598f50b-1a31-426e-ac8d-6867ed0e80d3",
+      "status": "failed",
+      "remoteState": null,
+      "generationReserved": false,
+      "errorCode": "REMOTE_REJECTED",
+      "httpStatus": 400,
+      "upstreamIdSha256": null,
+      "outputs": [],
+      "created_at": "2026-10-24T02:30:50.853Z",
+      "dispatch_started_at": "2026-10-24T02:30:50.865Z",
+      "completed_at": "2026-10-24T02:30:51.129Z"
+    }
+  ],
+  "publicProtocolEvidence": {
+    "source": "https://newapi.opensosen.com/api/pricing",
+    "status": 200,
+    "flare": {
+      "model": "gpt-image-2.5-flare",
+      "endpointType": "image-generation",
+      "method": "POST",
+      "path": "/v1/images/generations"
+    },
+    "videoModels": {
+      "models": [
+        "grok-imagine-video-6s",
+        "grok-imagine-video-1.5-6s"
+      ],
+      "endpointType": "openai",
+      "path": "/v1/chat/completions",
+      "textVideoSchemaConfirmed": false
+    },
+    "docsLink": ""
+  },
+  "credentialProtection": {
+    "storage": "host_process_memory_only",
+    "credentialDatabaseRows": 0,
+    "noRendererCredential": true,
+    "noCredentialInCommandArgumentsOrEnvironment": true
+  },
+  "productionCapabilities": [
+    {
+      "model": "gpt-image-2.5-flare",
+      "mode": "image.reference",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "gpt-image-2.5-flare",
+      "mode": "image.text",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "mode": "video.dual_reference",
+      "evidence_level": "historically_verified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "mode": "video.single_reference",
+      "evidence_level": "historically_verified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-1.5-6s",
+      "mode": "video.text",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-6s",
+      "mode": "video.dual_reference",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-6s",
+      "mode": "video.single_reference",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    },
+    {
+      "model": "grok-imagine-video-6s",
+      "mode": "video.text",
+      "evidence_level": "unverified",
+      "evidence_version": "opensosen-evidence-v1"
+    }
+  ],
+  "scope": {
+    "imageMinimumTextSampleVerified": true,
+    "imageEditVerified": false,
+    "imageSizeQualityEnumsVerified": false,
+    "videoGenerationVerified": false,
+    "videoPlaybackVerified": false,
+    "referenceInfluenceVerified": false,
+    "t15FinalAccepted": false,
+    "t16FinalAccepted": false,
+    "m5Passed": false
+  },
+  "limitations": [
+    "Original arbitrary video error bodies were not retained; only HTTP 400 and explicit rejection classification are established.",
+    "No billing/refund observation.",
+    "Successful image evidence awaits parent review; production capability level unchanged."
+  ],
+  "localRunRoot": "temp/t15-live-authorized-2026-10-24",
+  "generationRequestsSent": 3,
+  "followupCorrection": "Client FormData/undici encoding defect reproduced after first run; first-run remote error bodies unavailable, so not claimed as exhaustive cause of HTTP 400."
+}

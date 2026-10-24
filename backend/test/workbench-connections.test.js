@@ -133,7 +133,7 @@ test('read-only check uses only GET /models, no text-model requirement; caches v
     assert.equal(calls[0].init.headers.Authorization, 'Bearer ' + fixtureKey);
     assert.ok(checked.models.every(model => model.visibility === 'visible'));
     assert.equal(checked.capabilities.filter(cap => cap.evidenceLevel === 'historically_verified').length, 2);
-    assert.ok(checked.capabilities.filter(cap => cap.mode.endsWith('.text') || cap.model === PRESET_MODELS[0]).every(cap => cap.evidenceLevel === 'unverified'));
+    assert.ok(checked.capabilities.filter(cap => cap.evidenceVersion === 'opensosen-evidence-v1' && (cap.mode.endsWith('.text') || cap.model === PRESET_MODELS[0])).every(cap => cap.evidenceLevel === 'unverified'));
     const cached = await f.service.check(connection.connectionId, { connectionVersionId: connection.connectionVersionId });
     assert.equal(cached.cached, true);
     assert.equal(calls.length, 1);

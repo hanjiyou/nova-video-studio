@@ -21,6 +21,8 @@ function model(value, fallback) {
     return value;
 }
 function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...args), clock = () => Date.now(), checkTimeoutMs = 8000, cacheTtlMs = 300000 }) {
+    // Existing saved connections receive additive evidence versions at startup, without saving credentials or rebinding tasks.
+    db.transaction(() => { for (const scope of db.prepare('SELECT DISTINCT provider,base_url FROM connection_versions').all()) seedCapabilities(db, scope.provider, scope.base_url); })();
     const inFlight = new Map();
     let candidate = null;
     function invalidateCandidate() { if (candidate) { candidate.controller.abort(); candidate = null; } }

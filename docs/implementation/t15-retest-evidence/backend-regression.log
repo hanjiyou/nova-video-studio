@@ -1,0 +1,84 @@
+✔ normal production remains denied with no explicit host grant (0.9513ms)
+✔ grant validates exact identifiers and rejects configuration through data alone (0.6008ms)
+✔ only exact candidate minimum image request matches; other models modes inputs and prompts stay denied (0.2313ms)
+✔ dispatch reservation immediately closes the grant and callback failures fail closed (0.1591ms)
+✔ revocation cannot be configured again (0.6172ms)
+✔ production validator uses the host grant without mutating evidence and rejects mismatch or exhausted budget (0.1606ms)
+✔ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (37.3829ms)
+ℹ {"referenceCount":1,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":704}
+✔ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (6.7965ms)
+ℹ {"referenceCount":2,"proxyConnects":1,"postCount":1,"multipart":true,"rawBytesAndOrder":true,"bodyLength":947}
+✔ proxy transport leaves exact JSON bytes and GET methods intact (9.1675ms)
+✔ safe structured error keeps bounded code message and request ID without raw response (17.9187ms)
+✔ known raw percent double-percent base64 and hex credential echoes are suppressed (1.4791ms)
+✔ messages IDs URLs bearer tokens and control characters stay bounded and sanitized (0.1059ms)
+✔ oversized or non-JSON responses do not persist their raw prefix and leave original response readable (1.2279ms)
+✔ stalled clone diagnostics end on the independent short deadline (36.6846ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.0.0（2 个模型）
+✔ new package registers both exact models, with only fixed application controls and ordered references (1.0193ms)
+✔ production driver builds 1 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (18.8144ms)
+✔ production driver builds 2 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (1.4052ms)
+✔ grok-imagine-video-1.5-6s / video.text / 0 inputs rejects without guessing a protocol (0.405ms)
+✔ grok-imagine-video-6s / video.text / 0 inputs rejects without guessing a protocol (0.0719ms)
+✔ grok-imagine-video-6s / video.single_reference / 1 inputs rejects without guessing a protocol (0.0672ms)
+✔ grok-imagine-video-6s / video.dual_reference / 2 inputs rejects without guessing a protocol (0.0485ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 0 inputs rejects without guessing a protocol (0.0387ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 2 inputs rejects without guessing a protocol (0.0604ms)
+✔ grok-imagine-video-1.5-6s / video.dual_reference / 1 inputs rejects without guessing a protocol (0.2353ms)
+✔ grok-imagine-video-1.5-6s / video.text / 1 inputs rejects without guessing a protocol (0.1032ms)
+✔ driver rejects another service, unsupported size/seconds/extra fields and nonconsecutive input order (0.1555ms)
+✔ multipart host rejects paths, MIME spoofing, manual boundary and assets outside frozen input (0.3343ms)
+✔ safe accepted driver ID is exposed before a later parser or credential error; only one POST (2.0445ms)
+✔ new multipart POST 400 remains single attempt and has bounded safe rejection metadata (1.3374ms)
+✔ new multipart POST 401 remains single attempt and has bounded safe rejection metadata (0.3839ms)
+✔ new multipart POST 403 remains single attempt and has bounded safe rejection metadata (0.4093ms)
+✔ new multipart POST 429 remains single attempt and has bounded safe rejection metadata (0.3647ms)
+✔ new multipart POST 503 remains single attempt and has bounded safe rejection metadata (0.2639ms)
+✔ driver GET encodes one opaque segment, keeps progress, normalizes only observed states and supplies stable authenticated content source (1.3349ms)
+✔ unknown video status is not invented as complete/failure; empty create ID is not accepted (0.1199ms)
+✔ flare candidate is a precise nonstream minimum and preserves prompt without extra size/quality fields (0.1748ms)
+✔ flare reference boundary cannot silently fall back, and candidate production preflight stays gated by evidence (0.1211ms)
+✔ flare synthetic URL/base64 outputs normalize into temporary sources; empty, invalid and credential outputs reject (0.3541ms)
+✔ flare synthetic 503 and empty result use exactly one POST and no fallback model (0.5ms)
+✔ canonical snapshot rejects mode/count mismatch and unknown request/path overrides (0.4273ms)
+✔ shared script executor supports host-only ordered multipart while old JSON remains unchanged (0.8013ms)
+✔ candidate flare deadline covers headers and stalled JSON body, with one POST and one body read (273.2288ms)
+✔ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (729.6344ms)
+ℹ {"mode":"video.single_reference","files":1,"postCount":1,"getCount":2,"localState":"completed","download":"verified and readable offline","range":"206/416/HEAD exact bytes"}
+✔ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (721.5941ms)
+ℹ {"mode":"video.dual_reference","files":2,"postCount":1,"getCount":2,"localState":"completed","download":"verified and readable offline","range":"206/416/HEAD exact bytes"}
+✔ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (232.5241ms)
+✔ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (380.0362ms)
+✔ actual B1 disconnect becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (442.4551ms)
+✔ actual B1 stalled-body becomes submission_unknown, survives restart and attach-ID never queries before explicit resume (675.4063ms)
+✔ actual B1 GET 401 retains ID, original credential and conservative occupied slot (494.3798ms)
+✔ actual B1 GET 403 retains ID, original credential and conservative occupied slot (478.8892ms)
+✔ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (499.9157ms)
+✔ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (528.7456ms)
+✔ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (421.1266ms)
+✔ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (592.9656ms)
+ℹ {"rejectedId":".","postCount":1,"getCount":1,"queryPath":"/v1/videos/%E4%BB%BB%E5%8A%A1%2Fopaque%25.%E7%89%88%E6%9C%AC","contentPath":"/v1/videos/%E4%BB%BB%E5%8A%A1%2Fopaque%25.%E7%89%88%E6%9C%AC/content","reattachedOnlyAfterValidation":true}
+✔ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (650.1645ms)
+ℹ {"rejectedId":"..","postCount":1,"getCount":1,"queryPath":"/v1/videos/%E4%BB%BB%E5%8A%A1%2Fopaque%25.%E7%89%88%E6%9C%AC","contentPath":"/v1/videos/%E4%BB%BB%E5%8A%A1%2Fopaque%25.%E7%89%88%E6%9C%AC/content","reattachedOnlyAfterValidation":true}
+✔ actual Web Gemini 400 preserves its upstream error and consumes the response body exactly once (241.0692ms)
+✔ actual Web Gemini 401 preserves its upstream error and consumes the response body exactly once (196.6151ms)
+✔ actual Web Gemini 403 preserves its upstream error and consumes the response body exactly once (204.1452ms)
+✔ actual Web Gemini 429 preserves its upstream error and consumes the response body exactly once (204.2198ms)
+✔ actual desktop image 400 reads once, retains safe rejection/auth classification and never repeats POST (279.0707ms)
+✔ actual desktop image 401 reads once, retains safe rejection/auth classification and never repeats POST (262.4659ms)
+✔ actual desktop image 403 reads once, retains safe rejection/auth classification and never repeats POST (284.35ms)
+✔ actual desktop image 429 reads once, retains safe rejection/auth classification and never repeats POST (259.9265ms)
+✔ actual desktop JSON headers followed by a hanging body time out as submission_unknown without a second POST (432.2983ms)
+ℹ {"headersToBodyAbortMs":176,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+✔ actual desktop SSE headers followed by a hanging body time out as submission_unknown without a second POST (436.8168ms)
+ℹ {"headersToBodyAbortMs":173,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+✔ actual Web Gemini headers followed by a hanging body retain the request deadline through parsing (346.4687ms)
+ℹ tests 66
+ℹ suites 0
+ℹ pass 66
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6943.0254

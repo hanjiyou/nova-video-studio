@@ -1,0 +1,49 @@
+✖ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (34.5052ms)
+✖ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (7.4427ms)
+✔ proxy transport leaves exact JSON bytes and GET methods intact (8.1215ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 1
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 178.0357
+
+✖ failing tests:
+
+test at backend\test\t15-proxy-wire.test.js:15:26
+✖ actual ProxyAgent wire preserves 1 ordered PNG references and all scalar fields (34.5052ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^multipart\/form-data; boundary=[^;\s]+$/. Input:
+
+  'text/plain;charset=UTF-8'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\t15-proxy-wire.test.js:21:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'text/plain;charset=UTF-8',
+    expected: /^multipart\/form-data; boundary=[^;\s]+$/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at backend\test\t15-proxy-wire.test.js:15:26
+✖ actual ProxyAgent wire preserves 2 ordered PNG references and all scalar fields (7.4427ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^multipart\/form-data; boundary=[^;\s]+$/. Input:
+
+  'text/plain;charset=UTF-8'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\t15-proxy-wire.test.js:21:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'text/plain;charset=UTF-8',
+    expected: /^multipart\/form-data; boundary=[^;\s]+$/,
+    operator: 'match',
+    diff: 'simple'
+  }

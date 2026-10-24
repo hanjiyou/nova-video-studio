@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "scope": "All T15 changed source/evidence plus only the new isolated retest runtime; protected original app data not inspected",
+  "filesScanned": 121,
+  "bytesScanned": 26177514,
+  "rawOrEncodedCredentialMatches": 0,
+  "credentialDatabaseRows": 0,
+  "credentialInEnvironment": false
+}

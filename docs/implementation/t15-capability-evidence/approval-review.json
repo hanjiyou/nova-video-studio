@@ -1,0 +1,45 @@
+{
+  "status": "accepted_partial_scope",
+  "acceptedAt": "2026-10-24T03:55:33.789Z",
+  "reviewer": "/root",
+  "source": "Parent explicitly accepted these eight complete requirements after reading the closeout report and criteria and independently checking code, tests and real sample evidence.",
+  "acceptedRequirements": [
+    "I01",
+    "I07",
+    "I08",
+    "I09",
+    "V02",
+    "V03",
+    "V09",
+    "V10"
+  ],
+  "independentChecks": {
+    "backendCapabilityAndControlledGate": 9,
+    "frontendCapability": 4,
+    "transportAndSafeError": 8,
+    "realSampleVerification": true
+  },
+  "finalBoundary": {
+    "emptySourceIdsTestsPassed": 4,
+    "failed": 0,
+    "log": "frontend-final-boundary.log"
+  },
+  "notAccepted": [
+    "Remaining seven real-function requirements",
+    "Remaining seven installation/package/manual requirements",
+    "Final T15",
+    "Final T16",
+    "M5",
+    "Public release"
+  ],
+  "commitPushAuthorization": "Explicitly approved by parent /root after final diff, selected tests, acceptance ledger and capability review.",
+  "deliveryApprovedAt": "2026-10-24T03:57:02.690Z",
+  "deliveryTarget": "origin/dev",
+  "deliveryScope": "Only current T15 manifest; excludes temp, installers, original user images, credential file and large source archives.",
+  "forbiddenDeliveryActions": [
+    "main changes",
+    "force push",
+    "public release",
+    "start T16"
+  ]
+}

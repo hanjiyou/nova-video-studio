@@ -1,0 +1,21 @@
+{
+  "status": "approved",
+  "authorizationId": "2026-10-24-user-continue-after-wire-fix",
+  "authorizedModes": {
+    "video.single_reference": 1,
+    "video.dual_reference": 1
+  },
+  "maxTotalGenerationRequests": 2,
+  "imageGenerationAuthorized": false,
+  "textVideoNewAuthorization": false,
+  "reviewer": "/root",
+  "requirement": "Wait for explicit parent technical approval before reading credential or sending any real retest request.",
+  "localEvidence": [
+    "wire-before-fix.log",
+    "wire-after-fix.log",
+    "native-wire.json"
+  ],
+  "approvedAt": "2026-10-24T03:19:37.980Z",
+  "approvalSource": "Parent /root explicitly approved this technical retest after reading runner and independently passing 8/8 wire and safe-response tests.",
+  "scope": "Only one new single-reference and one new dual-reference request; no image, no guessed text video, no automatic retry."
+}

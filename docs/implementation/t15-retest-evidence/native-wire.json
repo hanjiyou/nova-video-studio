@@ -1,0 +1,42 @@
+{
+  "scope": "Local HTTP receiver, actual production native global fetch and Electron net.fetch transports; no external hosts or real credential",
+  "checks": [
+    {
+      "mode": "direct",
+      "referenceCount": 1,
+      "multipart": true,
+      "rawBytesAndOrder": true,
+      "proxyRequests": 0,
+      "bodyLength": 690
+    },
+    {
+      "mode": "direct",
+      "referenceCount": 2,
+      "multipart": true,
+      "rawBytesAndOrder": true,
+      "proxyRequests": 0,
+      "bodyLength": 933
+    },
+    {
+      "mode": "system",
+      "referenceCount": 1,
+      "multipart": true,
+      "rawBytesAndOrder": true,
+      "proxyRequests": 1,
+      "bodyLength": 690
+    },
+    {
+      "mode": "system",
+      "referenceCount": 2,
+      "multipart": true,
+      "rawBytesAndOrder": true,
+      "proxyRequests": 1,
+      "bodyLength": 933
+    }
+  ],
+  "status": "passed",
+  "versions": {
+    "electron": "43.4.0",
+    "node": "24.18.1"
+  }
+}

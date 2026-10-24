@@ -78,7 +78,7 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
 test('canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request',async t=>{
     const f=await rig(t);
     for(const extra of [
-        {mode:'image.text',model:'gpt-image-2.5-flare'},{mode:'image.reference',model:'gpt-image-2.5-flare'},
+        {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare'},
         {mode:'video.text'},{mode:'video.text',model:'grok-imagine-video-6s'},{model:'grok-imagine-video-6s'},
     ]){const response=await f.post('/api/nova/workbench/tasks',f.input(extra));assert.equal(response.status,400);assert.equal((await response.json()).code,'CAPABILITY_UNVERIFIED');}
     for(const extra of [{inputAssets:f.refs.slice(0,1)},{inputAssets:[{...f.refs[1],position:1},f.refs[0]]},{parameters:{seconds:6,size:'720x1280'}},{apiKey:KEY},

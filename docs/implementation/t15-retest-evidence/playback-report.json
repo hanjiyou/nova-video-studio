@@ -1,0 +1,37 @@
+{
+  "scope": "actual sandboxed Electron production workbench, real generated reference videos, no credential loaded, all external requests denied",
+  "checks": {
+    "twoVerifiedLocalReferenceVideos": true,
+    "video.dual_referencePlayedActualFrames": true,
+    "video.single_referencePlayedActualFrames": true,
+    "twoRetestRecordsVisibleInLibrary": true,
+    "imageCapabilityStillUnverified": true
+  },
+  "electron": "43.4.0",
+  "stage": "complete",
+  "videos": [
+    {
+      "mode": "video.dual_reference",
+      "assetId": "4b42e4f7-b204-4318-bd13-40285f5cedd9",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "currentTime": 0.809599,
+      "totalVideoFrames": 24,
+      "droppedVideoFrames": 0,
+      "error": null
+    },
+    {
+      "mode": "video.single_reference",
+      "assetId": "18dda6e4-2f44-4fd0-8e36-630b444eca76",
+      "width": 1280,
+      "height": 720,
+      "duration": 6.041667,
+      "currentTime": 0.772222,
+      "totalVideoFrames": 23,
+      "droppedVideoFrames": 0,
+      "error": null
+    }
+  ],
+  "status": "passed"
+}

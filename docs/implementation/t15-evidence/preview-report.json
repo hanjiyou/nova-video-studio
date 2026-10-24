@@ -1,0 +1,18 @@
+{
+  "scope": "actual sandboxed Electron production workbench, real generated local image, no credential loaded, all external requests denied",
+  "checks": {
+    "realImageDecodedInWorkbench": true,
+    "actualEnlargedPreviewDecoded": true,
+    "bothRejectedVideoTasksVisible": true,
+    "threeRealAttemptRecordsVisibleInLibrary": true,
+    "imageCapabilityStillUnverified": true
+  },
+  "electron": "43.4.0",
+  "stage": "complete",
+  "image": {
+    "width": 1448,
+    "height": 1086,
+    "src": "/api/nova/assets/740cc7ce-8a31-4b22-8d73-b06a0ba842a2/content"
+  },
+  "status": "passed"
+}

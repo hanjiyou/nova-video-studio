@@ -1,0 +1,11 @@
+{
+  "path": "temp/t15-live-authorized-2026-10-24/dispatch-ledger.json",
+  "sha256": "07ca16716bf75d6f065ba91d3c735048d3e6ad489d997fee2353a3d0f9b72280",
+  "byteLength": 1794,
+  "counts": {
+    "image.text": 1,
+    "video.text": 0,
+    "video.single_reference": 1,
+    "video.dual_reference": 1
+  }
+}

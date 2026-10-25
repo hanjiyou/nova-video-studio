@@ -1,0 +1,44 @@
+{
+  "checkedAt": "2026-10-25T12:24:32.769Z",
+  "source": "c2b5dc7cc12aa06003cdf82c2cef0a76e1190f67",
+  "releaseId": "423334843",
+  "release": {
+    "id": 423334843,
+    "tag": "v3.6.5",
+    "draft": false
+  },
+  "assets": [
+    {
+      "id": 674956885,
+      "name": "Nova-Studio-3.6.5-github-test-x64.exe",
+      "state": "uploaded",
+      "size": 133779595,
+      "digest": "sha256:e118b4236025b3baa532c312c8fa00885df594696d5554f562853bb37034fb37"
+    },
+    {
+      "id": 674962131,
+      "name": "Nova-Studio-3.6.5-github-test-x64.exe.blockmap",
+      "state": "uploaded",
+      "size": 140137,
+      "digest": "sha256:9b2bb9bdafb8da980e8e31949106215a7cc8bc88f0583eaef0e3f93d7d569d25"
+    },
+    {
+      "id": 674962185,
+      "name": "nova-test.yml",
+      "state": "uploaded",
+      "size": 371,
+      "digest": "sha256:b1f56dd047f87e9433bfa32b3e47fef71a420916a5b98e6b4b7a8bc6a17295a7"
+    }
+  ],
+  "latest": {
+    "id": 423334843,
+    "tag": "v3.6.5",
+    "draft": false
+  },
+  "tag": {
+    "sha": "c2b5dc7cc12aa06003cdf82c2cef0a76e1190f67"
+  },
+  "anonymousManifestMatches": true,
+  "remoteBytesVerifiedByDelivery": true,
+  "proxyRestored": "美国洛杉矶-2"
+}

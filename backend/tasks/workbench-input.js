@@ -5,6 +5,8 @@ const { MODEL, VERSION } = require('./flare-image-adapter');
 const { controlledImageValidation } = require('./controlled-image-validation');
 const { controlledVideoTextValidation } = require('./controlled-video-text-validation');
 const { generationEvidenceVerified } = require('../connections/capabilities');
+const videoPolicy = require('./video-policy');
+const {videoRule,validParameters}=require('../connections/model-catalog');
 const MODELS = require('../plugins/opensosen-video').MODELS;
 const multiReference = require('./multi-reference-policy');
 const imagePolicy = require('./image-policy');
@@ -32,6 +34,8 @@ function snapshotFor(body, videoVersion) {
     if (image ? body.model !== MODEL : !MODELS.includes(body.model)) throw invalid();
     if (image) {
         if (!imagePolicy.validParameters(body.parameters)) throw invalid();
+    } else if (validParameters(videoRule(body.model,{provider:'opensosen',baseUrl:videoPolicy.RULES.baseUrl}),body.parameters)) {
+        // The immutable capability version below distinguishes configured rules from legacy evidence.
     } else if (body.mode === 'video.text') {
         if (!controlledVideoTextValidation.allowsInput(body) && (body.parameters.seconds !== 6 || Object.keys(body.parameters).length !== 1)) throw invalid();
     } else if (Object.keys(body.parameters).some(key => !['seconds','size'].includes(key)) || body.parameters.seconds !== 6 || body.parameters.size !== '1280x720') throw invalid();
@@ -45,6 +49,7 @@ function validateCapability(db, snapshot, auth) {
     const capability = db.prepare('SELECT * FROM model_capabilities WHERE id=?').get(snapshot.capabilityVersionId);
     if (!capability || capability.provider !== auth.provider || capability.base_url !== auth.baseUrl ||
         capability.model !== snapshot.model || capability.mode !== snapshot.mode || capability.protocol !== auth.protocol) throw fail('CAPABILITY_UNVERIFIED','该能力版本与任务连接、模型或模式不匹配。');
+    if (videoPolicy.matches(capability,snapshot,auth)) { if(!videoPolicy.allows(capability,snapshot,auth))throw fail('CAPABILITY_UNVERIFIED','此型号协议准备完成，仍待验证。'); return capability; }
     const controlledText = controlledVideoTextValidation.allows(snapshot, auth, capability);
     const unverifiedMulti = multiReference.allowsUnverifiedSubmission(capability, snapshot, auth);
     const unverifiedImage = imagePolicy.allowsUnverifiedSubmission(capability, snapshot, auth);

@@ -1,0 +1,32 @@
+{
+  "provider": "opensosen",
+  "baseUrl": "https://newapi.opensosen.com/v1",
+  "version": "video-config-20261025-v1",
+  "models": {
+    "grok-imagine-video-1.5-6s": {
+      "minSeconds": 1,
+      "maxSeconds": 6,
+      "defaultSeconds": 6,
+      "sendSize": false,
+      "sizes": [],
+      "defaultSize": null,
+      "centsPerSecond": 5,
+      "submissionEnabled": true
+    },
+    "grok-imagine-video-1.5-preview": {
+      "minSeconds": 1,
+      "maxSeconds": 15,
+      "defaultSeconds": 10,
+      "sendSize": true,
+      "sizes": [
+        "1280x720",
+        "1920x1080",
+        "720x1280",
+        "1080x1920"
+      ],
+      "defaultSize": "1920x1080",
+      "centsPerSecond": 20,
+      "submissionEnabled": false
+    }
+  }
+}

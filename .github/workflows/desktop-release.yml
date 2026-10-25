@@ -1,28 +1,14 @@
-# 桌面版（Electron）发布流水线
-#
-# 触发方式：推送 v* 标签（如 v3.2.0）或在 Actions 页面手动 workflow_dispatch。
-# 产物：macOS（.dmg / .zip）与 Windows（.exe）安装包，推送标签时自动上传到对应 tag 的 GitHub Release。
-#
-# 注意：本流水线未配置任何代码签名 / 公证证书——
-#   - macOS：首次打开需在 Finder 中右键 →「打开」（或在 系统设置 → 隐私与安全性 中允许）；
-#   - Windows：安装/运行时会出现 SmartScreen 提示，需选择「仍要运行」。
-
+# 手动构建历史桌面包；公开发布统一由 scripts/deliver.cjs 负责。
 name: desktop-release
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
-    # v3.6.2, v3.6.3 and v3.6.4 are separately verified github-test packages, uploaded manually.
-    # Do not mix legacy build assets into their nova-test.yml releases.
-    if: github.ref != 'refs/tags/v3.6.2' && github.ref != 'refs/tags/v3.6.3' && github.ref != 'refs/tags/v3.6.4'
     name: 构建桌面安装包（${{ matrix.os }}）
     runs-on: ${{ matrix.os }}
     strategy:
@@ -58,12 +44,8 @@ jobs:
         if: runner.os == 'Windows'
         run: npx electron-builder --config electron-builder.yml --win
 
-      # 仅推送标签时上传 Release；手动触发只产出构件（可在 Artifacts 中查看）
-      - name: 上传到 GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: softprops/action-gh-release@v2
+      - name: 保存构建产物（不发布）
+        uses: actions/upload-artifact@v4
         with:
-          files: |
-            release/**/*.dmg
-            release/**/*.zip
-            release/**/*.exe
+          name: desktop-manual-${{ matrix.os }}
+          path: release/

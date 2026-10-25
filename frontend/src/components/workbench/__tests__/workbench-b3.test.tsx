@@ -54,12 +54,12 @@ it('an asynchronous reference edit keeps a later explicit model selection and se
   expect(writes[1]).toMatchObject({model:'explicit-model',prompt:'导图期间继续编辑',expectedRevision:1});
   expect(hook.result.current.drafts['image.text']?.model).toBe('explicit-model');
 });
-it('an already configured profile enters the workbench without forcing welcome or sending a check',async()=>{
+it('an already configured profile enters the workbench without forcing welcome and refreshes the model list once',async()=>{
   const calls:string[]=[];vi.stubGlobal('fetch',vi.fn(async(route:string,options?:RequestInit)=>{calls.push((options?.method||'GET')+' '+route);
     if(route==='/api/nova/connections/current')return Response.json({connection});
     if(route.startsWith('/api/nova/connections/'))return Response.json({connectionVersionId:connection.connectionVersionId,models:[],capabilities:[],modelsFetchedAt:null});
     if(route.startsWith('/api/nova/storage/drafts/'))return Response.json({draft:{mode:route.split('/').pop(),prompt:'',model:'',parameters:{},inputAssets:[],revision:0,updatedAt:null}});
     if(route.startsWith('/api/nova/storage/settings/'))return Response.json({setting:{key:route.split('/').pop(),value:null,revision:0,updatedAt:null}});
     if(route.startsWith('/api/nova/storage/tasks'))return Response.json({items:[],total:0});throw Error('Unexpected route');
-  }));render(<WorkbenchShell/>);await screen.findByRole('navigation',{name:'主要导航'});expect(screen.queryByRole('button',{name:'稍后配置'})).not.toBeInTheDocument();expect(calls.every(call=>call.startsWith('GET'))).toBe(true);
+  }));render(<WorkbenchShell/>);await screen.findByRole('navigation',{name:'主要导航'});expect(screen.queryByRole('button',{name:'稍后配置'})).not.toBeInTheDocument();expect(calls.filter(call=>call.startsWith('POST')&&call.endsWith('/check'))).toHaveLength(1);
 });

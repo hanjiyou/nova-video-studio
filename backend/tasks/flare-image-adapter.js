@@ -1,4 +1,5 @@
 'use strict';
+const { modelRejected } = require('../connections/model-catalog');
 const { containsCredential } = require('../connections/redaction');
 const { buildRequestInit } = require('../plugin-runtime/request-body');
 const { POLICY, validParameters } = require('./image-policy');
@@ -85,7 +86,8 @@ function createFlareImageAdapter({ validateCapability, readAsset, getAsset, vers
                 try { payload = JSON.parse(text); } catch { throw failure('SUBMISSION_UNKNOWN', { parseOutcome:'invalid_json', httpStatus: response.status }); }
                 if (containsCredential(text, auth.apiKey) || containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });
                 if (!response.ok) throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status, transmission: 'response_received',
-                    definiteRejection: response.status >= 400 && response.status < 500 && Boolean(payload?.error || payload?.message) });
+                    modelUnavailable: modelRejected(payload,response.status),
+                    definiteRejection: response.status >= 400 && response.status < 500 && (Boolean(payload?.error || payload?.message)||modelRejected(payload,response.status)) });
                 const parsed = parseSubmit(payload, auth); auth.checkpoint?.(); return parsed;
             } finally { clearTimeout(timer); auth.signal?.removeEventListener('abort', abort); }
         },

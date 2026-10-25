@@ -1,5 +1,12 @@
 # 持久任务服务与恢复接口 v1
 
+## 最新补充（2026-10-25）
+
+模型清单与参数费用联动已实现并完成本轮返修复测，见[实施报告](implementation/模型清单与参数费用联动实施报告.md)。型号明确拒绝时任务失败并刷新清单，不自动重新生成；已有远端 ID、旧任务连接和能力快照仍按原生命周期规则处理。清单刷新不会取消任务或释放未知远端任务的占位。
+
+本轮后端 163/163、前端 90/90 及完整 TypeScript 检查通过；不代表真实生成、安装包或发布验收完成。交付操作统一见[脚本使用说明](统一交付脚本使用说明.md)，任务与 UI 的新增规范见[工作台契约](contracts/workbench-v1.md)。以下阶段描述保留为历史基础，后续补充优先。
+
+
 B4/T11–T13 已把工作台接入上述任务服务，本批离线实现范围已由主会话复审接受。额外允许用户对 completed 且受管输出确已 missing 的任务明确执行 retry-download：转入原下载队列，保留原连接、ID、结果源及目录，不重新 POST 生成。其他 completed 状态转换仍拒绝；下载完整校验后才再次 completed。图片/视频工作台先持久本地意图、仅创建一次，回执丢失或重启只做本地关联核对，详见 [B4](implementation/B4-T11-T13-图片视频工作台与作品库.md)。原有保守占位、单次付费创建、有界 GET 和凭据版本规则保持。
 
 B2/T08 已安装生产下载worker，只有完整解码/正式文件/输出关联事务成功才completed；签名URL采用瞬时交接、有ID只读刷新、无ID重启明确不可恢复。基础范围已由主会话审核接受并明确批准提交推送，详见[B2审核](implementation/b2-evidence/approval-review.json)及[B2媒体契约](b2-media-v1.md)；下文保留T05当时的阶段边界。
@@ -77,3 +84,45 @@ schema v4 是追加迁移；v1–v3 SQL 与 checksum 不变，仍执行升级前
 统一 upstream-id 边界用于接收ID、手动补ID、原ID查询、恢复与 content 描述。当前单路径段协议拒绝仅为 . 或 .. 的 ID；encodeURIComponent 不编码点，%2E 也会被 WHATWG 当点段规范化，因此不以改成 %2E 绕过。正常含点、斜杠、百分号和中文的 opaque ID 保留原值，仅在 URL 中编码一次。空值、控制字符、过长及无法编码的孤立 UTF-16 代理项也不接受；这是客户端可查询表示约束，不宣称供应商的ID规则。
 
 新收到不可查询ID时保持 submission_unknown、派发标记与生成占位，不自动POST或GET；补入非法ID返回 INVALID_UPSTREAM_ID，不改ID/事件、不请求上游。既有持久不可查询ID在恢复/直接查询时暂停，保留原ID和占位，resume被拒绝；不清空、改写或换任务绕过占位。声明式插件查询及其content fallback使用相同编码/检查。详见[B1审核修复](implementation/B1-T06-T07-图片视频适配.md)。
+
+## I01 图片/视频生命周期数据契约（2026-10-25，主审通过；分批历史）
+
+本节记录 I01 完成时的数据边界，供兼容与历史证据查阅。当前 I02–I04 已主审通过，已启用独立并发、120/300 秒整任务截止、本地取消和恢复规则；以文末 I02–I04 当前运行契约覆盖相应历史行为，I05–I08 仍待后续批次。
+
+- 配置使用现有 GET/PUT `/api/nova/storage/settings/taskExecution`，值为完整对象 `{imageConcurrency:3,videoConcurrency:3,imageTimeoutSeconds:120,videoTimeoutSeconds:300}`。两类并发分别为整数 1–5，时限分别为整数 30–1800 秒；拒绝缺项、未知字段、字符串、布尔、非整数和非有限数，不强制转换或钳制。沿用 `expectedRevision` 冲突检查。未保存时只读返回默认值、revision=0，不写入数据库。并发设置从 I02 接入后续入场，时限在本批只保存新建快照，I03 才执行截止。
+- 公共模式分类：image.text/reference 属图片；video.text/single_reference/dual_reference/multi_reference 属视频；旧 text-to-image/image-to-image 属图片，plugin/legacy.plugin 属视频。不按任意前缀猜新模式。
+- 新任务在创建事务的独立列保存 `execution_media_kind` 与 `execution_timeout_seconds`，数据库拒绝后改；不把运行配置塞进原不可变输入。相同 localRequestId 重传优先关联旧任务，即使设置已改或原凭据已清除，也不改旧快照或增加派发。
+- 首次实际派发在原提交边界同一事务保存 `execution_attempt_id`（UUID）、原 `dispatch_started_at` 与 `execution_deadline_at=派发时间+快照秒数`。排队不消耗时限，后续查询/阶段切换不重置这些不可变字段。此 ID 供 I03 的异步执行 fence 使用；本批没有启用迟到回调保护或计时器。单调计时及跨重启预算核验由 I03/I04 实施。
+- `local_outcome` 表达 completed/failed/timed_out/cancelled；`local_finished_at` 表达本地结束。独立的 `remote_outcome` 表达 not_dispatched/unknown/confirmed_result/confirmed_rejected/confirmed_failed/confirmed_cancelled。保留实际 upstreamTaskId 和 remoteState，不能仅因本地取消、超时、通信或下载失败断言远端失败/取消。
+- `execution_phase`、`execution_phase_started_at` 为可观测阶段预留（reference_upload/submitting/receiving/parsing/remote_waiting/downloading/validating/saving）。完整多阶段边界沿用 task_events，I06 才采集与导出。无证据返回 null，不能补造 0 耗时或模型内部进度。
+- service 的 GET/WS/动作与 history 共用同一投影：mode、mediaKind、localOutcome、remoteOutcome、executionAttemptId、timeoutSeconds、dispatchStartedAt、deadlineAt、localFinishedAt、phase、phaseStartedAt、progress、nextPollAt、generationReserved、remoteMayContinue、schedulingNotice 的含义一致。旧终态可按已知 status 投影本地结论，远端结论只来自已知 remoteState/明确拒绝证据；仅有 failed 不推断远端 failed。
+- download_failed 的本地结论为 failed、生成占位为 false；显式下载重试必须在 I03 设计为独立下载尝试/预算，保留原生成尝试与取消/超时结论，不发生成 POST。本批保留现有 retry-download 行为，不将其改造伪装成已完成。
+- v7 只追加 nullable 列和独立的 `workbench_removed_tasks(task_id,removed_at)` 展示范围；旧行的时限、派发尝试和截止时间保持 null，禁止 UPDATE 补造时限。旧 `workbench_hidden_tasks` 内容和作品库过滤不变，不批量复现已隐藏记录。I05 才接入新移除入口与任务列表过滤；其不得删除任务、去重凭据或作品关联。
+
+迁移继续使用原一致 SQLite 备份、quick_check、SHA256 清单与完整事务回滚，v1–v6 SQL/checksum 保持原样。测试以临时隔离的 v6/A 形态合成数据库证明兼容，不打开用户资料，不代表真实 A→B 安装验收。I04 负责旧活动记录的一次性恢复，不在迁移里发请求或改写旧本地状态。
+
+后续故障边界：当前 background 的任何 rejection 都会关闭全队列并中止全部请求；I02/I03 必须将单任务取消、超时与终态竞争和真正存储故障分开。逻辑名额与真实 IO/清理分别追踪，更新关闭仍等待所有操作安全结束。
+
+## I02–I04 当前运行契约（2026-10-25，主审通过）
+
+本节覆盖下方 T05 / B1 / I01 原始阶段中唯一占位、串行下载、无总截止和自动恢复 GET 的历史行为；保留其他仍适用的去重、原连接 / 适配器、结果验证与安全边界。详细实现和命令见 [I02–I04 实施与验证](implementation/I02-I04-独立并发截止与恢复.md)。
+
+- 图片 / 视频分别默认 3 名额，覆盖真实派发到验证保存，分别默认 120 / 300 秒总预算。创建保存时限快照，派发保存不可变 attempt / deadline；队列时间另算，阶段 / 退避 / 查询暂停不续期。
+- cancel 停止本地等待，原子终态、释放逻辑名额并保留未知远端与已持久 ID；取消 / 超时不自动 POST，迟到响应 / 保存不绑定输出。真实 IO 单独追踪，更新仍等待它们和清理退出。
+- 每视频同 ID 最多一条在途 GET，stop-polling 保留原名额和截止；resume-polling 仅同 ID 未结束 / 未过期任务，遵守 Retry-After 与原查询预算。重启后有 ID 新任务需要用户显式恢复，剩余时限不重置。
+- 旧无 deadline 活动记录一次性本地结束，保留远端未知、真实 ID 与原快照；不补造旧预算，不静默 POST / GET。未派发队列保留 requiresContinue；新任务安全结果下载恢复也须显式 continue-queued，签名来源丢失且无 ID 明确不可恢复。
+- retry-download 是独立预算 / 独立 attempt，只重取原结果，不重新生成。原 localOutcome / localFinishedAt 和生成 deadline 不改；downloadAttempt.{active,outcome,startedAt,deadlineAt,timeoutSeconds,finishedAt} 表达新下载活动和结论。localExecutionActive / downloadAttempt.active 用于取消和移除保护，不可只看原 localOutcome。名额已满返回 TASK_CAPACITY_BUSY。
+- v8 追加下载尝试表和本地终态不可变约束，复用原备份 / 事务体系，v1–v7 checksum 不改。I05 移除、I06 完整诊断、I07 界面和 I08 真实交付仍未完成。
+
+## I05–I07 任务展示、诊断与交互（2026-10-25，待主审）
+
+本批实现与离线验证完成，尚未主审验收；详见 [实施报告](implementation/I05-I07-任务移除阶段诊断与交互.md)。沿用已通过 I01–I04 的调度、截止和恢复，不授权 I08 打包、安装、真实生成或发布。
+
+- GET /api/nova/storage/tasks 显式支持 scope=workbench（默认）与 scope=library。两者继续过滤旧 workbench_hidden_tasks，只有 workbench 过滤 workbench_removed_tasks；旧隐藏不恢复。工作台最近图片/视频与任务卡片使用前者，作品库显式使用后者。
+- POST /api/nova/storage/tasks/:id/remove 只接受 {}，服务确认结束后新增展示移除标记，返回 {removed:true,worksRetained:true}。活跃生成、排队和独立下载尝试均返回 TASK_ACTIVE，必须先取消并等待确认。不会删除任务、localRequestId、输入快照、输出关联或物理文件；GET 单条仍可读，DTO 的 removedFromWorkbench 只表达展示移除。
+- 原 DELETE /api/nova/storage/tasks/:id 的 {deleteOutputs:boolean} 仍是作品库隐藏/可选独占文件删除入口，继续保留物理别名和共享引用保护，与新的任务展示移除区分。
+- 设置页的“任务控制”独立于连接配置显示。图片/视频并发各默认 3（1–5）；时限默认 120/300 秒（30–1800）。保存完整对象和 expectedRevision；读取/保存失败保留输入，修订冲突要求明确重新读取，未保存输入或保存中阻挡更新安装。并发只影响后续入场，时限只影响新任务快照。
+- 卡片与详情按 phase/remoteState 显示观察到的阶段，无虚构百分比。排队与生成执行时间分列；生成结束按 localFinishedAt 冻结，下载重试另按 downloadAttempt 计时。原 localOutcome 不充当当前下载的终态；取消与移除使用 localExecutionActive/downloadAttempt.active。
+- stop-polling 只暂停同 ID 查询，保留原时限/名额；resume-polling 仅未结束且未过期任务。cancel 停止本地等待。旧无 ID 图片无需补造 ID 或轮询能力；远端可能继续生成或计费。
+- 创建收到本地 ACK 即释放创建锁，详情读取和意图清理可继续。提交指纹/持久意图保持；未知 ACK 不重发。提交序号与核对序号避免旧 finally、迟到列表或详情干扰下一次提交和另一模式的选择。展示移除后清理选择/详情，迟到 GET 或旧列表不能复活它；从作品库仍可打开作品。
+- 阶段诊断按白名单采集与导出，生成和最新下载独立摘要，最多 96 条诊断边界加两条摘要；视频查询只累计有限计数/错误分类，不逐次添加接收/解析阶段。阶段时长使用单调观察值，未知为 null；重启未观察区间不从墙钟推算。排队时长明确为 wall_timestamp_estimate。详见 [诊断契约](diagnostics-v1.md)。

@@ -1,5 +1,7 @@
 'use strict';
-const { randomUUID } = require('node:crypto');
+const catalog = require('./model-catalog');
+const credentialInModel=(name,key)=>Boolean(key&&(containsCredential(name,key)||name.includes(Buffer.from(key).toString('base64'))||name.includes(Buffer.from(key).toString('base64url'))));
+const { createHash, randomUUID } = require('node:crypto');
 const { UUID } = require('../storage/store');
 const { containsCredential } = require('./redaction');
 const { OPENSOSEN_URL, PRESET_MODELS, normalizeBaseUrl, seedCapabilities, listCapabilities } = require('./capabilities');
@@ -20,10 +22,10 @@ function model(value, fallback) {
         throw publicError('CONNECTION_MODEL_INVALID', '模型名称无效，请保留完整型号。');
     return value;
 }
-function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...args), clock = () => Date.now(), checkTimeoutMs = 8000, cacheTtlMs = 300000 }) {
+function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...args), clock = () => Date.now(), checkTimeoutMs = 8000, cacheTtlMs = 600000, failureBackoffMs = 30000 }) {
     // Existing saved connections receive additive evidence versions at startup, without saving credentials or rebinding tasks.
     db.transaction(() => { for (const scope of db.prepare('SELECT DISTINCT provider,base_url FROM connection_versions').all()) seedCapabilities(db, scope.provider, scope.base_url); })();
-    const inFlight = new Map();
+    const inFlight = new Map(), rejectionRefresh = new Map();
     let candidate = null;
     function invalidateCandidate() { if (candidate) { candidate.controller.abort(); candidate = null; } }
     const versionRow = versionId => db.prepare(`SELECT v.*,p.protocol,p.default_image_model,p.default_video_model FROM connection_versions v JOIN connection_preferences p ON p.connection_version_id=v.id WHERE v.id=?`).get(id(versionId));
@@ -118,12 +120,54 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         const version = getVersion(versionId);
         return { connectionVersionId: version.id, baseUrl: version.base_url, provider: version.provider, protocol: version.protocol, apiKey: vault.read(version.credential_ref) };
     }
+    function settingsKey(version) {
+        return 'model-settings:' + createHash('sha256').update(JSON.stringify([version.connection_id,version.provider,version.base_url,version.credential_ref])).digest('hex');
+    }
+    function preferences(version) { const row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)); return row?JSON.parse(row.value_json):{}; }
+    function writeSetting(key,value) { db.prepare('INSERT INTO app_settings VALUES(?,?,1,?) ON CONFLICT(key) DO UPDATE SET value_json=excluded.value_json,revision=app_settings.revision+1,updated_at=excluded.updated_at').run(key,JSON.stringify(value),new Date(clock()).toISOString()); }
+    function diagnostic(reason,result,extra={}) {
+        try {const key='model-catalog-diagnostics',row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(key),events=row?JSON.parse(row.value_json):[];
+        events.push({at:new Date(clock()).toISOString(),reason,result,...extra}); writeSetting(key,events.slice(-100));}catch{/* Diagnostics must not affect connection or task control. */}
+    }
+    function updateModelSettings(connectionId,input) {
+        exact(input,['connectionVersionId','model','categories','custom','defaultSeconds']);
+        const connection=active(connectionId),version=getVersion(connection.current_version_id);
+        if(input.connectionVersionId!==version.id)throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新读取。',409);
+        const name=model(input.model); if(name && version.credential_ref && credentialInModel(name,vault.read(version.credential_ref)))throw publicError('CONNECTION_INPUT_INVALID','型号不能包含凭据。'); if(!name)throw publicError('CONNECTION_MODEL_INVALID','请输入完整型号。');
+        if(input.categories!==undefined&&input.categories!==null&&(!Array.isArray(input.categories)||input.categories.length>2||input.categories.some(c=>!['image','video'].includes(c))))throw publicError('CONNECTION_INPUT_INVALID','分类无效。');
+        if(input.custom!==undefined&&typeof input.custom!=='boolean')throw publicError('CONNECTION_INPUT_INVALID','型号设置无效。');
+        const rule=catalog.videoRule(name,version);
+        if(input.defaultSeconds!==undefined&&(!rule||!Number.isInteger(input.defaultSeconds)||input.defaultSeconds<rule.minSeconds||input.defaultSeconds>rule.maxSeconds))throw publicError('CONNECTION_INPUT_INVALID','默认秒数超出型号范围。');
+        const saved=preferences(version),previous=saved[name]||{};
+        if(!Object.hasOwn(saved,name)&&Object.keys(saved).length>=500)throw publicError('CONNECTION_INPUT_INVALID','手动型号设置过多。');
+        saved[name]={...previous,...(input.categories!==undefined?{categories:input.categories===null?undefined:[...new Set(input.categories)]}:{}),...(input.custom!==undefined?{custom:input.custom}:{}),...(input.defaultSeconds!==undefined?{defaultSeconds:input.defaultSeconds}:{})};
+        writeSetting(settingsKey(version),saved);diagnostic('settings','saved');return models(connectionId);
+    }
     function models(connectionId) {
         const connection = active(connectionId), version = getVersion(connection.current_version_id);
         const check = db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(version.id);
-        const visible = check?.models_fetched_at ? JSON.parse(check.models_json) : null;
-        const ids = [...new Set([...PRESET_MODELS, ...(visible || [])])];
-        return { connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, models: ids.map(modelId => ({ model: modelId, visibility: visible ? (visible.includes(modelId) ? 'visible' : 'absent') : 'unknown' })), capabilities: listCapabilities(db, version.provider, version.base_url) };
+        const visible = check?.models_fetched_at ? catalog.entries(JSON.parse(check.models_json)) : null;
+        const saved=preferences(version),history=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)+':known');
+        const known=history?JSON.parse(history.value_json):[];
+        const capabilities=listCapabilities(db,version.provider,version.base_url);
+        const ids = [...new Set([...PRESET_MODELS,version.default_image_model,version.default_video_model,...Object.keys(saved),...known,...(visible || []).map(item=>item.model)])];
+        return { connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, refreshError:check?.error_code || null, modelSettings:saved,
+            models: ids.map(modelId => {const item=visible?.find(item=>item.model===modelId),override=saved[modelId];return {model:modelId,endpointTypes:item?.endpointTypes || [],...catalog.classify(modelId,item?.endpointTypes,override?.categories),custom:override?.custom===true,visibility:visible?(item?'visible':'absent'):'unknown'};}), capabilities };
+    }
+    async function ensureModels(versionId) {
+        const version=getVersion(versionId),connection=active(version.connection_id);
+        if(connection.current_version_id!==versionId)throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新提交。',409);
+        await checkConnection(connection.id,{connectionVersionId:versionId,reason:'submit'});
+        if(active(connection.id).current_version_id!==versionId)throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新提交。',409);
+        const result=models(connection.id),check=db.prepare('SELECT validation_state FROM connection_checks WHERE connection_version_id=?').get(versionId);
+        if(check?.validation_state==='auth_rejected')throw publicError('AUTH_REJECTED','当前连接鉴权被拒绝。',401);
+        return result;
+    }
+    async function modelRejected(versionId) {
+        const version=getVersion(versionId);if(active(version.connection_id).current_version_id!==versionId)return;
+        if(rejectionRefresh.has(versionId)&&clock()-rejectionRefresh.get(versionId)<failureBackoffMs)return;
+        rejectionRefresh.set(versionId,clock());
+        return checkConnection(version.connection_id,{connectionVersionId:versionId,force:true,reason:'model_rejected'});
     }
     async function probeModels(getCredential, signal) {
             let state = 'offline', errorCode = 'CONNECTION_OFFLINE', visible = null, httpStatus = null;
@@ -161,9 +205,11 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
                         chunks.push(Buffer.from(chunk));
                     }
                     const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
-                    if (!Array.isArray(payload?.data) || payload.data.length > 5000)
+                    if (!Array.isArray(payload?.data) || payload.data.length > 5000 || payload.data.some(item =>
+                        !item || typeof item !== 'object' || Array.isArray(item) || typeof item.id !== 'string' || !catalog.ID.test(item.id) ||
+                        (item.supported_endpoint_types !== undefined && (!Array.isArray(item.supported_endpoint_types) || item.supported_endpoint_types.some(type => typeof type !== 'string')))))
                         throw publicError('MODEL_LIST_INVALID', '模型列表格式无效。');
-                    visible = [...new Set(payload.data.map(item => item?.id).filter(value => typeof value === 'string' && /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$/.test(value) && !value.includes(auth.apiKey)))];
+                    visible = catalog.entries(payload.data).filter(item => !credentialInModel(item.model,auth.apiKey));
                     state = 'verified';
                     errorCode = null;
                 }
@@ -181,17 +227,20 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         return { state, errorCode, visible, httpStatus };
     }
     async function checkConnection(connectionId, input = {}) {
-        exact(input, ['connectionVersionId', 'force']);
+        exact(input, ['connectionVersionId', 'force', 'reason']);
+        const reason=['startup','submit','manual','connection_changed','model_rejected'].includes(input.reason)?input.reason:'manual';
         const connection = active(connectionId), versionId = connection.current_version_id;
         if (input.connectionVersionId !== versionId)
             throw publicError('CONNECTION_VERSION_CONFLICT', '连接已更新，请重新检查。', 409);
         if (input.force !== undefined && typeof input.force !== 'boolean')
             throw publicError('CONNECTION_INPUT_INVALID', '检查参数无效。');
+        // A caller must observe an ongoing refresh rather than an older successful cache.
+        if (inFlight.has(versionId)) return inFlight.get(versionId);
         const old = db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(versionId);
-        if (!input.force && old?.last_checked_at && clock() - Date.parse(old.last_checked_at) < cacheTtlMs)
+        const freshSuccess = !old?.error_code && old?.models_fetched_at && clock() - Date.parse(old.models_fetched_at) < cacheTtlMs;
+        const backingOff = old?.error_code && clock() - Date.parse(old.last_checked_at) < failureBackoffMs;
+        if ((!input.force && freshSuccess) || (reason !== 'manual' && backingOff))
             return { stale: false, cached: true, connection: summary(connectionId), ...models(connectionId) };
-        if (inFlight.has(versionId))
-            return inFlight.get(versionId);
         const pending = (async () => {
             const { state, errorCode, visible } = await probeModels(() => getAuth(versionId));
             if (active(connectionId).current_version_id !== versionId)
@@ -199,6 +248,9 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             const now = new Date(clock()).toISOString();
             db.prepare(`INSERT INTO connection_checks(connection_version_id,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code) VALUES(?,?,?,?,?,?,?) ON CONFLICT(connection_version_id) DO UPDATE SET validation_state=excluded.validation_state,last_checked_at=excluded.last_checked_at,last_success_at=excluded.last_success_at,models_fetched_at=excluded.models_fetched_at,models_json=excluded.models_json,error_code=excluded.error_code`)
                 .run(versionId, state, now, state === 'verified' ? now : (old?.last_success_at || null), visible ? now : (old?.models_fetched_at || null), visible ? JSON.stringify(visible) : (old?.models_json || '[]'), errorCode);
+            if(visible){const version=getVersion(versionId),key=settingsKey(version)+':known',prior=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(key);writeSetting(key,[...new Set([...(prior?JSON.parse(prior.value_json):[]),...catalog.entries(JSON.parse(old?.models_json||'[]')).map(item=>item.model),...visible.map(item=>item.model)])].slice(-5000));}
+            const previousNames=new Set(catalog.entries(JSON.parse(old?.models_json||'[]')).map(item=>item.model)),nextNames=new Set((visible||[]).map(item=>item.model));
+            diagnostic(reason,state,{count:visible?.length || 0,usingCache:!visible&&Boolean(old?.models_fetched_at),removedCount:visible?[...previousNames].filter(name=>!nextNames.has(name)).length:0,addedCount:visible?[...nextNames].filter(name=>!previousNames.has(name)).length:0,classificationCounts:visible?visible.reduce((counts,item)=>{const source=catalog.classify(item.model,item.endpointTypes).classificationSource;counts[source]=(counts[source]||0)+1;return counts;},{}):{}});
             return { stale: false, cached: false, connection: summary(connectionId), ...models(connectionId) };
         })();
         inFlight.set(versionId, pending);
@@ -276,6 +328,6 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             return {connection:summary(connection.connectionId),...(onboarding?{onboarding}:{})};
         })();
     }
-    return { save, clear, select, validateAndSave, cancelCandidate, completeSetup, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, check: checkConnection, getAuth };
+    return { save, clear, select, validateAndSave, cancelCandidate, completeSetup, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, updateModelSettings, ensureModels, modelRejected, check: checkConnection, getAuth };
 }
 module.exports = { createConnectionService, publicError };

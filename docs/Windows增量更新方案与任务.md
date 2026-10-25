@@ -1,5 +1,16 @@
 # Windows 增量更新方案与任务
 
+## 当前交付入口（2026-10-25）
+
+审核后的提交、推送、打包及发布统一使用[统一交付脚本](统一交付脚本使用说明.md)。可以仅提交推送，也可包含打包或完整发布；默认预览，显式执行后才产生交付动作。审核记录绑定选定文件和源码，构建使用对应提交的独立目录，支持失败续跑。
+
+当前脚本支持 github-test 未签名测试包：固定 nova-test 更新清单，发布要求干净的已提交源码绑定。旧的无源码测试记录不能直接通过新发布门槛。release 正式包的签名、发布者及其他正式门槛保持；local-test 不因此获得远端发布资格。desktop-release 工作流已改为仅手动构建并保存 Actions 产物，不再由标签自动发布。
+
+本轮交付及 Windows 构建/发布相关测试 71/71 通过（临时本地 Git 仓库、模拟 GitHub）。本轮新增功能尚未实际提交推送、构建新安装包或发布；真实完整流水线待下一次交付验证。历史 3.6.4 包不包含本轮未提交功能。
+
+以下日期、阶段状态与版本实例属于历史实施记录；以本节及统一脚本说明作为当前交付入口。历史“本轮未发布”仅描述对应阶段，正式发布模板的门槛仍有效。
+
+
 日期：2026-10-24。状态：U01 本地基础已实现、正式签名待决；固定 GitHub feed 已获用户选择。U02 本地构建和 U03–U05 运行时范围已获主审接受。U06 发布准备脚本、U07 真实本地传输/故障和 U08 安装预检已实施待本批主审；真实 GitHub、签名与隔离账户端到端安装待验。本批不安装、不提交推送或发布。
 
 ## 1. 推荐路线与范围
@@ -113,3 +124,18 @@
 主审已核对上游官方仓库的 [electron-updater 源码目录](https://github.com/electron-userland/electron-builder/tree/master/packages/electron-updater/src)，其中 `AppUpdater.ts` 涉及差分与回退、`providers/GitHubProvider.ts` 涉及 provider/Range 行为、`BaseUpdater.ts` 涉及安装退出。它们来自会变化的 **master**，只支持当前方案方向，不能证明本项目已安装或兼容某个 API；U01 必须锁定稳定版本并重新核对实际源码和文档，包括退出安装相关事件/属性，不把新版 `autoInstallEvent` 写成现可用能力。
 
 初始规划仅有代码阅读与上游调查；U01–U02 已安装稳定 updater 6.8.11 并生成 3.5.0/3.5.1（runtimeReady=false），34/34 定向与两版产物主审通过，原字节保留。本批采用显式 local-test 参数构建 3.5.2/3.5.3/3.5.4（runtimeReady=true），全局 runtimeReady 仍 false、正式签名 pending；严格历史复验只容许 runtimeReady 布尔差异，不放宽身份/feed/签名。最新本地范围与证据见 [U06–U08](implementation/u06-u08/implementation.md)，旧构建基线见 [U01–U02](implementation/u01-u02/implementation.md)；真实 GitHub、证书/轮换和隔离 system 资料安装仍未验。T16 33 pass/7 pending 用户接受非阻断、历史 NSIS 0xc0000409 根因、T15 其他模式、M5、FFmpeg 完整对应源码等门槛保持原状。启动时一次自动检查已纳入本期；定时检查不在范围，其他系统/CDN/自动回滚保留后续。
+
+
+## 本轮 GitHub 未签名测试 A（用户已批准）
+
+本轮在 dev / b4f7ffc45a5362717282a76dea7b26dbc2849379 上新增独立 github-test profile，制作 3.6.1 测试 A。用户明确批准未签名 GitHub 更新测试、不购买证书；本轮仅本地构建，不安装、不创建 tag/Release、不上传、不提交或推送，不读取真实 Key 或发起生成。该批准是本轮测试例外，不把正式 signing.pending 改为 approved，也不以 T15/M5/FFmpeg 完整对应源码等正式门槛阻止本地测试包制作。原 T16 33 pass/7 pending 用户接受非阻断、历史 NSIS 根因和其他待验状态保留。
+
+固定身份为 com.novaimage.studio.github-test / Nova Studio GitHub Test，缓存为 com.novaimage.studio.github-test-updater；资料使用 system 的 AppData/Roaming/Nova Studio GitHub Test，启动前由完整受信测试包元数据选定，安装器重启后仍选同一路径，不依赖 NOVA_DATA_DIR。不会扫描、迁移或删除旧 nova-image 资料。override 仍只能检查/下载，portable、unpacked 和开发形态仍不能走安装更新门闩。
+
+测试源固定公开 hanjiyou/nova-video-studio，使用稳定 GitHub provider 和独立 nova-test.yml，不生成/投喂正式 latest.yml；保留整包 SHA512、blockmap 每块与总覆盖验证。electron-updater 6.8.11 在 allowPrerelease=false 时先查仓库的最新稳定 Release，再在该 Release 读取 nova-test.yml；这只是清单隔离，不是独立完整的 Release channel。如果后续最新正式 Release 不带 nova-test.yml，测试客户端会检查失败，不回退到 latest.yml。正式客户端不会读取 nova-test.yml；未来测试发布时不能同时上传测试 latest.yml。
+
+3.6.0 首个候选的两份复制旧说明与新更新行为矛盾，原字节保留为不交付候选；修复后使用新版本 3.6.1 作为最终 A，后续 B 为 3.6.2 或更高。
+
+A 安装版每个主进程启动自动检查一次；不轮询、不自动下载或安装，手动检查保留。未来 B 必须高于 3.6.1，沿用同一测试身份、feed/channel、system 资料路径和未签名策略；发布 B 仍需单独授权。首次手动安装未建立旧安装器缓存时可能全量，不能承诺首轮差分。
+
+实际结果：最终 3.6.1 A 本地构建及严格包内核验通过，104/104 定向与12/12前端通过，旧3.5.0–3.5.4严格复验兼容；两个独立packaged Electron进程确认相同测试名、版本和system路径。主审独立83/83及最终包核验接受，详情见 [本轮实施](implementation/github-test-a/implementation.md)。实际安装、跨网络GitHub下载/重定向/Range、A→B重启和草稿/凭据/任务保持仍未验证，不能冒充正式发布或端到端通过。

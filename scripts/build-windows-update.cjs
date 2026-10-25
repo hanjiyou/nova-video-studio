@@ -14,6 +14,7 @@ function argumentsFrom(argv) {
       if (result[name] !== undefined || !argv[i + 1] || argv[i + 1].startsWith('--')) throw new Error('Missing or repeated argument: ' + argv[i]);
       result[name] = argv[++i];
     } else if (argv[i] === '--check-only') result.checkOnly = true;
+    else if (argv[i] === '--require-clean-source' && !result.requireCleanSource) result.requireCleanSource = true;
     else if (argv[i] === '--enable-test-runtime' && !result.enableTestRuntime) result.enableTestRuntime = true;
     else throw new Error('Unknown argument: ' + argv[i]);
   }
@@ -32,7 +33,7 @@ function tools() {
 
 async function runBuild(options, dependencies = {}) {
   const plan = (dependencies.makePlan || makePlan)(options);
-  if (plan.profile === 'release') plan.source = (dependencies.source || releaseSource)();
+  if (plan.profile === 'release' || options.requireCleanSource) plan.source = (dependencies.source || releaseSource)();
   assertNewOutput(plan);
   const localTools = (dependencies.tools || tools)();
   if (options.checkOnly) {

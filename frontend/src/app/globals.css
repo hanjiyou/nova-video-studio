@@ -837,3 +837,9 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-task-controls { margin-top:10px; }
 .wb-task-controls button { min-height:36px; }
 @media(max-width:640px) { .wb-task-settings { grid-template-columns:1fr; } }
+
+.wb-generation-price { display:flex; align-items:baseline; flex-wrap:wrap; gap:8px 16px; padding:16px 0; border-top:1px solid #35323e; }
+.wb-generation-price strong { font-size:1.5rem; color:#b993ff; }
+.wb-generation-price small { color:#aaa5b5; }
+.wb-generation-price small:last-child { flex-basis:100%; }
+.wb-video-parameters { display:flex; flex-direction:column; gap:10px; }

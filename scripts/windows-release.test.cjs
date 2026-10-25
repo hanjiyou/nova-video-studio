@@ -115,3 +115,34 @@ test('duplicate phase and arbitrary repository arguments are rejected', () => {
   assert.throws(() => release.args(['--directory', 'inert', '--phase', 'draft', '--phase', 'publish']), /repeated/);
   assert.throws(() => release.args(['--directory', 'inert', '--repo', 'different/repo']));
 });
+
+
+test('GitHub test publishing uses its own manifest and requires bound clean source without weakening formal gates',async t=>{
+ const f=fixture(t);const plan=makePlan({profile:'github-test',version:'3.6.5'},f.policy);plan.source={commit:SHA,clean:true};
+ const oldManifest=path.join(f.directory,'latest.yml');fs.renameSync(oldManifest,path.join(f.directory,'nova-test.yml'));
+ for(const [i,name] of [plan.artifactName,plan.artifactName+'.blockmap'].entries())fs.renameSync(path.join(f.directory,f.assets[i].name),path.join(f.directory,name));
+ f.deps.verifyDirectory=async()=>({plan,summary:{signature:plan.signature}});
+ const report=await release.run({...f.options,execute:false},f.deps);assert.deepEqual(report.blockers,[]);assert.equal(report.assets[2].name,'nova-test.yml');assert.equal(f.calls.length,0);
+ delete plan.source;assert.match(release.blockers(plan,f.deps.gates,f.policy).join(' '),/clean source/);
+ assert.ok(release.blockers({...plan,profile:'local-test'},f.deps.gates,f.policy).length);
+});
+test('resume finds existing matching draft after lost creation response, uploads only missing assets',async t=>{
+ const f=fixture(t);f.state.releases=[{id:42,tag_name:f.plan.tag}];f.state.assets=[f.assets[0]];
+ const result=await release.run({...f.options,releaseId:undefined,phase:'draft',resume:true},f.deps);
+ assert.equal(result.releaseId,42);assert.equal(f.calls.filter(c=>c.method==='POST'&&!c.url.includes('uploads.github.com')).length,0);assert.equal(f.state.assets.length,3);
+});
+test('resume confirms already published bytes without a second publication',async t=>{
+ const f=fixture(t),original=f.deps.remote.request;
+ f.deps.remote.request=async(url,opts)=>{const result=await original(url,opts);return url.endsWith('/releases/42')&&!opts?.method?{...result,draft:false}:result;};
+ const result=await release.run({...f.options,phase:'publish',resume:true},f.deps);assert.equal(result.published,true);assert.equal(f.calls.some(c=>c.method!=='GET'),false);
+});
+
+
+test('GitHub test source record round trips and binds package metadata while older local test records remain readable',t=>{
+ const f=fixture(t),plan=makePlan({profile:'github-test',version:'3.6.5'},f.policy),source={commit:SHA,clean:true};
+ const record={profile:plan.profile,version:plan.version,metadata:plan.metadata,source};
+ assert.deepEqual(planForRecord(record,f.policy).source,source);
+ assert.deepEqual(builderConfiguration({...plan,source},'inert').extraMetadata.novaBuild,source);
+ assert.throws(()=>planForRecord({...record,source:{commit:SHA,clean:false}},f.policy));
+ assert.equal(planForRecord({...record,source:undefined},f.policy).source,undefined);
+});

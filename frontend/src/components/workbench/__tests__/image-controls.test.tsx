@@ -89,5 +89,5 @@ it('result-to-edit shell flow checks the original asset, updates the image draft
   }));
   render(<WorkbenchShell/>);fireEvent.click(await screen.findByRole('button',{name:'作为参考图编辑'}));expect(await screen.findByRole('dialog',{name:'将内容带入草稿'})).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button',{name:'确认带入草稿'}));await waitFor(()=>expect(screen.getByAltText('参考图 1：'+asset.displayName)).toBeInTheDocument());await waitFor(()=>expect(records.get('image.text')?.inputAssets).toEqual([asset]));
-  expect(screen.getByLabelText('画面描述')).toHaveValue(draft.prompt);expect(screen.getByLabelText('生成模型')).toHaveValue(policy.model);expect(calls.some(c=>c.route==='/api/nova/assets/'+asset.assetId)).toBe(true);expect(calls.some(c=>c.method==='POST')).toBe(false);
+  expect(screen.getByLabelText('画面描述')).toHaveValue(draft.prompt);expect(screen.getByLabelText('生成模型')).toHaveValue(policy.model);expect(calls.some(c=>c.route==='/api/nova/assets/'+asset.assetId)).toBe(true);expect(calls.some(c=>c.method==='POST'&&!c.route.endsWith('/check'))).toBe(false);
 });

@@ -1,5 +1,18 @@
 # 工作台边界契约 v1
 
+## 模型清单与参数费用补充（2026-10-25）
+
+本节补充本轮已实现规则，原任务标识、凭据和不可变快照约束继续有效；详细证据见[实施报告](../implementation/模型清单与参数费用联动实施报告.md)。
+
+- 型号可见性、图片/视频分类和实际生成能力分别管理。分类优先用户覆盖、明确端点、严格型号规则；手动添加/分类不赋予生成能力，工作台与默认设置共用分类结果。
+- 缓存按连接版本隔离，成功有效期 10 分钟，失败退避 30 秒。同版本刷新合并；已有刷新先等待，最近失败不沿用旧成功有效期阻止恢复。畸形响应整次拒绝并保留缓存，合法空列表仍可表示型号缺失；切换连接后丢弃迟到结果。
+- 明确型号拒绝使任务失败并触发清单同步，不重发生成请求。前端同步成功才标记该拒绝已处理，失败后借已有任务列表更新按退避规则重试。旧任务保留原连接、能力与输入快照。
+- grok-imagine-video-1.5-6s 支持 1–6 整数秒、默认 6 秒，所有模式不发送 size，配置估价为每秒 0.05 元。Preview 参数预备支持 1–15 整数秒、默认 10 秒及候选/自定义尺寸，估价每秒 0.20 元；真实生成仍关闭。
+- 支持直接输入时长、保存型号默认时长及实时估价；价格来自配置，图片价格未知，不把估价视为实际账单。保留原工作台布局；旧草稿的冲突参数提示用户处理，不静默改写。
+
+离线验证通过不代表所有新参数已有真实服务证据，也不代表本轮已经打包发布。
+
+
 日期：2026-10-23。状态：T01 已由主会话审阅冻结；本文件描述规范边界，具体接口实现进度以各阶段记录为准，不表示全部业务接口已完成。
 
 ## 1. 标识、所有权和不可变快照
@@ -46,6 +59,8 @@ UI 读取 ConnectionSummary：connectionId、connectionVersionId、displayName�
 AssetSummary 返回 assetId、kind、mimeType、byteLength、sha256、width/height、durationSeconds（视频可选）、availability 和受控 previewUrl。真实路径只在宿主/库层保存。媒体缺失保留任务和元数据，标记 missing，不能假装任务从未存在。
 
 ## 4. 本地任务状态与恢复
+
+2026-10-25 I01 已新增图片/视频生命周期数据契约（待主审），详见 [任务契约 I01](../tasks-v1.md)。新增配置/DTO/时限快照与 v7 迁移不表示 I02–I07 的并发、整任务中止、取消、恢复或展示移除已启用；下文保留当前 T05 运行基线。
 
 以下是规范本地 state 值；旧文档中的 succeeded 与此处 completed 表示同一本地完成语义，后续存储/API 使用本表，原版旧状态需在迁移边界映射。
 
@@ -123,3 +138,27 @@ POST 429 与 GET 策略分开：不按 Retry-After 自动重新创建。有完�
 尺寸仅支持 1024x1024、1536x1024、1024x1536，质量提供自动、low、medium、high、xhigh、max。自动在任务参数中省略；比例按钮与尺寸共用同一个 size。文生图为 JSON `/images/generations`，参考图编辑为 multipart `/images/edits`，固定一个 `image` 原始 PNG/JPEG 文件部件，不重编码、不缩图、不尝试 `image[]` 或其他格式回退。未知参数、额外参考图、错误参数组合在派发前拒绝，草稿不静默删改。
 
 只对精确 1.0.0 最小图片快照兼容恢复；同 localRequestId、同输入返回原任务，不修改已保存快照，不因升级重发。请求结果未知时保留占位；图片同步结果不虚构上游 ID。结果沿用原 Base64/URL 安全落盘和媒体校验链路，可预览、另存并带入图片编辑草稿。详细验证见 [图片参数与单图编辑记录](../implementation/图片参数与单图编辑-离线实现与验证.md)。
+
+## I02–I04 当前运行契约（2026-10-25，主审通过）
+
+本节覆盖下方 T05 / B1 / I01 原始阶段中唯一占位、串行下载、无总截止和自动恢复 GET 的历史行为；保留其他仍适用的去重、原连接 / 适配器、结果验证与安全边界。详细实现和命令见 [I02–I04 实施与验证](../implementation/I02-I04-独立并发截止与恢复.md)。
+
+- 图片 / 视频分别默认 3 名额，覆盖真实派发到验证保存，分别默认 120 / 300 秒总预算。创建保存时限快照，派发保存不可变 attempt / deadline；队列时间另算，阶段 / 退避 / 查询暂停不续期。
+- cancel 停止本地等待，原子终态、释放逻辑名额并保留未知远端与已持久 ID；取消 / 超时不自动 POST，迟到响应 / 保存不绑定输出。真实 IO 单独追踪，更新仍等待它们和清理退出。
+- 每视频同 ID 最多一条在途 GET，stop-polling 保留原名额和截止；resume-polling 仅同 ID 未结束 / 未过期任务，遵守 Retry-After 与原查询预算。重启后有 ID 新任务需要用户显式恢复，剩余时限不重置。
+- 旧无 deadline 活动记录一次性本地结束，保留远端未知、真实 ID 与原快照；不补造旧预算，不静默 POST / GET。未派发队列保留 requiresContinue；新任务安全结果下载恢复也须显式 continue-queued，签名来源丢失且无 ID 明确不可恢复。
+- retry-download 是独立预算 / 独立 attempt，只重取原结果，不重新生成。原 localOutcome / localFinishedAt 和生成 deadline 不改；downloadAttempt.{active,outcome,startedAt,deadlineAt,timeoutSeconds,finishedAt} 表达新下载活动和结论。localExecutionActive / downloadAttempt.active 用于取消和移除保护，不可只看原 localOutcome。名额已满返回 TASK_CAPACITY_BUSY。
+- v8 追加下载尝试表和本地终态不可变约束，复用原备份 / 事务体系，v1–v7 checksum 不改。I05 移除、I06 完整诊断、I07 界面和 I08 真实交付仍未完成。
+
+## I05–I07 任务展示、诊断与交互（2026-10-25，待主审）
+
+本批实现与离线验证完成，尚未主审验收；详见 [实施报告](../implementation/I05-I07-任务移除阶段诊断与交互.md)。沿用已通过 I01–I04 的调度、截止和恢复，不授权 I08 打包、安装、真实生成或发布。
+
+- GET /api/nova/storage/tasks 显式支持 scope=workbench（默认）与 scope=library。两者继续过滤旧 workbench_hidden_tasks，只有 workbench 过滤 workbench_removed_tasks；旧隐藏不恢复。工作台最近图片/视频与任务卡片使用前者，作品库显式使用后者。
+- POST /api/nova/storage/tasks/:id/remove 只接受 {}，服务确认结束后新增展示移除标记，返回 {removed:true,worksRetained:true}。活跃生成、排队和独立下载尝试均返回 TASK_ACTIVE，必须先取消并等待确认。不会删除任务、localRequestId、输入快照、输出关联或物理文件；GET 单条仍可读，DTO 的 removedFromWorkbench 只表达展示移除。
+- 原 DELETE /api/nova/storage/tasks/:id 的 {deleteOutputs:boolean} 仍是作品库隐藏/可选独占文件删除入口，继续保留物理别名和共享引用保护，与新的任务展示移除区分。
+- 设置页的“任务控制”独立于连接配置显示。图片/视频并发各默认 3（1–5）；时限默认 120/300 秒（30–1800）。保存完整对象和 expectedRevision；读取/保存失败保留输入，修订冲突要求明确重新读取，未保存输入或保存中阻挡更新安装。并发只影响后续入场，时限只影响新任务快照。
+- 卡片与详情按 phase/remoteState 显示观察到的阶段，无虚构百分比。排队与生成执行时间分列；生成结束按 localFinishedAt 冻结，下载重试另按 downloadAttempt 计时。原 localOutcome 不充当当前下载的终态；取消与移除使用 localExecutionActive/downloadAttempt.active。
+- stop-polling 只暂停同 ID 查询，保留原时限/名额；resume-polling 仅未结束且未过期任务。cancel 停止本地等待。旧无 ID 图片无需补造 ID 或轮询能力；远端可能继续生成或计费。
+- 创建收到本地 ACK 即释放创建锁，详情读取和意图清理可继续。提交指纹/持久意图保持；未知 ACK 不重发。提交序号与核对序号避免旧 finally、迟到列表或详情干扰下一次提交和另一模式的选择。展示移除后清理选择/详情，迟到 GET 或旧列表不能复活它；从作品库仍可打开作品。
+- 阶段诊断按白名单采集与导出，生成和最新下载独立摘要，最多 96 条诊断边界加两条摘要；视频查询只累计有限计数/错误分类，不逐次添加接收/解析阶段。阶段时长使用单调观察值，未知为 null；重启未观察区间不从墙钟推算。排队时长明确为 wall_timestamp_estimate。详见 [诊断契约](../diagnostics-v1.md)。

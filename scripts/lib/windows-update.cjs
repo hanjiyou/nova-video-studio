@@ -95,7 +95,7 @@ function planForRecord(record, policy = readPolicy(), repository = REPOSITORY) {
   plan.runtimeReady = record.metadata.runtimeReady;
   plan.metadata = { ...plan.metadata, runtimeReady: record.metadata.runtimeReady };
   invariant(isDeepStrictEqual(record.metadata, plan.metadata), 'Saved build plan differs from fixed identity/feed/signature policy.');
-  if (plan.profile === 'release') {
+  if (plan.profile === 'release' || record.source !== undefined) {
     invariant(record.source?.clean === true && /^[a-f0-9]{40}$/.test(record.source.commit) && Object.keys(record.source).sort().join('|') === 'clean|commit', 'Release build must record a clean source commit.');
     plan.source = record.source;
   }
@@ -231,7 +231,7 @@ async function verifyArtifacts(directory, plan, options = {}) {
   const packaged = JSON.parse(builderRequire('@electron/asar').extractFile(asar, 'package.json').toString('utf8'));
   invariant(packaged.name === 'nova-image' && packaged.version === plan.version && isDeepStrictEqual(packaged.novaUpdate, plan.metadata), 'Packaged version/update identity differs from the build plan.');
   if (plan.profile === 'github-test') invariant(packaged.productName === plan.productName, 'GitHub test package.productName must match its isolated system data identity.');
-  if (plan.profile === 'release') invariant(plan.source?.clean === true && isDeepStrictEqual(packaged.novaBuild, plan.source), 'Packaged clean source commit differs from release build record.');
+  if (plan.profile === 'release' || plan.source) invariant(plan.source?.clean === true && isDeepStrictEqual(packaged.novaBuild, plan.source), 'Packaged clean source commit differs from release build record.');
   invariant(packaged.dependencies && packaged.dependencies['electron-updater'] === readPolicy().updaterVersion, 'Packaged updater dependency is not pinned.');
   const updateConfig = yaml.load(fs.readFileSync(path.join(resources, 'app-update.yml'), 'utf8'));
   const permitted = new Set([...Object.keys(plan.feed), 'updaterCacheDirName', ...(plan.signature.mode === 'authenticode' ? ['publisherName'] : [])]);

@@ -1,4 +1,5 @@
 'use strict';
+const { modelRejected } = require('../connections/model-catalog');
 const { resolveTemplate } = require('../plugin-runtime/template');
 const { pickFirstString, extractProgress, normalizeResult } = require('../plugin-runtime/extract');
 const executor = require('../plugin-runtime/executor');
@@ -12,6 +13,7 @@ function credentialFree(value, key) {
 function contextFor(plugin, task, auth, getAsset) {
     const request = JSON.parse(task.request_json), snapshot = JSON.parse(task.input_snapshot_json || '{}');
     const context = executor.buildContext({ ...request, ...auth, plugin, upstreamTaskId: task.upstream_task_id });
+    context.provider=auth.provider; context.protocol=auth.protocol;
     if (snapshot.mode && snapshot.mode !== 'legacy.plugin') Object.assign(context, { mode: snapshot.mode, parameters: snapshot.parameters, fields: { prompt: snapshot.prompt },
         model: snapshot.model, inputAssets: (snapshot.inputAssets || []).map(item => ({ ...item, mimeType: getAsset?.(item.assetId)?.mimeType })) });
     return context;
@@ -72,7 +74,8 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
             // A usable accepted ID wins over an HTTP error. Never discard a task already created.
             if (!response.ok && !(extracted && !polling)) throw failure(polling ? 'POLL_TRANSIENT' : 'SUBMISSION_UNKNOWN', {
                 httpStatus: response.status, retryAfter: response.headers.get('retry-after'), transmission: 'response_received',
-                definiteRejection: !polling && response.status >= 400 && response.status < 500 && Boolean(payload?.error || payload?.message || payload?.msg),
+                modelUnavailable: !polling && modelRejected(payload,response.status),
+                definiteRejection: !polling && response.status >= 400 && response.status < 500 && (Boolean(payload?.error || payload?.message || payload?.msg)||modelRejected(payload,response.status)),
             });
             return payload;
         } finally { clearTimeout(timer); context.signal?.removeEventListener('abort', abort); }

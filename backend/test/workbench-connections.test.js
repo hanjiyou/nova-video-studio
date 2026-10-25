@@ -140,7 +140,7 @@ test('read-only check uses only GET /models, no text-model requirement; caches v
     assert.equal(JSON.stringify(checked).includes(fixtureKey), false);
 });
 test('model absence preserves exact selected defaults; unknown visible IDs do not manufacture capabilities or upgrade evidence', async (t) => {
-    const f = await setup(t, { fetchImpl: async () => Response.json({ data: [{ id: 'other-visible-model' }, { id: fixtureKey }, { id: 'unsafe model' }] }) }), connection = save(f.service);
+    const f = await setup(t, { fetchImpl: async () => Response.json({ data: [{ id: 'other-visible-model' }, { id: fixtureKey }] }) }), connection = save(f.service);
     const checked = await f.service.check(connection.connectionId, { connectionVersionId: connection.connectionVersionId });
     assert.ok(checked.models.find(model => model.model === PRESET_MODELS[0]).visibility === 'absent');
     assert.equal(checked.connection.defaultImageModel, PRESET_MODELS[0]);

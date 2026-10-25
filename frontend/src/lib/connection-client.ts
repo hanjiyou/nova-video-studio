@@ -38,7 +38,9 @@ export interface CapabilitySummary {
 }
 export interface ConnectionModels {
   connectionVersionId: string; modelsFetchedAt: string | null;
-  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'}>;
+  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean}>;
+  refreshError?: string | null;
+  modelSettings?: Record<string,{categories?: string[];custom?: boolean;defaultSeconds?: number}>;
   capabilities: CapabilitySummary[];
 }
 export interface ConnectionCheck extends Partial<ConnectionModels> {
@@ -55,7 +57,7 @@ export async function getCurrentConnection(): Promise<ConnectionSummary | null> 
   return (await read<{connection: ConnectionSummary | null}>('/api/nova/connections/current')).connection;
 }
 export const getConnectionModels = (connectionId: string) => read<ConnectionModels>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/models');
-export const checkConnection = (connection: ConnectionSummary, force = false) => read<ConnectionCheck>('/api/nova/connections/' + encodeURIComponent(connection.connectionId) + '/check', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({connectionVersionId: connection.connectionVersionId, force})});
+export const checkConnection = (connection: ConnectionSummary, force = false, reason = 'manual') => read<ConnectionCheck>('/api/nova/connections/' + encodeURIComponent(connection.connectionId) + '/check', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({connectionVersionId: connection.connectionVersionId, force, ...(reason==='manual'?{}:{reason})})});
 export async function saveConnection(input: SaveConnectionInput): Promise<ConnectionSummary> {
   const transient = {...input};
   try {
@@ -99,3 +101,5 @@ export async function desktopTaskPayload<T extends object>(input: T): Promise<Om
   payload['connectionVersionId'] ??= fixed.connectionVersionId;
   return payload as Omit<T, 'apiKey' | 'baseUrl' | 'protocol'>;
 }
+
+export const saveModelSettings = (connection: ConnectionSummary, fields: {model:string;categories?:string[]|null;custom?:boolean;defaultSeconds?:number}) => read<ConnectionModels>('/api/nova/connections/'+encodeURIComponent(connection.connectionId)+'/model-settings',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({connectionVersionId:connection.connectionVersionId,...fields})});

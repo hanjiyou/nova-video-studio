@@ -14,6 +14,7 @@ function args(argv) {
   const seen = new Set();
   const fields = new Map([['--directory', 'directory'], ['--phase', 'phase'], ['--notes-file', 'notesFile'], ['--commit', 'commit'], ['--release-id', 'releaseId'], ['--confirm-tag', 'confirmTag']]);
   for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === '--resume' && !out.resume) { out.resume = true; continue; }
     if (argv[i] === '--execute' && !out.execute) { out.execute = true; continue; }
     const key = fields.get(argv[i]);
     need(key && !seen.has(key) && argv[i + 1] && !argv[i + 1].startsWith('--'), 'Unknown, missing or repeated release argument.');
@@ -28,6 +29,11 @@ function args(argv) {
 }
 function blockers(plan, gates = JSON.parse(fs.readFileSync(GATES, 'utf8')), policy = readPolicy()) {
   const result = [];
+  if (plan.profile === 'github-test') {
+    if (plan.signature.mode !== 'unsigned-github-test' || plan.runtimeReady !== true || plan.feed?.owner !== 'hanjiyou' || plan.feed?.repo !== 'nova-video-studio' || plan.feed?.channel !== 'nova-test') result.push('Invalid GitHub test identity/feed/signature.');
+    if (plan.source?.clean !== true || !/^[a-f0-9]{40}$/.test(plan.source?.commit || '')) result.push('GitHub test publication requires a clean source commit; rebuild with --require-clean-source.');
+    return result;
+  }
   if (plan.profile !== 'release') result.push('Unsigned local-test artifacts cannot be uploaded or published.');
   if (plan.signature.mode !== 'authenticode' || policy.signing.status !== 'approved') result.push('Approved Authenticode publisher and valid installer/application signatures are required.');
   if (plan.runtimeReady !== true || policy.runtimeReady !== true) result.push('Release runtime metadata and policy must both be enabled after review.');
@@ -42,7 +48,7 @@ async function localPreparation(options, deps = {}) {
   const directory = path.resolve(options.directory);
   const { plan, summary } = await (deps.verifyDirectory || verifyDirectory)(directory);
   const assets = [];
-  for (const name of [plan.artifactName, plan.artifactName + '.blockmap', 'latest.yml']) {
+  for (const name of [plan.artifactName, plan.artifactName + '.blockmap', plan.manifestName || 'latest.yml']) {
     const file = path.join(directory, name);
     assets.push({ name, size: fs.statSync(file).size, sha512: await hashFile(file) });
   }
@@ -80,9 +86,9 @@ async function remoteHash(assetId, token) {
   }
   throw new ReleaseError('Too many GitHub asset redirects.');
 }
-async function draftIdentity(request, id, report) {
+async function draftIdentity(request, id, report, allowPublished = false) {
   const release = await request(`${API}/releases/${id}`);
-  need(release.draft === true && release.prerelease === false && release.tag_name === report.tag, 'Only the exact, unpublished stable draft may be verified/published.');
+  need((release.draft === true || (allowPublished && release.draft === false)) && release.prerelease === false && release.tag_name === report.tag, 'Only the exact, unpublished stable draft may be verified/published.');
   need(report.source?.clean === true && release.target_commitish === report.source.commit, 'Draft target commit differs from the packaged clean source commit.');
   let ref = await request(`${API}/git/ref/tags/${report.tag}`, { missing: true });
   if (ref) {
@@ -92,8 +98,8 @@ async function draftIdentity(request, id, report) {
   }
   return release;
 }
-async function verifyRemote(request, id, report, hashAsset) {
-  const release = await draftIdentity(request, id, report);
+async function verifyRemote(request, id, report, hashAsset, allowPublished = false) {
+  const release = await draftIdentity(request, id, report, allowPublished);
   const assets = await request(`${API}/releases/${id}/assets?per_page=100`);
   need(Array.isArray(assets) && assets.length === report.assets.length, 'Draft assets are missing, extra or duplicated.');
   for (const expected of report.assets) {
@@ -115,8 +121,26 @@ async function run(options, deps = {}) {
   need(typeof token === 'string' && token.trim(), 'Future release operator must explicitly provide NOVA_RELEASE_TOKEN; no credential store is read.');
   const request = deps.remote?.request || github(token);
   const hashAsset = deps.remote?.hashAsset || (id => remoteHash(id, token));
-  let id = options.releaseId;
-  if (options.phase === 'draft') {
+  let id = options.phase === 'draft' && !options.resume ? undefined : options.releaseId;
+  if (options.resume && !id) {
+    for (let page = 1; page <= 100; page++) {
+      const releases = await request(API + '/releases?per_page=100&page=' + page);
+      const matches = releases.filter(r => r.tag_name === report.tag);
+      need(matches.length <= 1, 'Duplicate same-version releases.');
+      if (matches.length) { id = matches[0].id; break; }
+      if (releases.length < 100) break;
+      need(page < 100, 'Release history exceeds bounded inspection.');
+    }
+  }
+  if (id && options.resume) {
+    const existing = await draftIdentity(request, id, report, true);
+    deps.onDraft?.(id);
+    if (existing.draft === false) {
+      await verifyRemote(request, id, report, hashAsset, true);
+      return { ...report, dryRun: false, releaseId: id, remoteVerified: true, published: true };
+    }
+  }
+  if (options.phase === 'draft' && !id) {
     need(options.commit && options.notesFile, 'Draft requires --commit <40-char SHA> and --notes-file <reviewed notes>.');
     const notes = fs.readFileSync(options.notesFile, 'utf8');
     need(notes.trim() && notes.length <= 100000, 'Reviewed release notes are missing or too large.');
@@ -132,6 +156,7 @@ async function run(options, deps = {}) {
     await request(`${API}/git/commits/${options.commit}`);
     const draft = await request(`${API}/releases`, { method: 'POST', body: { tag_name: report.tag, target_commitish: options.commit, name: `Nova Studio ${plan.version}`, body: notes, draft: true, prerelease: false } });
     id = draft.id;
+    deps.onDraft?.(id);
     console.log(`Draft ${id} created. A failure retains this draft; resume with --phase upload --release-id ${id}.`);
   }
   if (options.phase === 'draft' || options.phase === 'upload') {

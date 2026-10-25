@@ -15,10 +15,13 @@ function createConnectionHttp({ getService, readJsonBody, sendJson }) {
                 sendJson(res, 200, { connection: service.current() });
                 return true;
             }
-            const match = pathname.match(/^\/api\/nova\/connections\/([^/]+)(\/models|\/check)?$/);
-            if (match && match[2] !== '/check' && req.method === 'GET') {
+            const match = pathname.match(/^\/api\/nova\/connections\/([^/]+)(\/models|\/check|\/model-settings)?$/);
+            if (match && !['/check','/model-settings'].includes(match[2]) && req.method === 'GET') {
                 sendJson(res, 200, match[2] === '/models' ? service.models(match[1]) : { connection: service.summary(match[1]) });
                 return true;
+            }
+            if (match?.[2] === '/model-settings' && req.method === 'PUT') {
+                sendJson(res,200,service.updateModelSettings(match[1],await readJsonBody(req)));return true;
             }
             if (match?.[2] === '/check' && req.method === 'POST') {
                 sendJson(res, 200, await service.check(match[1], await readJsonBody(req)));

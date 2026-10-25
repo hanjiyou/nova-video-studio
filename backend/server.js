@@ -1205,7 +1205,7 @@ function createDesktopPluginTask(body, req) {
   const taskId=taskService.enqueue({snapshot,mode:'plugin',request:{mode:'plugin',pluginId:plugin.id,pluginVersion:plugin.manifest.version,model:normalized.model,facets:normalized.facets,fields:normalized.fields,media:normalized.media}});
   return taskId; // enqueue stores the immutable input references in the same transaction
 }
-function createWorkbenchTask(body, req) {
+async function createWorkbenchTask(body, req) {
   if (!taskService) throw createHttpError(404,'NOT_FOUND','工作台任务需要桌面宿主。');
   workbenchStore.validateSubmissionInput(body);
   const plugin=pluginRegistry.getPlugin('opensosen-video');
@@ -1213,6 +1213,10 @@ function createWorkbenchTask(body, req) {
   const prior=db.prepare('SELECT input_snapshot_json FROM tasks WHERE local_request_id=?').get(snapshot.localRequestId);
   if(prior){let saved;try{saved=JSON.parse(prior.input_snapshot_json);}catch{saved=null;}snapshot=require('./tasks/plugin-compatibility').replaySnapshot(snapshot,saved);}
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
+  const catalog=await connectionService.ensureModels(snapshot.connectionVersionId);
+  const concurrentDuplicate=taskService.findDuplicate(snapshot);if(concurrentDuplicate)return concurrentDuplicate;
+  const listed=catalog.models.find(item=>item.model===snapshot.model);
+  if(catalog.modelsFetchedAt&&(!listed||listed.visibility==='absent')&&!listed?.custom)throw createHttpError(400,'MODEL_UNAVAILABLE','当前服务未列出此型号，请刷新或选择其他型号。');
   const auth=connectionService.getAuth(snapshot.connectionVersionId);
   workbenchInput.validateInputs(snapshot,auth,workbenchStore);
   workbenchInput.validateCapability(db,snapshot,auth);
@@ -1229,7 +1233,7 @@ function resolveDesktopTaskAdapter(task) {
   }
   if (task.adapter_id?.startsWith('plugin:')) {const request=JSON.parse(task.request_json),plugin=require('./tasks/plugin-compatibility').compatiblePlugin(pluginRegistry.getPlugin(request.pluginId),task);return plugin?createPluginAdapter(plugin,
     plugin.id==='opensosen-video'?{readAsset:id=>workbenchStore.readAsset(id),getAsset:id=>workbenchStore.getAsset(id),validateCapability,
-      authorizeContext:(context,snapshot,auth)=>{if(snapshot.mode==='video.multi_reference')require('./tasks/multi-reference-policy').authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));if(snapshot.mode==='video.text')require('./tasks/controlled-video-text-validation').controlledVideoTextValidation.authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));}}:{}):null;}
+      authorizeContext:(context,snapshot,auth)=>{const videoPolicy=require('./tasks/video-policy'); const capability=validateCapability(snapshot,auth);if(videoPolicy.allows(capability,snapshot,auth)){videoPolicy.authorizeContext(context,snapshot,auth,capability);return;}if(snapshot.mode==='video.multi_reference')require('./tasks/multi-reference-policy').authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));if(snapshot.mode==='video.text')require('./tasks/controlled-video-text-validation').controlledVideoTextValidation.authorizeContext(context,snapshot,auth,validateCapability(snapshot,auth));}}:{}):null;}
   if (task.adapter_id!=='legacy-image') return null;
   const requestFor=(snapshot,auth)=>({mode:snapshot.mode==='image.reference'?'image-to-image':'text-to-image',model:snapshot.model,prompt:snapshot.prompt,...snapshot.parameters,
     protocol:auth.protocol,baseUrl:normalizeProtocolBaseUrl(auth.protocol,auth.baseUrl),images:snapshot.inputAssets.map(item=>{const {bytes,asset}=workbenchStore.readAsset(item.assetId);return {data:bytes.toString('base64'),mimeType:asset.mimeType};})});
@@ -3607,7 +3611,7 @@ async function handleApi(req, res, pathname, searchParams) {
     }
 
     if (req.method === 'POST' && apiPathname === '/api/nova/workbench/tasks') {
-      const taskId=createWorkbenchTask(await readJsonBody(req),req);
+      const taskId=await createWorkbenchTask(await readJsonBody(req),req);
       sendJson(res,202,{taskId});return true;
     }
 

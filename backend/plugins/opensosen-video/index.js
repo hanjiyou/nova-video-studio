@@ -3,8 +3,9 @@ const { isQueryableUpstreamTaskId, encodeUpstreamTaskId } = require('../../plugi
 const { controlledVideoTextValidation } = require('../../tasks/controlled-video-text-validation');
 const multiReference = require('../../tasks/multi-reference-policy');
 const { MAX_VIDEO_REFERENCE_ASSETS } = require('../../storage/application-limits');
+const videoPolicy = require('../../tasks/video-policy');
 const BASE_URL = 'https://newapi.opensosen.com/v1';
-const MODELS = ['grok-imagine-video-6s', 'grok-imagine-video-1.5-6s'];
+const MODELS = ['grok-imagine-video-6s', 'grok-imagine-video-1.5-6s','grok-imagine-video-1.5-preview'];
 function failure(code) { return Object.assign(new Error(code === 'CAPABILITY_UNVERIFIED' ? '当前服务、模型与模式组合缺少协议证据。' : '视频输入无效。'), { code, statusCode: 400 }); }
 function validate(context) {
     const counts = { 'video.text': 0, 'video.single_reference': 1, 'video.dual_reference': 2, 'video.multi_reference': null };
@@ -13,6 +14,7 @@ function validate(context) {
     if (!MODELS.includes(context.model) || !Object.hasOwn(counts, context.mode) || typeof context.fields?.prompt !== 'string' ||
         !context.fields.prompt.trim() || !Array.isArray(input) || (multi ? input.length < 3 || input.length > MAX_VIDEO_REFERENCE_ASSETS : input.length !== counts[context.mode]) ||
         input.some((item, index) => item.position !== index || item.role !== 'reference')) throw failure('INPUT_INVALID');
+    if (videoPolicy.isAuthorizedContext(context)) { videoPolicy.descriptor(context); if(input.some(item=>!['image/png','image/jpeg'].includes(item.mimeType)))throw failure('INPUT_INVALID'); return; }
     if (context.baseUrl !== BASE_URL || context.model !== MODELS[1] || (context.mode === 'video.text' && !controlledVideoTextValidation.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
     if (multi && !multiReference.isAuthorizedContext(context)) throw failure('CAPABILITY_UNVERIFIED');
     if (!context.connectionVersionId) throw failure('INPUT_INVALID');
@@ -28,8 +30,7 @@ function buildSubmit(context) {
     const parts = [
         { kind: 'field', name: 'model', value: context.model },
         { kind: 'field', name: 'prompt', value: context.fields.prompt },
-        { kind: 'field', name: 'seconds', value: '6' },
-        ...(controlledVideoTextValidation.candidateFor(context) === 'without-size' ? [] : [{ kind: 'field', name: 'size', value: '1280x720' }]),
+        ...(videoPolicy.isAuthorizedContext(context) ? videoPolicy.descriptor(context) : [{ kind: 'field', name: 'seconds', value: '6' }, ...(controlledVideoTextValidation.candidateFor(context) === 'without-size' ? [] : [{kind:'field',name:'size',value:'1280x720'}])]),
         ...context.inputAssets.map((item, index) => ({ kind: 'file', name: 'input_reference', assetId: item.assetId,
             fileName: 'reference-' + (index + 1) + (item.mimeType === 'image/png' ? '.png' : '.jpg'), mimeType: item.mimeType })),
     ];

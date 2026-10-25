@@ -84,6 +84,7 @@ export function localErrorMessage(error: unknown) {
     TOO_MANY_ASSETS: `本应用一次最多添加 ${MAX_REFERENCE_ASSETS} 张；已保留全部素材，请减少选择后再试。`, ASSET_TYPE_INVALID: '参考图支持 PNG、JPEG。', ASSET_SIZE_INVALID: '图片为空或超过应用的 100 MiB 导入限制。',
     CONNECTION_INPUT_INVALID: '连接参数无效，请检查名称、地址与型号。', CONNECTION_MODEL_INVALID: '请输入完整模型名。',
     CONNECTION_SERVICE_NOT_READY: '本机连接服务尚未就绪，请重试。',
+    MODEL_UNAVAILABLE: '当前服务未列出此型号，请刷新列表或选择其他型号。',
     CAPABILITY_UNVERIFIED: '当前完整模型、模式或规格尚未验证，未提交生成。', INPUT_INVALID: '提示词、模式、规格或参考图不符合要求。',
     ASSET_MISSING: '本地文件缺失，任务记录仍保留。请重新导入参考图或核对结果。', ASSET_CORRUPT: '本地文件摘要不符，记录已保留。',
     AUTH_REJECTED: '原连接鉴权失败，请检查连接；旧任务不会改绑新 Key。', TASK_ACTIVE: '任务仍在本地执行，请先取消，等待取消确认后再移除。',

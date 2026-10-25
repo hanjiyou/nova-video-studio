@@ -31,6 +31,7 @@ function retryAfter(value, now) {
 const MESSAGES = {
     SUBMISSION_UNKNOWN: '创建结果不明，请核对上游记录；不会自动重新创建。',
     REMOTE_REJECTED: '上游明确拒绝创建，请检查输入。',
+    MODEL_UNAVAILABLE: '上游明确报告当前型号不存在、已停用或不可用，请刷新列表并选择型号。',
     AUTH_REJECTED: '连接鉴权被拒绝，已暂停查询并保留原任务。',
     CREDENTIAL_REQUIRED: '原连接版本凭据已清除，任务已暂停。',
     CREDENTIAL_UNAVAILABLE: '原连接版本凭据不可用，任务已暂停。',
@@ -51,7 +52,7 @@ const MESSAGES = {
 };
 function errorDto(code, phase, task, extra = {}) {
     return { code, phase, message: DETAILS[code]?.[1] || MESSAGES[code] || '任务已暂停，请检查详情。', retryAction: ({
-        SUBMISSION_UNKNOWN: 'reconcile_submission', REMOTE_REJECTED: 'edit_input', INPUT_INVALID: 'edit_input', CAPABILITY_UNVERIFIED: 'edit_input',
+        SUBMISSION_UNKNOWN: 'reconcile_submission', MODEL_UNAVAILABLE: 'edit_input', REMOTE_REJECTED: 'edit_input', INPUT_INVALID: 'edit_input', CAPABILITY_UNVERIFIED: 'edit_input',
         AUTH_REJECTED: 'reauthenticate', CREDENTIAL_REQUIRED: 'reauthenticate', CREDENTIAL_UNAVAILABLE: 'reauthenticate',
         POLL_TRANSIENT: 'retry_poll', RATE_LIMITED: 'retry_poll', REMOTE_STATUS_UNKNOWN: 'retry_poll',
         DOWNLOAD_FAILED: 'retry_download', DOWNLOAD_EXPIRED: 'retry_download',
@@ -284,7 +285,8 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (row(id).upstream_task_id) {pause(id,'accepted_response_unrecognized','REMOTE_STATUS_UNKNOWN');return;}
             const rejected = error.transmission === 'response_received' && error.definiteRejection === true && !row(id).upstream_task_id;
             const authenticationRejected = rejected && [401,403].includes(error.httpStatus);
-            setError(id, rejected ? 'failed' : 'submission_unknown', authenticationRejected ? 'AUTH_REJECTED' : rejected ? 'REMOTE_REJECTED' : 'SUBMISSION_UNKNOWN', authenticationRejected ? 'credential' : 'submit', { pause_reason: rejected ? null : 'submission_unknown' }, { transmission: rejected ? 'response_received' : 'may_have_reached_upstream', ...(Number.isInteger(error.httpStatus) ? { httpStatus: error.httpStatus } : {}), ...(error.credentialRedacted ? { message: '上游错误包含连接凭据，已隐藏详情。' } : {}) });
+            if(rejected && error.modelUnavailable) void connections.modelRejected?.(JSON.parse(row(id).input_snapshot_json).connectionVersionId)?.catch(()=>{});
+            setError(id, rejected ? 'failed' : 'submission_unknown', authenticationRejected ? 'AUTH_REJECTED' : rejected && error.modelUnavailable ? 'MODEL_UNAVAILABLE' : rejected ? 'REMOTE_REJECTED' : 'SUBMISSION_UNKNOWN', authenticationRejected ? 'credential' : 'submit', { pause_reason: rejected ? null : 'submission_unknown' }, { transmission: rejected ? 'response_received' : 'may_have_reached_upstream', ...(Number.isInteger(error.httpStatus) ? { httpStatus: error.httpStatus } : {}), ...(error.credentialRedacted ? { message: '上游错误包含连接凭据，已隐藏详情。' } : {}) });
         }
     }
     async function pump() {

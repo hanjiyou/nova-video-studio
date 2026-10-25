@@ -65,6 +65,11 @@ function seedCapabilities(db, provider, baseUrl) {
         insert.run(randomUUID(), provider, baseUrl, capability.model, capability.mode, 'openai', JSON.stringify(capability.parameters),
             'application_verified', APPLICATION_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
+    const videoPolicy = require('../tasks/video-policy');
+    if (provider === videoPolicy.RULES.provider && baseUrl === videoPolicy.RULES.baseUrl) for (const [model, rule] of Object.entries(videoPolicy.RULES.models)) for (const mode of videoPolicy.MODES) {
+        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoPolicy.RULES.version,
+            JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:rule.submissionEnabled?'user-configured-video-parameters':'prepared-awaiting-validation',supplierMaximumReferences:null}),new Date().toISOString());
+    }
     seedMultiReferenceCapability(db, provider, baseUrl);
     if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) for (const mode of ['image.text','image.reference']) {
         insert.run(randomUUID(), provider, baseUrl, imagePolicy.POLICY.model, mode, imagePolicy.POLICY.protocol, JSON.stringify(imagePolicy.parametersFor(mode)),

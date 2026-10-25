@@ -41,7 +41,7 @@ function remoteOutcome(task) {
     if (Object.hasOwn(known, task.remote_state)) return known[task.remote_state];
     let error;
     try { error = JSON.parse(task.task_error_json || 'null'); } catch { /* Legacy malformed metadata proves no remote outcome. */ }
-    if (error?.code === 'REMOTE_REJECTED' || error?.transmission === 'response_received' && error?.code === 'AUTH_REJECTED' && task.status === 'failed') return 'confirmed_rejected';
+    if (['REMOTE_REJECTED','MODEL_UNAVAILABLE'].includes(error?.code) || error?.transmission === 'response_received' && error?.code === 'AUTH_REJECTED' && task.status === 'failed') return 'confirmed_rejected';
     if (!task.dispatch_started_at && !task.upstream_task_id && (['local_queued','local_cancelled'].includes(task.status) || error?.transmission === 'not_dispatched')) return 'not_dispatched';
     return 'unknown';
 }

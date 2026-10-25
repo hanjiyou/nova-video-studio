@@ -54,12 +54,12 @@ async function localPreparation(options, deps = {}) {
   }
   return { plan, report: { schemaVersion: 1, repository: REPO, version: plan.version, tag: plan.tag, source: plan.source || null, phase: options.phase, dryRun: !options.execute, assets, signature: summary.signature, blockers: blockers(plan, deps.gates, deps.policy), retention: 'Keep all supported old exe/blockmap/release assets; never overwrite a tag, version or asset. Repair with a higher version.' } };
 }
-function github(token) {
+function github(token, fetchImpl = fetch) {
   const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Nova-Windows-Release' };
   return async (url, { method = 'GET', body, binary = false, missing = false } = {}) => {
-    need(url.startsWith(API + '/') || url.startsWith(`https://uploads.github.com/repos/${REPO}/releases/`), 'Non-fixed GitHub endpoint rejected.');
+    need(url === API || url.startsWith(API + '/') || url.startsWith(`https://uploads.github.com/repos/${REPO}/releases/`), 'Non-fixed GitHub endpoint rejected.');
     let response;
-    try { response = await fetch(url, { method, headers: { ...headers, ...(binary ? { 'Content-Type': 'application/octet-stream' } : body ? { 'Content-Type': 'application/json' } : {}) }, body: binary ? body : body ? JSON.stringify(body) : undefined, redirect: 'error', signal: AbortSignal.timeout(120000) }); }
+    try { response = await fetchImpl(url, { method, headers: { ...headers, ...(binary ? { 'Content-Type': 'application/octet-stream' } : body ? { 'Content-Type': 'application/json' } : {}) }, body: binary ? body : body ? JSON.stringify(body) : undefined, redirect: 'error', signal: AbortSignal.timeout(120000) }); }
     catch { throw new ReleaseError('GitHub request failed; inspect the retained draft before retrying.'); }
     if (missing && response.status === 404) return null;
     need(response.ok, `GitHub ${method} failed (HTTP ${response.status}); existing draft/assets were retained.`);
@@ -144,7 +144,7 @@ async function run(options, deps = {}) {
     need(options.commit && options.notesFile, 'Draft requires --commit <40-char SHA> and --notes-file <reviewed notes>.');
     const notes = fs.readFileSync(options.notesFile, 'utf8');
     need(notes.trim() && notes.length <= 100000, 'Reviewed release notes are missing or too large.');
-    const repo = await request(`https://api.github.com/repos/${REPO}/`);
+    const repo = await request(API);
     need(repo.private === false && repo.full_name === REPO, 'Fixed public repository identity changed.');
     need(!await request(`${API}/git/ref/tags/${report.tag}`, { missing: true }), 'Tag already exists; use a new version.');
     for (let page = 1; ; page++) {
@@ -180,4 +180,4 @@ async function run(options, deps = {}) {
   return { ...report, dryRun: false, releaseId: id, remoteVerified: true, published: options.phase === 'publish' };
 }
 if (require.main === module) Promise.resolve().then(() => run(args(process.argv.slice(2)))).then(r => console.log(JSON.stringify(r, null, 2))).catch(error => { console.error('[FAILED] ' + (error instanceof ReleaseError ? error.message : 'Local artifact/config verification failed; run update:verify:win separately. Raw remote errors are never printed.')); process.exitCode = 1; });
-module.exports = { args, blockers, localPreparation, run, draftIdentity, verifyRemote, ReleaseError };
+module.exports = { github, args, blockers, localPreparation, run, draftIdentity, verifyRemote, ReleaseError };

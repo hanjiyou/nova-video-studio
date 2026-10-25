@@ -30,7 +30,7 @@ function fixture(t) {
     if (url.includes('/git/ref/tags/')) return state.tag;
     if (url.includes('/git/tags/')) return { object: { type: 'commit', sha: state.tagCommit || SHA } };
     if (url.includes('/git/commits/')) return { sha: SHA };
-    if (url.endsWith('/repos/hanjiyou/nova-video-studio/')) return { full_name: 'hanjiyou/nova-video-studio', private: false };
+    if (url.endsWith('/repos/hanjiyou/nova-video-studio')) return { full_name: 'hanjiyou/nova-video-studio', private: false };
     if (url.includes('/releases?')) return state.releases;
     if (url.endsWith('/releases') && options.method === 'POST') { state.target = options.body.target_commitish; return { id: 42 }; }
     if (url.includes('/assets?')) return state.assets;
@@ -145,4 +145,12 @@ test('GitHub test source record round trips and binds package metadata while old
  assert.deepEqual(builderConfiguration({...plan,source},'inert').extraMetadata.novaBuild,source);
  assert.throws(()=>planForRecord({...record,source:{commit:SHA,clean:false}},f.policy));
  assert.equal(planForRecord({...record,source:undefined},f.policy).source,undefined);
+});
+
+
+test('GitHub transport accepts canonical repository root and refuses lookalike repository', async () => {
+ const {github}=require('./release-windows-update.cjs');const root='https://api.github.com/repos/hanjiyou/nova-video-studio';let calls=0;
+ const request=github('synthetic-token',async(url)=>{calls++;assert.equal(url,root);return {ok:true,status:200,json:async()=>({full_name:'hanjiyou/nova-video-studio'})};});
+ assert.equal((await request(root)).full_name,'hanjiyou/nova-video-studio');
+ await assert.rejects(request(root+'-other'),/Non-fixed/);assert.equal(calls,1);
 });

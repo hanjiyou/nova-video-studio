@@ -20,9 +20,9 @@ permissions:
 
 jobs:
   release:
-    # v3.6.2 is the separately verified github-test package, uploaded manually.
-    # Do not mix legacy build assets into its nova-test.yml release.
-    if: github.ref != 'refs/tags/v3.6.2'
+    # v3.6.2 and v3.6.3 are separately verified github-test packages, uploaded manually.
+    # Do not mix legacy build assets into their nova-test.yml releases.
+    if: github.ref != 'refs/tags/v3.6.2' && github.ref != 'refs/tags/v3.6.3'
     name: 构建桌面安装包（${{ matrix.os }}）
     runs-on: ${{ matrix.os }}
     strategy:

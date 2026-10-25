@@ -34,25 +34,25 @@ function buildSubmit(snapshot, auth, getAsset) {
 }
 function parseSubmit(payload, auth) {
     if (containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });
-    if (!Array.isArray(payload?.data) || !payload.data.length || payload.data.length > 32) throw failure('SUBMISSION_UNKNOWN');
+    if (!Array.isArray(payload?.data) || !payload.data.length || payload.data.length > 32) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:Array.isArray(payload?.data)&&!payload.data.length?'no_result':'unexpected_schema'});
     const resultSources = payload.data.map(item => {
         if (typeof item?.b64_json === 'string' && item.b64_json.length) {
             const compact = item.b64_json;
-            if (!/^[A-Za-z0-9+/]*={0,2}$/.test(compact) || compact.length % 4 !== 0) throw failure('SUBMISSION_UNKNOWN');
+            if (!/^[A-Za-z0-9+/]*={0,2}$/.test(compact) || compact.length % 4 !== 0) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'});
             const bytes = Buffer.from(compact, 'base64');
-            if (!bytes.length) throw failure('SUBMISSION_UNKNOWN');
+            if (!bytes.length) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'});
             const mimeType = bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])) ? 'image/png' :
                 bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 ? 'image/jpeg' : null;
-            if (!mimeType) throw failure('SUBMISSION_UNKNOWN');
+            if (!mimeType) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'});
             return { kind: 'inline', bytes, mimeType, mediaKind: 'image' };
         }
         if (typeof item?.url === 'string' && item.url.trim()) {
             let url;
-            try { url = new URL(item.url); } catch { throw failure('SUBMISSION_UNKNOWN'); }
-            if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.hash) throw failure('SUBMISSION_UNKNOWN');
+            try { url = new URL(item.url); } catch { throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'}); }
+            if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password || url.hash) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'});
             return { kind: 'url', url: url.toString(), authScope: 'none', mediaKind: 'image' };
         }
-        throw failure('SUBMISSION_UNKNOWN');
+        throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'unexpected_schema'});
     });
     return { resultSources };
 }
@@ -76,12 +76,13 @@ function createFlareImageAdapter({ validateCapability, readAsset, getAsset, vers
                 const init=buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset);
                 auth.checkpoint?.();
                 auth.phase?.('submitting');
+                auth.diagnostic?.('request_started',{operation:'submit'});
                 const response = await fetch(request.url, { ...init, signal: controller.signal });
                 auth.phase?.('receiving'); auth.diagnostic?.('response_headers',{httpStatus:response.status});
                 const text = await response.text(); // Includes the complete body in the request deadline.
                 auth.checkpoint?.(); auth.diagnostic?.('body_received',{byteLength:Buffer.byteLength(text)}); auth.phase?.('parsing');
                 let payload;
-                try { payload = JSON.parse(text); } catch { throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status }); }
+                try { payload = JSON.parse(text); } catch { throw failure('SUBMISSION_UNKNOWN', { parseOutcome:'invalid_json', httpStatus: response.status }); }
                 if (containsCredential(text, auth.apiKey) || containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });
                 if (!response.ok) throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status, transmission: 'response_received',
                     definiteRejection: response.status >= 400 && response.status < 500 && Boolean(payload?.error || payload?.message) });

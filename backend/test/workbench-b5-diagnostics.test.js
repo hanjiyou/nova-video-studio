@@ -17,3 +17,10 @@ test('B5 diagnostic IPC rejects hostile frames, all caller arguments and returns
 test('B5 a missing old output volume does not prevent exporting useful diagnostics elsewhere',async t=>{const f=await setup(t),external=path.join(f.directory,'offline-output');fs.mkdirSync(external);f.store.selectOutputDirectory(external);fs.renameSync(external,external+'-moved');insert(f);const file=path.join(f.directory,'offline-diagnostic.json');assert.equal((await actions(f,{canceled:false,filePath:file}).export()).ok,true);assert.equal(JSON.parse(fs.readFileSync(file,'utf8')).counts.exported,1);});
 
 test('B5 selecting a volume root also protects its descendants despite its trailing separator',async t=>{const f=await setup(t),volume=path.parse(f.directory).root;f.db.prepare('INSERT INTO storage_roots VALUES(?,?,?)').run(randomUUID(),volume,new Date().toISOString());assert.equal(f.store.allowDiagnosticDestination(path.join(volume,'not-a-real-export.json')),false);});
+
+
+test('export includes persisted prior update observations after restart, with no private payload',async t=>{
+ const f=await setup(t),{createUpdateDiagnostics}=require('../../desktop/update-diagnostics.cjs');const previous=createUpdateDiagnostics({directory:f.data,currentVersion:'3.6.2'});previous.begin();previous.record('install_requested',{targetVersion:'3.6.3',url:'PRIVATE'});previous.record('parent_quit_requested');
+ const current=createUpdateDiagnostics({directory:f.data,currentVersion:'3.6.3'}),file=path.join(f.directory,'combined.json');assert.equal((await actions(f,{canceled:false,filePath:file},{runtimeInfo:()=>({version:'3.6.3',updateDiagnostics:current.snapshot()})}).export()).ok,true);
+ const report=JSON.parse(fs.readFileSync(file,'utf8'));assert.ok(report.updates.events.some(e=>e.event==='parent_quit_requested'));assert.ok(report.updates.events.some(e=>e.event==='target_version_started'));assert.ok(!JSON.stringify(report).includes('PRIVATE'));assert.ok(!JSON.stringify(report).includes(f.directory));
+});

@@ -15,6 +15,7 @@ const { SESSION_HEADER, configureDesktopSession, revokeDesktopSession } = requir
 
 const { reportStartupFailure } = require('./startup.cjs');
 const { readRuntimePolicy } = require('./update-policy.cjs');
+const { createUpdateDiagnostics } = require('./update-diagnostics.cjs');
 const { createUpdateService } = require('./update-service.cjs');
 const { attachInstallerLaunchProof } = require('./update-launcher.cjs');
 const { createUpdateQuitHandler } = require('./update-quit.cjs');
@@ -34,6 +35,7 @@ let detachSession;
 let stopping = false;
 let allowQuit = false;
 let exitCode = 0;
+let updateDiagnostics;
 let updates, installerLaunch, updateFailureVisible = false;
 
 async function reportUpdateFailure() {
@@ -80,9 +82,12 @@ function createWindow(origin, features) {
   });
   mainWindow.on('closed', () => { mainWindow = null; });
   mainWindow.on('close', event => { if (updates?.preparing && !allowQuit) event.preventDefault(); });
-  void mainWindow.loadURL(origin + '/');
+  mainWindow.webContents.once('did-finish-load',()=>updateDiagnostics?.record('window_loaded'));
+  mainWindow.webContents.on('did-fail-load',(_event,_code,_description,_url,isMainFrame)=>{if(isMainFrame)updateDiagnostics?.record('window_failed');});
+  void mainWindow.loadURL(origin + '/').catch(error=>updateDiagnostics?.error('window_failed',error));
 }
 async function start() {
+  updateDiagnostics=createUpdateDiagnostics({directory:dataPolicy.directory,currentVersion:app.getVersion(),networkMode:process.env.NOVA_NETWORK_MODE || 'direct'});
   const port = await resolveBackendPort(Number(process.env.NOVA_BACKEND_PORT || 31207));
   const origin = 'http://127.0.0.1:' + port;
   const token = randomBytes(32).toString('hex');
@@ -94,12 +99,12 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, getUpdateService: () => updates, getUpdateGate: () => backend?.updateGate, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features }) });
+  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, getUpdateService: () => updates, getUpdateGate: () => backend?.updateGate, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features, updateDiagnostics: updateDiagnostics?.snapshot() }) });
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
-  await backend.ready;
-  updates = createUpdateService({ policy: readRuntimePolicy({ app, dataMode: dataPolicy.mode }), currentVersion: app.getVersion(),
-    createUpdater() { const updater = new (require('electron-updater').NsisUpdater)(); installerLaunch = attachInstallerLaunchProof(updater); return updater; },
+  await backend.ready; updateDiagnostics?.record('backend_ready');
+  updates = createUpdateService({ diagnostics:updateDiagnostics, policy: readRuntimePolicy({ app, dataMode: dataPolicy.mode }), currentVersion: app.getVersion(),
+    createUpdater() { const updater = new (require('electron-updater').NsisUpdater)(); installerLaunch = attachInstallerLaunchProof(updater, undefined, updateDiagnostics); return updater; },
     send(channel, value) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send(channel, value); },
     prepareBackend: () => backend.prepareForUpdate(), releaseBackend: () => backend.releaseUpdate(), closeBackend: () => backend.shutdownForUpdate(), onClosedFailure: () => { void reportUpdateFailure(); },
   });
@@ -118,7 +123,7 @@ if (initializationFailure) {
 else {
   const updateQuit = createUpdateQuitHandler({ getUpdates: () => updates, getLaunchProof: () => installerLaunch,
     closeHost() { stopping = true; revokeDesktopSession(); network?.abortPending(); ipc?.dispose(); detachSession?.(); network?.dispose(); },
-    quit() { allowQuit = true; app.quit(); }, onFailure() { void reportUpdateFailure(); },
+    quit() { updateDiagnostics?.record('parent_quit_requested'); allowQuit = true; app.quit(); }, onFailure() { void reportUpdateFailure(); },
   });
   // Desktop DevTools remains an explicit loopback-only test/debug switch.
   if (String(process.env.NOVA_ELECTRON_CDP_ENABLED || 'false').toLowerCase() === 'true') {
@@ -138,5 +143,5 @@ else {
     updates?.dispose();
     void cleanup().catch(() => { exitCode = 1; console.error('Desktop resource cleanup failed'); }).finally(() => { allowQuit = true; app.exit(exitCode); });
   });
-  app.whenReady().then(() => { if(initializationFailure) throw initializationFailure; return start(); }).catch(error => { exitCode = 1; reportStartupFailure({dialog,error}); app.quit(); });
+  app.whenReady().then(() => { if(initializationFailure) throw initializationFailure; return start(); }).catch(error => { updateDiagnostics?.error('startup_failed',error); exitCode = 1; reportStartupFailure({dialog,error}); app.quit(); });
 }

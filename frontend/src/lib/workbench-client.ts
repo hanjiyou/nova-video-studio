@@ -65,6 +65,14 @@ export function connectionMessage(connection: import('./connection-client').Conn
   };
   return messages[connection.validationState] || '连接尚未验证。';
 }
+// A stale model-list check does not invalidate saved credentials.
+export function connectionBanner(connection: import('./connection-client').ConnectionSummary | null, online = true): string | null {
+  if (!connection || !connection.hasCredential || connection.credentialState !== 'ready') return connectionMessage(connection, true);
+  if (!validateBaseUrl(connection.baseUrl).canonical) return '接口基础地址无效，请在设置中检查地址。';
+  if (!online) return '当前网络离线，请恢复网络后重试；无需重新填写连接配置。';
+  if (connection.validationState === 'auth_rejected') return '最近模型接口检查未通过鉴权，请在设置中核对权限或 Key；这不等于所有生成接口均不可用。';
+  return null;
+}
 export function localErrorMessage(error: unknown) {
   const code = error instanceof Error ? error.message : 'LOCAL_SERVICE_FAILED';
   const messages: Record<string, string> = {

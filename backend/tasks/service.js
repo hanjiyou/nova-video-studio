@@ -7,6 +7,7 @@ const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
 const { DETAILS, failure: downloadFailure } = require('../storage/download-errors');
 const { executionSnapshot, mediaKind, localOutcome, remoteOutcome } = require('./lifecycle-contract');
 const { createExecutionRuntime } = require('./execution-runtime');
+const {classifyError}=require('./diagnostic-error');
 const { createDiagnosticTimeline } = require('./diagnostic-timeline');
 const TERMINAL = new Set(['completed', 'failed', 'download_failed', 'local_cancelled', 'remote_cancelled', 'timed_out']);
 const REMOTE_ACTIVE = new Set(['remote_queued', 'generating']);
@@ -257,7 +258,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const execution = { execution_attempt_id: randomUUID(), execution_deadline_at: iso(dispatchedAt + (task.execution_timeout_seconds ?? settings()[kind(task)+'TimeoutSeconds']) * 1000) };
         update(id, 'submitting', { dispatch_started_at: iso(dispatchedAt), ...execution, requires_continue: 0, error: null, task_error_json: null }, 'dispatch_started');
         task = row(id); // Adapters must receive the committed attempt and deadline, never the queued row.
-        const ctx = context(task); ctx.phase('submitting');
+        const ctx = context(task); telemetry.record(id,'dispatched',{},ctx); ctx.phase('submitting');
         const accept = upstreamId => {
             ctx.checkpoint();
             if (!isQueryableUpstreamTaskId(upstreamId) || containsCredential(upstreamId,auth.apiKey)) throw fail('SUBMISSION_UNKNOWN');
@@ -278,6 +279,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         } catch (error) {
             if (closed || error.code === 'TASK_EXECUTION_ENDED' || localOutcome(row(id))) return;
             ctx.checkpoint();
+            telemetry.observe(id,'request_failed',{operation:'submit',errorCategory:classifyError(error),parseOutcome:error.parseOutcome,httpStatus:error.httpStatus},ctx);
             // An adapter may prove a complete explicit rejection. All other POST outcomes are unknown.
             if (row(id).upstream_task_id) {pause(id,'accepted_response_unrecognized','REMOTE_STATUS_UNKNOWN');return;}
             const rejected = error.transmission === 'response_received' && error.definiteRejection === true && !row(id).upstream_task_id;
@@ -343,6 +345,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                 if (closed || !REMOTE_ACTIVE.has(row(id)?.status)) return; // stopped/closed while GET was in flight
                 const remote = outcome?.remoteState, raw = sanitizeRaw(outcome?.rawStatus, auth.apiKey);
                 if (!['queued', 'generating', 'completed', 'failed', 'cancelled'].includes(remote)) {
+                    telemetry.observe(id,'parse_failed',{operation:'poll',parseOutcome:'unexpected_schema'},ctx);
                     pause(id, 'remote_status_unknown', 'REMOTE_STATUS_UNKNOWN', { remote_state: 'unknown', raw_status: raw }); return;
                 }
                 if (remote === 'completed') { remoteCompleted(id, outcome.resultSources, auth.apiKey, raw, ctx); return; }
@@ -354,7 +357,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                 update(id, remote === 'queued' ? 'remote_queued' : 'generating', { remote_state: remote, raw_status: raw, ...(typeof outcome.progress==='number' && Number.isFinite(outcome.progress) && outcome.progress>=0 && outcome.progress<=100 ? {remote_progress:outcome.progress}:{}), poll_attempts: 0, poll_budget_started_at: null, next_poll_at: iso(next), not_before_at: null, task_error_json: null, error: null });
                 schedule(id, next);
             } catch (error) {
-                if (!closed && error.code !== 'TASK_EXECUTION_ENDED' && !localOutcome(row(id)) && REMOTE_ACTIVE.has(row(id)?.status)) { ctx.checkpoint(); telemetry.query(id,ctx,error); pollFailure(id, error); }
+                if (!closed && error.code !== 'TASK_EXECUTION_ENDED' && !localOutcome(row(id)) && REMOTE_ACTIVE.has(row(id)?.status)) { ctx.checkpoint(); telemetry.observe(id,'request_failed',{operation:'poll',errorCategory:classifyError(error),parseOutcome:error.parseOutcome,httpStatus:error.httpStatus},ctx); telemetry.query(id,ctx,error); pollFailure(id, error); }
             }
         });
     }
@@ -428,6 +431,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             return ephemeralSources.get(task.id)||saved;
         } catch(error) {
             if(error.code==='TASK_EXECUTION_ENDED')throw error;
+            telemetry.observe(task.id,'request_failed',{operation:'poll',errorCategory:classifyError(error),parseOutcome:error.parseOutcome,httpStatus:error.httpStatus},ctx);
             telemetry.query(task.id,ctx,error);
             const wait=retryAfter(error.retryAfter,now());
             if(wait!==null)db.prepare('UPDATE task_downloads SET refresh_not_before_at=? WHERE task_id=?').run(iso(now()+wait),task.id);
@@ -490,6 +494,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         db.transaction(() => {
             for (const task of db.prepare('SELECT * FROM tasks ORDER BY created_at,id').all()) {
                 const retry=retryJob(task.id);
+                if(retry||!localOutcome(task))telemetry.record(task.id,'recovery_observed');
                 if(retry){db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),retry.id);db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);db.prepare("UPDATE tasks SET status='download_failed' WHERE id=?").run(task.id);event(task.id,'download_attempt_interrupted',{sameGeneration:true});continue;}
                 if (localOutcome(task)) continue;
                 if (['queued', '排队中', 'local_queued'].includes(task.status) && !task.dispatch_started_at && !task.upstream_task_id) {

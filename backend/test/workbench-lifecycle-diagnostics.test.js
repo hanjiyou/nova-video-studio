@@ -50,3 +50,19 @@ test('I06 cross-restart unobserved phase gap and total are unknown, never inferr
 test('I06 a second explicit download attempt starts a known independent monotonic measurement',async t=>{
  const f=await fixture(t);let elapsed=0;const first={token:randomUUID(),downloadAttempt:{},elapsedMs:()=>elapsed};f.timeline.phase(f.id,'downloading',first);elapsed=300;f.timeline.end(f.id,'failed','DOWNLOAD_FAILED',first);elapsed=0;const second={token:randomUUID(),downloadAttempt:{},elapsedMs:()=>elapsed};f.timeline.phase(f.id,'downloading',second);elapsed=600;f.timeline.end(f.id,'completed',undefined,second);const report=f.report();assert.equal(report.latestDownload.elapsedUnknown,false);assert.equal(report.latestDownload.observedElapsedMs,600);assert.equal(report.latestDownload.durations.downloading,600);assert.equal(report.queueClock,'wall_timestamp_estimate');
 });
+
+
+test('extended lifecycle boundaries preserve session correlation, query timings and safe failures over restart',async t=>{
+ const f=await fixture(t);f.timeline.phase(f.id,'submitting',f.ctx);f.timeline.observe(f.id,'request_started',{operation:'poll'},f.ctx);f.step(50);f.timeline.observe(f.id,'query_response',{operation:'poll',httpStatus:429,durationMs:50},f.ctx);f.timeline.observe(f.id,'request_failed',{operation:'poll',errorCategory:'timeout',httpStatus:429,raw:'PRIVATE'},f.ctx);
+ const next=createDiagnosticTimeline({db:f.db,now:f.now});next.record(f.id,'recovery_observed');const report=f.report();assert.ok(report.timeline.every(e=>e.sessionId));assert.equal(report.timeline.find(e=>e.point==='query_response').durationMs,50);assert.equal(report.timeline.find(e=>e.point==='request_failed').errorCategory,'timeout');assert.ok(!JSON.stringify(report).includes('PRIVATE'));
+});
+test('diagnostic database write failures do not change task control flow',()=>{const timeline=createDiagnosticTimeline({db:{prepare(){throw Error('disk error');}}});assert.doesNotThrow(()=>timeline.observe('task','request_failed',{errorCategory:'dns'}));});
+
+
+test('no-context recovery overflow preserves full generation and independent download summaries',async t=>{
+ const f=await fixture(t);f.timeline.phase(f.id,'submitting',f.ctx);f.step(200);f.timeline.end(f.id,'completed',undefined,f.ctx);
+ const download={token:randomUUID(),downloadAttempt:{},elapsedMs:()=>20};f.timeline.phase(f.id,'downloading',download);f.timeline.end(f.id,'completed',undefined,download);
+ for(let n=0;n<MAX_EVENTS;n++)f.timeline.record(f.id,'download_progress',{byteLength:n},download);
+ const before=f.report(),next=createDiagnosticTimeline({db:f.db,now:f.now});next.record(f.id,'recovery_observed');const after=f.report();
+ assert.deepEqual(after.generation,{...before.generation,omittedEvents:before.generation.omittedEvents+1});assert.deepEqual(after.latestDownload,before.latestDownload);assert.equal(after.generation.attemptId,f.ctx.token);assert.equal(after.generation.outcome,'completed');assert.equal(after.generation.durations.submitting,200);
+});

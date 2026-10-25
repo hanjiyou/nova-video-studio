@@ -55,15 +55,18 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
         if (context.signal?.aborted) controller.abort();
         try {
             if (!polling) context.phase?.('submitting');
+            const requestStarted=performance.now(); context.diagnostic?.('request_started',{operation:polling?'poll':'submit'});
             const response = await fetch(request.url, { ...request.init, signal: controller.signal });
+            if(polling)context.diagnostic?.('query_response',{operation:'poll',httpStatus:response.status,durationMs:Math.round(performance.now()-requestStarted)});
             if (!polling) { context.phase?.('receiving'); context.diagnostic?.('response_headers',{httpStatus:response.status}); }
             const text = await response.text(); // timeout covers headers AND body
             context.checkpoint?.(); if (!polling) { context.diagnostic?.('body_received',{byteLength:Buffer.byteLength(text)}); context.phase?.('parsing'); }
+            if(polling)context.diagnostic?.('query_body',{operation:'poll',byteLength:Buffer.byteLength(text),durationMs:Math.round(performance.now()-requestStarted)});
             let payload;
-            try { payload = JSON.parse(text); } catch { throw failure(polling ? (response.ok ? 'REMOTE_STATUS_UNKNOWN' : 'POLL_TRANSIENT') : 'SUBMISSION_UNKNOWN', {httpStatus:response.status,retryAfter:response.headers.get('retry-after')}); }
+            try { payload = JSON.parse(text); } catch { throw failure(polling ? (response.ok ? 'REMOTE_STATUS_UNKNOWN' : 'POLL_TRANSIENT') : 'SUBMISSION_UNKNOWN', {parseOutcome:'invalid_json',httpStatus:response.status,retryAfter:response.headers.get('retry-after')}); }
             const extracted = polling ? undefined : plugin.driver?.extractAcceptedId ? plugin.driver.extractAcceptedId(payload, context) :
                 plugin.driver ? undefined : pickFirstString(payload, plugin.provider.submit.extract.taskId);
-            if (!polling && extracted && !isQueryableUpstreamTaskId(extracted)) throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status });
+            if (!polling && extracted && !isQueryableUpstreamTaskId(extracted)) throw failure('SUBMISSION_UNKNOWN', { parseOutcome:'invalid_task_id', httpStatus: response.status });
             if (!polling && extracted && !containsCredential(extracted,context.apiKey)) context.onAccepted?.(extracted);
             try { credentialFree(text, context.apiKey); credentialFree(payload, context.apiKey); } catch (error) { error.httpStatus=response.status; throw error; }
             // A usable accepted ID wins over an HTTP error. Never discard a task already created.
@@ -91,11 +94,11 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
                 const status=pickFirstString(payload,plugin.provider.poll.status?.from || ['status','state']) || '';
                 if (plugin.provider.poll.status?.completed?.includes(status.toLowerCase())) accepted.immediate=normalizeResult(payload,plugin.provider.poll.result,{...context,upstreamTaskId:encodeUpstreamTaskId(accepted.upstreamTaskId)},resolveTemplate);
             }
-            if (!accepted.upstreamTaskId && !accepted.immediate?.assets?.length) throw failure('SUBMISSION_UNKNOWN');
+            if (!accepted.upstreamTaskId && !accepted.immediate?.assets?.length) throw failure('SUBMISSION_UNKNOWN',{parseOutcome:'missing_task_id'});
             return { upstreamTaskId: accepted.upstreamTaskId, ...(accepted.immediate?.assets?.length ? { resultSources: sources(accepted.immediate.assets, context) } : {}) };
         },
         async poll(task, _snapshot, auth) {
-            const context = { ...contextFor(plugin, task, auth, getAsset), signal: auth.signal, checkpoint: auth.checkpoint, phase: auth.phase, remainingMs: auth.remainingMs }, payload = await send(context, true);
+            const context = { ...contextFor(plugin, task, auth, getAsset), signal: auth.signal, checkpoint: auth.checkpoint, phase: auth.phase, diagnostic: auth.diagnostic, remainingMs: auth.remainingMs }, payload = await send(context, true);
             if (plugin.driver?.parseTaskResult) {
                 const parsed = await plugin.driver.parseTaskResult(payload, context); auth.checkpoint?.(); credentialFree(parsed, auth.apiKey);
                 return { remoteState: ({ processing: 'generating', queued: 'queued', completed: 'completed', failed: 'failed', cancelled: 'cancelled' })[parsed?.state] || 'unknown', rawStatus: parsed?.rawStatus || parsed?.state, progress: parsed?.progress, resultSources: sources(parsed?.assets, context) };

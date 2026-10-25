@@ -14,7 +14,8 @@ function createDiagnosticActions({getStore,dialog,getWindow,runtimeInfo}) {
             const parent=await fs.realpath(path.dirname(result.filePath)),destination=path.join(parent,path.basename(result.filePath));
             // Do not let an export overwrite the database or any managed output.
             if(!store.allowDiagnosticDestination(destination))return {ok:false,code:'DIAGNOSTIC_TARGET_PROTECTED'};
-            const before=await snapshot(destination),report=store.createDiagnostics(runtimeInfo());
+            const before=await snapshot(destination),runtime=runtimeInfo(),report=store.createDiagnostics(runtime);
+            if(runtime.updateDiagnostics)report.updates=runtime.updateDiagnostics;
             temporary=path.join(parent,'.nova-diagnostic-'+randomUUID()+'.part');handle=await fs.open(temporary,'wx');
             await handle.writeFile(JSON.stringify(report,null,2)+'\n','utf8');await handle.sync();await handle.close();handle=null;
             if(JSON.stringify(before)!==JSON.stringify(await snapshot(destination)))throw Object.assign(new Error(),{code:'SAVE_TARGET_CHANGED'});

@@ -141,3 +141,22 @@ test('v4 to v5 keeps referenced asset IDs, foreign keys, immutable old SQL and u
         assert.throws(()=>db.prepare('INSERT INTO assets SELECT ?,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref FROM assets WHERE id=?').run(randomUUID(),asset),/UNIQUE/);
     }finally{db.close();}
 });
+
+
+test('download diagnostics show headers, full bytes, media verification and publication in order',async t=>{
+ const f=await setup(t),id=f.enqueue();await until(()=>f.service.get(id).status==='completed');const timeline=f.store.createDiagnostics().tasks.find(task=>task.localTaskId===id).execution.timeline;
+ const points=timeline.map(e=>e.point);for(const point of ['dispatched','download_started','download_headers','download_received','media_validated','file_saved','terminal'])assert.ok(points.includes(point),point);
+ assert.ok(points.indexOf('download_headers')<points.indexOf('media_validated'));assert.ok(points.indexOf('media_validated')<points.indexOf('file_saved'));assert.equal(timeline.find(e=>e.point==='download_headers').httpStatus,200);assert.equal(timeline.find(e=>e.point==='download_received').byteLength,video.length);
+});
+test('download DNS failure preserves safe cause before normalization into download_failed',async t=>{
+ const f=await setup(t,{worker:{fetchImpl:async()=>{throw Object.assign(Error('PRIVATE https://private.invalid'),{cause:{code:'ENOTFOUND'}});}}}),id=f.enqueue();await until(()=>f.service.get(id).status==='download_failed');
+ const report=f.store.createDiagnostics();assert.ok(report.tasks.find(task=>task.localTaskId===id).execution.timeline.some(e=>e.errorCategory==='dns'&&e.operation==='download'));assert.ok(!JSON.stringify(report).includes('PRIVATE'));
+});
+
+
+for(const [code,category]of [['ENOSPC','disk_full'],['EBUSY','file_busy'],['EPERM','file_permission']])test('publication error '+code+' is classified before file error normalization',async t=>{
+ const f=await setup(t);f.store.publishVerifiedFile=()=>{throw Object.assign(Error('PRIVATE'),{code});};const id=f.enqueue();await until(()=>f.service.get(id).status==='download_failed');assert.ok(f.store.createDiagnostics().tasks.find(task=>task.localTaskId===id).execution.timeline.some(e=>e.errorCategory===category&&e.phase==='saving'&&e.point==='operation_failed'));
+});
+test('stream reset distinguishes body failure from response header delay',async t=>{
+ const f=await setup(t,{worker:{fetchImpl:async()=>({status:200,ok:true,headers:new Headers(),body:{async *[Symbol.asyncIterator](){yield video.subarray(0,100);throw Object.assign(Error('PRIVATE'),{code:'UND_ERR_SOCKET'});},cancel:async()=>{}}})}}),id=f.enqueue();await until(()=>f.service.get(id).status==='download_failed');const timeline=f.store.createDiagnostics().tasks.find(task=>task.localTaskId===id).execution.timeline;assert.ok(timeline.some(e=>e.point==='download_headers'));assert.ok(timeline.some(e=>e.errorCategory==='connection_reset'&&e.byteLength===100));assert.ok(!timeline.some(e=>e.point==='file_saved'));
+});

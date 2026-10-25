@@ -1,4 +1,5 @@
 'use strict';
+const {classifyError}=require('../tasks/diagnostic-error');
 const fs = require('node:fs');
 const path = require('node:path');
 const dns = require('node:dns/promises');
@@ -29,7 +30,7 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
         let url=initial, leftService=false;
         for(let hop=0;hop<=5;hop++) {
             checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
-            try{await checkUrl(url);}catch(error){throw error.code==='DOWNLOAD_FORBIDDEN'?error:failure('DOWNLOAD_FAILED');}
+            try{await checkUrl(url);}catch(error){diagnostic('request_failed',{operation:'download',errorCategory:classifyError(error)});throw error.code==='DOWNLOAD_FORBIDDEN'?error:failure('DOWNLOAD_FAILED');}
             checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
             if(containsCredential(url.href,original.apiKey))throw failure('DOWNLOAD_FORBIDDEN');
             const sameService=url.origin===service.origin&&url.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/');
@@ -37,13 +38,16 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
             if(!sameService)leftService=true;
             const headers={Accept:source.mediaKind==='video'?'video/*':'image/*','Accept-Encoding':'identity'};
             if(source.authScope==='connection'&&sameService&&!leftService)headers.Authorization='Bearer '+connections.getAuth(task.connection_version_id).apiKey;
-            let response;
-            try{response=await fetchImpl(url.href,{method:'GET',headers,redirect:'manual',signal});}catch{throw failure('DOWNLOAD_FAILED');}
+            let response; const started=performance.now();
+            diagnostic('download_started',{operation:'download',redirectHop:hop});
+            try{response=await fetchImpl(url.href,{method:'GET',headers,redirect:'manual',signal});}catch(error){diagnostic('request_failed',{operation:'download',errorCategory:classifyError(error),durationMs:Math.round(performance.now()-started)});throw failure('DOWNLOAD_FAILED');}
+            diagnostic('download_headers',{operation:'download',httpStatus:response.status,durationMs:Math.round(performance.now()-started)});
             if([301,302,303,307,308].includes(response.status)) {
                 const location=response.headers.get('location');await response.body?.cancel();
                 if(hop===5||!location)throw failure('DOWNLOAD_FORBIDDEN');
                 let next;try{next=new URL(location,url);}catch{throw failure('DOWNLOAD_FORBIDDEN');}
                 if(url.protocol==='https:'&&next.protocol!=='https:')throw failure('DOWNLOAD_FORBIDDEN');
+                diagnostic('download_redirect',{operation:'download',redirectHop:hop+1,httpStatus:response.status});
                 url=next;continue;
             }
             if(!response.ok) {
@@ -54,13 +58,13 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
             if(response.status!==200||!response.body)throw failure('DOWNLOAD_INCOMPLETE');
             const rawLength=response.headers.get('content-length'), expected=rawLength===null?null:Number(rawLength);
             if(expected!==null&&(!Number.isSafeInteger(expected)||expected<1||expected>MAX_ASSET_BYTES)){await response.body.cancel();throw failure('DOWNLOAD_TOO_LARGE');}
-            let fd,size=0;
+            let fd,size=0,lastProgress=performance.now();
             try {
                 fd=fs.openSync(file,'wx');
-                for await(const chunk of response.body){checkpoint();if(signal.aborted)throw failure('DOWNLOAD_FAILED');size+=chunk.length;if(size>MAX_ASSET_BYTES)throw failure('DOWNLOAD_TOO_LARGE');fs.writeFileSync(fd,chunk);}
+                for await(const chunk of response.body){checkpoint();if(signal.aborted)throw failure('DOWNLOAD_FAILED');size+=chunk.length;if(size>MAX_ASSET_BYTES)throw failure('DOWNLOAD_TOO_LARGE');fs.writeFileSync(fd,chunk);if(performance.now()-lastProgress>=5000){diagnostic('download_progress',{operation:'download',byteLength:size,durationMs:Math.round(performance.now()-started)});lastProgress=performance.now();}}
                 if(!size||expected!==null&&size!==expected)throw failure('DOWNLOAD_INCOMPLETE');
                 fs.fsyncSync(fd);
-            } catch(error){await response.body.cancel().catch(()=>{});if(error.code==='UND_ERR_SOCKET'||error.name==='TypeError')throw failure('DOWNLOAD_INCOMPLETE');throw error;}
+            } catch(error){diagnostic('request_failed',{operation:'download',errorCategory:classifyError(error),byteLength:size,durationMs:Math.round(performance.now()-started)});await response.body.cancel().catch(()=>{});if(error.code==='UND_ERR_SOCKET'||error.name==='TypeError')throw failure('DOWNLOAD_INCOMPLETE');throw error;}
             finally{if(fd!==undefined)fs.closeSync(fd);}
             diagnostic('download_received',{byteLength:size}); return;
         }
@@ -68,10 +72,10 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
     return async function worker(task,sources,{signal,checkpoint=()=>{},phase=()=>{},diagnostic=()=>{},remainingMs=()=>timeoutMs}={}) {
         const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(abort,Math.min(timeoutMs,remainingMs()));
         signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
-        const assetIds=[];
+        const assetIds=[];let observedPhase='downloading';
         try {
             for(const source of sources) {
-                checkpoint(); phase('downloading');
+                checkpoint(); observedPhase='downloading'; phase('downloading');
                 const directory=store.downloadDirectory(task.output_root_ref),file=path.join(directory,randomUUID()+'.part');
                 try {
                     let expectedKind=source.mediaKind;
@@ -82,16 +86,17 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
                     } else if(source.kind==='url')await download(source,task,file,controller.signal,checkpoint,diagnostic);
                     else throw failure('RESULT_NOT_RECOVERABLE');
                     if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');
-                    checkpoint(); phase('validating');
+                    checkpoint(); observedPhase='validating'; phase('validating');
                     const metadata=await validate(file,{expectedKind,signal:controller.signal,timeoutMs:Math.min(90000,remainingMs())});
                     checkpoint();
                     if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');
-                    phase('saving'); checkpoint();
-                    assetIds.push(store.publishVerifiedFile(file,metadata,task.output_root_ref).assetId); checkpoint();
+                    diagnostic('media_validated');
+                    observedPhase='saving'; phase('saving'); checkpoint();
+                    assetIds.push(store.publishVerifiedFile(file,metadata,task.output_root_ref).assetId); checkpoint(); diagnostic('file_saved');
                 } finally {try{fs.unlinkSync(file);}catch { /* A locked orphan part is never reused or bound as output. */ }}
             }
             return {assetIds};
-        } catch(error){if(error.code==='TASK_EXECUTION_ENDED')throw error;if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');throw fileFailure(error.cause?.code?error.cause:error);}
+        } catch(error){if(error.code!=='TASK_EXECUTION_ENDED')diagnostic('operation_failed',{operation:'download',phase:observedPhase,reason:error.code,errorCategory:classifyError(error),httpStatus:error.httpStatus});if(error.code==='TASK_EXECUTION_ENDED')throw error;if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');throw fileFailure(error.cause?.code?error.cause:error);}
         finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
     };
 }

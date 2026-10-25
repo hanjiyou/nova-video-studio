@@ -45,3 +45,16 @@ test('a safe accepted ID is persisted before a later credential-contaminated fie
     let observed;await assert.rejects(createPluginAdapter(plugin).submit(task,{}, {...auth,onAccepted:id=>{observed=id;}}),{credentialRedacted:true});
     assert.equal(observed,'safe-accepted-id');
 });
+
+
+test('poll response timing is observable without exporting IDs, credentials, response body or URL',async t=>{
+ mock(t,Response.json({status:'queued',progress:42,private:'PRIVATE'}));const events=[];
+ await createPluginAdapter(plugin).poll(task,{}, {...auth,diagnostic:(point,payload)=>events.push({point,...payload})});
+ assert.deepEqual(events.map(e=>e.point),['request_started','query_response','query_body']);assert.equal(events[1].httpStatus,200);assert.ok(events[1].durationMs>=0);assert.ok(events[2].byteLength>0);
+ for(const privateValue of ['PRIVATE',auth.apiKey,auth.baseUrl,task.upstream_task_id])assert.ok(!JSON.stringify(events).includes(privateValue));
+});
+
+
+for(const [body,parseOutcome]of [['not JSON','invalid_json'],['{}','missing_task_id'],['{"id":".."}','invalid_task_id']])test('malformed successful POST is distinguished as '+parseOutcome,async t=>{
+ mock(t,new Response(body,{status:200}));await assert.rejects(createPluginAdapter(plugin).submit(task,{},auth),error=>error.code==='SUBMISSION_UNKNOWN'&&error.parseOutcome===parseOutcome);
+});

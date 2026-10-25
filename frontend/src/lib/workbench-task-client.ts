@@ -1,3 +1,5 @@
+import { acceptTask, notifyTaskState } from './workbench-task-state';
+import { generateUUID } from './uuid';
 export interface AssetSummary {
   assetId: string; kind: 'image' | 'video' | 'audio'; displayName: string; mimeType: string; byteLength: number; sha256: string;
   width?: number | null; height?: number | null; durationSeconds?: number | null;
@@ -7,7 +9,7 @@ export interface AssetSummary {
 export type WorkbenchTaskState = 'local_queued' | 'submitting' | 'submission_unknown' | 'remote_queued' | 'generating' | 'polling_paused' | 'remote_completed' | 'downloading' | 'download_failed' | 'completed' | 'failed' | 'local_cancelled' | 'remote_cancelled' | 'timed_out';
 export type TaskExecutionPhase = 'reference_upload' | 'submitting' | 'receiving' | 'parsing' | 'remote_waiting' | 'downloading' | 'validating' | 'saving';
 export interface DownloadAttemptDto {
-  id: string; active: boolean; startedAt: string; deadlineAt: string; timeoutSeconds: number;
+  id: string; active: boolean; attemptNumber?: number; queuedAt?: string | null; startedAt: string | null; deadlineAt: string | null; timeoutSeconds: number;
   outcome: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null; finishedAt: string | null;
 }
 export interface TaskErrorDto {
@@ -24,8 +26,22 @@ export interface TaskErrorDto {
 export interface TaskExecutionSettings {
   imageConcurrency: number; videoConcurrency: number;
   imageTimeoutSeconds: number; videoTimeoutSeconds: number;
+  imageDownloadTimeoutSeconds?: number; videoDownloadTimeoutSeconds?: number;
+}
+export interface DownloadProgressDto {
+  attemptId: string; attemptNumber: number; retryCount: number;
+  phase: 'waiting' | 'refreshing' | 'downloading' | 'validating' | 'saving' | 'completed' | 'failed' | 'cancelled';
+  fileIndex: number; fileCount: number; transferNumber: number; sourceKind: string | null;
+  receivedBytes: number; totalBytes: number | null; bytesPerSecond: number; percent: number | null;
+  savedFileCount: number; overallReceivedBytes: number; overallTotalBytes: number | null; reusedBytes: number; completedBytes: number;
+  elapsedMs: number; lastByteAt: string | null; startedAt: string | null; deadlineAt: string | null; timeoutSeconds: number; stalled: boolean;
 }
 export interface DurableTaskFields {
+  revision?: number; acceptedAttemptId?: string; canRetryDownload?: boolean; recoveryKind?: string; recoveryReason?: string | null;
+  lifecycleVersion?: 1 | 2;
+  generationOutcome?: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null;
+  generationFinishedAt?: string | null;
+  downloadProgress?: DownloadProgressDto | null;
   removedFromWorkbench?: boolean;
   mediaKind?: 'image' | 'video' | null;
   localOutcome?: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null;
@@ -74,13 +90,13 @@ export async function getWorkbenchTask(taskId: string): Promise<WorkbenchTaskRes
   const response = await fetch('/api/nova/tasks/' + encodeURIComponent(taskId), { cache: 'no-store' });
   const result = await response.json();
   if (!response.ok) throw new WorkbenchTaskActionError(result.code || 'TASK_READ_FAILED', result.error || '读取任务失败。', response.status);
-  return result as WorkbenchTaskResponse;
+  return acceptTask(result as WorkbenchTaskResponse);
 }
-export async function actOnWorkbenchTask(taskId: string, action: WorkbenchTaskAction, input: { upstreamTaskId: string } | Record<string, never> = {}): Promise<WorkbenchTaskResponse> {
+export async function actOnWorkbenchTask(taskId: string, action: WorkbenchTaskAction, input: { upstreamTaskId: string } | {requestId:string} | Record<string, never> = {}): Promise<WorkbenchTaskResponse> {
   const response = await fetch('/api/nova/tasks/' + encodeURIComponent(taskId) + '/' + action, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(input) });
   const result = await response.json();
   if (!response.ok) throw new WorkbenchTaskActionError(result.code || 'TASK_ACTION_FAILED', result.error || '任务操作失败。', response.status, result.notBeforeAt);
-  return result.task as WorkbenchTaskResponse;
+  return {...acceptTask(result.task as WorkbenchTaskResponse),acceptedAttemptId:result.task.acceptedAttemptId};
 }
 
 /** Canonical B1 input. The caller persists this intent before sending; failed POSTs are never retried here. */
@@ -101,4 +117,14 @@ export async function createWorkbenchTask(input: WorkbenchTaskInput): Promise<st
   const result = await response.json();
   if (!response.ok) throw new WorkbenchTaskActionError(result.code || 'TASK_CREATE_FAILED', result.error || '创建任务失败。', response.status);
   return result.taskId as string;
+}
+
+const downloadRequests=new Map<string,{requestId:string;promise?:Promise<WorkbenchTaskResponse>}>();
+export const downloadRequestPending=(id:string)=>Boolean(downloadRequests.get(id)?.promise);
+/** An unconfirmed transport response retains its request ID; a definitive response permits a new intent. */
+export function retryOriginalDownload(id:string):Promise<WorkbenchTaskResponse> {
+ const previous=downloadRequests.get(id);if(previous?.promise)return previous.promise;
+ const entry=previous||{requestId:generateUUID()};downloadRequests.set(id,entry);
+ const promise=actOnWorkbenchTask(id,'retry-download',{requestId:entry.requestId}).then(task=>{downloadRequests.delete(id);return task;}).catch(error=>{if(error instanceof WorkbenchTaskActionError && error.statusCode<500)downloadRequests.delete(id);throw error;}).finally(()=>{entry.promise=undefined;notifyTaskState();});
+ entry.promise=promise;notifyTaskState();return promise;
 }

@@ -5,7 +5,7 @@ const { createHash, randomUUID } = require('node:crypto');
 const { createOutputDirectories } = require('./output-directories');
 const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const { MODES: TASK_MODES, DEFAULT_EXECUTION_SETTINGS, validateExecutionSettings, taskFields } = require('../tasks/lifecycle-contract');
+const { MODES: TASK_MODES, DEFAULT_EXECUTION_SETTINGS, validateExecutionSettings, normalizeExecutionSettings, taskFields } = require('../tasks/lifecycle-contract');
 const MODES = new Set(Object.keys(TASK_MODES));
 const MIME_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif',
     'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/mp4': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac' };
@@ -48,6 +48,7 @@ function safeJson(value, maxBytes = 65536) {
     return json;
 }
 function createWorkbenchStore({ db, rootDirectory }) {
+    const liveDownloadProgress = new Map();
     const root = path.resolve(rootDirectory);
     const assetRoot = path.join(root, 'assets');
     fs.mkdirSync(assetRoot, { recursive: true });
@@ -277,7 +278,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         exactKeys(value, ['value', 'expectedRevision']);
         if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
             throw fail('INVALID_SETTING_KEY');
-        if (key === 'taskExecution') value = { ...value, value: validateExecutionSettings(value.value) };
+        if (key === 'taskExecution') value = { ...value, value: normalizeExecutionSettings(value.value, getSetting(key).value) };
         if (key === 'theme' && !['system', 'light', 'dark'].includes(value.value))
             throw fail('INVALID_SETTING_VALUE');
         if (key === 'workspace') {
@@ -310,7 +311,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
             throw fail('INVALID_SETTING_KEY');
         const item = db.prepare('SELECT * FROM app_settings WHERE key=?').get(key);
         const result = item ? { key, value: JSON.parse(item.value_json), revision: item.revision, updatedAt: item.updated_at } : { key, value: key === 'taskExecution' ? { ...DEFAULT_EXECUTION_SETTINGS } : null, revision: 0, updatedAt: null };
-        if (key === 'taskExecution') result.value = validateExecutionSettings(result.value);
+        if (key === 'taskExecution') result.value = normalizeExecutionSettings(result.value);
         return result;
     }
     function linkLegacyAsset(kind, relativeKey, assetId) {
@@ -345,6 +346,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         const link = db.prepare("SELECT asset_id FROM asset_legacy_links WHERE kind='image' AND relative_key LIKE ? ORDER BY relative_key LIMIT 1").get(taskId + '-' + index + '-%');
         return link ? summary(row(link.asset_id)) : null;
     }
+    let recoveryResolver=()=>({canRetryDownload:false,recoveryKind:'none',recoveryReason:null});
     function record(task) {
         let request = {};
         try {
@@ -352,11 +354,14 @@ function createWorkbenchStore({ db, rootDirectory }) {
         }
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
         const rootRow = db.prepare('SELECT directory FROM storage_roots WHERE id=?').get(task.output_root_ref || outputDirectories.DEFAULT);
-        const downloadAttempt = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='task_download_attempts'").get() ? db.prepare('SELECT id,started_at,deadline_at,timeout_seconds,outcome,finished_at FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(task.id) : null;
-        return { ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
-            downloadAttempt: downloadAttempt ? { id:downloadAttempt.id,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
+        const downloadAttempt = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='task_download_attempts'").get() ? db.prepare('SELECT *, (SELECT count(*) FROM task_download_attempts older WHERE older.task_id=task_download_attempts.task_id AND older.rowid<=task_download_attempts.rowid) AS attempt_number FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(task.id) : null;
+        const recovery=recoveryResolver(task),inputs=taskAssets(task.id),outputs=taskAssets(task.id,'output');
+        const revision=db.prepare('SELECT revision FROM tasks WHERE id=?').get(task.id)?.revision||0;
+        return { revision,...recovery, ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
+            downloadProgress: downloadAttempt ? liveDownloadProgress.get(downloadAttempt.id) || (downloadAttempt.progress_json ? JSON.parse(downloadAttempt.progress_json) : null) : null,
+            downloadAttempt: downloadAttempt ? { id:downloadAttempt.id,attemptNumber:downloadAttempt.attempt_number,queuedAt:downloadAttempt.queued_at,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
             outputLocation: rootRow ? path.basename(rootRow.directory) : null,
-            inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
+            inputAssets: inputs, outputAssets: outputs };
     }
     function listTasks({ limit = 50, offset = 0, kind = '', search = '', model = '', status = '', scope = 'workbench' } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0)
@@ -375,7 +380,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     const importFiles = files => { if (!Array.isArray(files) || files.length > MAX_REFERENCE_ASSETS)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
-    const service = { importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
+    const service = {
+        setRecoveryResolver: resolver=>{recoveryResolver=resolver;},
+        setLiveDownloadProgress: (id,value) => value ? liveDownloadProgress.set(id,value) : liveDownloadProgress.delete(id), importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
         outputDirectory: () => outputDirectories.current(), checkOutputDirectory: () => outputDirectories.checkCurrent(), selectOutputDirectory: directory => outputDirectories.select(directory),
         freezeOutputDirectory: snapshot => outputDirectories.freeze(snapshot),
         downloadDirectory: rootRef => {

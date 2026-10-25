@@ -1,0 +1,5 @@
+'use strict';
+const root=process.argv[2],direction=Number(process.argv[3]);
+const crypto=require('node:crypto');let seq=0;crypto.randomUUID=()=> '00000000-0000-4000-8000-'+String(direction===1?++seq:999999-(++seq)).padStart(12,'0');
+const OriginalDate=Date;global.Date=class extends OriginalDate{constructor(...args){super(...(args.length?args:['2026-10-25T00:00:00.000Z']));}static now(){return OriginalDate.parse('2026-10-25T00:00:00.000Z');}};
+const Database=require('better-sqlite3'),{MIGRATIONS}=require(root+'/backend/storage/migrations'),{seedCapabilities,listCapabilities}=require(root+'/backend/connections/capabilities');const db=new Database(':memory:');for(const migration of MIGRATIONS)db.exec(migration.sql);seedCapabilities(db,'opensosen','https://newapi.opensosen.com/v1');const rows=listCapabilities(db,'opensosen','https://newapi.opensosen.com/v1').filter(c=>c.model==='grok-imagine-video-1.5-6s'&&c.mode==='video.multi_reference');console.log(JSON.stringify({direction,current:rows.find(c=>c.isCurrent),candidateCount:rows.length}));db.close();

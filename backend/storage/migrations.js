@@ -257,6 +257,44 @@ WHEN (OLD.local_outcome IS NOT NULL AND NEW.local_outcome IS NOT OLD.local_outco
  OR (OLD.local_finished_at IS NOT NULL AND NEW.local_finished_at IS NOT OLD.local_finished_at)
 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_LOCAL_OUTCOME'); END;
 ` },
+    { version: 9, name: 'independent-download-budgets', sql: `
+ALTER TABLE tasks ADD COLUMN lifecycle_version INTEGER NOT NULL DEFAULT 1 CHECK(lifecycle_version IN (1,2));
+ALTER TABLE tasks ADD COLUMN generation_outcome TEXT CHECK(generation_outcome IS NULL OR generation_outcome IN ('completed','failed','timed_out','cancelled'));
+ALTER TABLE tasks ADD COLUMN generation_finished_at TEXT;
+CREATE TRIGGER task_lifecycle_version_immutable BEFORE UPDATE OF lifecycle_version ON tasks
+WHEN NEW.lifecycle_version IS NOT OLD.lifecycle_version BEGIN SELECT RAISE(ABORT,'IMMUTABLE_LIFECYCLE_VERSION'); END;
+CREATE TRIGGER task_generation_outcome_immutable BEFORE UPDATE OF generation_outcome,generation_finished_at ON tasks
+WHEN (OLD.generation_outcome IS NOT NULL AND NEW.generation_outcome IS NOT OLD.generation_outcome)
+ OR (OLD.generation_finished_at IS NOT NULL AND NEW.generation_finished_at IS NOT OLD.generation_finished_at)
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GENERATION_OUTCOME'); END;
+DROP INDEX idx_task_active_download_attempt;
+ALTER TABLE task_download_attempts RENAME TO task_download_attempts_v8;
+CREATE TABLE task_download_attempts (
+ id TEXT PRIMARY KEY,task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+ started_at TEXT,deadline_at TEXT,timeout_seconds INTEGER NOT NULL CHECK(timeout_seconds BETWEEN 30 AND 1800),
+ outcome TEXT CHECK(outcome IS NULL OR outcome IN ('completed','failed','timed_out','cancelled')),finished_at TEXT,
+ queued_at TEXT,progress_json TEXT,
+ CHECK((started_at IS NULL)=(deadline_at IS NULL))
+);
+INSERT INTO task_download_attempts(rowid,id,task_id,started_at,deadline_at,timeout_seconds,outcome,finished_at)
+ SELECT rowid,id,task_id,started_at,deadline_at,timeout_seconds,outcome,finished_at FROM task_download_attempts_v8 ORDER BY rowid;
+DROP TABLE task_download_attempts_v8;
+CREATE UNIQUE INDEX idx_task_active_download_attempt ON task_download_attempts(task_id) WHERE outcome IS NULL;
+CREATE TRIGGER download_budget_immutable BEFORE UPDATE OF started_at,deadline_at,timeout_seconds ON task_download_attempts
+WHEN NEW.timeout_seconds IS NOT OLD.timeout_seconds OR (OLD.started_at IS NOT NULL AND (NEW.started_at IS NOT OLD.started_at OR NEW.deadline_at IS NOT OLD.deadline_at))
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DOWNLOAD_BUDGET'); END;
+` },
+    { version: 10, name: 'download-recovery-checkpoints', sql: `
+ALTER TABLE tasks ADD COLUMN revision INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE task_download_attempts ADD COLUMN error_code TEXT;
+ALTER TABLE task_download_attempts ADD COLUMN http_status INTEGER;
+CREATE TRIGGER asset_availability_revision AFTER UPDATE OF availability ON assets WHEN NEW.availability IS NOT OLD.availability BEGIN UPDATE tasks SET revision=revision+1 WHERE id IN (SELECT task_id FROM task_assets WHERE asset_id=NEW.id); END;
+CREATE TRIGGER task_revision AFTER UPDATE ON tasks WHEN NEW.revision=OLD.revision
+BEGIN UPDATE tasks SET revision=OLD.revision+1 WHERE id=NEW.id; END;
+CREATE TRIGGER task_removed_revision AFTER INSERT ON workbench_removed_tasks BEGIN UPDATE tasks SET revision=revision+1 WHERE id=NEW.task_id; END;
+CREATE TABLE task_download_actions(request_id TEXT PRIMARY KEY,task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,attempt_id TEXT NOT NULL REFERENCES task_download_attempts(id),created_at TEXT NOT NULL);
+CREATE TABLE task_download_files(task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,source_key TEXT NOT NULL,asset_id TEXT NOT NULL REFERENCES assets(id),sha256 TEXT NOT NULL,byte_length INTEGER NOT NULL,position INTEGER NOT NULL,PRIMARY KEY(task_id,source_key));
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

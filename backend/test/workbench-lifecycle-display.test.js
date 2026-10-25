@@ -40,3 +40,8 @@ test('I05 HTTP action validates an empty body and keeps library DELETE distinct'
  input={};assert.deepEqual((await request('POST','/api/nova/storage/tasks/'+id+'/remove')).value,{removed:true,worksRetained:true});assert.equal((await request('GET','/api/nova/storage/tasks?scope=workbench')).value.total,0);assert.equal((await request('GET','/api/nova/storage/tasks?scope=library')).value.total,1);
  input={deleteOutputs:false};assert.equal((await request('DELETE','/api/nova/storage/tasks/'+id)).value.removed,true);assert.equal((await request('GET','/api/nova/storage/tasks?scope=library')).value.total,0);assert.equal((await request('GET','/api/nova/storage/tasks/'+id)).value.task.id,id);
 });
+
+test('D09 deleting one work cannot remove a file retained by another unfinished download checkpoint',async t=>{
+ const f=await fixture(t),id=f.task(),other=f.task('image.text','download_failed'),bytes=fs.readFileSync(path.join(__dirname,'fixtures/workbench-v1/reference-a.png')),asset=f.store.importBuffer(bytes,{mimeType:'image/png',sourceKind:'generated',validation:{width:2,height:2}});
+ f.store.bindTaskAssets(id,[{assetId:asset.assetId,position:0,role:'reference'}],'output');f.db.prepare('INSERT INTO task_download_files VALUES(?,?,?,?,?,?)').run(other,'synthetic-source',asset.assetId,asset.sha256,asset.byteLength,0);const result=f.store.removeHistory(id,{deleteOutputs:true});assert.equal(result.deletedAssets,0);assert.equal(result.retainedAssets,1);assert.deepEqual(f.store.readAsset(asset.assetId).bytes,bytes);
+});

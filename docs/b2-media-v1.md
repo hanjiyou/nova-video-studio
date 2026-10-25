@@ -1,5 +1,7 @@
 # B2 下载与本地媒体接口 v1
 
+> 2026-10-26 当前下载体验：D01–D03 已主审；D04–D10 已实现并完成离线验收，源码与离线范围主审通过。图片下载默认30秒、视频180秒可配置；生成与下载独立预算，原卡片/详情显示进度并可重新下载。用户选择保持原来源存储，不新增加密；无ID临时链接重启后不可恢复时明确提示。见[实施记录](implementation/D04-D10-下载恢复与工作台体验.md)。未提交、打包或发布，已发布3.6.5仍执行旧规则。
+
 日期：2026-10-23。B2=T08，基础范围已由主会话审核接受，明确批准本批提交推送origin/dev，见[审核记录](implementation/b2-evidence/approval-review.json)。独立检查为105项中104通过、1项因Windows缺symlink权限跳过、0失败；没有新增完整工作台UI、真实供应商能力证据或发布。61项要求与17个任务编号保持。
 
 ## 完成门槛与下载队列
@@ -58,3 +60,23 @@ preload `getOutputDirectory()` 返回 opaque 版本/根引用与 displayName；`
 GET/HEAD `/api/nova/assets/:assetId/content` 延续会话鉴权、真实路径边界和每次长度/SHA核对，支持完整200、单一bytes范围206、无效/多段/越界416（Content-Range: bytes */size）、suffix/open-end、Accept-Ranges、ETag/If-Range。HEAD返回完整元数据不传正文。图片和视频均可离线读取；Range返回精确本地字节，不代理远端 URL。
 
 固定安全错误包括 DOWNLOAD_FAILED、DOWNLOAD_INCOMPLETE、DOWNLOAD_TOO_LARGE、DOWNLOAD_FORBIDDEN、DOWNLOAD_EXPIRED、RESULT_NOT_RECOVERABLE、MEDIA_INVALID、MEDIA_VALIDATOR_UNAVAILABLE、DISK_FULL、FILE_BUSY、DIRECTORY_NOT_WRITABLE、PATH_TOO_LONG、FILESYSTEM_ERROR、ASSET_MISSING、ASSET_CORRUPT、SAVE_TARGET_CHANGED；凭据错误延续原分类。错误不会保存原始 HTTP正文、路径、签名URL或解码 stderr。实际测试与边界见 [B2实施记录](implementation/B2-T08-下载与本地媒体.md)。
+
+
+## D01–D03 下载体验增量（2026-10-25，本批离线范围主审通过）
+
+已实施新任务 lifecycleVersion=2：生成默认120/300秒，结果下载默认图片30/视频180秒，均可配置；生成成功且来源登记后结束生成计时，实际开始下载时再启动完整下载预算。旧任务保持版本1预算和历史结论。所有文件、来源刷新、验证和保存共享下载绝对截止，不在阶段切换续期。
+
+新增 generationOutcome/generationFinishedAt 只表示生成完成，完整文件验证保存关联前不表示任务 completed。downloadAttempt.attemptNumber 区分首次与重试；waiting 的 startedAt/deadlineAt 为 null。进度 downloadProgress 与 remote progress 分离，字节/毫秒/字节每秒，未知总大小/比例为 null；普通采样500ms、3秒速度窗口、5秒停滞观察。来源URL/凭据不进入进度。
+
+v9迁移保持旧checksum；旧四字段配置写入保留当前下载值且继续revision检查。原下载失败后显式重试使用新下载配置与attempt，不更改原生成事实和首次localOutcome，不重复生成POST。无ID签名链接加密未授权，保持旧限制。完整文件检查点、WS版本、卡片进度、配置输入、诊断导出尚在D04–D10。
+
+实现与验证见 [D01–D03实施记录](implementation/D01-D03-独立下载预算与真实进度.md)。
+
+
+## 2026-10-26 下载体验 D04–D10 当前实现补充
+
+已实现原任务内下载进度、重新下载、文件检查点、原来源恢复、HTTP/WS 版本同步和有界诊断，离线验收完成、源码与离线范围主审通过；未提交/打包/发布。详见[实施及验证记录](implementation/D04-D10-下载恢复与工作台体验.md)。本补充替代上文同主题“待开发”的旧阶段描述，原签名 URL 仅内存规则保持，历史证据保留。
+
+新任务生成/下载独立预算：图片 120/30 秒、视频 300/180 秒；设置页各时限 30–1800 整数秒。下载排队不计时，刷新、多文件、校验与保存共用一次尝试截止；重试读取新配置，不重新生成。卡片/详情显示真实进度，未知总量不显示百分比，只有验证保存关联成功才完成。网络改善后点击“重新下载”，复用已验证完整文件，未保存文件从头下载，不宣称 Range 续传。
+
+用户最终确认保持原来源存储规则，不新增恢复信息加密：安全持久源/内联资产/可原 ID 查询结果可跨重启恢复；无 ID 临时签名链接仅本次运行可用，重启或过期后无法恢复时明确提示，绝不重新生成。全部已验证检查点可恢复最终关联。task.revision 持久递增，HTTP/WS 与动作共享投影；requestId 重放回传 acceptedAttemptId 和当前状态。失败诊断保留实际字节、预算、原因和最近 10 次尝试；direct 不代表用户未启用代理。

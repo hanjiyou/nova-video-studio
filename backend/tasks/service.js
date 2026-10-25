@@ -1,11 +1,12 @@
 'use strict';
-const { randomUUID } = require('node:crypto');
+const { createHash, randomUUID } = require('node:crypto');
 const { UUID, fail } = require('../storage/store');
 const uuid = value => { if (typeof value !== 'string' || !UUID.test(value)) throw fail('INVALID_ID'); return value; };
 const { containsCredential } = require('../connections/redaction');
 const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
 const { DETAILS, failure: downloadFailure } = require('../storage/download-errors');
 const { executionSnapshot, mediaKind, localOutcome, remoteOutcome } = require('./lifecycle-contract');
+const {createDownloadProgress}=require('../storage/download-progress');
 const { createExecutionRuntime } = require('./execution-runtime');
 const {classifyError}=require('./diagnostic-error');
 const { createDiagnosticTimeline } = require('./diagnostic-timeline');
@@ -76,7 +77,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     const row = id => db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id));
     const telemetry = createDiagnosticTimeline({db,now});
     const event = (id, type, payload = {}) => store.appendTaskEvent(id, type, payload);
-    const emit = id => queueMicrotask(() => { if (!closed) onChange(id); });
+    const emit = id => { db.prepare('UPDATE tasks SET revision=revision+1 WHERE id=?').run(id); queueMicrotask(() => { if (!closed) onChange(id); }); };
     const kind = task => task.execution_media_kind || mediaKind(JSON.parse(task.input_snapshot_json || '{}').mode || task.mode);
     const settings = () => store.getSetting('taskExecution').value;
     const retryJob = id => db.prepare("SELECT * FROM task_download_attempts WHERE task_id=? AND outcome IS NULL ORDER BY rowid DESC LIMIT 1").get(id);
@@ -87,32 +88,60 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         return counts;
     }
     const runtime = createExecutionRuntime({ now, monotonic, setTimer, clearTimer, onError:stopScheduler,
-        current(id, ctx) { const task = row(id); return !closed && task && (ctx.downloadAttempt ? retryJob(id)?.id === ctx.token : !localOutcome(task) && task.execution_attempt_id === ctx.token); },
-        expire(id, ctx) { finishLocal(id, 'timed_out', 'TASK_TIMED_OUT', ctx); },
+        current(id, ctx) { const task = row(id); return !closed && task && (ctx.downloadAttempt ? retryJob(id)?.id === ctx.token : !localOutcome(task) && !task.generation_outcome && task.execution_attempt_id === ctx.token); },
+        expire(id, ctx) { finishLocal(id, 'timed_out', ctx.downloadAttempt ? 'DOWNLOAD_TIMEOUT' : 'TASK_TIMED_OUT', ctx); },
         phase(id, value, ctx) { telemetry.phase(id,value,ctx); const task = row(id); if (task.execution_phase !== value) { db.prepare('UPDATE tasks SET execution_phase=?,execution_phase_started_at=? WHERE id=?').run(value, iso(), id); emit(id); } },
     });
     function finishLocal(id, outcome, code, ctx = runtime.active.get(id)) {
         const task = row(id); if (!task) return false;
+        const waiting = !ctx && retryJob(id);
+        if (waiting) ctx = { token:waiting.id, downloadAttempt:waiting };
         if(ctx)ctx.endedOutcome=outcome;
         if (ctx?.downloadAttempt) {
             const changed = db.prepare('UPDATE task_download_attempts SET outcome=?,finished_at=? WHERE id=? AND outcome IS NULL').run(outcome, iso(), ctx.token).changes;
             if (!changed) return false;
+            db.prepare('UPDATE task_download_attempts SET error_code=? WHERE id=?').run(code,ctx.token);
             db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), id);
-            db.prepare("UPDATE tasks SET status='download_failed',next_poll_at=NULL WHERE id=?").run(id);
+            const error = errorDto(code, task.execution_phase || 'download', task);
+            db.prepare("UPDATE tasks SET status='download_failed',next_poll_at=NULL,task_error_json=?,error=?,local_outcome=COALESCE(local_outcome,?),local_finished_at=COALESCE(local_finished_at,?) WHERE id=?").run(JSON.stringify(error),error.message,outcome,iso(),id);
+            persistFinalDownloadProgress(id,ctx,outcome==='cancelled'?'cancelled':'failed');
             event(id, 'download_attempt_ended', { outcome, code }); telemetry.end(id,outcome,code,ctx); emit(id);
         } else {
             if (localOutcome(task)) return false;
             const error = errorDto(code, task.execution_phase || 'submit', task, { transmission: task.dispatch_started_at ? 'may_have_reached_upstream' : 'not_dispatched' });
             db.transaction(() => {
                 const changed = db.prepare('UPDATE tasks SET status=?,local_outcome=?,local_finished_at=?,completed_at=?,remote_outcome=?,task_error_json=?,error=?,next_poll_at=NULL,requires_continue=0 WHERE id=? AND local_outcome IS NULL').run(outcome === 'cancelled' ? 'local_cancelled' : outcome === 'timed_out' ? 'timed_out' : 'failed', outcome, iso(), iso(), remoteOutcome(task), JSON.stringify(error), error.message, id).changes;
+                if (changed && task.lifecycle_version===2 && !task.generation_outcome) db.prepare('UPDATE tasks SET generation_outcome=?,generation_finished_at=? WHERE id=? AND generation_outcome IS NULL').run(outcome,iso(),id);
                 if (changed) { event(id, 'local_execution_ended', { outcome, code, phase: task.execution_phase }); telemetry.end(id,outcome,code,ctx); }
                 db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=? AND state IN ('waiting','running')").run(iso(), id);
             }).immediate();
             emit(id);
         }
-        cancelTimer(id); runtime.finish(id); inFlight.get(id)?.controller.abort(); ephemeralSources.delete(id); queueMicrotask(() => { background(pump()); background(drainDownloads()); }); return true;
+        cancelTimer(id); runtime.finish(id); inFlight.get(id)?.controller.abort(); if (!task.result_sources_json) ephemeralSources.delete(id); queueMicrotask(() => { background(pump()); background(drainDownloads()); }); return true;
     }
-    function context(task) { const ctx = runtime.active.get(task.id) || runtime.start(task, retryJob(task.id)); ctx.options.diagnostic = (point,payload) => { ctx.checkpoint(); telemetry.observe(task.id,point,payload,ctx); }; ctx.checkpoint(); return ctx; }
+    function persistFinalDownloadProgress(id,ctx,phase) {
+        if(!ctx?.downloadAttempt)return;
+        const persisted=db.prepare('SELECT * FROM task_download_attempts WHERE id=?').get(ctx.token);
+        if(ctx.finalDownloadPersisted&&persisted?.outcome&&persisted.progress_json===JSON.stringify(ctx.finalDownloadSnapshot))return;
+        const tracker=ctx.options?.progressTracker;
+        if(!ctx.finalDownloadSnapshot&&tracker){
+            const value=tracker.snapshot(),attempt=ctx.downloadAttempt,task=row(id);
+            ctx.finalDownloadReason=phase==='completed'?null:JSON.parse(task.task_error_json||'null')?.code;
+            const count=db.prepare('SELECT count(*) AS n FROM task_download_attempts WHERE task_id=? AND rowid<=(SELECT rowid FROM task_download_attempts WHERE id=?)').get(id,ctx.token).n;
+            ctx.finalDownloadSnapshot={...value,phase,bytesPerSecond:0,stalled:false,elapsedMs:ctx.elapsedMs(),attemptId:ctx.token,attemptNumber:count,retryCount:count-(task.lifecycle_version===2?1:0),startedAt:attempt.started_at,deadlineAt:attempt.deadline_at,timeoutSeconds:attempt.timeout_seconds};
+        }
+        tracker?.close();
+        if(ctx.finalDownloadSnapshot)db.prepare('UPDATE task_download_attempts SET progress_json=? WHERE id=?').run(JSON.stringify(ctx.finalDownloadSnapshot),ctx.token);
+        store.setLiveDownloadProgress(ctx.token,null);
+        if(ctx.finalDownloadSnapshot){
+            const attempt=db.prepare('SELECT * FROM task_download_attempts WHERE id=?').get(ctx.token);
+            const code=attempt.outcome==='completed'?null:ctx.finalDownloadReason;
+            db.prepare('UPDATE task_download_attempts SET error_code=COALESCE(error_code,?) WHERE id=?').run(DETAILS[code]||code==='TASK_CANCELLED'?code:null,ctx.token);
+            ctx.finalDownloadPersisted=true;
+            if(db.prepare('SELECT id FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(id)?.id===ctx.token){telemetry.end(id,attempt.outcome||'failed',code,ctx);emit(id);}
+        }
+    }
+    function context(task) { const ctx = runtime.active.get(task.id) || runtime.start(task, retryJob(task.id)); ctx.options.diagnostic = (point,payload) => { ctx.checkpoint(); if(ctx.downloadAttempt&&Number.isInteger(payload?.httpStatus)&&payload.httpStatus>=100&&payload.httpStatus<=599)db.prepare('UPDATE task_download_attempts SET http_status=? WHERE id=? AND outcome IS NULL').run(payload.httpStatus,ctx.token); telemetry.observe(task.id,point,payload,ctx); }; ctx.checkpoint(); return ctx; }
     function wake() { if (!closed) queueMicrotask(() => { background(pump()); background(drainDownloads()); }); }
     function track(key, task, run) {
         if (inFlight.has(key)) return inFlight.get(key).promise;
@@ -129,8 +158,9 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (!before) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
             const downloadRetry = ['missing_result_download_requested','download_retry_requested'].includes(type) || Boolean(retryJob(id));
             if (localOutcome(before) && state !== before.status && !downloadRetry) throw fail('TASK_EXECUTION_ENDED');
-            const allowed = ['upstream_task_id', 'dispatch_started_at', 'remote_state', 'raw_status', 'remote_progress', 'pause_reason', 'not_before_at', 'next_poll_at', 'poll_attempts', 'poll_budget_started_at', 'task_error_json', 'error', 'requires_continue', 'result_sources_json', 'completed_at', 'execution_attempt_id', 'execution_deadline_at', 'local_outcome', 'local_finished_at', 'remote_outcome', 'execution_phase', 'execution_phase_started_at'];
+            const allowed = ['upstream_task_id', 'dispatch_started_at', 'remote_state', 'raw_status', 'remote_progress', 'pause_reason', 'not_before_at', 'next_poll_at', 'poll_attempts', 'poll_budget_started_at', 'task_error_json', 'error', 'requires_continue', 'result_sources_json', 'completed_at', 'execution_attempt_id', 'execution_deadline_at', 'local_outcome', 'local_finished_at', 'remote_outcome', 'execution_phase', 'execution_phase_started_at', 'generation_outcome', 'generation_finished_at'];
             if (Object.keys(fields).some(key => !allowed.includes(key))) throw fail('TASK_STATE_INVALID');
+            if (TERMINAL.has(state) && before.lifecycle_version === 2 && !before.generation_outcome && state !== 'download_failed') Object.assign(fields, {generation_outcome:localOutcome({status:state}),generation_finished_at:iso()});
             if (TERMINAL.has(state) && !localOutcome(before)) Object.assign(fields, { local_outcome: localOutcome({ status: state }), local_finished_at: iso(), remote_outcome: remoteOutcome({ ...before, ...fields, status: state }) });
             db.prepare('UPDATE tasks SET status=?' + Object.keys(fields).map(key => ',' + key + '=?').join('') + ' WHERE id=?').run(state, ...Object.values(fields), id);
             if (type !== 'task_transition' || before.status !== state) event(id, type, { previous: before.status, next: state, ...payload });
@@ -190,7 +220,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         connections.getAuth(snapshot.connectionVersionId);
         const id = randomUUID(), execution = executionSnapshot(snapshot.mode, store.getSetting('taskExecution').value);
         db.transaction(() => {
-            db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at,execution_media_kind,execution_timeout_seconds) VALUES(?,?,?,?,?,?,?)').run(id, 'local_queued', mode, JSON.stringify(request), iso(), execution.mediaKind, execution.timeoutSeconds);
+            db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at,execution_media_kind,execution_timeout_seconds,lifecycle_version) VALUES(?,?,?,?,?,?,?,2)').run(id, 'local_queued', mode, JSON.stringify(request), iso(), execution.mediaKind, execution.timeoutSeconds);
             store.setTaskSnapshot(id, snapshot);
             event(id, 'task_enqueued', { contractVersion: 1 }); telemetry.record(id,'queued');
         }).immediate();
@@ -219,11 +249,15 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password || url.hash || containsCredential(url.toString(), key)) throw Object.assign(fail('DOWNLOAD_EXPIRED'), { credentialRedacted: containsCredential(url.toString(), key) });
             // Signed addresses are handed directly to the worker in memory. A durable marker
             // records the limitation without persisting any query/token or temporary path.
-            if (url.search) { transient.push({ ...source, url:url.toString() }); return { kind:'ephemeral', mediaKind:source.mediaKind || 'image' }; }
+            if (url.search) { transient.push({kind:'url',mediaKind:source.mediaKind || 'image',authScope:source.authScope==='connection'?'connection':'none',url:url.toString() }); return { kind:'ephemeral', mediaKind:source.mediaKind || 'image' }; }
             return { kind: 'url', url: url.toString(), authScope: source.authScope === 'connection' ? 'connection' : 'none', mediaKind: source.mediaKind || 'image' };
         });
         if(transient.length)ephemeralSources.set(task.id,result.map((source,index)=>saved[index].kind==='ephemeral'?transient.shift():saved[index]));
         else ephemeralSources.delete(task.id);
+        const full=ephemeralSources.get(task.id)||saved;
+        const outputSetId=randomUUID();
+        for(const [position,source] of full.entries()){source.outputSetId=outputSetId;source.sourceKey=createHash('sha256').update(canonical({position,source})).digest('hex');}
+        for(let i=0;i<saved.length;i++)saved[i].sourceKey=full[i].sourceKey;
         return saved;
     }
     function remoteCompleted(id, result, key, rawStatus = null, ctx = context(row(id))) {
@@ -234,10 +268,16 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         try { sources = candidates(row(id), result, key, ctx); ctx.checkpoint(); }
         catch (error) { if (error.code === 'TASK_EXECUTION_ENDED') return; setError(id, 'download_failed', error.code === 'DOWNLOAD_EXPIRED' ? 'DOWNLOAD_EXPIRED' : 'DOWNLOAD_FAILED', 'download', { remote_state: 'completed', pause_reason: null, next_poll_at: null }, error.credentialRedacted ? { message: '上游资源地址包含连接凭据，已停止下载。' } : {}); background(pump()); return; }
         db.transaction(() => {
+            ctx.checkpoint();
             update(id, 'remote_completed', { result_sources_json: JSON.stringify(sources), remote_state: 'completed', raw_status: rawStatus, remote_progress: 100, task_error_json: null, error: null, next_poll_at: null, pause_reason: null });
             db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at").run(id, iso(), iso());
+            if (row(id).lifecycle_version === 2) {
+                db.prepare("UPDATE tasks SET generation_outcome='completed',generation_finished_at=?,remote_outcome='confirmed_result' WHERE id=? AND generation_outcome IS NULL").run(iso(),id);
+                queueDownloadAttempt(id);
+            }
             event(id, 'download_enqueued', { candidateCount: sources.length });
         })();
+        if (row(id).lifecycle_version === 2) { telemetry.end(id,'completed',null,ctx); cancelTimer(id); runtime.finish(id); }
         background(pump()); background(drainDownloads());
     }
     async function submit(id, signal) {
@@ -366,7 +406,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     function action(id, name, input = {}) {
         if (closed || updatePaused) throw fail('TASK_SERVICE_PAUSED', '任务服务已停止或准备更新，现有记录保留。', 503);
         const task = row(id); if (!task) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
-        if (!input || Object.keys(input).some(key => name !== 'attach-upstream-id' || key !== 'upstreamTaskId')) throw fail('INVALID_TASK_ACTION');
+        if (!input || Object.keys(input).some(key => !(name === 'attach-upstream-id' && key === 'upstreamTaskId') && !(name==='retry-download'&&key==='requestId'))) throw fail('INVALID_TASK_ACTION');
         if (name === 'cancel' || name === 'cancel-task') {
             if (!localOutcome(task) || retryJob(id)) finishLocal(id, 'cancelled', 'TASK_CANCELLED');
         } else if (name === 'cancel-queued') {
@@ -397,24 +437,36 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (!isQueryableUpstreamTaskId(value) || containsCredential(value, auth.apiKey)) throw fail('INVALID_UPSTREAM_ID');
             update(id, 'polling_paused', { upstream_task_id: value, pause_reason: 'reconciled_id', error: null, task_error_json: null }, 'submission_reconciled');
         } else if (name === 'retry-download') {
-            const missingResult = task.status === 'completed' && store.taskAssets(id, 'output').some(asset => asset.availability === 'missing');
+            const requestId=input.requestId===undefined?randomUUID():uuid(input.requestId).toLowerCase();
+            const receipt=db.prepare('SELECT * FROM task_download_actions WHERE request_id=?').get(requestId);
+            if(receipt){if(receipt.task_id!==id)throw fail('LOCAL_REQUEST_CONFLICT','重新下载请求标识冲突。',409);return {...publicTask(row(id)),acceptedAttemptId:receipt.attempt_id};}
+            if(retryJob(id)){const active=retryJob(id);db.prepare('INSERT INTO task_download_actions VALUES(?,?,?,?)').run(requestId,id,active.id,iso());return {...publicTask(row(id)),acceptedAttemptId:active.id};}
+
+            const missingResult = task.status === 'completed' && store.taskAssets(id, 'output').some(asset => asset.availability !== 'available');
             if (task.status !== 'download_failed' && !missingResult || retryJob(id)) throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
             if (!task.result_sources_json && !task.upstream_task_id) throw fail('RESULT_REFRESH_REQUIRED', '没有可恢复资源；不会重新生成。', 409);
+            if(!recovery(task).canRetryDownload)throw fail('RESULT_NOT_RECOVERABLE','原结果无法安全恢复；不会重新生成。',409);
             const job=db.prepare('SELECT refresh_not_before_at FROM task_downloads WHERE task_id=?').get(id);
             if(Date.parse(job?.refresh_not_before_at || '')>now())throw Object.assign(fail('POLL_NOT_BEFORE','尚未到上游允许的刷新时间。',409),{notBeforeAt:job.refresh_not_before_at});
-            const attemptId = randomUUID(), timeoutSeconds = settings()[kind(task) + 'TimeoutSeconds'];
+
             if(reservationCounts()[kind(task)]>=settings()[kind(task)+'Concurrency'])throw fail('TASK_CAPACITY_BUSY','该类任务名额已满，请稍后重试下载。',409);
             db.transaction(() => {
-                db.prepare('INSERT INTO task_download_attempts(id,task_id,started_at,deadline_at,timeout_seconds) VALUES(?,?,?,?,?)').run(attemptId,id,iso(),iso(now()+timeoutSeconds*1000),timeoutSeconds);
+                const attemptId=queueDownloadAttempt(id);
+                db.prepare('INSERT INTO task_download_actions VALUES(?,?,?,?)').run(requestId,id,attemptId,iso());
                 update(id, 'remote_completed', { task_error_json: null, error: null }, missingResult ? 'missing_result_download_requested' : 'download_retry_requested');
                 db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at,refresh_attempts=0,refresh_budget_started_at=NULL").run(id,iso(),iso());
             }).immediate();
-            runtime.start(row(id), retryJob(id)); background(drainDownloads());
+            background(drainDownloads());emit(id);return {...publicTask(row(id)),acceptedAttemptId:db.prepare('SELECT attempt_id FROM task_download_actions WHERE request_id=?').get(requestId).attempt_id};
         } else throw fail('TASK_ACTION_INVALID');
         emit(id); return publicTask(row(id));
     }
+    function queueDownloadAttempt(id) {
+        const task=row(id), attemptId=randomUUID(), timeoutSeconds=settings()[kind(task)+'DownloadTimeoutSeconds'];
+        db.prepare('INSERT INTO task_download_attempts(id,task_id,timeout_seconds,queued_at) VALUES(?,?,?,?)').run(attemptId,id,timeoutSeconds,iso());
+        return attemptId;
+    }
     async function refreshDownload(task, ctx) {
-        ctx.checkpoint();
+        ctx.checkpoint();ctx.options.progressTracker?.phase('refreshing');
         if(!task.upstream_task_id||!isQueryableUpstreamTaskId(task.upstream_task_id))throw downloadFailure('RESULT_NOT_RECOVERABLE');
         const job=db.prepare('SELECT * FROM task_downloads WHERE task_id=?').get(task.id);
         if(Date.parse(job.refresh_not_before_at || '')>now())throw downloadFailure('RATE_LIMITED');
@@ -443,6 +495,26 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             throw DETAILS[error.code]?error:downloadFailure('DOWNLOAD_EXPIRED');
         }
     }
+    function readCheckpoint(taskId,source){
+            if(!source.sourceKey)return null;
+            const file=db.prepare('SELECT * FROM task_download_files WHERE task_id=? AND source_key=?').get(taskId,source.sourceKey);
+            if(!file)return null;
+            try{const checked=store.readAsset(file.asset_id);if(checked.asset.validationState!=='verified'||checked.asset.sha256!==file.sha256||checked.bytes.length!==file.byte_length||createHash('sha256').update(checked.bytes).digest('hex')!==file.sha256)return null;return {assetId:file.asset_id,byteLength:file.byte_length};}catch{return null;}
+    }
+    function recovery(task) {
+        let sources;try{sources=JSON.parse(task.result_sources_json||'null');}catch{}
+        const generated=task.generation_outcome==='completed'||task.remote_state==='completed'||Boolean(sources);
+        const missing=task.status==='completed'&&store.taskAssets(task.id,'output').some(asset=>asset.availability!=='available');
+        if(retryJob(task.id)||task.status==='completed'&&!missing)return {canRetryDownload:false,recoveryKind:'none',recoveryReason:null};
+        let recoveryKind='none';
+        if(sources?.length&&sources.every(source=>source.kind!=='ephemeral'))recoveryKind='stored';
+        else if(ephemeralSources.has(task.id))recoveryKind='session';
+        else if(sources?.length&&sources.every(source=>{const file=db.prepare('SELECT * FROM task_download_files WHERE task_id=? AND source_key=?').get(task.id,source.sourceKey||'');if(!file)return false;try{const asset=store.getAsset(file.asset_id);return asset.availability==='available'&&asset.validationState==='verified'&&asset.sha256===file.sha256&&asset.byteLength===file.byte_length;}catch{return false;}}))recoveryKind='checkpoints';
+        if(recoveryKind==='none'&&isQueryableUpstreamTaskId(task.upstream_task_id)){try{if(typeof adapter(task).poll==='function')recoveryKind='upstream';}catch{}}
+
+        return {canRetryDownload:generated&&recoveryKind!=='none'&&!retryJob(task.id)&&(task.status==='download_failed'||missing),recoveryKind,recoveryReason:generated&&recoveryKind==='none'?'原结果暂时无法恢复；临时链接可能已丢失，且当前无法通过原任务查询。不会重新生成。':recoveryKind==='session'?'原结果临时链接仅本次运行可恢复；请在退出前完成下载。':null};
+    }
+    store.setRecoveryResolver?.(recovery);
     // One projection for task HTTP/WS/action responses and storage history.
     function publicTask(task) { return task ? store.getTask(task.id) : null; }
 
@@ -459,7 +531,28 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     async function runDownload(job, original) {
         let ctx;
-        try {ctx=context(original);}catch(error){if(error.code==='TASK_EXECUTION_ENDED')return;throw error;}
+        try {
+            const attempt=retryJob(original.id);
+            if (attempt && !attempt.started_at) db.prepare('UPDATE task_download_attempts SET started_at=?,deadline_at=? WHERE id=? AND started_at IS NULL AND outcome IS NULL').run(iso(),iso(now()+attempt.timeout_seconds*1000),attempt.id);
+            ctx=context(row(original.id));
+        }catch(error){if(error.code==='TASK_EXECUTION_ENDED')return;throw error;}
+        ctx.options.readCheckpoint=source=>readCheckpoint(original.id,source);
+        ctx.options.saveCheckpoint=(source,index,assetId)=>{ctx.checkpoint();if(!source.sourceKey)return;const asset=store.getAsset(assetId);db.prepare('INSERT INTO task_download_files VALUES(?,?,?,?,?,?) ON CONFLICT(task_id,source_key) DO UPDATE SET asset_id=excluded.asset_id,sha256=excluded.sha256,byte_length=excluded.byte_length,position=excluded.position').run(original.id,source.sourceKey,assetId,asset.sha256,asset.byteLength,index);};
+        ctx.options.legacyDownloadLimit=original.lifecycle_version===1&&!ctx.downloadAttempt;
+        let progress, lastSnapshot=null,lastPersist=-Infinity;
+        if (ctx.downloadAttempt) {
+            const attempt=ctx.downloadAttempt, count=db.prepare('SELECT count(*) AS n FROM task_download_attempts WHERE task_id=?').get(original.id).n;
+            // The worker sets the list size and emits through one tracker for all source refreshes.
+            ctx.options.progressOptions={checkpoint:ctx.checkpoint,now,monotonic:monotonic || (now===Date.now?undefined:now),setTimer:(fn,ms)=>{let handle;const loop=()=>{fn();if(!ctx.controller.signal.aborted)handle=setTimer(loop,ms);};handle=setTimer(loop,ms);return {stop:()=>clearTimer(handle)};},clearTimer:handle=>handle.stop(),
+                onProgress:value=>{ctx.checkpoint(); const previous=lastSnapshot;
+                    lastSnapshot={...value,attemptId:attempt.id,attemptNumber:count,retryCount:count-(original.lifecycle_version===2?1:0),startedAt:attempt.started_at,deadlineAt:attempt.deadline_at,timeoutSeconds:attempt.timeout_seconds};
+                    store.setLiveDownloadProgress(attempt.id,lastSnapshot);
+                    if(!previous||previous.phase!==value.phase||previous.fileIndex!==value.fileIndex||ctx.elapsedMs()-lastPersist>=5000){db.prepare('UPDATE task_download_attempts SET progress_json=? WHERE id=? AND outcome IS NULL').run(JSON.stringify(lastSnapshot),ctx.token);lastPersist=ctx.elapsedMs();}
+                    emit(original.id);
+                }};
+            progress=createDownloadProgress({...ctx.options.progressOptions,fileCount:JSON.parse(original.result_sources_json||'[]').length});ctx.options.progressTracker=progress;
+        }
+        const endProgress=phase=>persistFinalDownloadProgress(original.id,ctx,phase);
         downloadsRunning++;
         return track('download:'+job.task_id,original,async () => {
             ctx.checkpoint(); ctx.phase('downloading');
@@ -470,34 +563,34 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                 let proof;
                     let sources=ephemeralSources.get(task.id)||JSON.parse(task.result_sources_json || 'null');
                     let refreshed=false;
-                    if(!sources||sources.some(source=>source.kind==='ephemeral')){sources=await refreshDownload(task,ctx);refreshed=true;}
+                    if(!sources||sources.some(source=>source.kind==='ephemeral'&&!ctx.options.readCheckpoint(source))){sources=await refreshDownload(task,ctx);refreshed=true;}
                     try { proof=await downloadWorker(task,sources,ctx.options); }
                     catch(error) { if(error.code!=='DOWNLOAD_EXPIRED'||refreshed||!task.upstream_task_id)throw error;
                         ctx.checkpoint();sources=await refreshDownload(task,ctx);proof=await downloadWorker(task,sources,ctx.options); }
                 ctx.checkpoint(); ctx.phase('saving');
-                if (!proof?.assetIds?.length) throw fail('DOWNLOAD_FAILED');
+                if (!proof?.assetIds?.length || proof.assetIds.length!==sources.length) throw fail('DOWNLOAD_FAILED');
                 for (const id of proof.assetIds) { const checked = store.readAsset(id); if (checked.asset.validationState !== 'verified') throw fail('DOWNLOAD_FAILED'); }
                 ctx.checkpoint();
-                db.transaction(() => { ctx.checkpoint(); store.bindTaskAssets(job.task_id, proof.assetIds.map((assetId, position) => ({ assetId, position, role: 'reference' })), 'output'); ctx.checkpoint(); update(job.task_id, 'completed', ctx.downloadAttempt ? {} : { completed_at: iso() }); db.prepare("UPDATE task_downloads SET state='completed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); if(ctx.downloadAttempt)db.prepare("UPDATE task_download_attempts SET outcome='completed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),ctx.token); })();
-                runtime.finish(task.id);
+                db.transaction(() => { ctx.checkpoint(); store.bindTaskAssets(job.task_id, proof.assetIds.map((assetId, position) => ({ assetId, position, role: 'reference' })), 'output'); ctx.checkpoint(); update(job.task_id, 'completed', localOutcome(row(job.task_id)) ? {} : { completed_at: iso() }); db.prepare("UPDATE task_downloads SET state='completed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); if(ctx.downloadAttempt)db.prepare("UPDATE task_download_attempts SET outcome='completed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),ctx.token); })();
+                endProgress('completed');runtime.finish(task.id);
                 ephemeralSources.delete(job.task_id);
             } catch (error) {
                 // A synchronous bind may cross the deadline inside a transaction. Its rollback
                 // must not roll back the winning local terminal state as well.
-                if(error.code==='TASK_EXECUTION_ENDED'&&ctx.endedOutcome&&(ctx.downloadAttempt?retryJob(job.task_id)?.id===ctx.token:!localOutcome(row(job.task_id))))finishLocal(job.task_id,ctx.endedOutcome,ctx.endedOutcome==='timed_out'?'TASK_TIMED_OUT':'TASK_CANCELLED',ctx);
+                if(error.code==='TASK_EXECUTION_ENDED'&&ctx.endedOutcome&&(ctx.downloadAttempt?retryJob(job.task_id)?.id===ctx.token:!localOutcome(row(job.task_id))))finishLocal(job.task_id,ctx.endedOutcome,ctx.endedOutcome==='timed_out'?(ctx.downloadAttempt?'DOWNLOAD_TIMEOUT':'TASK_TIMED_OUT'):'TASK_CANCELLED',ctx);
                 if (!closed && error.code!=='TASK_EXECUTION_ENDED' && (ctx.downloadAttempt ? retryJob(job.task_id)?.id===ctx.token : !localOutcome(row(job.task_id)))) {
                     ctx.checkpoint();const code=DETAILS[error.code]?error.code:'DOWNLOAD_FAILED';setError(job.task_id, 'download_failed', code, DETAILS[code]?.[0] || 'download'); db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), job.task_id);
                     if(ctx.downloadAttempt)db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),ctx.token);runtime.finish(job.task_id);
                 }
             }
-        }).finally(()=>{downloadsRunning--;wake();});
+        }).finally(()=>{const attempt=db.prepare('SELECT outcome FROM task_download_attempts WHERE id=?').get(ctx.token);endProgress(attempt?.outcome==='completed'?'completed':attempt?.outcome==='cancelled'?'cancelled':'failed');downloadsRunning--;wake();});
     }
     function recover() {
         db.transaction(() => {
             for (const task of db.prepare('SELECT * FROM tasks ORDER BY created_at,id').all()) {
                 const retry=retryJob(task.id);
                 if(retry||!localOutcome(task))telemetry.record(task.id,'recovery_observed');
-                if(retry){db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),retry.id);db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);db.prepare("UPDATE tasks SET status='download_failed' WHERE id=?").run(task.id);event(task.id,'download_attempt_interrupted',{sameGeneration:true});continue;}
+                if(retry){db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),retry.id);db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);db.prepare("UPDATE tasks SET status='download_failed',local_outcome=COALESCE(local_outcome,'failed'),local_finished_at=COALESCE(local_finished_at,?) WHERE id=?").run(iso(),task.id);const saved=JSON.parse(task.result_sources_json||'null'),code=recovery(task).recoveryKind==='none'?'RESULT_NOT_RECOVERABLE':'DOWNLOAD_INTERRUPTED',error=errorDto(code,'download',task);db.prepare('UPDATE task_download_attempts SET error_code=? WHERE id=?').run(code,retry.id);db.prepare('UPDATE tasks SET task_error_json=?,error=? WHERE id=?').run(JSON.stringify(error),error.message,task.id);if(retry.progress_json){const progress={...JSON.parse(retry.progress_json),phase:'failed',bytesPerSecond:0,stalled:false};db.prepare('UPDATE task_download_attempts SET progress_json=? WHERE id=?').run(JSON.stringify(progress),retry.id);}store.setLiveDownloadProgress(retry.id,null);event(task.id,'download_attempt_interrupted',{sameGeneration:true});continue;}
                 if (localOutcome(task)) continue;
                 if (['queued', '排队中', 'local_queued'].includes(task.status) && !task.dispatch_started_at && !task.upstream_task_id) {
                     if(task.status!=='local_queued'||!task.requires_continue)update(task.id, 'local_queued', { requires_continue: 1 }, 'recovery_queue_waiting'); continue;
@@ -520,7 +613,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
                 } else finishLocal(task.id,'failed','RESTART_RESULT_UNAVAILABLE');
             }
         })();
-        for (const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL AND execution_attempt_id IS NOT NULL').all()) if(ACTIVE.has(task.status))runtime.start(task);
+        for (const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL AND execution_attempt_id IS NOT NULL').all()) if(ACTIVE.has(task.status)&&!task.generation_outcome)runtime.start(task);
     }
     function stats() {
         const counts = Object.fromEntries(db.prepare('SELECT status,count(*) AS n FROM tasks GROUP BY status').all().map(item => [item.status, item.n]));
@@ -544,7 +637,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     function releaseUpdate() {
         if (closed || !updatePaused) return;
         updatePaused = false;
-        for(const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL').all())if(ACTIVE.has(task.status)&&task.execution_attempt_id)runtime.start(task);
+        for(const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL').all())if(ACTIVE.has(task.status)&&task.execution_attempt_id&&!task.generation_outcome)runtime.start(task);
         for (const task of db.prepare("SELECT * FROM tasks WHERE status IN ('remote_queued','generating')").all()) schedule(task.id, Math.max(Date.parse(task.next_poll_at || '') || now(), Date.parse(task.not_before_at || '') || 0));
         background(pump()); background(drainDownloads());
     }

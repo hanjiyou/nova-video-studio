@@ -48,7 +48,7 @@ test('I01 exact image/video classification and finite integer settings reject co
     for(const mode of ['plugin','legacy.plugin']) assert.equal(mediaKind(mode),'video');
     for(const mode of ['video.unverified','audio.text','toString','__proto__',null])assert.equal(mediaKind(mode),null);
     assert.throws(()=>executionSnapshot('audio.text',DEFAULT_EXECUTION_SETTINGS),{code:'INVALID_TASK_MODE'});
-    assert.deepEqual(validateExecutionSettings(DEFAULT_EXECUTION_SETTINGS),{imageConcurrency:3,videoConcurrency:3,imageTimeoutSeconds:120,videoTimeoutSeconds:300});
+    assert.deepEqual(validateExecutionSettings(DEFAULT_EXECUTION_SETTINGS),{imageConcurrency:3,videoConcurrency:3,imageTimeoutSeconds:120,videoTimeoutSeconds:300,imageDownloadTimeoutSeconds:30,videoDownloadTimeoutSeconds:180});
     for(const key of Object.keys(DEFAULT_EXECUTION_SETTINGS)) {
         const concurrency=key.endsWith('Concurrency'), min=concurrency?1:30,max=concurrency?5:1800;
         for(const value of [min,max])assert.equal(validateExecutionSettings({...DEFAULT_EXECUTION_SETTINGS,[key]:value})[key],value);
@@ -162,4 +162,17 @@ test('I01 service/history/list share lifecycle semantics, separate local timeout
     assert.equal(service.get(id).taskError,null);assert.equal(service.get(id).error,null);assert.deepEqual(service.get(id),f.store.getTask(id));
     f.db.prepare("UPDATE tasks SET status='toString',remote_state='__proto__' WHERE id=?").run(id);
     assert.equal(service.get(id).localOutcome,null);assert.equal(service.get(id).remoteOutcome,'unknown');
+});
+
+test('D01 legacy writes preserve configured download budgets and revision; partial new schema is rejected',async t=>{
+ const f=await fixture(t),defaults=f.store.getSetting('taskExecution');let setting=f.store.putSetting('taskExecution',{value:{...defaults.value,imageDownloadTimeoutSeconds:75,videoDownloadTimeoutSeconds:800},expectedRevision:0});
+ const legacy={imageConcurrency:2,videoConcurrency:4,imageTimeoutSeconds:90,videoTimeoutSeconds:500};setting=f.store.putSetting('taskExecution',{value:legacy,expectedRevision:setting.revision});assert.equal(setting.value.imageDownloadTimeoutSeconds,75);assert.equal(setting.value.videoDownloadTimeoutSeconds,800);assert.equal(setting.value.imageTimeoutSeconds,90);
+ assert.throws(()=>f.store.putSetting('taskExecution',{value:legacy,expectedRevision:0}),{code:'SETTING_REVISION_CONFLICT'});assert.throws(()=>f.store.putSetting('taskExecution',{value:{...legacy,imageDownloadTimeoutSeconds:50},expectedRevision:setting.revision}),{code:'INVALID_SETTING_VALUE'});
+});
+
+test('D01 v8 migration retains attempt rowid order, timestamps and original checksum history',async t=>{
+ const f=await fixture(t,8),id=f.insertLegacy(f.snapshot(),'download_failed'),at='2026-10-25T00:00:00Z';
+ const ids=[randomUUID(),randomUUID(),randomUUID()];for(const [index,attempt] of ids.entries())f.db.prepare("INSERT INTO task_download_attempts(rowid,id,task_id,started_at,deadline_at,timeout_seconds,outcome,finished_at) VALUES(?,?,?,?,?,?,?,?)").run([3,9,20][index],attempt,id,at,'2026-10-25T00:02:00Z',120,'failed',at);
+ const before=f.db.prepare('SELECT rowid,* FROM task_download_attempts ORDER BY rowid').all(),history=f.db.prepare('SELECT version,checksum FROM schema_migrations').all();await migrateDatabase({db:f.db,dbPath:f.dbPath});
+ const after=f.db.prepare('SELECT rowid,id,task_id,started_at,deadline_at,timeout_seconds,outcome,finished_at FROM task_download_attempts ORDER BY rowid').all();assert.deepEqual(after,before);assert.deepEqual(f.db.prepare('SELECT version,checksum FROM schema_migrations WHERE version<=8').all(),history);assert.equal(f.store.getTask(id).downloadAttempt.id,ids[2]);assert.equal(f.store.getTask(id).downloadAttempt.attemptNumber,3);assert.equal(f.store.getTask(id).lifecycleVersion,1);
 });

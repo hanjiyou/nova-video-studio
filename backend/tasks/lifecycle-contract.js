@@ -8,7 +8,7 @@ const MODES = Object.freeze({
 });
 const LEGACY_MODES = Object.freeze({ 'text-to-image': 'image', 'image-to-image': 'image', 'plugin': 'video', 'legacy.plugin': 'video' });
 const EXECUTION_LIMITS = Object.freeze({ concurrency: Object.freeze({ min: 1, max: 5 }), timeoutSeconds: Object.freeze({ min: 30, max: 1800 }) });
-const DEFAULT_EXECUTION_SETTINGS = Object.freeze({ imageConcurrency: 3, videoConcurrency: 3, imageTimeoutSeconds: 120, videoTimeoutSeconds: 300 });
+const DEFAULT_EXECUTION_SETTINGS = Object.freeze({ imageConcurrency: 3, videoConcurrency: 3, imageTimeoutSeconds: 120, videoTimeoutSeconds: 300, imageDownloadTimeoutSeconds: 30, videoDownloadTimeoutSeconds: 180 });
 const LOCAL_OUTCOMES = Object.freeze(['completed', 'failed', 'timed_out', 'cancelled']);
 const REMOTE_OUTCOMES = Object.freeze(['not_dispatched', 'unknown', 'confirmed_result', 'confirmed_rejected', 'confirmed_failed', 'confirmed_cancelled']);
 const EXECUTION_PHASES = Object.freeze(['reference_upload', 'submitting', 'receiving', 'parsing', 'remote_waiting', 'downloading', 'validating', 'saving']);
@@ -24,10 +24,17 @@ function validateExecutionSettings(value) {
     }
     return Object.fromEntries(keys.map(key => [key, value[key]]));
 }
+function normalizeExecutionSettings(value, previous = DEFAULT_EXECUTION_SETTINGS) {
+    const legacyKeys = ['imageConcurrency','videoConcurrency','imageTimeoutSeconds','videoTimeoutSeconds'];
+    if (value && Object.getPrototypeOf(value) === Object.prototype && Object.keys(value).length === 4 && legacyKeys.every(key => Object.hasOwn(value,key))) {
+        return validateExecutionSettings({...value,imageDownloadTimeoutSeconds:previous.imageDownloadTimeoutSeconds,videoDownloadTimeoutSeconds:previous.videoDownloadTimeoutSeconds});
+    }
+    return validateExecutionSettings(value);
+}
 function executionSnapshot(mode, settings) {
     const kind = mediaKind(mode);
     if (!kind) throw Object.assign(new Error('无法识别任务媒体类型。'), { code: 'INVALID_TASK_MODE', statusCode: 400 });
-    const checked = validateExecutionSettings(settings);
+    const checked = normalizeExecutionSettings(settings);
     return { mediaKind: kind, timeoutSeconds: checked[kind + 'TimeoutSeconds'] };
 }
 function localOutcome(task) {
@@ -65,6 +72,7 @@ function taskFields(task, snapshot = {}, downloadAttempt = null) {
         localExecutionActive: retryActive || !outcome,
         schedulingNotice: mayContinue ? (reserved ? '远端可能仍在生成或计费；本地等待受原截止时间约束，可取消本地等待。' : '已停止本地等待；远端结果待核对，可能仍在生成或计费。') : null,
         localOutcome: outcome, remoteOutcome: remote,
+        lifecycleVersion: task.lifecycle_version ?? 1, generationOutcome: task.generation_outcome ?? null, generationFinishedAt: task.generation_finished_at ?? null,
         executionAttemptId: task.execution_attempt_id ?? null, timeoutSeconds: task.execution_timeout_seconds ?? null,
         dispatchStartedAt: task.dispatch_started_at ?? null, deadlineAt: task.execution_deadline_at ?? null,
         localFinishedAt: task.local_finished_at ?? (outcome ? task.completed_at ?? null : null),
@@ -74,4 +82,4 @@ function taskFields(task, snapshot = {}, downloadAttempt = null) {
         createdAt: task.created_at, completedAt: task.completed_at, expiresAt: null,
     };
 }
-module.exports = { MODES, EXECUTION_LIMITS, DEFAULT_EXECUTION_SETTINGS, LOCAL_OUTCOMES, REMOTE_OUTCOMES, EXECUTION_PHASES, mediaKind, localOutcome, remoteOutcome, validateExecutionSettings, executionSnapshot, taskFields };
+module.exports = { MODES, EXECUTION_LIMITS, DEFAULT_EXECUTION_SETTINGS, LOCAL_OUTCOMES, REMOTE_OUTCOMES, EXECUTION_PHASES, mediaKind, localOutcome, remoteOutcome, validateExecutionSettings, normalizeExecutionSettings, executionSnapshot, taskFields };

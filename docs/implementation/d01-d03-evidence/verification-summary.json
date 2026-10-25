@@ -1,0 +1,91 @@
+{
+  "date": "2026-10-25",
+  "state": "main_review_passed_offline_scope",
+  "baseline": {
+    "commit": "e2ef3eb66a912a82da51dc5a749e535996b5b735",
+    "command": "npm test (isolated HEAD archive, NODE_PATH points to existing local dependencies)",
+    "tests": 544,
+    "passed": 519,
+    "failed": 25,
+    "failureNames": [
+      "B4 active, ambiguous, paused and unfinished download records cannot be removed",
+      "B4 actual local HTTP: persisted intent + double create = one multipart POST; read/reuse/delete never create",
+      "actual B1 GET 401 retains ID, original credential and conservative occupied slot",
+      "actual B1 GET 403 retains ID, original credential and conservative occupied slot",
+      "actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot",
+      "actual B1 GET unknown status retains ID, original credential and conservative occupied slot",
+      "actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery",
+      "actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery",
+      "actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again",
+      "actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys",
+      "actual desktop B1 1 file request freezes original assets and completes through B2 verified local download",
+      "actual desktop B1 2 file request freezes original assets and completes through B2 verified local download",
+      "actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input",
+      "canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once",
+      "canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request",
+      "cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential",
+      "edit connection-lost ends unrecoverable local wait across restart while retaining unknown remote outcome and never resending",
+      "edit empty ends unrecoverable local wait across restart while retaining unknown remote outcome and never resending",
+      "edit server-error ends unrecoverable local wait across restart while retaining unknown remote outcome and never resending",
+      "explicit edit rejection is safe and single-attempt; URL results and corrupt output retain existing validation semantics",
+      "new package registers both exact models, with only fixed application controls and ordered references",
+      "new unverified scope is submit-capable only for exact known 1.5 and 3..7, leaving verified evidence and legacy boundaries unchanged",
+      "review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST",
+      "review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST",
+      "script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape"
+    ]
+  },
+  "firstWorkingTreeFullRun": {
+    "command": "npm test",
+    "tests": 560,
+    "passed": 531,
+    "failed": 29,
+    "additionalFailures": [
+      "download interruption recovers only the download queue, with no submit or poll",
+      "download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed",
+      "normal intent and production HTTP submit 3 ordered original multipart files once; local result persists with the unverified capability",
+      "remote completion keeps its media slot until verified save; admitted jobs never claim completed without verifier"
+    ]
+  },
+  "resolvedNewAssertions": [
+    "remote completion keeps its media slot until verified save; admitted jobs never claim completed without verifier",
+    "download interruption recovers only the download queue, with no submit or poll",
+    "download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed"
+  ],
+  "existingNondeterminism": {
+    "test": "normal intent and production HTTP submit 3 ordered original multipart files once; local result persists with the unverified capability",
+    "cause": "Equal evidence rank and same millisecond created_at choose isCurrent by random UUID descending; historical fixed size fixture sometimes chooses sendSize=false capability.",
+    "deterministicProbe": "Frozen Date and monotonic UUID ascending/descending; HEAD and working tree both select legacy multi-reference-v1 / video-config-20261025-v1 respectively.",
+    "sourceFilesUnchanged": [
+      "backend/connections/capabilities.js",
+      "backend/tasks/workbench-input.js",
+      "backend/test/multi-reference.test.js"
+    ],
+    "notFixedInThisScope": true
+  },
+  "finalRelatedBackend": {
+    "command": "node --test test/workbench-lifecycle-contract.test.js test/workbench-lifecycle-runtime.test.js test/workbench-lifecycle-display.test.js test/workbench-lifecycle-diagnostics.test.js test/workbench-downloads.test.js test/workbench-download-progress.test.js test/workbench-tasks.test.js",
+    "tests": 153,
+    "passed": 153,
+    "failed": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "command": "npx tsc --noEmit --incremental false; npx vitest run src/components/workbench/__tests__/workbench-lifecycle.test.tsx",
+    "tests": 19,
+    "passed": 19,
+    "typecheck": "passed"
+  },
+  "limits": [
+    "No final full-suite rerun after correcting the three restart assertions; final relevant group includes all three and passes.",
+    "No real generation, release, installation or external network validation.",
+    "D04-D10 not completed.",
+    "First HEAD baseline attempt failed to resolve dependencies via junction and was stopped; excluded from comparison."
+  ],
+  "mainReviewFixes": [
+    "Preserve v8 attempt rowid order in v9 migration and verify multi-attempt history.",
+    "Distinguish legacy first manual retry from v2 first automatic download.",
+    "Count actual received chunks before disk writes.",
+    "Capture unthrottled tracker snapshot on terminal state and freeze it against late cleanup."
+  ]
+}

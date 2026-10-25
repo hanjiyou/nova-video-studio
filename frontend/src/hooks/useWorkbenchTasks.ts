@@ -1,4 +1,6 @@
 'use client';
+import {acceptTask,currentTask,watchTaskState} from '@/lib/workbench-task-state';
+import {novaTaskSocket} from '@/lib/ccode-task-socket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {checkConnection} from '@/lib/connection-client';
 import type { ConnectionModels, ConnectionSummary } from '@/lib/connection-client';
@@ -45,7 +47,10 @@ export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', conne
       if (mounted.current && ticket===reconcileSequence.current) { setIntents(saved.filter(item => !item.taskId)); setReconciliationReady(true); setReconciliationError(''); }
     } catch { if (mounted.current && ticket===reconcileSequence.current) { setReconciliationReady(false); setReconciliationError('暂时无法核对本地提交记录，已暂停新建生成。请重新读取，不会自动重发创建。'); } }
   }, []);
-  useEffect(() => { if (!ready) return; void Promise.resolve().then(refresh); void Promise.resolve().then(reconcile); const timer = setInterval(() => { setNow(Date.now()); void refresh(); },1500); return () => clearInterval(timer); },[ready,kind,refresh,reconcile]);
+  useEffect(() => { if (!ready) return; void Promise.resolve().then(refresh); void Promise.resolve().then(reconcile); const timer = setInterval(() => { setNow(Date.now()); void refresh(); },5000); return () => clearInterval(timer); },[ready,kind,refresh,reconcile]);
+  useEffect(()=>watchTaskState(()=>{setHistory(previous=>previous?{...previous,items:previous.items.map(currentTask)}:previous);setSelected(previous=>Object.fromEntries(Object.entries(previous).map(([key,value])=>[key,value?currentTask(value):value])));}),[]);
+  const subscriptionIds=[...new Set([...(history?.items.map(task=>task.localTaskId)||[]),...Object.values(selected).filter(Boolean).map(task=>task!.localTaskId)])].join(',');
+  useEffect(()=>{if(!ready)return;const stops=subscriptionIds.split(',').filter(Boolean).map(id=>novaTaskSocket.subscribeTask(id,task=>{if(task.localTaskId)acceptTask(task as unknown as HistoryTask);}));return()=>stops.forEach(stop=>stop());},[ready,subscriptionIds]);
   const fingerprint = (draft: Draft) => { const plan = generationPlan(draft,connection,models); return JSON.stringify([connection?.connectionVersionId,plan.capability?.capabilityVersionId,plan.mode,plan.model,draft.prompt,plan.parameters,draft.inputAssets.map(item => item.assetId)]); };
   async function submit(draft: Draft) {
     let plan = generationPlan(draft,connection,models); const signature = fingerprint(draft);

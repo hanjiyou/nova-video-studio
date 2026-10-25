@@ -42,7 +42,7 @@ export function reusableDraft(task: HistoryTask): Pick<Draft, 'model' | 'prompt'
 export const taskExecutionActive = (task: HistoryTask) => task.downloadAttempt?.active === true || (typeof task.localExecutionActive === 'boolean' ? task.localExecutionActive : !task.localOutcome && !terminalTask(task.status));
 const PHASE_LABELS: Record<string,string> = {reference_upload:'准备参考图',submitting:'提交与等待响应',receiving:'接收响应',parsing:'解析结果',remote_waiting:'远端等待',downloading:'下载结果',validating:'验证媒体',saving:'保存作品'};
 export function taskStage(task: HistoryTask) {
-  if(task.downloadAttempt?.active) return '下载重试 · '+(PHASE_LABELS[task.phase || ''] || '等待下载');
+  if(task.downloadAttempt?.active) return (task.lifecycleVersion===2&&task.downloadAttempt.attemptNumber===1?'':'下载重试 · ')+(!task.downloadAttempt.startedAt?'等待下载':PHASE_LABELS[task.phase || ''] || '下载中');
   if(!taskExecutionActive(task)) return TASK_LABELS[task.status] || '本地执行已结束';
   if(task.status==='local_queued') return task.requiresContinue?'等待明确继续':'等待处理';
   if(task.status==='polling_paused') return '查询已暂停（仍计时）';
@@ -56,11 +56,11 @@ export function durationLabel(start: string | null | undefined, finish: string |
 }
 export function taskTiming(task: HistoryTask, now: number) {
   const ended=!taskExecutionActive(task) || Boolean(task.localOutcome);
-  const finish=task.localFinishedAt || (ended?task.completedAt:null);
+  const finish=task.generationFinishedAt || task.localFinishedAt || (ended?task.completedAt:null);
   const queue=task.dispatchStartedAt?durationLabel(task.createdAt,task.dispatchStartedAt,now):task.timeoutSeconds!=null || task.status==='local_queued'?durationLabel(task.createdAt,finish,now):'未知';
   const execution=task.dispatchStartedAt?(!finish&&ended?'未知':durationLabel(task.dispatchStartedAt,finish,now)):task.upstreamTaskId || task.generationReserved?'旧记录未提供':'尚未派发';
   const retry=task.downloadAttempt;
-  return {queue,execution,limit:task.timeoutSeconds!=null?task.timeoutSeconds+' 秒':'旧记录未提供',deadline:task.deadlineAt || null,download:retry?durationLabel(retry.startedAt,retry.finishedAt,now):null,downloadLimit:retry?retry.timeoutSeconds+' 秒':null};
+  return {queue,execution,limit:task.timeoutSeconds!=null?task.timeoutSeconds+' 秒':'旧记录未提供',deadline:task.deadlineAt || null,download:retry?(retry.startedAt?durationLabel(retry.startedAt,retry.finishedAt,now):'等待下载'):null,downloadLimit:retry?retry.timeoutSeconds+' 秒':null};
 }
 export function elapsed(task: Pick<HistoryTask,'createdAt'|'completedAt'> & Partial<HistoryTask>, now: number) {
   const finish=task.localFinishedAt || task.completedAt;

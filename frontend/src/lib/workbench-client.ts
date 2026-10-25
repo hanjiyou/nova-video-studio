@@ -1,3 +1,4 @@
+import {acceptTask,markTaskRemoved} from './workbench-task-state';
 import { MAX_REFERENCE_ASSETS } from './reference-policy';
 import type { AssetSummary, WorkbenchTaskResponse, WorkbenchTaskInput } from './workbench-task-client';
 export const DRAFT_MODES = ['image.text', 'video.text', 'video.single_reference', 'video.dual_reference'] as const;
@@ -25,9 +26,9 @@ export const getSetting = async <T>(key: string) => (await localRead<{ setting: 
 export const putSetting = async <T>(key: string, value: T, expectedRevision: number) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value, expectedRevision }) })).setting;
 export interface HistoryTask extends WorkbenchTaskResponse { prompt: string; model: string; parameters: Record<string, string | number | boolean>; capabilityVersionId?: string; outputDirectoryVersionId?: string; outputRootRef?: string; outputLocation?: string }
 export interface HistoryQuery { limit?: number; offset?: number; kind?: string; search?: string; model?: string; status?: string; scope?: 'workbench' | 'library' }
-export const getLocalHistory = (query: HistoryQuery = { limit: 12 }) => localRead<{ items: HistoryTask[]; total: number; unfilteredTotal: number }>('/api/nova/storage/tasks?' + new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, String(value)])));
-export const getHistoryTask = async (id: string) => (await localRead<{ task: HistoryTask }>('/api/nova/storage/tasks/' + encodeURIComponent(id))).task;
-export const removeTaskDisplay = (id: string) => localRead<{removed:boolean;worksRetained:boolean}>('/api/nova/storage/tasks/' + encodeURIComponent(id) + '/remove', {method:'POST',headers:{'content-type':'application/json'},body:'{}'});
+export const getLocalHistory = async (query: HistoryQuery = { limit: 12 }) => {const result=await localRead<{ items: HistoryTask[]; total: number; unfilteredTotal: number }>('/api/nova/storage/tasks?' + new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, String(value)])));return {...result,items:result.items.map(acceptTask)};};
+export const getHistoryTask = async (id: string) => acceptTask((await localRead<{ task: HistoryTask }>('/api/nova/storage/tasks/' + encodeURIComponent(id))).task);
+export const removeTaskDisplay = async (id: string) => {const result=await localRead<{removed:boolean;worksRetained:boolean}>('/api/nova/storage/tasks/' + encodeURIComponent(id) + '/remove', {method:'POST',headers:{'content-type':'application/json'},body:'{}'});markTaskRemoved(id);return result;};
 export const removeHistoryTask = (id: string, deleteOutputs: boolean) => localRead<{ removed: boolean; deletedAssets: number; retainedAssets: number }>('/api/nova/storage/tasks/' + encodeURIComponent(id), { method: 'DELETE', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ deleteOutputs }) });
 export interface SubmissionIntent { localRequestId: string; input: WorkbenchTaskInput; createdAt: string; attemptStartedAt: string | null; taskId: string | null }
 export const prepareSubmission = async (input: WorkbenchTaskInput) => (await localRead<{ input: WorkbenchTaskInput }>('/api/nova/storage/submissions', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(input) })).input;

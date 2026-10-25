@@ -122,7 +122,7 @@ test('Retry-After numeric/date parsing and invalid values', () => {
 test('remote completion keeps its media slot until verified save; admitted jobs never claim completed without verifier', async t => {
     const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png', authScope: 'none' }] }) }); f.store.putSetting('taskExecution',{value:{imageConcurrency:3,videoConcurrency:3,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:1});const first = f.enqueue(), second = f.enqueue();
     await until(() => f.service.get(second).status === 'remote_completed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).status, 'remote_completed'); assert.equal(f.service.stats().downloadQueued, 2); assert.equal(f.service.stats().processingCount, 2);
-    await f.restart(); assert.equal(f.service.get(first).status, 'remote_completed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).outputAssets.length, 0);
+    await f.restart(); assert.equal(f.service.get(first).status, 'download_failed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).outputAssets.length, 0);
 });
 test('inline output is a managed unverified candidate, never an exposed base64 result or local completion', async t => {
     const bytes = fs.readFileSync(path.join(__dirname, 'fixtures/workbench-v1/reference-a.png'));
@@ -135,11 +135,11 @@ test('query-bearing or credential-bearing candidate URL is not saved/exported; f
 });
 test('download interruption recovers only the download queue, with no submit or poll', async t => {
     const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.mp4' }] }) }), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_completed'); f.db.prepare("UPDATE tasks SET status='downloading' WHERE id=?").run(id); f.db.prepare("UPDATE task_downloads SET state='running' WHERE task_id=?").run(id);
-    await f.restart(); assert.equal(f.service.get(id).status, 'remote_completed'); assert.equal(f.service.stats().downloadQueued, 1); assert.equal(f.submits, 1); assert.equal(f.polls, 0);
+    await f.restart(); assert.equal(f.service.get(id).status, 'download_failed'); assert.equal(f.service.get(id).taskError.code,'DOWNLOAD_INTERRUPTED'); assert.equal(f.service.stats().downloadQueued, 0); assert.equal(f.submits, 1); assert.equal(f.polls, 0);
 });
 test('download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed', async t => {
     const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png' }] }) }), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_completed');
-    await f.restart({ downloadWorker: async () => { throw new Error('disk full'); } });assert.equal(f.service.get(id).requiresContinue,true);f.service.action(id,'continue-queued'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1); f.service.action(id, 'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1);
+    await f.restart({ downloadWorker: async () => { throw new Error('disk full'); } });assert.equal(f.service.get(id).status,'download_failed');f.service.action(id,'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1); f.service.action(id, 'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1);
 });
 test('schema v3 to current keeps historical SQL checksums, committed WAL rows and a consistent rollback backup', async t => {
     const f = await fixture(t), dbPath=path.join(f.directory,'v3.sqlite'), db=new Database(dbPath);

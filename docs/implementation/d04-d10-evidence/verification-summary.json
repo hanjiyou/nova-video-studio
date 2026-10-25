@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-26",
+  "developmentDates": "2026-10-25–26",
+  "status": "main_review_passed_source_and_offline_scope",
+  "scope": "D04–D10; original source persistence retained, no new recovery encryption",
+  "backend": {
+    "cwd": "backend",
+    "command": "node --test test/workbench-lifecycle-contract.test.js test/workbench-lifecycle-runtime.test.js test/workbench-lifecycle-display.test.js test/workbench-lifecycle-diagnostics.test.js test/workbench-downloads.test.js test/workbench-download-progress.test.js test/workbench-tasks.test.js test/workbench-downloads-http.test.js test/workbench-storage.test.js",
+    "tests": 187,
+    "passed": 187,
+    "failed": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "cwd": "frontend",
+    "command": "npx vitest run src/components/workbench/__tests__/workbench-lifecycle.test.tsx src/components/workbench/__tests__/download-status.test.tsx",
+    "tests": 27,
+    "passed": 27,
+    "failed": 0,
+    "typecheck": "npx tsc --noEmit --incremental false (passed)",
+    "warnings": "Existing lifecycle interaction fixtures produce a few asynchronous React act warnings; assertions pass."
+  },
+  "installerAndDelivery": {
+    "cwd": ".",
+    "command": "node --test scripts/deliver.test.cjs scripts/windows-release.test.cjs scripts/windows-update.test.cjs",
+    "tests": 78,
+    "passed": 78,
+    "failed": 0,
+    "environment": "isolated fixtures; no actual project commit/push/build/publish/install"
+  },
+  "httpWs": {
+    "generatedPostCount": 1,
+    "originalIdQueryCount": 2,
+    "contentAttempts": 6,
+    "includes": [
+      "authorized subscription",
+      "unauthorized HTTP and WS rejection",
+      "reconnect snapshot",
+      "terminal attempt and progress consistency",
+      "requestId receipt replay"
+    ]
+  },
+  "privacyScopeCheck": {
+    "newRecoveryVault": false,
+    "newSecretTable": false,
+    "desktopCredentialVaultDiff": "empty",
+    "deletedOwnUnusedFile": "desktop/result-recovery.cjs"
+  },
+  "limits": [
+    "No real provider generation or fees",
+    "No real user database or credentials read",
+    "No proxy changes",
+    "No browser screenshot/manual visual acceptance",
+    "No real installer execution",
+    "No final full backend-suite run; D01–D03 recorded proven preexisting failures remain outside this scope"
+  ],
+  "sha256": {
+    "backend/server.js": "e7b77c73e4f445b729caaf322db05661dbb0cc734c1f8044c9aae95e88c215c0",
+    "backend/storage/download-errors.js": "11165e0319c6555ff6532b59f8cfae181a7157f2253de8676ced2adf3c0ffc33",
+    "backend/storage/download-worker.js": "6a1643942fb03d40adf841a77637eeed8f673928f5c9a5dafe60f22fc301421a",
+    "backend/storage/download-progress.js": "383274ffa73b39a9d443d15331e87da24fd5116e5a11a040a895feb1cbc605bb",
+    "backend/storage/migrations.js": "8884d415163fd5899ce26cb037166d0700d5200fd32fda3baf7c27ac63cfbdfa",
+    "backend/storage/store.js": "82b497481fa821471158fdcecff333ff2993bc3bd775e6197406a6115d0f173c",
+    "backend/storage/workbench-library.js": "dd999a4867bfa98e7db362767b1e73017bf81b288034eba941ae1ad97d0c4cc5",
+    "backend/tasks/service.js": "21b33b6dcadfe722bd8bf4341c5d9aa4416161eb9133f89cfb4848779a6dc9da",
+    "backend/tasks/diagnostic-timeline.js": "abb6edf3b05d11873ff42a305069c77ef830c91d9deda62655b098d9a3c6a74b",
+    "frontend/src/components/workbench/DownloadStatus.tsx": "a31f32a36a668b8981ce57311944d3e4cc8472c792adb8d33ea270bca3d006ae",
+    "frontend/src/components/workbench/WorkbenchResults.tsx": "dc8e993a61328d2ba86f8a82ea521734684a31c4b6d5bda0de72785085aea80c",
+    "frontend/src/components/workbench/TaskExecutionSettings.tsx": "60b96d90e7be1f63b859a319bae938d61774f617e9f0d1323ee09051165cdabd",
+    "frontend/src/hooks/useWorkbenchTasks.ts": "69560df792577c502860c56a6262d62fcc8e3a083cd5665e6784718821eea4bb",
+    "frontend/src/lib/workbench-task-state.ts": "2fb9986ea75eb3ea6f65fc9a7d76471a56163dea7c18cc673dfaa94ea57b59f2",
+    "frontend/src/lib/workbench-task-client.ts": "73fa008cef741a125a3ce953752ff359d03ab2d8bd0d7c56c4903cd92945916b",
+    "frontend/src/lib/workbench-client.ts": "fdd59d55abb698dddb8ecd07056da0e1dad2a41429ce5408d9ae69eb15a381fa"
+  }
+}

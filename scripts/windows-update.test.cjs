@@ -352,3 +352,17 @@ test('update build configuration fails before packaging when either selected not
     fs.writeFileSync(file,'\ufeff中文安装说明');assert.doesNotThrow(()=>builderConfiguration(plan,'inert',directory));
   }
 });
+
+
+test('publishable update installers offer launch on finish; isolated local tests remain manual', () => {
+  for (const profile of ['github-test', 'release', 'local-test']) {
+    const policy = readPolicy();
+    policy.signing = {status:'approved', publisherNames:['Synthetic test publisher']};
+    const plan = makePlan({profile, version:'3.6.6', ...(profile === 'local-test' ? {testFeedUrl:'http://127.0.0.1:18888/'} : {})}, policy);
+    const config = builderConfiguration(plan, 'inert');
+    assert.equal(config.nsis.runAfterFinish, profile !== 'local-test');
+  }
+  const base = yaml.load(fs.readFileSync(path.join(__dirname, '../electron-builder.yml'), 'utf8'));
+  assert.equal(base.nsis.oneClick, false);
+  assert.equal(base.nsis.runAfterFinish, false);
+});

@@ -56,7 +56,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
             if (handled.has(object.key)) continue;
             handled.add(object.key);
             const aliases = new Set(object.assets.map(item => item.id));
-            const other = object.assets.some(item => db.prepare("SELECT (SELECT count(*) FROM task_assets WHERE asset_id=? AND (task_id<>? OR role='input')) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) AS n").get(item.id,idValue,item.id).n);
+            const other = object.assets.some(item => db.prepare("SELECT (SELECT count(*) FROM task_assets WHERE asset_id=? AND (task_id<>? OR role='input')) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) + (SELECT count(*) FROM task_download_files WHERE asset_id=? AND task_id<>?) AS n").get(item.id,idValue,item.id,item.id,idValue).n);
             const intentUses = submissions().some(intent => !intent.taskId && intent.input.inputAssets.some(item => aliases.has(item.assetId)));
             const candidateUses = db.prepare('SELECT result_sources_json FROM tasks WHERE id<>? AND result_sources_json IS NOT NULL').all(idValue).some(task => { try { return JSON.parse(task.result_sources_json).some(source => aliases.has(source.assetId)); } catch { return true; } });
             const legacyUses = object.assets.some(item => db.prepare('SELECT 1 FROM asset_legacy_links WHERE asset_id=? LIMIT 1').get(item.id));

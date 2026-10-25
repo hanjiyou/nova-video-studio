@@ -2654,7 +2654,7 @@ function broadcastTask(taskId) {
       cachedPayload = { type: 'task', task };
     }
     safeSendJson(ws, cachedPayload);
-    if (cachedPayload.task.status === 'completed' || cachedPayload.task.status === 'failed' || cachedPayload.task.status === 'expired') {
+    if (!cachedPayload.task.localTaskId && (cachedPayload.task.status === 'completed' || cachedPayload.task.status === 'failed' || cachedPayload.task.status === 'expired')) {
       set.delete(taskId);
     }
   }

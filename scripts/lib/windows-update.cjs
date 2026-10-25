@@ -144,7 +144,9 @@ function builderConfiguration(plan, attempt, repository = REPOSITORY) {
       verifyUpdateCodeSignature: plan.signature.mode === 'authenticode',
       ...(plan.signature.mode === 'authenticode' ? { publisherName: plan.signature.publisherNames } : {}),
     },
-    nsis: { uninstallDisplayName: `${plan.productName} ${plan.version}`, ...(plan.profile === 'github-test' ? { createDesktopShortcut: true, createStartMenuShortcut: true, license: path.join(repository, 'desktop/installer/GITHUB-TEST-NOTICE.txt') } : {}) },
+    // Interactive NSIS ignores --force-run; the finish-page checkbox must be enabled.
+    // Isolated local tests retain manual launch to preserve their custom data directory.
+    nsis: { runAfterFinish: plan.profile !== 'local-test', uninstallDisplayName: `${plan.productName} ${plan.version}`, ...(plan.profile === 'github-test' ? { createDesktopShortcut: true, createStartMenuShortcut: true, license: path.join(repository, 'desktop/installer/GITHUB-TEST-NOTICE.txt') } : {}) },
   };
 }
 

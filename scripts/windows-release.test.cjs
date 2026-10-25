@@ -78,7 +78,7 @@ test('upload resumes a partial draft, checks existing bytes first and only adds 
 });
 test('existing wrong draft bytes block all uploads and are never replaced', async t => {
   const f = fixture(t); f.state.assets = [f.assets[0]]; f.deps.remote.hashAsset = async () => ({ size: f.assets[0].size, sha512: 'wrong' });
-  await assert.rejects(release.run({ ...f.options, phase: 'upload' }, f.deps), /Existing draft asset differs/);
+  await assert.rejects(release.run({ ...f.options, phase: 'upload' }, f.deps), /Remote asset bytes differ/);
   assert.equal(f.calls.some(c => c.method !== 'GET'), false);
 });
 test('same-version draft prevents new release creation even without tag', async t => {
@@ -153,4 +153,31 @@ test('GitHub transport accepts canonical repository root and refuses lookalike r
  const request=github('synthetic-token',async(url)=>{calls++;assert.equal(url,root);return {ok:true,status:200,json:async()=>({full_name:'hanjiyou/nova-video-studio'})};});
  assert.equal((await request(root)).full_name,'hanjiyou/nova-video-studio');
  await assert.rejects(request(root+'-other'),/Non-fixed/);assert.equal(calls,1);
+});
+
+
+test('incomplete upload is diagnosed before hashing or mutating anything', async t => {
+ const f=fixture(t); f.state.assets=[{...f.assets[0],state:'starter',size:0}];
+ f.deps.remote.hashAsset=async()=>{throw Error('must not download starter');};
+ await assert.rejects(release.run({...f.options,phase:'upload'},f.deps),/Incomplete draft asset/);
+ assert.equal(f.calls.some(c=>c.method!=='GET'),false);
+});
+test('one invocation reuses byte verification only with unchanged live metadata', async t => {
+ const f=fixture(t); for (const a of f.assets) { a.updated_at='2026-10-25T00:00:00Z'; a.digest='sha256:fixture'+a.id; }
+ f.deps.verificationCache=new Map(); let hashes=0;
+ const original=f.deps.remote.hashAsset; f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
+ await release.run({...f.options,phase:'upload'},f.deps); assert.equal(hashes,3);
+ await release.run({...f.options,phase:'publish'},f.deps); assert.equal(hashes,3);
+ f.assets[0].updated_at='2026-10-25T01:00:00Z';
+ await release.run(f.options,f.deps); assert.equal(hashes,4);
+ f.state.assets[0]={...f.assets[0],state:'starter'};
+ await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/name\/state\/size/);
+});
+test('cache does not bypass source identity or carry across separate invocations', async t=>{
+ const f=fixture(t); for(const a of f.assets){a.updated_at='now';a.digest='fixture'+a.id;}
+ let hashes=0;const original=f.deps.remote.hashAsset;f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
+ await release.run(f.options,f.deps);await release.run(f.options,f.deps);assert.equal(hashes,6);
+ f.deps.verificationCache=new Map();await release.run(f.options,f.deps);f.state.target=OTHER;
+ await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/target commit/);
+ assert.equal(f.state.published,false);
 });

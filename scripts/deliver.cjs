@@ -68,10 +68,12 @@ function options(argv) {
   const out = { action: argv[0] || 'menu', mode: 'push', profile: 'github-test' };
   need(['menu', 'review', 'run', 'status'].includes(out.action), '用法：deliver [menu|review|run|status]');
   for (let i = 1; i < argv.length; i++) {
+    if (argv[i] === '--direct') { need(!out.direct, '重复参数'); out.direct = true; continue; }
     if (argv[i] === '--execute') { need(!out.execute, '重复参数'); out.execute = true; continue; }
-    const key = ({ '--review': 'review', '--files': 'files', '--reviewer': 'reviewer', '--evidence': 'evidence', '--mode': 'mode', '--profile': 'profile', '--version': 'version', '--message': 'message', '--notes-file': 'notesFile' })[argv[i]];
+    const key = ({ '--proxy': 'proxy', '--transfer-timeout': 'transferTimeout', '--idle-timeout': 'idleTimeout', '--review': 'review', '--files': 'files', '--reviewer': 'reviewer', '--evidence': 'evidence', '--mode': 'mode', '--profile': 'profile', '--version': 'version', '--message': 'message', '--notes-file': 'notesFile' })[argv[i]];
     need(key && argv[i + 1] && !argv[i + 1].startsWith('--'), '未知或缺少参数：' + argv[i]); out[key] = argv[++i];
   }
+  require('./lib/release-network.cjs').configuration(out);
   return out;
 }
 function deliveryDirectory(root) { return path.join(git(root, ['rev-parse', '--absolute-git-dir']), 'nova-delivery'); }
@@ -82,6 +84,7 @@ function remoteTip(root, ref) {
   return git(root, ['ls-remote', url, 'refs/heads/' + ref]).split(/\s/)[0];
 }
 async function run(root, opts, deps = {}) {
+  const networkConfig = require('./lib/release-network.cjs').configuration(opts);
   const tipFor = deps.remoteTip || remoteTip;
   need(opts.review, '请指定 --review 审核记录。');
   const bytes = fs.readFileSync(path.resolve(opts.review)); const review = JSON.parse(bytes);
@@ -102,7 +105,7 @@ async function run(root, opts, deps = {}) {
   }
   if (opts.mode === 'publish') need(notes?.trim(), '发布需要 --notes-file。');
   if (!state.commit && !state.tree) validateReview(root, review);
-  const preview = { branch: review.branch, mode: opts.mode, profile, version: version || null, reviewedBy: review.reviewer, evidence: review.evidence, files: review.files.map(f => f.name), completed: state.done, commit: state.commit || null, output: state.output || null };
+  const preview = { releaseNetwork: networkConfig, branch: review.branch, mode: opts.mode, profile, version: version || null, reviewedBy: review.reviewer, evidence: review.evidence, files: review.files.map(f => f.name), completed: state.done, commit: state.commit || null, output: state.output || null };
   console.log(JSON.stringify(preview, null, 2));
   if (!opts.execute) { console.log('仅预览，没有执行提交、联网、打包或发布。'); return preview; }
   fs.mkdirSync(path.dirname(stateFile), { recursive: true });
@@ -176,8 +179,8 @@ async function run(root, opts, deps = {}) {
         need(!/push:|action-gh-release|contents: write/.test(workflow), '当前提交仍包含旧标签自动发布流程，请审核并提交工作流修正。');
         const release = require(path.join(state.checkout, 'scripts/release-windows-update.cjs'));
         const notesFile = path.join(deliveryDirectory(root), review.id + '.notes.txt'); fs.writeFileSync(notesFile, notes);
-        const common = { directory: state.output, commit: state.commit, confirmTag: 'v' + version, execute: true, resume: true, notesFile };
-        const deps = { onDraft: id => { state.releaseId = String(id); save(state); } };
+        const common = { directory: state.output, commit: state.commit, confirmTag: 'v' + version, execute: true, resume: true, notesFile, proxy: opts.proxy, direct: opts.direct, transferTimeout: opts.transferTimeout, idleTimeout: opts.idleTimeout };
+        const deps = { verificationCache: new Map(), onDraft: id => { state.releaseId = String(id); save(state); } };
         const uploaded = await release.run({ ...common, phase: 'draft', ...(state.releaseId ? { releaseId: state.releaseId } : {}) }, deps);
         const result = uploaded.published ? uploaded : await release.run({ ...common, phase: 'publish', releaseId: String(uploaded.releaseId) }, deps);
         return { releaseId: String(result.releaseId), releaseUrl: 'https://github.com/hanjiyou/nova-video-studio/releases/tag/v' + version, published: result.published };
@@ -210,6 +213,7 @@ async function menu(root) {
     const opts = { mode, profile: 'github-test', review: (await rl.question('审核记录路径：')).trim(), message: await rl.question('提交说明（续跑可留空）：') };
     if (mode !== 'push') { opts.version = (await rl.question('版本号（续跑可留空）：')).trim(); const type = (await rl.question('发布类型：1 GitHub测试版 / 2 正式签名版 [1]：')).trim(); need(['', '1', '2'].includes(type), '无效类型'); opts.profile = type === '2' ? 'release' : 'github-test'; }
     if (mode === 'publish') opts.notesFile = (await rl.question('发布说明文件路径（续跑可留空）：')).trim();
+    if (mode === 'publish') { const route = (await rl.question('发布代理地址（留空沿用 NOVA_RELEASE_PROXY；输入 direct 禁用应用代理）：')).trim(); if (route === 'direct') opts.direct = true; else if (route) opts.proxy = route; }
     await run(root, opts);
     if ((await rl.question('按以上清单执行？输入 YES：')).trim() === 'YES') await run(root, { ...opts, execute: true });
   } finally { rl.close(); }

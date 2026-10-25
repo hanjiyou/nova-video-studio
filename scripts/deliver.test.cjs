@@ -55,3 +55,12 @@ test('isolated build explicitly prepares Electron binary and fails when preparat
  assert.throws(()=>prepareElectron(root,(cwd,executable,args)=>{called++;assert.equal(cwd,root);assert.equal(executable,process.execPath);assert.deepEqual(args,[path.join(electron,'install.js')]);}),/未准备完成/);
  prepareElectron(root,()=>{called++;fs.mkdirSync(path.join(electron,'dist'));fs.writeFileSync(path.join(electron,'dist/electron.exe'),'fixture binary');});assert.equal(called,2);
 });
+
+
+test('delivery accepts explicit release network configuration and rejects conflicting routes', () => {
+ const {options}=require('./deliver.cjs');
+ const opts=options(['run','--proxy','http://127.0.0.1:7898','--transfer-timeout','1800','--idle-timeout','90']);
+ assert.equal(opts.proxy,'http://127.0.0.1:7898'); assert.equal(opts.idleTimeout,'90');
+ assert.throws(()=>options(['run','--proxy','http://localhost','--direct']),/Choose/);
+ assert.throws(()=>options(['run','--transfer-timeout','0']),/timeouts/);
+});

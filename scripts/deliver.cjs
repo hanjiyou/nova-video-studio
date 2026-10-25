@@ -15,6 +15,14 @@ function command(root, executable, args) {
   const result = spawnSync(executable, args, { cwd: root, stdio: 'inherit', windowsHide: true, shell: false });
   need(!result.error && result.status === 0, '步骤执行失败，已保留进度。');
 }
+function prepareElectron(root, execute = command) {
+  const installer = path.join(root, 'node_modules/electron/install.js');
+  need(fs.existsSync(installer), 'Electron 安装器缺失，请检查锁文件依赖安装。');
+  // Electron 43 no longer runs its binary installer through npm lifecycle scripts.
+  // Its installer verifies the installed version and uses checked cached/downloaded artifacts.
+  execute(root, process.execPath, [installer]);
+  need(fs.existsSync(path.join(root, 'node_modules/electron/dist/electron.exe')), 'Electron 运行文件未准备完成。');
+}
 function localPath(root, name) {
   need(typeof name === 'string' && name && !name.startsWith('-') && !name.includes('\\') && !path.isAbsolute(name) && !name.split('/').some(p => !p || p === '.' || p === '..') && !/[\x00-\x1f]/.test(name), '文件路径无效：' + name);
   need(!/^(?:\.git|node_modules|release[^/]*|temp)(?:\/|$)/i.test(name) && !/(?:^|\/)(?:node_modules|\.env(?:\..*)?|\.aws|\.next)(?:\/|$)/i.test(name), '不允许交付临时目录、依赖或凭据文件：' + name);
@@ -153,6 +161,7 @@ async function run(root, opts, deps = {}) {
         const output = path.join(state.checkout, 'release-updates', profile, version);
         if (!fs.existsSync(output)) {
           for (const directory of ['', 'frontend', 'backend']) command(path.join(state.checkout, directory), process.execPath, [npmCli, 'ci', '--no-audit', '--no-fund']);
+          prepareElectron(state.checkout);
           command(state.checkout, process.execPath, ['scripts/build-windows-update.cjs', '--profile', profile, '--version', version, '--require-clean-source']);
         }
         return { output };
@@ -216,4 +225,4 @@ async function main(root, opts) {
   return run(root, opts);
 }
 if (require.main === module) main(REPO, options(process.argv.slice(2))).catch(error => { console.error(error.status !== undefined ? 'Git操作失败，请检查分支、身份与认证。' : error.message); console.error('交付未完成。请查看上方步骤输出及 deliver status；进度和构建目录已保留。不会自动回滚或重复生成版本。'); process.exitCode = 1; });
-module.exports = { recordReview, validateReview, fingerprint, localPath, stages, sequence, options, git, run, main };
+module.exports = { prepareElectron, recordReview, validateReview, fingerprint, localPath, stages, sequence, options, git, run, main };

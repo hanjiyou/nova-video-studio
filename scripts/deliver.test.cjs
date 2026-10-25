@@ -45,3 +45,13 @@ test('stage journal resumes and promotes push to build then publish without repe
 });
 test('argument defaults are preview and explicitly selected operation only',()=>{assert.equal(options(['run','--review','x']).execute,undefined);assert.equal(options(['run','--execute']).execute,true);assert.throws(()=>options(['run','--force']));});
 test('legacy workflow never triggers on tags or uploads public Release assets',()=>{const text=fs.readFileSync(path.join(__dirname,'../.github/workflows/desktop-release.yml'),'utf8');assert.ok(text.includes('workflow_dispatch:'));assert.equal(/push:|action-gh-release|contents: write/.test(text),false);});
+
+
+test('isolated build explicitly prepares Electron binary and fails when preparation is incomplete', t => {
+ const root=fixture(t),electron=path.join(root,'node_modules/electron');fs.mkdirSync(electron,{recursive:true});
+ const {prepareElectron}=require('./deliver.cjs');let called=0;
+ assert.throws(()=>prepareElectron(root,()=>{called++;}),/安装器缺失/);assert.equal(called,0);
+ fs.writeFileSync(path.join(electron,'install.js'),'fixture');
+ assert.throws(()=>prepareElectron(root,(cwd,executable,args)=>{called++;assert.equal(cwd,root);assert.equal(executable,process.execPath);assert.deepEqual(args,[path.join(electron,'install.js')]);}),/未准备完成/);
+ prepareElectron(root,()=>{called++;fs.mkdirSync(path.join(electron,'dist'));fs.writeFileSync(path.join(electron,'dist/electron.exe'),'fixture binary');});assert.equal(called,2);
+});

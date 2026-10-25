@@ -1,4 +1,4 @@
-Nova Studio GitHub 更新测试版（未签名）
+﻿Nova Studio GitHub 更新测试版（未签名）
 
 本安装包仅供已批准的 GitHub 更新测试，不是正式发布版。Windows 可能显示“未知发布者”。
 固定测试源：公开 GitHub 仓库 hanjiyou/nova-video-studio 的 nova-test.yml。

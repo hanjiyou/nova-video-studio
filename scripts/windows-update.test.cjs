@@ -12,7 +12,7 @@ const { buildBlockMap } = require('app-builder-lib/out/targets/blockmap/blockmap
 const { createUpdateInfoTasks, writeUpdateInfoFiles } = require('app-builder-lib/out/publish/updateInfoBuilder');
 const { Platform } = require('app-builder-lib');
 const { Arch } = require('builder-util');
-const { readPolicy, stableVersion, compareVersions, localFeed, makePlan, planForRecord, verifyDirectory, builderConfiguration, verifyArtifacts, publisherMatches } = require('./lib/windows-update.cjs');
+const { readPolicy, stableVersion, compareVersions, localFeed, makePlan, planForRecord, verifyDirectory, assertInstallerNoticeEncoding, builderConfiguration, verifyArtifacts, publisherMatches } = require('./lib/windows-update.cjs');
 const release = require('./release-windows-update.cjs');
 const { argumentsFrom, runBuild } = require('./build-windows-update.cjs');
 
@@ -330,4 +330,25 @@ test('GitHub test afterPack removes only obsolete copied notices and complete ve
   await verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) });
   fs.unlinkSync(path.join(resources, 'GitHub测试版使用说明.md'));
   await assert.rejects(verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) }), /ENOENT/);
+});
+
+
+test('both Chinese NSIS notices are strict UTF-8 with BOM, and missing/invalid encoding is rejected',t=>{
+  for(const name of ['GITHUB-TEST-NOTICE.txt','LOCAL-TEST-NOTICE.txt']) {
+    const file=path.join(__dirname,'../desktop/installer',name);assert.doesNotThrow(()=>assertInstallerNoticeEncoding(file));
+    const bytes=fs.readFileSync(file);assert.deepEqual([...bytes.subarray(0,3)],[0xef,0xbb,0xbf]);assert.match(bytes.toString('utf8'),/[\u4e00-\u9fff]/);
+  }
+  const directory=sandbox(t),file=path.join(directory,'notice.txt');
+  fs.writeFileSync(file,'中文安装说明','utf8');assert.throws(()=>assertInstallerNoticeEncoding(file),/UTF-8 with BOM/);
+  fs.writeFileSync(file,Buffer.from([0xef,0xbb,0xbf,0xff]));assert.throws(()=>assertInstallerNoticeEncoding(file),/invalid UTF-8/);
+  fs.writeFileSync(file,'\ufeff中文安装说明','utf8');assert.doesNotThrow(()=>assertInstallerNoticeEncoding(file));
+});
+test('update build configuration fails before packaging when either selected notice loses its BOM',t=>{
+  const directory=sandbox(t);fs.mkdirSync(path.join(directory,'desktop/installer'),{recursive:true});
+  fs.writeFileSync(path.join(directory,'electron-builder.yml'),'nsis:\n  license: desktop/installer/LOCAL-TEST-NOTICE.txt\nextraResources: []\n');
+  for(const [profile,name]of [['local-test','LOCAL-TEST-NOTICE.txt'],['github-test','GITHUB-TEST-NOTICE.txt']]) {
+    const file=path.join(directory,'desktop/installer',name),plan=makePlan(profile==='github-test'?{profile,version:'3.6.4'}:{profile,version:'3.5.4',testFeedUrl:'http://127.0.0.1:8080/'});
+    fs.writeFileSync(file,'中文安装说明');assert.throws(()=>builderConfiguration(plan,'inert',directory),/UTF-8 with BOM/);
+    fs.writeFileSync(file,'\ufeff中文安装说明');assert.doesNotThrow(()=>builderConfiguration(plan,'inert',directory));
+  }
 });

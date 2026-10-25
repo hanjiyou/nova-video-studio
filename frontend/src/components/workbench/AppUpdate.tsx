@@ -3,6 +3,11 @@ import { useState, useSyncExternalStore } from 'react';
 import type { AppUpdateState } from '@/lib/app-update';
 import { updateUnsupportedMessage } from '@/lib/app-update';
 import { hasUpdateBlockers, subscribeUpdateReadiness } from '@/lib/update-readiness';
+export function SidebarVersion({ state, onOpen }: { state: AppUpdateState | null; onOpen: () => void }) {
+  const version = state?.currentVersion && /^\d+(\.\d+){2,3}$/.test(state.currentVersion) ? state.currentVersion : null;
+  const label = version ? `v${version}${state?.testBuild ? ' · 测试版' : ''}` : '版本信息';
+  return <button type="button" className="wb-version-button" aria-label={`${label}，查看版本与更新`} onClick={onOpen}>{label}<span aria-hidden="true">›</span></button>;
+}
 export function UpdateNotice({ state, onOpen }: { state: AppUpdateState | null; onOpen: () => void }) {
   if (!state?.notice) return null;
   return <div className="wb-notice wb-update-notice" role="status"><div><strong>有新版本 {state.notice}</strong><p>可在设置中下载，完成后由你选择重启安装。</p></div><button type="button" onClick={onOpen}>查看更新</button><button type="button" aria-label="关闭更新提示" onClick={() => void window.novaDesktop?.dismissUpdateNotice().catch(() => {})}>稍后</button></div>;

@@ -112,7 +112,20 @@ async function verifyDirectory(directory, options = {}) {
   return { plan, summary };
 }
 
+function assertInstallerNoticeEncoding(filename) {
+  assertOrdinaryFile(filename);
+  const bytes = fs.readFileSync(filename);
+  invariant(bytes.length > 3 && bytes.subarray(0, 3).equals(Buffer.from([0xef, 0xbb, 0xbf])), 'NSIS installer notice must be UTF-8 with BOM: ' + path.basename(filename));
+  try { new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  catch { throw new Error('NSIS installer notice contains invalid UTF-8: ' + path.basename(filename)); }
+}
+
 function builderConfiguration(plan, attempt, repository = REPOSITORY) {
+  const baseConfig = yaml.load(fs.readFileSync(path.join(repository, 'electron-builder.yml'), 'utf8'));
+  // Explicit nsis.license bypasses electron-builder's localized-file BOM conversion.
+  const notice = plan.profile === 'github-test' ? 'desktop/installer/GITHUB-TEST-NOTICE.txt' : baseConfig.nsis?.license;
+  invariant(typeof notice === 'string' && notice.length > 0, 'NSIS installer notice is required.');
+  assertInstallerNoticeEncoding(path.resolve(repository, notice));
   return {
     extends: path.join(repository, 'electron-builder.update.yml'),
     appId: plan.appId,
@@ -122,7 +135,7 @@ function builderConfiguration(plan, attempt, repository = REPOSITORY) {
     afterPack: path.join(repository, 'scripts/finalize-windows-update.cjs'),
     directories: { output: attempt },
     publish: [plan.feed],
-    ...(plan.profile === 'github-test' ? { extraResources: yaml.load(fs.readFileSync(path.join(repository, 'electron-builder.yml'), 'utf8')).extraResources.filter(entry => !['docs/本地离线测试版使用说明.md', 'desktop/installer/LOCAL-TEST-NOTICE.txt'].includes(entry.from)).concat([{ from: 'docs/Windows-GitHub测试版使用说明.md', to: 'GitHub测试版使用说明.md' }, { from: 'desktop/installer/GITHUB-TEST-NOTICE.txt', to: 'GITHUB-TEST-NOTICE.txt' }]) } : {}),
+    ...(plan.profile === 'github-test' ? { extraResources: baseConfig.extraResources.filter(entry => !['docs/本地离线测试版使用说明.md', 'desktop/installer/LOCAL-TEST-NOTICE.txt'].includes(entry.from)).concat([{ from: 'docs/Windows-GitHub测试版使用说明.md', to: 'GitHub测试版使用说明.md' }, { from: 'desktop/installer/GITHUB-TEST-NOTICE.txt', to: 'GITHUB-TEST-NOTICE.txt' }]) } : {}),
     forceCodeSigning: plan.signature.mode === 'authenticode',
     win: {
       artifactName: plan.artifactName,
@@ -237,4 +250,4 @@ async function verifyArtifacts(directory, plan, options = {}) {
   return { schemaVersion: 1, profile: plan.profile, version: plan.version, windowsVersion: plan.windowsVersion, appId: plan.appId, productName: plan.productName, tag: plan.tag, installer: plan.artifactName, size, sha512, blockmap: { name: plan.artifactName + '.blockmap', sha512: await hashFile(installer + '.blockmap'), ...blockmap }, manifest: { name: manifestName, sha512: await hashFile(path.join(directory, manifestName)) }, feed: plan.feed, signature: { mode: plan.signature.mode, results: inspections.map(({ status, subject, fileVersion, productVersion }) => ({ status, subject, fileVersion, productVersion })) }, runtimeReady: plan.runtimeReady, ...(plan.source ? { source: plan.source } : {}), publication: 'not-published' };
 }
 
-module.exports = { REPOSITORY, readPolicy, stableVersion, compareVersions, localFeed, makePlan, planForRecord, verifyDirectory, hashFile, builderConfiguration, assertNewOutput, verifyArtifacts, verifyBlockmap, inspectWindowsFiles, publisherMatches };
+module.exports = { REPOSITORY, readPolicy, stableVersion, compareVersions, localFeed, makePlan, planForRecord, verifyDirectory, hashFile, assertInstallerNoticeEncoding, builderConfiguration, assertNewOutput, verifyArtifacts, verifyBlockmap, inspectWindowsFiles, publisherMatches };

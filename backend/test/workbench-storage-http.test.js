@@ -49,7 +49,7 @@ test('actual desktop HTTP persists ordered assets/drafts/history across changed 
     assert.equal(oldTask.status, 'completed');
     assert.equal(oldTask.expiresAt, null);
     const processing = await (await runtime.request('/api/nova/tasks/' + old.processing)).json();
-    assert.equal(processing.status, 'submission_unknown');
+    assert.equal(processing.status, 'failed');assert.equal(processing.remoteOutcome,'unknown');assert.equal(processing.generationReserved,false);
     assert.ok(fs.existsSync(path.join(directory, 'images', old.processing + '-0-0.png')));
     assert.ok(fs.existsSync(path.join(directory, 'plugin-media', old.file)));
     const assets = [];

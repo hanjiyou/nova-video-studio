@@ -12,6 +12,7 @@ import type { CapabilitySummary, ConnectionModels, ConnectionSummary } from '@/l
 import type { Draft, HistoryTask, SubmissionIntent } from '@/lib/workbench-client';
 import type { AssetSummary, WorkbenchTaskInput } from '@/lib/workbench-task-client';
 import policy from '../../../../../backend/tasks/image-policy.json';
+if (policy.protocol !== 'openai') throw new Error('Image policy fixture must use the supported openai protocol');
 const connection: ConnectionSummary = {connectionId:'11111111-1111-4111-8111-111111111111',connectionVersionId:'22222222-2222-4222-8222-222222222222',displayName:'fixture',baseUrl:policy.baseUrl,provider:policy.provider,protocol:policy.protocol,hasCredential:true,credentialState:'ready',validationState:'verified',lastCheckedAt:null,lastSuccessAt:null,modelsFetchedAt:null,errorCode:null,defaultImageModel:policy.model,defaultVideoModel:'grok-imagine-video-1.5-6s',isDefault:true};
 const asset: AssetSummary = {assetId:'44444444-4444-4444-8444-444444444444',kind:'image',displayName:'original.png',mimeType:'image/png',byteLength:120,sha256:'fixture',availability:'available',validationState:'verified',previewUrl:'/original.png'};
 const minimum: CapabilitySummary = {capabilityVersionId:'33333333-3333-4333-8333-333333333333',provider:policy.provider,baseUrl:policy.baseUrl,protocol:policy.protocol,model:policy.model,mode:'image.text',parameters:{},evidenceLevel:'application_verified',evidenceVersion:'existing-verified',evidence:{sourceIds:['existing-test'],applicationVerified:true},isCurrent:true};
@@ -47,7 +48,9 @@ it('single-reference editing keeps the original File body and params; remove ret
 it('unsupported saved specs, multiple references and stale/mismatched policies are preserved and blocked',()=>{
   const value={...draft,parameters:{size:'2048x2048',quality:'high'}};render(<Editor initial={value}/>);expect(screen.getByLabelText('图片尺寸')).toHaveValue('2048x2048');expect(screen.getByLabelText('图片质量')).toHaveValue('high');expect(screen.getByRole('button',{name:'生成图片'})).toBeDisabled();expect(value.parameters).toEqual({size:'2048x2048',quality:'high'});
   expect(generationPlan({...draft,inputAssets:[asset,{...asset,assetId:'other'}]},connection,models).blocked).toContain('1 张');
-  const reference={...draft,inputAssets:[asset]};for(const changed of [{...connection,provider:'openai-compatible'},{...connection,baseUrl:'https://other.invalid/v1'},{...connection,protocol:'other'}])expect(generationPlan(reference,changed,models).blocked).not.toBe('');
+  const reference={...draft,inputAssets:[asset]};for(const changed of [{...connection,provider:'openai-compatible'},{...connection,baseUrl:'https://other.invalid/v1'}])expect(generationPlan(reference,changed,models).blocked).not.toBe('');
+  // @ts-expect-error Deliberately invalid persisted protocol must also be rejected at runtime.
+  expect(generationPlan(reference,{...connection,protocol:'other'},models).blocked).not.toBe('');
   for(const cap of [{...edit,evidenceVersion:'other'},{...edit,parameters:{...edit.parameters,inputReferenceName:'image[]'}},{...edit,evidence:{...edit.evidence,applicationVerified:true}}])expect(generationPlan(reference,connection,{...models,capabilities:[cap]}).blocked).not.toBe('');
   expect(generationPlan(reference,connection,{...models,connectionVersionId:'stale'}).blocked).not.toBe('');expect(generationPlan({...draft,model:'gpt-image-2.5-sunburst',parameters:{quality:'high'}},connection,models).model).toBe('gpt-image-2.5-sunburst');
 });

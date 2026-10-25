@@ -12,4 +12,20 @@ module.exports = async context => {
   for (const [key, value] of Object.entries(policy.feed)) if (config[key] !== value) throw new Error('Builder feed differs from fixed policy.');
   config.updaterCacheDirName = policy.updaterCacheDirName;
   fs.writeFileSync(file, yaml.dump(config));
+  if (policy.profile === 'github-test') {
+    if (!require('../desktop/update-identity.cjs').isGithubTestMetadata(policy)) throw new Error('Invalid GitHub test package identity.');
+    // Inherited extraResources are concatenated by builder. Remove only these
+    // two obsolete copied notices inside this attempt, never application data.
+    const resources = path.resolve(context.appOutDir, 'resources');
+    if (fs.lstatSync(resources).isSymbolicLink()) throw new Error('Unsafe packaged resources directory.');
+    for (const name of ['LOCAL-TEST-NOTICE.txt', '本地离线测试版使用说明.md']) {
+      const target = path.join(resources, name);
+      if (path.dirname(target) !== resources) throw new Error('Unsafe copied notice path.');
+      if (fs.existsSync(target)) {
+        const stat = fs.lstatSync(target);
+        if (!stat.isFile() || stat.isSymbolicLink()) throw new Error('Copied obsolete notice is not an ordinary file.');
+        fs.unlinkSync(target);
+      }
+    }
+  }
 };

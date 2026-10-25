@@ -17,6 +17,8 @@ async function fixture(t, overrides = {}) {
     const store = createWorkbenchStore({ db, rootDirectory: path.join(directory, 'storage') }), connectionId = randomUUID(), versionId = randomUUID();
     db.prepare('INSERT INTO connections(id,display_name,created_at,updated_at) VALUES(?,?,?,?)').run(connectionId, 'synthetic', '2026-01-01', '2026-01-01');
     db.prepare('INSERT INTO connection_versions(id,connection_id,base_url,provider,created_at) VALUES(?,?,?,?,?)').run(versionId, connectionId, 'https://fixture.invalid/v1', 'openai-compatible', '2026-01-01');
+    // Single-slot action fixtures isolate state-machine assertions; default 3+3 is covered by I02 runtime tests.
+    store.putSetting('taskExecution',{value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0});
     let time = Date.parse('2026-10-23T00:00:00Z'), credential = true, submits = 0, polls = 0, chosen;
     const snapshot = (extra = {}) => ({ contractVersion: 1, localRequestId: randomUUID(), connectionVersionId: versionId, mode: 'video.text', model: 'synthetic-model', prompt: '  中文\n"完整台词"\r\n第二行  ', parameters: { duration: 6 }, inputAssets: [], adapterId: 'synthetic', adapterVersion: '1', ...extra });
     const connections = { getAuth(id) { assert.equal(id, versionId); if (!credential) throw Object.assign(new Error('No credential'), { code: 'CREDENTIAL_REQUIRED' }); return { connectionVersionId: id, apiKey: 'synthetic-secret', baseUrl: 'https://fixture.invalid/v1' }; } };
@@ -50,23 +52,23 @@ test('queued cancellation races preflight safely and never dispatches cancelled 
 test('restart of never-dispatched queue requires explicit continue; cancel is available before dispatch', async t => {
     const f = await fixture(t), first = f.enqueue(); await until(() => f.service.get(first).status === 'remote_queued');
     const second = f.enqueue(); await f.restart(); assert.equal(f.service.get(second).status, 'local_queued'); assert.equal(f.service.get(second).requiresContinue, true);
-    f.implementation.poll = async () => ({ remoteState: 'failed', rawStatus: 'failed' }); f.advance(20000); await f.service.poll(first); await tick(); assert.equal(f.submits, 1);
+    f.implementation.poll = async () => ({ remoteState: 'failed', rawStatus: 'failed' }); f.advance(20000);f.service.action(first,'resume-polling'); await f.service.poll(first); await tick(); assert.equal(f.submits, 1);
     f.service.action(second, 'continue-queued'); await until(() => f.submits === 2); assert.equal(f.service.get(second).requiresContinue, false);
 });
-for (const cause of ['network', '503', 'empty-id']) test('uncertain submit ' + cause + ' never retries POST and keeps single generation reservation across restart', async t => {
+for (const cause of ['network', '503', 'empty-id']) test('uncertain submit ' + cause + ' never retries POST, retains bounded reservation, and restart releases unrecoverable local wait', async t => {
     const f = await fixture(t, { submit: async () => { if (cause === 'empty-id') return { upstreamTaskId: '' }; throw Object.assign(new Error('synthetic upstream detail'), { httpStatus: cause === '503' ? 503 : undefined }); } });
     const id = f.enqueue(); await until(() => f.service.get(id).status === 'submission_unknown'); const next = f.enqueue(); await tick();
     assert.equal(f.submits, 1); assert.equal(f.service.get(next).status, 'local_queued'); assert.equal(f.service.get(id).generationReserved, true); assert.equal(f.service.get(id).remoteMayContinue, true); assert.match(f.service.get(id).schedulingNotice, /计费/);
-    await f.restart(); f.service.action(next, 'continue-queued'); await tick(); assert.equal(f.submits, 1); assert.equal(f.polls, 0);
+    await f.restart(); assert.equal(f.submits,1);assert.equal(f.service.get(id).status,'failed');assert.equal(f.service.get(id).remoteOutcome,'unknown');assert.equal(f.service.get(id).generationReserved,false);assert.equal(f.service.get(next).requiresContinue,true);f.service.action(next,'continue-queued');await until(()=>f.submits===2);assert.equal(f.polls,0);
 });
 test('complete explicit POST rejection permits queue progress; POST 429 never follows Retry-After', async t => {
     const f = await fixture(t, { submit: async () => { throw Object.assign(new Error('synthetic rejection'), { httpStatus: 429, transmission: 'response_received', definiteRejection: true, retryAfter: '1' }); } });
     const id = f.enqueue(); await until(() => f.service.get(id).status === 'failed'); f.advance(200000); await tick(); assert.equal(f.submits, 1); assert.equal(f.service.get(id).taskError.code, 'REMOTE_REJECTED'); assert.equal(f.service.get(id).taskError.transmission, 'response_received');
 });
-test('restart after dispatch and before ID becomes submission_unknown; an existing ID resumes GET only', async t => {
+test('restart after dispatch without recoverable ID ends local wait; an existing ID requires explicit GET resume', async t => {
     const f = await fixture(t), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_queued');
     const unknown = f.enqueue(); f.db.prepare("UPDATE tasks SET status='submitting',dispatch_started_at=? WHERE id=?").run('2026-10-22T00:00:00Z', unknown);
-    await f.restart(); assert.equal(f.service.get(unknown).status, 'submission_unknown'); f.advance(20000); await f.service.poll(id); assert.equal(f.submits, 1); assert.equal(f.polls, 1);
+    await f.restart(); assert.equal(f.service.get(unknown).status, 'failed');assert.equal(f.service.get(unknown).remoteOutcome,'unknown'); f.advance(20000);f.service.action(id,'resume-polling'); await f.service.poll(id); assert.equal(f.submits, 1); assert.equal(f.polls, 1);
 });
 test('stop polling retains reservation, ignores late GET, survives restart, and resume uses original ID only', async t => {
     let finish;
@@ -97,8 +99,10 @@ test('unrecognized remote state preserves safe raw status and pauses; no false f
     const task = f.service.get(id); assert.equal(task.status, 'polling_paused'); assert.equal(task.rawStatus, 'Supplier_New_Status'); assert.equal(task.remoteState, 'unknown');
 });
 test('GET transient retry count is bounded and persists across restarts; no POST retry', async t => {
-    const f = await fixture(t, { poll: async () => { throw new Error('offline synthetic-secret'); } }), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_queued');
-    for (let index = 0; index < 6; index++) { f.advance(120000); await f.service.poll(id); if (index === 1) await f.restart(); }
+    const f = await fixture(t, { poll: async () => { throw new Error('offline synthetic-secret'); } });
+    // Isolate the pre-existing GET retry budget from the new total deadline. Default 300s is tested separately.
+    f.store.putSetting('taskExecution',{value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:1800},expectedRevision:1});const id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_queued');
+    for (let index = 0; index < 6; index++) { f.advance(120000); await f.service.poll(id); if (index === 1) {await f.restart();f.service.action(id,'resume-polling');} }
     assert.equal(f.service.get(id).status, 'polling_paused'); assert.equal(f.service.get(id).taskError.code, 'POLL_TRANSIENT'); assert.equal(f.polls, 5); assert.equal(f.submits, 1);
     assert.equal(JSON.stringify(f.store.events(id)).includes('synthetic-secret'), false);
 });
@@ -115,9 +119,9 @@ test('short Retry-After controls next GET and successful status clears failure b
 test('Retry-After numeric/date parsing and invalid values', () => {
     const time = Date.parse('2026-10-23T00:00:00Z'); assert.equal(retryAfter('40', time), 40000); assert.equal(retryAfter('Fri, 23 Oct 2026 00:01:00 GMT', time), 60000); assert.equal(retryAfter('garbage', time), null); assert.equal(retryAfter('-1', time), null); assert.equal(retryAfter(null, time), null);
 });
-test('remote completion queues downloads independently, releases generation and never claims local completed without a verifier', async t => {
-    const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png', authScope: 'none' }] }) }); const first = f.enqueue(), second = f.enqueue();
-    await until(() => f.service.get(second).status === 'remote_completed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).status, 'remote_completed'); assert.equal(f.service.stats().downloadQueued, 2); assert.equal(f.service.stats().processingCount, 0);
+test('remote completion keeps its media slot until verified save; admitted jobs never claim completed without verifier', async t => {
+    const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png', authScope: 'none' }] }) }); f.store.putSetting('taskExecution',{value:{imageConcurrency:3,videoConcurrency:3,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:1});const first = f.enqueue(), second = f.enqueue();
+    await until(() => f.service.get(second).status === 'remote_completed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).status, 'remote_completed'); assert.equal(f.service.stats().downloadQueued, 2); assert.equal(f.service.stats().processingCount, 2);
     await f.restart(); assert.equal(f.service.get(first).status, 'remote_completed'); assert.equal(f.submits, 2); assert.equal(f.service.get(first).outputAssets.length, 0);
 });
 test('inline output is a managed unverified candidate, never an exposed base64 result or local completion', async t => {
@@ -135,7 +139,7 @@ test('download interruption recovers only the download queue, with no submit or 
 });
 test('download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed', async t => {
     const f = await fixture(t, { submit: async () => ({ resultSources: [{ kind: 'url', url: 'https://cdn.invalid/result.png' }] }) }), id = f.enqueue(); await until(() => f.service.get(id).status === 'remote_completed');
-    await f.restart({ downloadWorker: async () => { throw new Error('disk full'); } }); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1); f.service.action(id, 'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1);
+    await f.restart({ downloadWorker: async () => { throw new Error('disk full'); } });assert.equal(f.service.get(id).requiresContinue,true);f.service.action(id,'continue-queued'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1); f.service.action(id, 'retry-download'); await until(() => f.service.get(id).status === 'download_failed'); assert.equal(f.submits, 1);
 });
 test('schema v3 to current keeps historical SQL checksums, committed WAL rows and a consistent rollback backup', async t => {
     const f = await fixture(t), dbPath=path.join(f.directory,'v3.sqlite'), db=new Database(dbPath);
@@ -150,7 +154,9 @@ test('schema v3 to current keeps historical SQL checksums, committed WAL rows an
     } finally {db.close();}
 });
 test('GET failure count limit pauses after five automatic retries even with a larger elapsed-time budget',async t=>{
-    const f=await fixture(t,{poll:async()=>{throw new Error('offline');}});await f.restart({policy:{budgetMs:100000000}});
+    const f=await fixture(t,{poll:async()=>{throw new Error('offline');}});
+    // A deliberate 1800s snapshot isolates GET retry-count exhaustion; it does not change production defaults.
+    f.store.putSetting('taskExecution',{value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:1800},expectedRevision:1});await f.restart({policy:{budgetMs:100000000}});
     const id=f.enqueue();await until(()=>f.service.get(id).status==='remote_queued');
     for(let n=0;n<6;n++){f.advance(120000);await f.service.poll(id);}
     assert.equal(f.polls,6);assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.submits,1);
@@ -171,26 +177,16 @@ test('complete POST authentication rejection is classified for reauthentication,
     await until(()=>f.service.get(id).status==='failed');const task=f.service.get(id);assert.equal(task.taskError.code,'AUTH_REJECTED');assert.equal(task.taskError.phase,'credential');assert.equal(task.taskError.retryAction,'reauthenticate');assert.equal(task.taskError.transmission,'response_received');assert.equal(f.submits,1);
 });
 
-for(const invalid of ['.','..'])test('review dot ID '+invalid+' from onAccepted stays unknown/reserved; manual attach has no poll side effects',async t=>{
-    const f=await fixture(t,{submit:async(_task,_snapshot,auth)=>{auth.onAccepted(invalid);return{upstreamTaskId:invalid};}});
-    const id=f.enqueue();await until(()=>f.service.get(id).status==='submission_unknown');
-    assert.equal(f.service.get(id).upstreamTaskId,null);assert.equal(f.service.get(id).generationReserved,true);
-    const next=f.enqueue();await tick();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(next).status,'local_queued');
+for(const invalid of ['.','..'])test('review dot ID '+invalid+' stays unknown and unqueryable; normal ID recovery is explicit GET only',async t=>{
+    const f=await fixture(t,{submit:async(_task,_snapshot,auth)=>{auth.onAccepted(invalid);return{upstreamTaskId:invalid};}}),id=f.enqueue();await until(()=>f.service.get(id).status==='submission_unknown');
+    assert.equal(f.service.get(id).upstreamTaskId,null);assert.equal(f.service.get(id).generationReserved,true);const next=f.enqueue();await tick();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(next).status,'local_queued');
     for(const upstreamTaskId of ['.','..'])assert.throws(()=>f.service.action(id,'attach-upstream-id',{upstreamTaskId}),{code:'INVALID_UPSTREAM_ID'});
     assert.equal(f.polls,0);assert.equal(f.service.get(id).status,'submission_unknown');assert.equal(f.service.get(id).upstreamTaskId,null);
-    await f.restart();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(id).generationReserved,true);
-    const normal='正常/百分号%.版本';f.service.action(id,'attach-upstream-id',{upstreamTaskId:normal});
-    assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.polls,0);
-    f.service.action(id,'resume-polling');await f.service.poll(id);assert.equal(f.polls,1);assert.equal(f.submits,1);
-    assert.equal(f.service.get(id).upstreamTaskId,normal);
+    const normal='正常/百分号%.版本';f.service.action(id,'attach-upstream-id',{upstreamTaskId:normal});assert.equal(f.polls,0);await f.restart();assert.equal(f.submits,1);assert.equal(f.polls,0);assert.equal(f.service.get(id).upstreamTaskId,normal);
+    f.service.action(id,'resume-polling');await f.service.poll(id);assert.equal(f.polls,1);assert.equal(f.submits,1);assert.equal(f.service.get(id).upstreamTaskId,normal);
 });
-for(const invalid of ['.','..'])test('review persisted old dot ID '+invalid+' pauses on recovery and direct poll without invoking an adapter or freeing the slot',async t=>{
-    const f=await fixture(t),id=f.enqueue();
-    f.db.prepare("UPDATE tasks SET status='remote_queued',dispatch_started_at=?,upstream_task_id=? WHERE id=?").run('2026-10-22T00:00:00Z',invalid,id);
-    await f.restart();assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.service.get(id).upstreamTaskId,invalid);
-    assert.equal(f.service.get(id).generationReserved,true);assert.equal(f.service.get(id).pauseReason,'upstream_id_unqueryable');
-    assert.throws(()=>f.service.action(id,'resume-polling'),{code:'INVALID_UPSTREAM_ID'});
-    f.enqueue();await tick();assert.equal(f.submits,0);assert.equal(f.polls,0);
-    f.db.prepare("UPDATE tasks SET status='remote_queued',next_poll_at=NULL WHERE id=?").run(id);
-    await f.service.poll(id);assert.equal(f.service.get(id).status,'polling_paused');assert.equal(f.service.get(id).generationReserved,true);assert.equal(f.polls,0);
+for(const invalid of ['.','..'])test('review legacy dot ID '+invalid+' ends local wait, retains original ID and never queries it',async t=>{
+    const f=await fixture(t),id=f.enqueue();f.db.prepare("UPDATE tasks SET status='remote_queued',dispatch_started_at=?,upstream_task_id=? WHERE id=?").run('2026-10-22T00:00:00Z',invalid,id);await f.restart();
+    assert.equal(f.service.get(id).status,'failed');assert.equal(f.service.get(id).upstreamTaskId,invalid);assert.equal(f.service.get(id).generationReserved,false);assert.equal(f.service.get(id).remoteOutcome,'unknown');assert.throws(()=>f.service.action(id,'resume-polling'),{code:'TASK_ACTION_INVALID'});await f.service.poll(id);assert.equal(f.polls,0);assert.equal(f.submits,0);
+    f.enqueue();await until(()=>f.submits===1);assert.equal(f.polls,0);
 });

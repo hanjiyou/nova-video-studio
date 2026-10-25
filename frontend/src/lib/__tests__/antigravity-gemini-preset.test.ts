@@ -63,6 +63,7 @@ describe('Antigravity Gemini builtin preset', () => {
     const config: ImageModelConfig = {
       ...BUILTIN_IMAGE_PRESETS['antigravity-gemini-image'],
       id: 'antigravity-gemini-image',
+      builtinPreset: 'antigravity-gemini-image',
       apiKey: 'test-key',
     };
     saveRegistry({

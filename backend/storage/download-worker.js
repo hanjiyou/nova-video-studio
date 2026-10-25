@@ -21,14 +21,16 @@ async function assertPublicUrl(url) {
     if(!addresses.length||addresses.some(item=>privateAddress(item.address)))throw failure('DOWNLOAD_FORBIDDEN');
 }
 function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(...args), validate=validateMedia, checkUrl=assertPublicUrl, timeoutMs=120000 }) {
-    async function download(source, task, file, signal) {
+    async function download(source, task, file, signal, checkpoint, diagnostic) {
         const initial=new URL(source.url);
         // The original immutable connection is the only possible authorization source.
         const original=connections.getAuth(task.connection_version_id), service=new URL(original.baseUrl);
         if(source.authScope==='connection'&&(initial.origin!==service.origin||!initial.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/')))throw failure('DOWNLOAD_FORBIDDEN');
         let url=initial, leftService=false;
         for(let hop=0;hop<=5;hop++) {
+            checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
             try{await checkUrl(url);}catch(error){throw error.code==='DOWNLOAD_FORBIDDEN'?error:failure('DOWNLOAD_FAILED');}
+            checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
             if(containsCredential(url.href,original.apiKey))throw failure('DOWNLOAD_FORBIDDEN');
             const sameService=url.origin===service.origin&&url.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/');
             // Once redirected away, a redirect back cannot regain the connection credential.
@@ -55,36 +57,41 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
             let fd,size=0;
             try {
                 fd=fs.openSync(file,'wx');
-                for await(const chunk of response.body){if(signal.aborted)throw failure('DOWNLOAD_FAILED');size+=chunk.length;if(size>MAX_ASSET_BYTES)throw failure('DOWNLOAD_TOO_LARGE');fs.writeFileSync(fd,chunk);}
+                for await(const chunk of response.body){checkpoint();if(signal.aborted)throw failure('DOWNLOAD_FAILED');size+=chunk.length;if(size>MAX_ASSET_BYTES)throw failure('DOWNLOAD_TOO_LARGE');fs.writeFileSync(fd,chunk);}
                 if(!size||expected!==null&&size!==expected)throw failure('DOWNLOAD_INCOMPLETE');
                 fs.fsyncSync(fd);
             } catch(error){await response.body.cancel().catch(()=>{});if(error.code==='UND_ERR_SOCKET'||error.name==='TypeError')throw failure('DOWNLOAD_INCOMPLETE');throw error;}
             finally{if(fd!==undefined)fs.closeSync(fd);}
-            return;
+            diagnostic('download_received',{byteLength:size}); return;
         }
     }
-    return async function worker(task,sources,{signal}={}) {
-        const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(abort,timeoutMs);
+    return async function worker(task,sources,{signal,checkpoint=()=>{},phase=()=>{},diagnostic=()=>{},remainingMs=()=>timeoutMs}={}) {
+        const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(abort,Math.min(timeoutMs,remainingMs()));
         signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
         const assetIds=[];
         try {
             for(const source of sources) {
+                checkpoint(); phase('downloading');
                 const directory=store.downloadDirectory(task.output_root_ref),file=path.join(directory,randomUUID()+'.part');
                 try {
                     let expectedKind=source.mediaKind;
                     if(source.kind==='asset') {
                         const original=store.readAsset(source.assetId);expectedKind=original.asset.kind;
+                        diagnostic('download_received',{byteLength:original.bytes.length,sourceKind:'asset'});
                         const fd=fs.openSync(file,'wx');try{fs.writeFileSync(fd,original.bytes);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
-                    } else if(source.kind==='url')await download(source,task,file,controller.signal);
+                    } else if(source.kind==='url')await download(source,task,file,controller.signal,checkpoint,diagnostic);
                     else throw failure('RESULT_NOT_RECOVERABLE');
                     if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');
-                    const metadata=await validate(file,{expectedKind,signal:controller.signal});
+                    checkpoint(); phase('validating');
+                    const metadata=await validate(file,{expectedKind,signal:controller.signal,timeoutMs:Math.min(90000,remainingMs())});
+                    checkpoint();
                     if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');
-                    assetIds.push(store.publishVerifiedFile(file,metadata,task.output_root_ref).assetId);
+                    phase('saving'); checkpoint();
+                    assetIds.push(store.publishVerifiedFile(file,metadata,task.output_root_ref).assetId); checkpoint();
                 } finally {try{fs.unlinkSync(file);}catch { /* A locked orphan part is never reused or bound as output. */ }}
             }
             return {assetIds};
-        } catch(error){if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');throw fileFailure(error.cause?.code?error.cause:error);}
+        } catch(error){if(error.code==='TASK_EXECUTION_ENDED')throw error;if(controller.signal.aborted)throw failure('DOWNLOAD_FAILED');throw fileFailure(error.cause?.code?error.cause:error);}
         finally{clearTimeout(timer);signal?.removeEventListener('abort',abort);}
     };
 }

@@ -4,6 +4,8 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { randomBytes } = require('node:crypto');
 const { resolveDataPolicy, resolveBackendPort } = require('./runtime.cjs');
+const { resolvePackageSystemUserData } = require('./update-identity.cjs');
+const packageMetadata = require('../package.json');
 const { installNetworkPolicy } = require('./network.cjs');
 const { createSessionPolicy, constrainNavigation } = require('./session-policy.cjs');
 const { registerDesktopIpc } = require('./ipc.cjs');
@@ -18,7 +20,7 @@ const { attachInstallerLaunchProof } = require('./update-launcher.cjs');
 const { createUpdateQuitHandler } = require('./update-quit.cjs');
 let dataPolicy, primary = false, initializationFailure;
 try {
-  dataPolicy = resolveDataPolicy({ systemUserData: app.getPath('userData') });
+  dataPolicy = resolveDataPolicy({ systemUserData: resolvePackageSystemUserData({ app, pkg: packageMetadata }) });
   fs.mkdirSync(dataPolicy.directory, { recursive: true });
   app.setPath('userData', dataPolicy.directory);
   // The lock is scoped to this data profile, before SQLite/queue initialization.
@@ -66,7 +68,7 @@ async function cleanup() {
   network?.dispose();
 }
 function createWindow(origin, features) {
-  mainWindow = new BrowserWindow({ width: 1440, height: 900, title: '影像工作台 · 本地离线测试版 · 完整功能验收中', webPreferences: {
+  mainWindow = new BrowserWindow({ width: 1440, height: 900, title: packageMetadata.novaUpdate?.profile === 'github-test' ? 'Nova Studio · GitHub 更新测试版 · 未签名' : '影像工作台 · 本地离线测试版 · 完整功能验收中', webPreferences: {
     preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true,
     additionalArguments: ['--nova-agent-enabled=' + features.agent, '--nova-cdp-enabled=' + features.browserAutomation],
   } });

@@ -5,7 +5,8 @@ const { execFileSync } = require('node:child_process');
 const { isDeepStrictEqual } = require('node:util');
 const { UUID } = require('builder-util-runtime');
 const { load } = require('js-yaml');
-const IDENTITIES = Object.freeze({ 'local-test': { appId: 'com.novaimage.studio.offline-test.followup-20261024', productName: 'Nova Studio T16 Followup' }, release: { appId: 'com.novaimage.studio', productName: 'Nova Image Studio' } });
+const { GITHUB_TEST_IDENTITY, GITHUB_TEST_FEED, isGithubTestMetadata } = require('./update-identity.cjs');
+const IDENTITIES = Object.freeze({ 'github-test': GITHUB_TEST_IDENTITY, 'local-test': { appId: 'com.novaimage.studio.offline-test.followup-20261024', productName: 'Nova Studio T16 Followup' }, release: { appId: 'com.novaimage.studio', productName: 'Nova Image Studio' } });
 const GITHUB = Object.freeze({ provider: 'github', owner: 'hanjiyou', repo: 'nova-video-studio', private: false, channel: 'latest', releaseType: 'release' });
 function stable(value) { return typeof value === 'string' && /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(value) && value.split('.').every(n => Number(n) <= 65535); }
 function compare(a, b) { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < 3; i++) if (x[i] !== y[i]) return Math.sign(x[i] - y[i]); return 0; }
@@ -18,11 +19,13 @@ function validateMetadata({ metadata: m, config, version, platform, arch, packag
   if (platform !== 'win32' || arch !== 'x64' || !packaged || !installed || dataMode === 'portable') return { supported: false, reason: 'INSTALLATION_UNSUPPORTED' };
   if (!m || m.runtimeReady !== true) return { supported: false, reason: 'UPDATE_NOT_ENABLED' };
   const bad = { supported: false, reason: 'UPDATE_METADATA_INVALID' };
-  if (!exact(m, ['schemaVersion', 'profile', 'version', 'windowsVersion', 'minimumUpdatableVersion', 'appId', 'productName', 'updaterCacheDirName', 'feed', 'signature', 'runtimeReady']) || m.schemaVersion !== 1 || !IDENTITIES[m.profile] || !stable(m.version) || m.version !== version || m.windowsVersion !== version + '.0' || m.minimumUpdatableVersion !== '3.5.0' || compare(version, m.minimumUpdatableVersion) < 0) return bad;
+  if (!exact(m, ['schemaVersion', 'profile', 'version', 'windowsVersion', 'minimumUpdatableVersion', 'appId', 'productName', 'updaterCacheDirName', 'feed', 'signature', 'runtimeReady']) || m.schemaVersion !== 1 || !IDENTITIES[m.profile] || !stable(m.version) || m.version !== version || m.windowsVersion !== version + '.0' || m.minimumUpdatableVersion !== (m.profile === 'github-test' ? '3.6.0' : '3.5.0') || compare(version, m.minimumUpdatableVersion) < 0) return bad;
   const identity = IDENTITIES[m.profile];
   if (m.appId !== identity.appId || m.productName !== identity.productName || m.updaterCacheDirName !== m.appId + '-updater' || !exact(m.signature, ['mode', 'publisherNames']) || !Array.isArray(m.signature.publisherNames)) return bad;
   if (m.profile === 'local-test') {
     if (!loopbackFeed(m.feed) || m.signature.mode !== 'unsigned-local-test' || m.signature.publisherNames.length) return bad;
+  } else if (m.profile === 'github-test') {
+    if (!isGithubTestMetadata(m, version) || !isDeepStrictEqual(m.feed, GITHUB_TEST_FEED)) return bad;
   } else {
     if (!isDeepStrictEqual(m.feed, GITHUB) || m.signature.mode !== 'authenticode' || !m.signature.publisherNames.length || !m.signature.publisherNames.every(n => typeof n === 'string' && n.trim() && n.length <= 1024)) return bad;
   }
@@ -59,7 +62,7 @@ function readRuntimePolicy({ app, resourcesPath = process.resourcesPath, platfor
   try {
     const pkg = JSON.parse(fs.readFileSync(path.join(app.getAppPath(), 'package.json'), 'utf8'));
     if (!pkg.novaUpdate || pkg.novaUpdate.runtimeReady !== true) return { supported: false, reason: 'UPDATE_NOT_ENABLED' };
-    if (pkg.name !== 'nova-image' || pkg.dependencies?.['electron-updater'] !== '6.8.11' || require('electron-updater/package.json').version !== '6.8.11') return { supported: false, reason: 'UPDATE_METADATA_INVALID' };
+    if ((pkg.novaUpdate.profile === 'github-test' && pkg.productName !== GITHUB_TEST_IDENTITY.productName) || pkg.name !== 'nova-image' || pkg.dependencies?.['electron-updater'] !== '6.8.11' || require('electron-updater/package.json').version !== '6.8.11') return { supported: false, reason: 'UPDATE_METADATA_INVALID' };
     const config = load(fs.readFileSync(path.join(resourcesPath, 'app-update.yml'), 'utf8'), { schema: require('js-yaml').JSON_SCHEMA });
     return validateMetadata({ metadata: pkg.novaUpdate, config, version: app.getVersion(), platform, arch, packaged: app.isPackaged, installed: platform === 'win32' && installedProbe(app, pkg.novaUpdate), dataMode });
   } catch { return { supported: false, reason: 'UPDATE_METADATA_INVALID' }; }

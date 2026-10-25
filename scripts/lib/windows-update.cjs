@@ -13,6 +13,8 @@ const builderRequire = createRequire(require.resolve('app-builder-lib'));
 const yaml = builderRequire('js-yaml');
 const { blake2b } = builderRequire('@noble/hashes/blake2.js');
 
+const { GITHUB_TEST_IDENTITY, GITHUB_TEST_FEED } = require('../../desktop/update-identity.cjs');
+
 const REPOSITORY = path.resolve(__dirname, '../..');
 const POLICY_PATH = path.join(REPOSITORY, 'config/windows-update.json');
 
@@ -50,12 +52,13 @@ function readPolicy() {
 
 function makePlan(options = {}, policy = readPolicy(), repository = REPOSITORY) {
   const profile = options.profile || 'local-test';
-  invariant(['local-test', 'release'].includes(profile), 'Profile must be local-test or release.');
+  invariant(['local-test', 'github-test', 'release'].includes(profile), 'Profile must be local-test, github-test or release.');
   const version = stableVersion(options.version || policy.bootstrapVersion);
-  invariant(compareVersions(version, policy.minimumUpdatableVersion) >= 0, 'Version is below the minimum updatable version.');
+  const minimumUpdatableVersion = profile === 'github-test' ? '3.6.0' : policy.minimumUpdatableVersion;
+  invariant(compareVersions(version, minimumUpdatableVersion) >= 0, 'Version is below the minimum updatable version.');
   const identity = policy.identities[profile];
   invariant(identity && identity.appId && identity.productName, 'Installation identity is missing.');
-  const fixedIdentity = profile === 'local-test' ? { appId: 'com.novaimage.studio.offline-test.followup-20261024', productName: 'Nova Studio T16 Followup' } : { appId: 'com.novaimage.studio', productName: 'Nova Image Studio' };
+  const fixedIdentity = profile === 'github-test' ? GITHUB_TEST_IDENTITY : profile === 'local-test' ? { appId: 'com.novaimage.studio.offline-test.followup-20261024', productName: 'Nova Studio T16 Followup' } : { appId: 'com.novaimage.studio', productName: 'Nova Image Studio' };
   invariant(isDeepStrictEqual(identity, fixedIdentity) && policy.minimumUpdatableVersion === '3.5.0', 'Fixed installation identity/minimum version has changed.');
   invariant(options.enableTestRuntime === undefined || typeof options.enableTestRuntime === 'boolean', 'Test runtime flag must be boolean.');
   invariant(!options.enableTestRuntime || (profile === 'local-test' && compareVersions(version, '3.5.2') >= 0), 'Test runtime requires local-test version 3.5.2 or higher.');
@@ -63,25 +66,31 @@ function makePlan(options = {}, policy = readPolicy(), repository = REPOSITORY) 
   if (profile === 'local-test') {
     feed = localFeed(options.testFeedUrl);
     signature = { mode: 'unsigned-local-test', publisherNames: [] };
+  } else if (profile === 'github-test') {
+    invariant(!options.testFeedUrl, 'GitHub test builds cannot override the fixed feed.');
+    invariant(isDeepStrictEqual(policy.githubTestFeed, GITHUB_TEST_FEED), 'GitHub test feed must remain the fixed approved repository/channel.');
+    feed = { ...GITHUB_TEST_FEED };
+    signature = { mode: 'unsigned-github-test', publisherNames: [] };
   } else {
     invariant(!options.testFeedUrl, 'Release builds cannot use a test feed.');
     const source = policy.githubFeed;
     invariant(isDeepStrictEqual(source, { provider: 'github', owner: 'hanjiyou', repo: 'nova-video-studio', private: false, channel: 'latest', releaseType: 'release' }), 'Release feed must remain the fixed approved GitHub feed repository.');
     invariant(source && source.provider === 'github' && /^[A-Za-z0-9-]+$/.test(source.owner) && /^[A-Za-z0-9_.-]+$/.test(source.repo) && source.private === false && source.channel === 'latest', 'An approved public GitHub feed must be configured for release builds.');
-    invariant(policy.signing.status === 'approved' && Array.isArray(policy.signing.publisherNames) && policy.signing.publisherNames.length > 0 && policy.signing.publisherNames.every(n => typeof n === 'string' && n.trim()), 'Release signing/publisher decision is pending. Only unsigned local-test builds are currently allowed.');
+    invariant(policy.signing.status === 'approved' && Array.isArray(policy.signing.publisherNames) && policy.signing.publisherNames.length > 0 && policy.signing.publisherNames.every(n => typeof n === 'string' && n.trim()), 'Release signing/publisher decision is pending. Only explicit unsigned test profiles are currently allowed.');
     feed = { provider: 'github', owner: source.owner, repo: source.repo, private: false, channel: 'latest', releaseType: 'release' };
     signature = { mode: 'authenticode', publisherNames: policy.signing.publisherNames };
   }
-  const metadata = { schemaVersion: 1, profile, version, windowsVersion: `${version}.0`, minimumUpdatableVersion: policy.minimumUpdatableVersion, ...identity, updaterCacheDirName: `${identity.appId}-updater`, feed, signature, runtimeReady: profile === 'local-test' ? options.enableTestRuntime === true : policy.runtimeReady === true };
-  const artifactName = `Nova-Studio-${version}-${profile === 'local-test' ? 'update-test' : 'win'}-x64.exe`;
+  const metadata = { schemaVersion: 1, profile, version, windowsVersion: `${version}.0`, minimumUpdatableVersion, ...identity, updaterCacheDirName: `${identity.appId}-updater`, feed, signature, runtimeReady: profile === 'github-test' || (profile === 'local-test' ? options.enableTestRuntime === true : policy.runtimeReady === true) };
+  const artifactName = `Nova-Studio-${version}-${profile === 'local-test' ? 'update-test' : profile === 'github-test' ? 'github-test' : 'win'}-x64.exe`;
   const root = path.join(repository, 'release-updates');
-  return { ...metadata, metadata, artifactName, tag: `v${version}`, root, output: path.join(root, profile, version) };
+  return { ...metadata, metadata, artifactName, manifestName: profile === 'github-test' ? 'nova-test.yml' : 'latest.yml', tag: `v${version}`, root, output: path.join(root, profile, version) };
 }
 
 // Only runtimeReady is historical. Every identity, feed, publisher and tool rule
 // still comes from the current fixed policy; the saved record cannot define them.
 function planForRecord(record, policy = readPolicy(), repository = REPOSITORY) {
   invariant(record && typeof record.metadata?.runtimeReady === 'boolean', 'Saved runtimeReady must be boolean.');
+  invariant(record.profile !== 'github-test' || record.metadata.runtimeReady === true, 'GitHub test runtime must remain explicitly enabled.');
   const plan = makePlan({ profile: record.profile, version: record.version, testFeedUrl: record.testFeedUrl, enableTestRuntime: record.profile === 'local-test' && record.metadata.runtimeReady }, policy, repository);
   plan.runtimeReady = record.metadata.runtimeReady;
   plan.metadata = { ...plan.metadata, runtimeReady: record.metadata.runtimeReady };
@@ -109,10 +118,11 @@ function builderConfiguration(plan, attempt, repository = REPOSITORY) {
     appId: plan.appId,
     productName: plan.productName,
     buildVersion: plan.windowsVersion,
-    extraMetadata: { version: plan.version, novaUpdate: plan.metadata, ...(plan.source ? { novaBuild: plan.source } : {}) },
+    extraMetadata: { version: plan.version, ...(plan.profile === 'github-test' ? { productName: plan.productName } : {}), novaUpdate: plan.metadata, ...(plan.source ? { novaBuild: plan.source } : {}) },
     afterPack: path.join(repository, 'scripts/finalize-windows-update.cjs'),
     directories: { output: attempt },
     publish: [plan.feed],
+    ...(plan.profile === 'github-test' ? { extraResources: yaml.load(fs.readFileSync(path.join(repository, 'electron-builder.yml'), 'utf8')).extraResources.filter(entry => !['docs/本地离线测试版使用说明.md', 'desktop/installer/LOCAL-TEST-NOTICE.txt'].includes(entry.from)).concat([{ from: 'docs/Windows-GitHub测试版使用说明.md', to: 'GitHub测试版使用说明.md' }, { from: 'desktop/installer/GITHUB-TEST-NOTICE.txt', to: 'GITHUB-TEST-NOTICE.txt' }]) } : {}),
     forceCodeSigning: plan.signature.mode === 'authenticode',
     win: {
       artifactName: plan.artifactName,
@@ -121,7 +131,7 @@ function builderConfiguration(plan, attempt, repository = REPOSITORY) {
       verifyUpdateCodeSignature: plan.signature.mode === 'authenticode',
       ...(plan.signature.mode === 'authenticode' ? { publisherName: plan.signature.publisherNames } : {}),
     },
-    nsis: { uninstallDisplayName: `${plan.productName} ${plan.version}` },
+    nsis: { uninstallDisplayName: `${plan.productName} ${plan.version}`, ...(plan.profile === 'github-test' ? { createDesktopShortcut: true, createStartMenuShortcut: true, license: path.join(repository, 'desktop/installer/GITHUB-TEST-NOTICE.txt') } : {}) },
   };
 }
 
@@ -185,8 +195,10 @@ async function verifyArtifacts(directory, plan, options = {}) {
   const size = assertOrdinaryFile(installer).size;
   const fd = fs.openSync(installer, 'r');
   try { const header = Buffer.alloc(2); fs.readSync(fd, header, 0, 2, 0); invariant(header.toString() === 'MZ', 'Installer is not a Windows executable.'); } finally { fs.closeSync(fd); }
-  const raw = fs.readFileSync(path.join(directory, 'latest.yml'), 'utf8');
-  const info = parseUpdateInfo(raw, 'latest.yml', 'local-verification');
+  const manifestName = plan.manifestName;
+  invariant(plan.profile !== 'github-test' || !fs.existsSync(path.join(directory, 'latest.yml')), 'GitHub test must not generate the formal latest.yml manifest.');
+  const raw = fs.readFileSync(path.join(directory, manifestName), 'utf8');
+  const info = parseUpdateInfo(raw, manifestName, 'local-verification');
   invariant(info && info.version === plan.version && Array.isArray(info.files) && info.files.length === 1 && !info.packages, 'Manifest version/files do not match this full NSIS build.');
   const entry = info.files[0];
   invariant(entry.url === plan.artifactName && info.path === plan.artifactName, 'Manifest path does not match the expected installer basename.');
@@ -197,10 +209,15 @@ async function verifyArtifacts(directory, plan, options = {}) {
   invariant(resolved.length === 1 && decodeURIComponent(resolved[0].url.pathname) === `/${plan.artifactName}`, 'Pinned updater cannot resolve the installer.');
   const blockmap = verifyBlockmap(installer + '.blockmap', installer, size);
   const resources = path.join(directory, 'win-unpacked/resources');
+  if (plan.profile === 'github-test') {
+    for (const name of ['LOCAL-TEST-NOTICE.txt', '本地离线测试版使用说明.md']) invariant(!fs.existsSync(path.join(resources, name)), 'GitHub test still includes obsolete offline-only copied notices.');
+    for (const name of ['GITHUB-TEST-NOTICE.txt', 'GitHub测试版使用说明.md']) assertOrdinaryFile(path.join(resources, name));
+  }
   const asar = path.join(resources, 'app.asar');
   assertOrdinaryFile(asar);
   const packaged = JSON.parse(builderRequire('@electron/asar').extractFile(asar, 'package.json').toString('utf8'));
-  invariant(packaged.version === plan.version && isDeepStrictEqual(packaged.novaUpdate, plan.metadata), 'Packaged version/update identity differs from the build plan.');
+  invariant(packaged.name === 'nova-image' && packaged.version === plan.version && isDeepStrictEqual(packaged.novaUpdate, plan.metadata), 'Packaged version/update identity differs from the build plan.');
+  if (plan.profile === 'github-test') invariant(packaged.productName === plan.productName, 'GitHub test package.productName must match its isolated system data identity.');
   if (plan.profile === 'release') invariant(plan.source?.clean === true && isDeepStrictEqual(packaged.novaBuild, plan.source), 'Packaged clean source commit differs from release build record.');
   invariant(packaged.dependencies && packaged.dependencies['electron-updater'] === readPolicy().updaterVersion, 'Packaged updater dependency is not pinned.');
   const updateConfig = yaml.load(fs.readFileSync(path.join(resources, 'app-update.yml'), 'utf8'));
@@ -214,10 +231,10 @@ async function verifyArtifacts(directory, plan, options = {}) {
   const inspections = (options.inspectWindowsFiles || inspectWindowsFiles)([installer, appExe]);
   invariant(inspections.length === 2 && inspections[0].fileVersion === plan.windowsVersion && inspections[0].productVersion === plan.version && inspections[1].fileVersion === plan.windowsVersion && inspections[1].productVersion === plan.windowsVersion, 'Windows application version resources do not match SemVer/buildVersion.');
   for (const item of inspections) {
-    if (plan.signature.mode === 'unsigned-local-test') invariant(item.status === 'NotSigned', 'Local test must be explicitly unsigned; unexpected signature status.');
+    if (['unsigned-local-test', 'unsigned-github-test'].includes(plan.signature.mode)) invariant(item.status === 'NotSigned', 'Test build must be explicitly unsigned; unexpected signature status.');
     else invariant(item.status === 'Valid' && plan.signature.publisherNames.some(name => publisherMatches(item.subject, name)), 'Release signature is invalid or publisher differs from the approved identity.');
   }
-  return { schemaVersion: 1, profile: plan.profile, version: plan.version, windowsVersion: plan.windowsVersion, appId: plan.appId, productName: plan.productName, tag: plan.tag, installer: plan.artifactName, size, sha512, blockmap: { name: plan.artifactName + '.blockmap', sha512: await hashFile(installer + '.blockmap'), ...blockmap }, manifest: { name: 'latest.yml', sha512: await hashFile(path.join(directory, 'latest.yml')) }, feed: plan.feed, signature: { mode: plan.signature.mode, results: inspections.map(({ status, subject, fileVersion, productVersion }) => ({ status, subject, fileVersion, productVersion })) }, runtimeReady: plan.runtimeReady, ...(plan.source ? { source: plan.source } : {}), publication: 'not-published' };
+  return { schemaVersion: 1, profile: plan.profile, version: plan.version, windowsVersion: plan.windowsVersion, appId: plan.appId, productName: plan.productName, tag: plan.tag, installer: plan.artifactName, size, sha512, blockmap: { name: plan.artifactName + '.blockmap', sha512: await hashFile(installer + '.blockmap'), ...blockmap }, manifest: { name: manifestName, sha512: await hashFile(path.join(directory, manifestName)) }, feed: plan.feed, signature: { mode: plan.signature.mode, results: inspections.map(({ status, subject, fileVersion, productVersion }) => ({ status, subject, fileVersion, productVersion })) }, runtimeReady: plan.runtimeReady, ...(plan.source ? { source: plan.source } : {}), publication: 'not-published' };
 }
 
 module.exports = { REPOSITORY, readPolicy, stableVersion, compareVersions, localFeed, makePlan, planForRecord, verifyDirectory, hashFile, builderConfiguration, assertNewOutput, verifyArtifacts, verifyBlockmap, inspectWindowsFiles, publisherMatches };

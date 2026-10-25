@@ -109,3 +109,38 @@ test('failed launch never quits and uses visible recovery, while preparation blo
   const order=[];let updates={preparing:true};const handler=createUpdateQuitHandler({getUpdates:()=>updates,getLaunchProof:()=>({confirm:async()=>false}),closeHost:()=>assert.fail(),quit:()=>assert.fail(),onFailure:()=>order.push('failure')});
   assert.equal(handler.handle({preventDefault:()=>order.push('prevent')}),true);updates={installing:true};handler.handle({preventDefault:()=>order.push('prevent')});await tick();assert.deepEqual(order,['prevent','prevent','failure']);
 });
+
+const { makePlan } = require('../scripts/lib/windows-update.cjs');
+const { resolvePackageSystemUserData } = require('./update-identity.cjs');
+const { resolveDataPolicy } = require('./runtime.cjs');
+function githubMetadataBase() {
+  const metadata = makePlan({ profile: 'github-test', version: '3.6.0' }).metadata;
+  return { metadata, config: { ...metadata.feed, updaterCacheDirName: metadata.updaterCacheDirName }, version: metadata.version, platform: 'win32', arch: 'x64', packaged: true, installed: true, dataMode: 'system' };
+}
+test('GitHub test runtime accepts only exact isolated unsigned metadata/feed and keeps installation gates', () => {
+  const base = githubMetadataBase(), m = base.metadata;
+  assert.equal(validateMetadata(base).supported, true); assert.equal(validateMetadata(base).installSupported, true);
+  for (const patch of [{ appId: metadata().appId }, { productName: 'nova-image' }, { updaterCacheDirName: 'nova-image-updater' }, { feed: { ...m.feed, channel: 'latest' } }, { feed: { ...m.feed, owner: 'other' } }, { feed: { ...m.feed, token: 'inert' } }, { signature: { mode: 'unsigned-local-test', publisherNames: [] } }, { signature: { mode: 'authenticode', publisherNames: ['inert'] } }, { minimumUpdatableVersion: '3.5.0' }, { runtimeReady: false }]) assert.equal(validateMetadata({ ...base, metadata: { ...m, ...patch } }).supported, false);
+  for (const patch of [{ installed: false }, { packaged: false }, { dataMode: 'portable' }, { config: { ...base.config, token: 'inert' } }]) assert.equal(validateMetadata({ ...base, ...patch }).supported, false);
+  assert.equal(validateMetadata({ ...base, dataMode: 'override' }).installSupported, false);
+});
+test('trusted GitHub test system identity precedes all userData access and is stable across restart', () => {
+  const path = require('node:path'), m = githubMetadataBase().metadata, calls = [];
+  const pkg = { name: 'nova-image', productName: m.productName, version: m.version, novaUpdate: m };
+  const app = { isPackaged: true, getVersion: () => m.version, setName: n => calls.push(['name', n]), getPath: key => { calls.push(['path', key]); if (key !== 'appData') assert.fail('Must not read legacy userData'); return 'C:/Synthetic/AppData/Roaming'; } };
+  const a = resolvePackageSystemUserData({ app, pkg }), b = resolvePackageSystemUserData({ app, pkg });
+  assert.equal(a, b); assert.equal(a, path.join('C:/Synthetic/AppData/Roaming', 'Nova Studio GitHub Test'));
+  assert.ok(calls.every(c => c[1] !== 'userData'));
+  assert.deepEqual(resolveDataPolicy({ env: {}, systemUserData: a }), { mode: 'system', directory: a });
+  assert.equal(resolveDataPolicy({ env: { NOVA_DATA_DIR: './inert-override' }, systemUserData: a }).mode, 'override');
+  assert.throws(() => resolvePackageSystemUserData({ app, pkg: { ...pkg, productName: undefined } }), /invalid/);
+  assert.throws(() => resolvePackageSystemUserData({ app, pkg: { ...pkg, novaUpdate: { ...m, feed: { ...m.feed, repo: 'other' } } } }), /invalid/);
+  assert.throws(() => resolvePackageSystemUserData({ app: { ...app, isPackaged: false }, pkg }), /invalid/);
+  const legacyApp = { getPath: key => key === 'userData' ? 'legacy-data' : assert.fail(), setName: () => assert.fail() };
+  for (const novaUpdate of [undefined, metadata(), { profile: 'release' }]) assert.equal(resolvePackageSystemUserData({ app: legacyApp, pkg: { novaUpdate } }), 'legacy-data');
+});
+test('GitHub test service identifies the test build while preserving once-per-process and explicit download', async () => {
+  const f = fixture({ service: { policy: validateMetadata(githubMetadataBase()) } });
+  await f.service.startup(); await f.service.startup(); assert.equal(f.calls.check, 1); assert.equal(f.calls.download, 0); assert.equal(f.calls.install, 0);
+  assert.equal(f.service.snapshot().testBuild, true); assert.equal(f.updater.allowPrerelease, false); assert.equal(f.updater.allowDowngrade, false);
+});

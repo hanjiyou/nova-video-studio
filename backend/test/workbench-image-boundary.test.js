@@ -23,6 +23,7 @@ async function fixture(t, {desktop=false,status=400,imageStream=false,hangBody=f
     const baseUrl='http://127.0.0.1:'+server.address().port;
     const runtime=await start(directory,{desktop,imageStream,trackResponseReads:true,...(hangBody?{imageRequestTimeoutMs:180}:{})});
     t.after(async()=>{server.closeAllConnections();await runtime.stop();await new Promise(resolve=>server.close(resolve));const target=path.resolve(directory);assert.ok(target.startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(target,{recursive:true,force:true,maxRetries:5,retryDelay:50});});
+    if(desktop){assert.equal((await runtime.request('/api/nova/storage/settings/taskExecution',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0})})).status,200);}
     const saved=desktop?await runtime.saveConnection({baseUrl,apiKey:key}):null;
     const input=()=>({localRequestId:randomUUID(),...(desktop?{connectionVersionId:saved.connectionVersionId}:{apiKey:key,baseUrl,protocol:'google'}),mode:'text-to-image',model:desktop?'gpt-image-2':'gemini-3.1-flash-image-preview',prompt:'本地合成响应边界\n"原句"',parallelCount:1,outputSize:'auto',aspectRatio:'auto',images:[]});
     const create=async()=>{const response=await runtime.request('/api/nova/tasks',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(input())});assert.equal(response.status,202);return(await response.json()).taskId;};

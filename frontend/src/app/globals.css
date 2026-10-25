@@ -820,3 +820,14 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-app-update progress { width:100%; accent-color:#a78bfa; }
 .wb-update-overlay { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; background:#080712dd; padding:24px; }
 .wb-update-overlay .wb-panel { max-width:520px; }
+
+/* Task lifecycle controls share the workbench form and card spacing. */
+.wb-task-settings { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px; }
+.wb-task-settings label { display:flex;flex-direction:column;gap:6px;min-width:0; }
+.wb-task-settings input { width:100%; }
+.wb-task-settings small { opacity:.7; }
+.wb-task-timing { overflow-wrap:anywhere; }
+.wb-task-timing p { margin:6px 0; }
+.wb-task-controls { margin-top:10px; }
+.wb-task-controls button { min-height:36px; }
+@media(max-width:640px) { .wb-task-settings { grid-template-columns:1fr; } }

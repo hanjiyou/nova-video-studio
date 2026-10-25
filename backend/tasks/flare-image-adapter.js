@@ -65,21 +65,27 @@ function createFlareImageAdapter({ validateCapability, readAsset, getAsset, vers
             buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset);
         },
         async submit(_task, snapshot, auth) {
+            auth.checkpoint?.(); auth.phase?.(snapshot.mode === 'image.reference' ? 'reference_upload' : 'submitting');
             const request = buildSubmit(snapshot, auth, getAsset);
             validateCapability(snapshot, auth);
             const controller = new AbortController(), abort = () => controller.abort();
             auth.signal?.addEventListener('abort', abort, { once: true });
             if (auth.signal?.aborted) controller.abort();
-            const timer = setTimeout(abort, 30 * 60 * 1000);
+            const timer = setTimeout(abort, Math.min(30 * 60 * 1000, auth.remainingMs?.() ?? 30 * 60 * 1000));
             try {
-                const response = await fetch(request.url, { ...buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset), signal: controller.signal });
+                const init=buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset);
+                auth.checkpoint?.();
+                auth.phase?.('submitting');
+                const response = await fetch(request.url, { ...init, signal: controller.signal });
+                auth.phase?.('receiving'); auth.diagnostic?.('response_headers',{httpStatus:response.status});
                 const text = await response.text(); // Includes the complete body in the request deadline.
+                auth.checkpoint?.(); auth.diagnostic?.('body_received',{byteLength:Buffer.byteLength(text)}); auth.phase?.('parsing');
                 let payload;
                 try { payload = JSON.parse(text); } catch { throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status }); }
                 if (containsCredential(text, auth.apiKey) || containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });
                 if (!response.ok) throw failure('SUBMISSION_UNKNOWN', { httpStatus: response.status, transmission: 'response_received',
                     definiteRejection: response.status >= 400 && response.status < 500 && Boolean(payload?.error || payload?.message) });
-                return parseSubmit(payload, auth);
+                const parsed = parseSubmit(payload, auth); auth.checkpoint?.(); return parsed;
             } finally { clearTimeout(timer); auth.signal?.removeEventListener('abort', abort); }
         },
         poll() { throw failure('ADAPTER_UNAVAILABLE'); },

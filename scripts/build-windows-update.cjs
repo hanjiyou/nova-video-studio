@@ -70,7 +70,7 @@ async function runBuild(options, dependencies = {}) {
     assertNewOutput(plan);
     if (fs.lstatSync(attempt).isSymbolicLink() || path.dirname(attempt) !== path.dirname(plan.output)) throw new Error('Unsafe attempt/final path; attempt retained.');
     fs.renameSync(attempt, plan.output);
-    console.log(`Validated build saved: ${plan.output}\n${plan.signature.mode === 'unsigned-local-test' ? 'Unsigned local test only.' : 'Signed build validated.'} No installation or publication performed.`);
+    console.log(`Validated build saved: ${plan.output}\n${plan.signature.mode !== 'authenticode' ? 'Unsigned test only.' : 'Signed build validated.'} No installation or publication performed.`);
     return plan;
   } catch (error) {
     if (attempt) {

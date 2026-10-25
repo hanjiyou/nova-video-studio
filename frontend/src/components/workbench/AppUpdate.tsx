@@ -14,6 +14,7 @@ export function AppUpdate({ state, onInstall }: { state: AppUpdateState | null; 
   async function run(operation: () => Promise<unknown> | undefined) { if (pending) return; setPending(true); setTransportError(''); try { await operation(); } catch { setTransportError('暂时无法执行更新操作，请稍后重试。'); } finally { setPending(false); } }
   const busy = pending || state && ['checking', 'downloading', 'preparing', 'installing', 'closed-error'].includes(state.phase);
   return <section className="wb-panel wb-app-update" aria-label="应用更新"><div className="wb-section-heading"><h2>应用更新</h2><span className="wb-local-pill">当前版本 {state?.currentVersion || '读取中'}</span></div>
+    {state?.testBuild && <p className="wb-muted">GitHub 更新测试版 · 未签名</p>}
     {!state ? <p className="wb-help">应用内更新仅在受支持的桌面安装版中提供。</p> : !state.supported ? <p className="wb-help">{updateUnsupportedMessage(state)}</p> : <>
       <p className="wb-help">每次启动后检查一次。下载和重启安装均由你决定。</p>
       {state.update && <div><h3>新版本 {state.update.version}</h3>{state.update.releaseNotes && <p className="wb-update-notes">{state.update.releaseNotes}</p>}</div>}

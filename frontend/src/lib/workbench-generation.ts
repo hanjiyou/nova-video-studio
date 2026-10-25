@@ -4,8 +4,8 @@ import type { WorkbenchTaskInput } from './workbench-task-client';
 import { MAX_VIDEO_REFERENCE_ASSETS, unverifiedMultiSubmissionAllowed } from './reference-policy';
 import { unverifiedImageCapability } from './image-policy';
 export const generationEvidenceVerified = (capability?: CapabilitySummary) => capability?.evidenceLevel === 'historically_verified' || capability?.evidenceLevel === 'application_verified' && capability.evidence.applicationVerified === true && Array.isArray(capability.evidence.sourceIds) && capability.evidence.sourceIds.length > 0;
-export const TASK_LABELS: Record<string, string> = { local_queued: '本地排队', submitting: '提交中', submission_unknown: '提交结果待核对', remote_queued: '远端排队', generating: '生成中', polling_paused: '查询已暂停', remote_completed: '等待下载', downloading: '下载中', download_failed: '下载失败', completed: '已保存到本机', failed: '失败', local_cancelled: '本地排队已取消', remote_cancelled: '远端已取消' };
-export const terminalTask = (status: string) => ['completed', 'failed', 'local_cancelled', 'remote_cancelled'].includes(status);
+export const TASK_LABELS: Record<string, string> = { local_queued: '等待处理', submitting: '提交中', submission_unknown: '提交结果待核对', remote_queued: '远端排队', generating: '生成中', polling_paused: '查询已暂停', remote_completed: '等待下载', downloading: '下载中', download_failed: '下载失败', completed: '已保存到本机', failed: '失败', local_cancelled: '已取消本地等待', remote_cancelled: '远端已取消', timed_out: '超时失败' };
+export const terminalTask = (status: string) => ['completed', 'failed', 'download_failed', 'local_cancelled', 'remote_cancelled', 'timed_out'].includes(status);
 export function generationPlan(draft: Draft, connection: ConnectionSummary | null, models: ConnectionModels | null) {
   const image = draft.mode === 'image.text';
   const model = draft.model || (image ? connection?.defaultImageModel : connection?.defaultVideoModel) || (image ? 'gpt-image-2.5-flare' : 'grok-imagine-video-1.5-6s');
@@ -35,7 +35,31 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
 export function reusableDraft(task: HistoryTask): Pick<Draft, 'model' | 'prompt' | 'parameters' | 'inputAssets'> {
   return { model: task.model, prompt: task.prompt, parameters: { ...task.parameters }, inputAssets: [...(task.inputAssets || [])] };
 }
-export function elapsed(task: Pick<HistoryTask, 'createdAt' | 'completedAt'>, now: number) {
-  const seconds = Math.max(0, Math.floor(((task.completedAt ? Date.parse(task.completedAt) : now) - Date.parse(task.createdAt)) / 1000));
-  return seconds < 60 ? `${seconds} 秒` : `${Math.floor(seconds / 60)} 分 ${seconds % 60} 秒`;
+export const taskExecutionActive = (task: HistoryTask) => task.downloadAttempt?.active === true || (typeof task.localExecutionActive === 'boolean' ? task.localExecutionActive : !task.localOutcome && !terminalTask(task.status));
+const PHASE_LABELS: Record<string,string> = {reference_upload:'准备参考图',submitting:'提交与等待响应',receiving:'接收响应',parsing:'解析结果',remote_waiting:'远端等待',downloading:'下载结果',validating:'验证媒体',saving:'保存作品'};
+export function taskStage(task: HistoryTask) {
+  if(task.downloadAttempt?.active) return '下载重试 · '+(PHASE_LABELS[task.phase || ''] || '等待下载');
+  if(!taskExecutionActive(task)) return TASK_LABELS[task.status] || '本地执行已结束';
+  if(task.status==='local_queued') return task.requiresContinue?'等待明确继续':'等待处理';
+  if(task.status==='polling_paused') return '查询已暂停（仍计时）';
+  if(task.phase==='remote_waiting') return task.remoteState==='generating'?'远端生成中':task.remoteState==='queued'?'远端排队':'远端等待';
+  return PHASE_LABELS[task.phase || ''] || TASK_LABELS[task.status] || '处理中';
+}
+export function durationLabel(start: string | null | undefined, finish: string | null | undefined, now: number) {
+  const from = start ? Date.parse(start) : NaN, to = finish ? Date.parse(finish) : now;
+  if(!Number.isFinite(from) || !Number.isFinite(to) || to<from) return '未知';
+  const seconds=Math.floor((to-from)/1000);return seconds<60?seconds+' 秒':Math.floor(seconds/60)+' 分 '+seconds%60+' 秒';
+}
+export function taskTiming(task: HistoryTask, now: number) {
+  const ended=!taskExecutionActive(task) || Boolean(task.localOutcome);
+  const finish=task.localFinishedAt || (ended?task.completedAt:null);
+  const queue=task.dispatchStartedAt?durationLabel(task.createdAt,task.dispatchStartedAt,now):task.timeoutSeconds!=null || task.status==='local_queued'?durationLabel(task.createdAt,finish,now):'未知';
+  const execution=task.dispatchStartedAt?(!finish&&ended?'未知':durationLabel(task.dispatchStartedAt,finish,now)):task.upstreamTaskId || task.generationReserved?'旧记录未提供':'尚未派发';
+  const retry=task.downloadAttempt;
+  return {queue,execution,limit:task.timeoutSeconds!=null?task.timeoutSeconds+' 秒':'旧记录未提供',deadline:task.deadlineAt || null,download:retry?durationLabel(retry.startedAt,retry.finishedAt,now):null,downloadLimit:retry?retry.timeoutSeconds+' 秒':null};
+}
+export function elapsed(task: Pick<HistoryTask,'createdAt'|'completedAt'> & Partial<HistoryTask>, now: number) {
+  const finish=task.localFinishedAt || task.completedAt;
+  if((task.localOutcome || terminalTask(task.status || ''))&&!finish)return '未知';
+  return durationLabel(task.createdAt,finish,now);
 }

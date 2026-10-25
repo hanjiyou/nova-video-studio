@@ -9,7 +9,7 @@ function textNotes(value) {
 }
 function progress(p) { const safe = {}; for (const k of ['percent', 'transferred', 'total', 'bytesPerSecond']) if (typeof p?.[k] === 'number' && Number.isFinite(p[k]) && p[k] >= 0) safe[k] = k === 'percent' ? Math.min(100, p[k]) : p[k]; return safe; }
 function createUpdateService({ policy, currentVersion, createUpdater, send = () => {}, prepareBackend, releaseBackend, closeBackend, onClosedFailure = () => {}, timeoutMs = 15000 }) {
-  let state = { supported: policy.supported, currentVersion, phase: policy.supported ? 'idle' : 'unsupported', reason: policy.reason, installSupported: !!policy.installSupported, installReason: policy.installReason, notice: null, remoteMayContinue: false };
+  let state = { supported: policy.supported, testBuild: policy.metadata?.profile === 'github-test', currentVersion, phase: policy.supported ? 'idle' : 'unsupported', reason: policy.reason, installSupported: !!policy.installSupported, installReason: policy.installReason, notice: null, remoteMayContinue: false };
   let updater, started = false, checking, downloading, preparing, flushPending, backendClosed = false, installing = false, disposed = false;
   const noticed = new Set(), listeners = [];
   const publish = patch => { state = { ...state, ...patch }; if (!disposed) send('nova:update-state', snapshot()); };

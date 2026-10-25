@@ -5,9 +5,13 @@ const uuid = value => { if (typeof value !== 'string' || !UUID.test(value)) thro
 const { containsCredential } = require('../connections/redaction');
 const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
 const { DETAILS, failure: downloadFailure } = require('../storage/download-errors');
-const TERMINAL = new Set(['completed', 'failed', 'local_cancelled', 'remote_cancelled']);
+const { executionSnapshot, mediaKind, localOutcome, remoteOutcome } = require('./lifecycle-contract');
+const { createExecutionRuntime } = require('./execution-runtime');
+const { createDiagnosticTimeline } = require('./diagnostic-timeline');
+const TERMINAL = new Set(['completed', 'failed', 'download_failed', 'local_cancelled', 'remote_cancelled', 'timed_out']);
 const REMOTE_ACTIVE = new Set(['remote_queued', 'generating']);
 const RESERVING = new Set(['submitting', 'submission_unknown', 'remote_queued', 'generating', 'polling_paused']);
+const ACTIVE = new Set([...RESERVING, 'remote_completed', 'downloading']);
 const STATES = new Set(['local_queued', ...RESERVING, 'remote_completed', 'downloading', 'download_failed', ...TERMINAL]);
 const DEFAULT_POLICY = Object.freeze({ intervalMs: 20000, maxDelayMs: 120000, maxRetries: 5, budgetMs: 600000 });
 const canonical = value => JSON.stringify(sort(value));
@@ -39,6 +43,10 @@ const MESSAGES = {
     INPUT_INVALID: '任务预检失败，尚未派发。',
     CAPABILITY_UNVERIFIED: '当前组合缺少成功协议证据，尚未派发。',
     ADAPTER_UNAVAILABLE: '原适配器版本不可用，任务已暂停。',
+    TASK_TIMED_OUT: '已达到本地最长等待时间；远端结果可能仍需核对，不会自动重新生成。',
+    TASK_CANCELLED: '已停止本地等待；远端可能仍在生成或计费。',
+    LEGACY_EXECUTION_ENDED: '升级已结束旧任务的本地等待；远端结果待核对，不会自动提交或查询。',
+    RESTART_RESULT_UNAVAILABLE: '重启后无法安全继续原请求，已结束本地等待；远端结果待核对。',
 };
 function errorDto(code, phase, task, extra = {}) {
     return { code, phase, message: DETAILS[code]?.[1] || MESSAGES[code] || '任务已暂停，请检查详情。', retryAction: ({
@@ -52,38 +60,100 @@ function errorDto(code, phase, task, extra = {}) {
 /** Desktop-only durable orchestration. Adapters perform exactly one submit or one GET.
  * Download workers are injected by T08; without one, candidates remain remote_completed.
  */
-function createTaskService({ db, store, connections, resolveAdapter, onChange = () => {}, now = Date.now, random = Math.random, policy = {}, downloadWorker = null }) {
-    const rules = { ...DEFAULT_POLICY, ...policy }, timers = new Map(), inFlight = new Map(), controllers = new Set(), ephemeralSources = new Map();
+function createTaskService({ db, store, connections, resolveAdapter, onChange = () => {}, now = Date.now, monotonic, setTimer = setTimeout, clearTimer = clearTimeout, random = Math.random, policy = {}, downloadWorker = null }) {
+    const rules = { ...DEFAULT_POLICY, ...policy }, timers = new Map(), inFlight = new Map(), ephemeralSources = new Map(), starting = new Set();
     let closed = false, updatePaused = false, pumping = false, downloadsRunning = 0, schedulerError = null;
-    function background(promise) { promise.catch(() => { schedulerError = 'STORAGE_OPERATION_FAILED'; closed = true; for (const timer of timers.values()) clearTimeout(timer); timers.clear(); for (const controller of controllers) controller.abort(); }); }
+    function stopScheduler() {
+        schedulerError = 'STORAGE_OPERATION_FAILED'; closed = true; for (const timer of timers.values()) clearTimer(timer); timers.clear(); runtime.close(); for(const entry of inFlight.values())entry.controller.abort();
+    }
+    function background(promise) { promise.catch(error => {
+        if (error?.code === 'TASK_EXECUTION_ENDED' || error?.name === 'AbortError' || error?.code === 'TASK_ACTION_INVALID') return;
+        stopScheduler();
+    }); }
     const iso = ms => new Date(Math.min(8640000000000000, ms ?? now())).toISOString();
     const row = id => db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id));
+    const telemetry = createDiagnosticTimeline({db,now});
     const event = (id, type, payload = {}) => store.appendTaskEvent(id, type, payload);
     const emit = id => queueMicrotask(() => { if (!closed) onChange(id); });
+    const kind = task => task.execution_media_kind || mediaKind(JSON.parse(task.input_snapshot_json || '{}').mode || task.mode);
+    const settings = () => store.getSetting('taskExecution').value;
+    const retryJob = id => db.prepare("SELECT * FROM task_download_attempts WHERE task_id=? AND outcome IS NULL ORDER BY rowid DESC LIMIT 1").get(id);
+    function reservationCounts() {
+        const counts={image:0,video:0},candidates=new Map(db.prepare("SELECT t.*,EXISTS(SELECT 1 FROM task_download_attempts d WHERE d.task_id=t.id AND d.outcome IS NULL) AS retry_active FROM tasks t WHERE (t.local_outcome IS NULL AND t.status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused','remote_completed','downloading')) OR EXISTS(SELECT 1 FROM task_download_attempts d WHERE d.task_id=t.id AND d.outcome IS NULL)").all().map(task=>[task.id,task]));
+        for(const id of starting)if(!candidates.has(id))candidates.set(id,row(id));
+        for(const task of candidates.values())if(task&&(task.retry_active||!localOutcome(task)&&(starting.has(task.id)||ACTIVE.has(task.status)&&(task.dispatch_started_at||task.upstream_task_id))))counts[kind(task)]++;
+        return counts;
+    }
+    const runtime = createExecutionRuntime({ now, monotonic, setTimer, clearTimer, onError:stopScheduler,
+        current(id, ctx) { const task = row(id); return !closed && task && (ctx.downloadAttempt ? retryJob(id)?.id === ctx.token : !localOutcome(task) && task.execution_attempt_id === ctx.token); },
+        expire(id, ctx) { finishLocal(id, 'timed_out', 'TASK_TIMED_OUT', ctx); },
+        phase(id, value, ctx) { telemetry.phase(id,value,ctx); const task = row(id); if (task.execution_phase !== value) { db.prepare('UPDATE tasks SET execution_phase=?,execution_phase_started_at=? WHERE id=?').run(value, iso(), id); emit(id); } },
+    });
+    function finishLocal(id, outcome, code, ctx = runtime.active.get(id)) {
+        const task = row(id); if (!task) return false;
+        if(ctx)ctx.endedOutcome=outcome;
+        if (ctx?.downloadAttempt) {
+            const changed = db.prepare('UPDATE task_download_attempts SET outcome=?,finished_at=? WHERE id=? AND outcome IS NULL').run(outcome, iso(), ctx.token).changes;
+            if (!changed) return false;
+            db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), id);
+            db.prepare("UPDATE tasks SET status='download_failed',next_poll_at=NULL WHERE id=?").run(id);
+            event(id, 'download_attempt_ended', { outcome, code }); telemetry.end(id,outcome,code,ctx); emit(id);
+        } else {
+            if (localOutcome(task)) return false;
+            const error = errorDto(code, task.execution_phase || 'submit', task, { transmission: task.dispatch_started_at ? 'may_have_reached_upstream' : 'not_dispatched' });
+            db.transaction(() => {
+                const changed = db.prepare('UPDATE tasks SET status=?,local_outcome=?,local_finished_at=?,completed_at=?,remote_outcome=?,task_error_json=?,error=?,next_poll_at=NULL,requires_continue=0 WHERE id=? AND local_outcome IS NULL').run(outcome === 'cancelled' ? 'local_cancelled' : outcome === 'timed_out' ? 'timed_out' : 'failed', outcome, iso(), iso(), remoteOutcome(task), JSON.stringify(error), error.message, id).changes;
+                if (changed) { event(id, 'local_execution_ended', { outcome, code, phase: task.execution_phase }); telemetry.end(id,outcome,code,ctx); }
+                db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=? AND state IN ('waiting','running')").run(iso(), id);
+            }).immediate();
+            emit(id);
+        }
+        cancelTimer(id); runtime.finish(id); inFlight.get(id)?.controller.abort(); ephemeralSources.delete(id); queueMicrotask(() => { background(pump()); background(drainDownloads()); }); return true;
+    }
+    function context(task) { const ctx = runtime.active.get(task.id) || runtime.start(task, retryJob(task.id)); ctx.options.diagnostic = (point,payload) => { ctx.checkpoint(); telemetry.observe(task.id,point,payload,ctx); }; ctx.checkpoint(); return ctx; }
+    function wake() { if (!closed) queueMicrotask(() => { background(pump()); background(drainDownloads()); }); }
+    function track(key, task, run) {
+        if (inFlight.has(key)) return inFlight.get(key).promise;
+        // Install the physical IO gate before the operation can yield or call back.
+        const entry = { kind: kind(task), promise: null, controller:new AbortController() }; inFlight.set(key, entry);
+        entry.promise = Promise.resolve().then(()=>run(entry.controller.signal)).finally(() => { inFlight.delete(key); starting.delete(task.id); wake(); });
+        return entry.promise;
+    }
+    function physicalCount(media) { return [...inFlight.values()].filter(entry => entry.kind === media).length; }
     function update(id, state, fields = {}, type = 'task_transition', payload = {}) {
         if (!STATES.has(state)) throw fail('TASK_STATE_INVALID');
         db.transaction(() => {
             const before = row(id);
             if (!before) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
-            if (TERMINAL.has(before.status) && state !== before.status && !(before.status === 'completed' && state === 'remote_completed' && type === 'missing_result_download_requested')) throw fail('TASK_ACTION_INVALID', '任务已经结束。', 409);
-            const allowed = ['upstream_task_id', 'dispatch_started_at', 'remote_state', 'raw_status', 'remote_progress', 'pause_reason', 'not_before_at', 'next_poll_at', 'poll_attempts', 'poll_budget_started_at', 'task_error_json', 'error', 'requires_continue', 'result_sources_json', 'completed_at'];
+            const downloadRetry = ['missing_result_download_requested','download_retry_requested'].includes(type) || Boolean(retryJob(id));
+            if (localOutcome(before) && state !== before.status && !downloadRetry) throw fail('TASK_EXECUTION_ENDED');
+            const allowed = ['upstream_task_id', 'dispatch_started_at', 'remote_state', 'raw_status', 'remote_progress', 'pause_reason', 'not_before_at', 'next_poll_at', 'poll_attempts', 'poll_budget_started_at', 'task_error_json', 'error', 'requires_continue', 'result_sources_json', 'completed_at', 'execution_attempt_id', 'execution_deadline_at', 'local_outcome', 'local_finished_at', 'remote_outcome', 'execution_phase', 'execution_phase_started_at'];
             if (Object.keys(fields).some(key => !allowed.includes(key))) throw fail('TASK_STATE_INVALID');
+            if (TERMINAL.has(state) && !localOutcome(before)) Object.assign(fields, { local_outcome: localOutcome({ status: state }), local_finished_at: iso(), remote_outcome: remoteOutcome({ ...before, ...fields, status: state }) });
             db.prepare('UPDATE tasks SET status=?' + Object.keys(fields).map(key => ',' + key + '=?').join('') + ' WHERE id=?').run(state, ...Object.values(fields), id);
-            event(id, type, { previous: before.status, next: state, ...payload });
+            if (type !== 'task_transition' || before.status !== state) event(id, type, { previous: before.status, next: state, ...payload });
+            const ctx = runtime.active.get(id);
+            if (fields.remote_state && fields.remote_state !== before.remote_state) telemetry.observe(id,'remote_state',{remoteState:fields.remote_state},ctx);
+            if (type === 'upstream_accepted') telemetry.observe(id,'upstream_accepted',{},ctx);
+            if (TERMINAL.has(state) && (!localOutcome(before) || retryJob(id))) {
+                let reason; try { reason = JSON.parse(fields.task_error_json || 'null')?.code; } catch { /* No raw error in diagnostics. */ }
+                telemetry.end(id,localOutcome({status:state}),reason,ctx);
+            }
         }).immediate();
+        if (TERMINAL.has(state)) { cancelTimer(id); if (!retryJob(id)) runtime.finish(id); wake(); }
         emit(id);
     }
     function setError(id, state, code, phase, fields = {}, extra = {}) {
         const task = row(id), error = errorDto(code, phase, task, extra);
-        if (TERMINAL.has(state) && !fields.completed_at) fields.completed_at=iso();
+        if (TERMINAL.has(state) && state!=='download_failed' && !localOutcome(task) && !fields.completed_at) fields.completed_at=iso();
         update(id, state, { task_error_json: JSON.stringify(error), error: error.message, ...fields }, code.startsWith('CREDENTIAL_') ? 'credential_access_paused' : 'task_error', { code, phase });
     }
-    function cancelTimer(id) { const timer = timers.get(id); if (timer) clearTimeout(timer); timers.delete(id); }
+    function cancelTimer(id) { const timer = timers.get(id); if (timer) clearTimer(timer); timers.delete(id); }
     function schedule(id, when) {
         cancelTimer(id);
         if (closed || updatePaused) return;
         const delay = Math.max(0, when - now());
-        const timer = setTimeout(() => { timers.delete(id); background(poll(id)); }, Math.min(delay, 2147483647));
+        const timer = setTimer(() => { timers.delete(id); background(poll(id)); }, Math.min(delay, 2147483647));
         timer.unref?.(); timers.set(id, timer);
     }
     function adapter(task) {
@@ -116,11 +186,11 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         snapshot = store.freezeOutputDirectory(snapshot);
         // A controlled preflight can establish not_dispatched. No key is kept in the record.
         connections.getAuth(snapshot.connectionVersionId);
-        const id = randomUUID();
+        const id = randomUUID(), execution = executionSnapshot(snapshot.mode, store.getSetting('taskExecution').value);
         db.transaction(() => {
-            db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at) VALUES(?,?,?,?,?)').run(id, 'local_queued', mode, JSON.stringify(request), iso());
+            db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at,execution_media_kind,execution_timeout_seconds) VALUES(?,?,?,?,?,?,?)').run(id, 'local_queued', mode, JSON.stringify(request), iso(), execution.mediaKind, execution.timeoutSeconds);
             store.setTaskSnapshot(id, snapshot);
-            event(id, 'task_enqueued', { contractVersion: 1 });
+            event(id, 'task_enqueued', { contractVersion: 1 }); telemetry.record(id,'queued');
         }).immediate();
         emit(id); queueMicrotask(() => background(pump())); return id;
     }
@@ -131,13 +201,15 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (containsCredential(raw, key) || /https?:|authorization|bearer\s|data:|[\r\n]/i.test(raw)) return '[hidden]';
         return raw.slice(0, 128);
     }
-    function candidates(task, result, key) {
+    function candidates(task, result, key, ctx) {
         if (!Array.isArray(result) || result.length === 0 || result.length > 32) throw fail('REMOTE_STATUS_UNKNOWN');
         const transient=[];
         const saved=result.map(source => {
+            ctx?.checkpoint();
             if (source.kind === 'asset') { store.readAsset(source.assetId); return { kind: 'asset', assetId: source.assetId }; }
             if (source.kind === 'inline') {
                 const asset = store.importBuffer(source.bytes, { mimeType: source.mimeType, sourceKind: 'generated' });
+                ctx?.checkpoint();
                 return { kind: 'asset', assetId: asset.assetId };
             }
             if(typeof source.url!=='string'||source.url.length>8192)throw fail('DOWNLOAD_EXPIRED');
@@ -152,10 +224,13 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         else ephemeralSources.delete(task.id);
         return saved;
     }
-    function remoteCompleted(id, result, key, rawStatus = null) {
+    function remoteCompleted(id, result, key, rawStatus = null, ctx = context(row(id))) {
+        ctx.checkpoint();
+        const kinds = Array.isArray(result) ? [...new Set(result.map(source => source?.kind))] : [];
+        telemetry.observe(id,'result_received',{sourceKind:kinds.length===1?kinds[0]:'mixed',candidateCount:Array.isArray(result)?result.length:undefined},ctx);
         let sources;
-        try { sources = candidates(row(id), result, key); }
-        catch (error) { setError(id, 'download_failed', error.code === 'DOWNLOAD_EXPIRED' ? 'DOWNLOAD_EXPIRED' : 'DOWNLOAD_FAILED', 'download', { remote_state: 'completed', pause_reason: null, next_poll_at: null }, error.credentialRedacted ? { message: '上游资源地址包含连接凭据，已停止下载。' } : {}); background(pump()); return; }
+        try { sources = candidates(row(id), result, key, ctx); ctx.checkpoint(); }
+        catch (error) { if (error.code === 'TASK_EXECUTION_ENDED') return; setError(id, 'download_failed', error.code === 'DOWNLOAD_EXPIRED' ? 'DOWNLOAD_EXPIRED' : 'DOWNLOAD_FAILED', 'download', { remote_state: 'completed', pause_reason: null, next_poll_at: null }, error.credentialRedacted ? { message: '上游资源地址包含连接凭据，已停止下载。' } : {}); background(pump()); return; }
         db.transaction(() => {
             update(id, 'remote_completed', { result_sources_json: JSON.stringify(sources), remote_state: 'completed', raw_status: rawStatus, remote_progress: 100, task_error_json: null, error: null, next_poll_at: null, pause_reason: null });
             db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at").run(id, iso(), iso());
@@ -163,20 +238,28 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         })();
         background(pump()); background(drainDownloads());
     }
-    async function submit(id) {
+    async function submit(id, signal) {
         let task = row(id), auth, chosen;
         try {
             auth = connections.getAuth(task.connection_version_id); chosen = adapter(task);
-            if (chosen.preflight) await chosen.preflight(task, JSON.parse(task.input_snapshot_json), auth);
+            if (chosen.preflight) await chosen.preflight(task, JSON.parse(task.input_snapshot_json), {...auth,signal});
         } catch (error) {
+            if (closed || localOutcome(row(id))) return;
             const code = ['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE', 'ADAPTER_UNAVAILABLE', 'CAPABILITY_UNVERIFIED'].includes(error.code) ? error.code : 'INPUT_INVALID';
             setError(id, ['INPUT_INVALID', 'CAPABILITY_UNVERIFIED'].includes(code) ? 'failed' : 'polling_paused', code, code.startsWith('CREDENTIAL_') ? 'credential' : 'validation', { pause_reason: code, requires_continue: 1 }, { transmission: 'not_dispatched' });
             return;
         }
         if (closed || row(id).status !== 'local_queued') return;
         // Commit the dispatch boundary BEFORE invoking any adapter network operation.
-        update(id, 'submitting', { dispatch_started_at: iso(), requires_continue: 0, error: null, task_error_json: null }, 'dispatch_started');
+        const dispatchedAt = now();
+        // I01 persists one generation attempt and its absolute deadline; I03 enforces it.
+        // Legacy rows have no snapshot and must never acquire a made-up past budget.
+        const execution = { execution_attempt_id: randomUUID(), execution_deadline_at: iso(dispatchedAt + (task.execution_timeout_seconds ?? settings()[kind(task)+'TimeoutSeconds']) * 1000) };
+        update(id, 'submitting', { dispatch_started_at: iso(dispatchedAt), ...execution, requires_continue: 0, error: null, task_error_json: null }, 'dispatch_started');
+        task = row(id); // Adapters must receive the committed attempt and deadline, never the queued row.
+        const ctx = context(task); ctx.phase('submitting');
         const accept = upstreamId => {
+            ctx.checkpoint();
             if (!isQueryableUpstreamTaskId(upstreamId) || containsCredential(upstreamId,auth.apiKey)) throw fail('SUBMISSION_UNKNOWN');
             const current=row(id);
             if (current.upstream_task_id) {if(current.upstream_task_id!==upstreamId)throw fail('SUBMISSION_UNKNOWN');return;}
@@ -184,18 +267,17 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             task=row(id);
         };
         try {
-            const controller = new AbortController(); controllers.add(controller);
-            let accepted;
-            try { accepted = await chosen.submit(task, JSON.parse(task.input_snapshot_json), { ...auth, signal: controller.signal, onAccepted:accept }); }
-            finally { controllers.delete(controller); }
+            const accepted = await chosen.submit(task, JSON.parse(task.input_snapshot_json), { ...auth, ...ctx.options, onAccepted:accept });
+            ctx.checkpoint();
             const upstreamId=accepted?.upstreamTaskId;
             if (upstreamId!==undefined) accept(upstreamId);
             if (closed) return;
-            if (accepted?.resultSources?.length) remoteCompleted(id, accepted.resultSources, auth.apiKey);
-            else if (upstreamId) schedule(id, now() + rules.intervalMs);
+            if (accepted?.resultSources?.length) remoteCompleted(id, accepted.resultSources, auth.apiKey, null, ctx);
+            else if (upstreamId) { ctx.phase('remote_waiting'); schedule(id, now() + rules.intervalMs); }
             else throw fail('SUBMISSION_UNKNOWN');
         } catch (error) {
-            if (closed) return;
+            if (closed || error.code === 'TASK_EXECUTION_ENDED' || localOutcome(row(id))) return;
+            ctx.checkpoint();
             // An adapter may prove a complete explicit rejection. All other POST outcomes are unknown.
             if (row(id).upstream_task_id) {pause(id,'accepted_response_unrecognized','REMOTE_STATUS_UNKNOWN');return;}
             const rejected = error.transmission === 'response_received' && error.definiteRejection === true && !row(id).upstream_task_id;
@@ -207,13 +289,14 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (closed || updatePaused || pumping) return;
         pumping = true;
         try {
-            if (db.prepare("SELECT 1 FROM tasks WHERE status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused') AND (dispatch_started_at IS NOT NULL OR upstream_task_id IS NOT NULL) LIMIT 1").get()) return;
-            const next = db.prepare("SELECT id FROM tasks WHERE status='local_queued' AND requires_continue=0 ORDER BY created_at,rowid LIMIT 1").get();
-            if (!next) return;
-            const promise = submit(next.id); inFlight.set(next.id, promise);
-            try { await promise; } finally { inFlight.delete(next.id); }
+            for (const ctx of [...runtime.active.values()]) { try { ctx.checkpoint(); } catch (error) { if (error.code !== 'TASK_EXECUTION_ENDED') throw error; } }
+            const limits = settings(), counts = reservationCounts();
+            for (const task of db.prepare("SELECT * FROM tasks WHERE status='local_queued' AND requires_continue=0 ORDER BY created_at,rowid").all()) {
+                const media = kind(task);
+                if (starting.has(task.id) || counts[media] >= limits[media + 'Concurrency'] || physicalCount(media) >= 5) continue;
+                counts[media]++; starting.add(task.id); background(track(task.id, task, signal => submit(task.id,signal)));
+            }
         } finally { pumping = false; }
-        if (!closed) queueMicrotask(() => background(pump()));
     }
     function pause(id, reason, code, fields = {}, phase = 'poll') {
         cancelTimer(id);
@@ -229,7 +312,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (error.code === 'ADAPTER_UNAVAILABLE') { pause(id, 'adapter_unavailable', error.code); return; }
         if (error.code === 'REMOTE_STATUS_UNKNOWN' || (status && status !== 429 && status < 500)) { pause(id, 'unrecognized_response', 'REMOTE_STATUS_UNKNOWN'); return; }
         const attempt = task.poll_attempts + 1, started = task.poll_budget_started_at ? Date.parse(task.poll_budget_started_at) : now();
-        const remaining = rules.budgetMs - (now() - started), requested = retryAfter(error.retryAfter, now());
+        const remaining = Math.min(rules.budgetMs - (now() - started), context(task).remainingMs()), requested = retryAfter(error.retryAfter, now());
         const delay = requested ?? Math.min(rules.maxDelayMs, Math.round(rules.intervalMs * (2 ** (attempt - 1)) * (0.8 + random() * 0.4)));
         const notBefore = requested !== null ? iso(now() + requested) : null;
         const fields = { poll_attempts: attempt, poll_budget_started_at: iso(started), not_before_at: notBefore };
@@ -245,44 +328,48 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (closed || updatePaused || inFlight.has(id)) return;
         let task = row(id);
         if (!task || !REMOTE_ACTIVE.has(task.status) || !task.upstream_task_id) return;
+        let ctx; try {ctx = context(task);}catch(error){if(error.code==='TASK_EXECUTION_ENDED')return;throw error;}
         if (!isQueryableUpstreamTaskId(task.upstream_task_id)) { pause(id, 'upstream_id_unqueryable', 'REMOTE_STATUS_UNKNOWN'); return; }
         const due = Math.max(Date.parse(task.not_before_at || '') || 0, Date.parse(task.next_poll_at || '') || 0);
         if (due > now()) { schedule(id, due); return; }
-        const promise = (async () => {
+        return track(id, task, async () => {
             let auth;
             try {
                 auth = connections.getAuth(task.connection_version_id);
-                const controller = new AbortController(); controllers.add(controller);
-                let outcome;
-                try { outcome = await adapter(task).poll(task, JSON.parse(task.input_snapshot_json), { ...auth, signal: controller.signal }); }
-                finally { controllers.delete(controller); }
+                ctx.checkpoint();
+                telemetry.query(id,ctx);
+                const outcome = await adapter(task).poll(task, JSON.parse(task.input_snapshot_json), { ...auth, ...ctx.options });
+                ctx.checkpoint();
                 if (closed || !REMOTE_ACTIVE.has(row(id)?.status)) return; // stopped/closed while GET was in flight
                 const remote = outcome?.remoteState, raw = sanitizeRaw(outcome?.rawStatus, auth.apiKey);
                 if (!['queued', 'generating', 'completed', 'failed', 'cancelled'].includes(remote)) {
                     pause(id, 'remote_status_unknown', 'REMOTE_STATUS_UNKNOWN', { remote_state: 'unknown', raw_status: raw }); return;
                 }
-                if (remote === 'completed') { remoteCompleted(id, outcome.resultSources, auth.apiKey, raw); return; }
+                if (remote === 'completed') { remoteCompleted(id, outcome.resultSources, auth.apiKey, raw, ctx); return; }
                 if (remote === 'failed' || remote === 'cancelled') {
                     setError(id, remote === 'failed' ? 'failed' : 'remote_cancelled', remote === 'failed' ? 'REMOTE_FAILED' : 'REMOTE_CANCELLED', 'poll', { remote_state: remote, raw_status: raw, completed_at: iso(), pause_reason: null, next_poll_at: null }); return;
                 }
                 const next = now() + rules.intervalMs;
+                ctx.phase('remote_waiting');
                 update(id, remote === 'queued' ? 'remote_queued' : 'generating', { remote_state: remote, raw_status: raw, ...(typeof outcome.progress==='number' && Number.isFinite(outcome.progress) && outcome.progress>=0 && outcome.progress<=100 ? {remote_progress:outcome.progress}:{}), poll_attempts: 0, poll_budget_started_at: null, next_poll_at: iso(next), not_before_at: null, task_error_json: null, error: null });
                 schedule(id, next);
             } catch (error) {
-                if (!closed && REMOTE_ACTIVE.has(row(id)?.status)) pollFailure(id, error);
+                if (!closed && error.code !== 'TASK_EXECUTION_ENDED' && !localOutcome(row(id)) && REMOTE_ACTIVE.has(row(id)?.status)) { ctx.checkpoint(); telemetry.query(id,ctx,error); pollFailure(id, error); }
             }
-        })();
-        inFlight.set(id, promise);
-        try { await promise; } finally { inFlight.delete(id); if (!closed) background(pump()); }
+        });
     }
     function action(id, name, input = {}) {
         if (closed || updatePaused) throw fail('TASK_SERVICE_PAUSED', '任务服务已停止或准备更新，现有记录保留。', 503);
         const task = row(id); if (!task) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
         if (!input || Object.keys(input).some(key => name !== 'attach-upstream-id' || key !== 'upstreamTaskId')) throw fail('INVALID_TASK_ACTION');
-        if (name === 'cancel-queued') {
+        if (name === 'cancel' || name === 'cancel-task') {
+            if (!localOutcome(task) || retryJob(id)) finishLocal(id, 'cancelled', 'TASK_CANCELLED');
+        } else if (name === 'cancel-queued') {
+            if (task.status === 'local_cancelled' && !task.dispatch_started_at) return publicTask(task);
             if (!['local_queued', 'polling_paused'].includes(task.status) || task.dispatch_started_at || task.upstream_task_id) throw fail('TASK_ALREADY_DISPATCHED', '任务已开始派发，不能取消本地排队。', 409);
-            update(id, 'local_cancelled', { completed_at: iso(), requires_continue: 0 }, 'queue_cancelled');
+            finishLocal(id, 'cancelled', 'TASK_CANCELLED');
         } else if (name === 'continue-queued') {
+            if(task.status==='remote_completed'&&task.requires_continue&&!localOutcome(task)) { context(task).checkpoint(); update(id,'remote_completed',{requires_continue:0},'download_continued');background(drainDownloads());return publicTask(row(id)); }
             if (task.status !== 'local_queued' || task.dispatch_started_at) throw fail('TASK_ACTION_INVALID', '该任务不能继续排队。', 409);
             connections.getAuth(task.connection_version_id);
             update(id, 'local_queued', { requires_continue: 0 }, 'queue_continued'); background(pump());
@@ -290,13 +377,15 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (!REMOTE_ACTIVE.has(task.status) || !task.upstream_task_id) throw fail('TASK_ACTION_INVALID', '该任务当前没有进行查询。', 409);
             pause(id, 'user_stopped');
         } else if (name === 'resume-polling') {
+            if (localOutcome(row(id))) throw fail('TASK_ACTION_INVALID', '任务已在本地结束，不能恢复查询。', 409);
             if (task.status !== 'polling_paused' || !task.upstream_task_id) throw fail('TASK_ACTION_INVALID', '只有保留上游标识的暂停任务可以恢复查询。', 409);
             if (!isQueryableUpstreamTaskId(task.upstream_task_id)) throw fail('INVALID_UPSTREAM_ID', '原上游标识无法安全查询，任务保持暂停。', 409);
             if (inFlight.has(id)) throw fail('TASK_QUERY_BUSY', '原查询尚未结束，请稍后恢复。', 409);
             const earliest = Date.parse(task.not_before_at || '') || 0;
             if (earliest > now()) throw Object.assign(fail('POLL_NOT_BEFORE', '尚未到上游允许的查询时间。', 409), { notBeforeAt: task.not_before_at });
             connections.getAuth(task.connection_version_id); adapter(task);
-            update(id, 'remote_queued', { pause_reason: null, error: null, task_error_json: null, poll_attempts: 0, poll_budget_started_at: null, next_poll_at: iso(), not_before_at: null }, 'polling_resumed'); schedule(id, now());
+            context(task).checkpoint();
+            update(id, 'remote_queued', { pause_reason: null, error: null, task_error_json: null, requires_continue: 0, next_poll_at: iso(), not_before_at: null }, 'polling_resumed'); schedule(id, now());
         } else if (name === 'attach-upstream-id') {
             if (task.status !== 'submission_unknown' || task.upstream_task_id) throw fail('TASK_ACTION_INVALID', '该任务不需要补充上游标识。', 409);
             const auth = connections.getAuth(task.connection_version_id), value = input.upstreamTaskId;
@@ -304,16 +393,23 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             update(id, 'polling_paused', { upstream_task_id: value, pause_reason: 'reconciled_id', error: null, task_error_json: null }, 'submission_reconciled');
         } else if (name === 'retry-download') {
             const missingResult = task.status === 'completed' && store.taskAssets(id, 'output').some(asset => asset.availability === 'missing');
-            if (task.status !== 'download_failed' && !missingResult) throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
+            if (task.status !== 'download_failed' && !missingResult || retryJob(id)) throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
             if (!task.result_sources_json && !task.upstream_task_id) throw fail('RESULT_REFRESH_REQUIRED', '没有可恢复资源；不会重新生成。', 409);
             const job=db.prepare('SELECT refresh_not_before_at FROM task_downloads WHERE task_id=?').get(id);
             if(Date.parse(job?.refresh_not_before_at || '')>now())throw Object.assign(fail('POLL_NOT_BEFORE','尚未到上游允许的刷新时间。',409),{notBeforeAt:job.refresh_not_before_at});
-            update(id, 'remote_completed', { task_error_json: null, error: null, completed_at: null }, missingResult ? 'missing_result_download_requested' : 'download_retry_requested');
-            db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at,refresh_attempts=0,refresh_budget_started_at=NULL").run(id,iso(),iso()); background(drainDownloads());
+            const attemptId = randomUUID(), timeoutSeconds = settings()[kind(task) + 'TimeoutSeconds'];
+            if(reservationCounts()[kind(task)]>=settings()[kind(task)+'Concurrency'])throw fail('TASK_CAPACITY_BUSY','该类任务名额已满，请稍后重试下载。',409);
+            db.transaction(() => {
+                db.prepare('INSERT INTO task_download_attempts(id,task_id,started_at,deadline_at,timeout_seconds) VALUES(?,?,?,?,?)').run(attemptId,id,iso(),iso(now()+timeoutSeconds*1000),timeoutSeconds);
+                update(id, 'remote_completed', { task_error_json: null, error: null }, missingResult ? 'missing_result_download_requested' : 'download_retry_requested');
+                db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at,refresh_attempts=0,refresh_budget_started_at=NULL").run(id,iso(),iso());
+            }).immediate();
+            runtime.start(row(id), retryJob(id)); background(drainDownloads());
         } else throw fail('TASK_ACTION_INVALID');
         emit(id); return publicTask(row(id));
     }
-    async function refreshDownload(task, signal) {
+    async function refreshDownload(task, ctx) {
+        ctx.checkpoint();
         if(!task.upstream_task_id||!isQueryableUpstreamTaskId(task.upstream_task_id))throw downloadFailure('RESULT_NOT_RECOVERABLE');
         const job=db.prepare('SELECT * FROM task_downloads WHERE task_id=?').get(task.id);
         if(Date.parse(job.refresh_not_before_at || '')>now())throw downloadFailure('RATE_LIMITED');
@@ -323,13 +419,16 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         db.prepare('UPDATE task_downloads SET refresh_attempts=refresh_attempts+1,refresh_budget_started_at=? WHERE task_id=?').run(iso(started),task.id);
         const auth=connections.getAuth(task.connection_version_id);
         try {
-            const outcome=await adapter(task).poll(task,JSON.parse(task.input_snapshot_json),{...auth,signal});
+            telemetry.query(task.id,ctx);
+            const outcome=await adapter(task).poll(task,JSON.parse(task.input_snapshot_json),{...auth,...ctx.options}); ctx.checkpoint();
             if(outcome?.remoteState!=='completed')throw downloadFailure('DOWNLOAD_EXPIRED');
-            const saved=candidates(task,outcome.resultSources,auth.apiKey);
+            const saved=candidates(task,outcome.resultSources,auth.apiKey,ctx); ctx.checkpoint();
             db.prepare('UPDATE tasks SET result_sources_json=? WHERE id=?').run(JSON.stringify(saved),task.id);
             event(task.id,'download_source_refreshed',{sameUpstreamTask:true});
             return ephemeralSources.get(task.id)||saved;
         } catch(error) {
+            if(error.code==='TASK_EXECUTION_ENDED')throw error;
+            telemetry.query(task.id,ctx,error);
             const wait=retryAfter(error.retryAfter,now());
             if(wait!==null)db.prepare('UPDATE task_downloads SET refresh_not_before_at=? WHERE task_id=?').run(iso(now()+wait),task.id);
             if([401,403].includes(error.httpStatus))throw downloadFailure('AUTH_REJECTED');
@@ -338,82 +437,90 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             throw DETAILS[error.code]?error:downloadFailure('DOWNLOAD_EXPIRED');
         }
     }
-    function publicTask(task) {
-        if (!task) return null;
-        return { localTaskId: task.id, id: task.id, localRequestId: task.local_request_id, status: task.status,
-            mode: task.mode, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
-            outputDirectoryVersionId:task.output_directory_version_id,outputRootRef:task.output_root_ref,
-            remoteState: task.remote_state, rawStatus: task.raw_status, progress: task.remote_progress ?? undefined, pauseReason: task.pause_reason,
-            notBeforeAt: task.not_before_at, nextPollAt: task.next_poll_at, requiresContinue: Boolean(task.requires_continue),
-            generationReserved: RESERVING.has(task.status) && Boolean(task.dispatch_started_at || task.upstream_task_id),
-            remoteMayContinue: ['submission_unknown', 'polling_paused'].includes(task.status) && Boolean(task.dispatch_started_at || task.upstream_task_id),
-            schedulingNotice: ['submission_unknown', 'polling_paused'].includes(task.status) && (task.dispatch_started_at || task.upstream_task_id) ? '远端可能仍在生成或计费；本地保留生成占位，后续队列等待同一任务的明确结果。' : null,
-            taskError: task.task_error_json ? JSON.parse(task.task_error_json) : null, error: task.error,
-            createdAt: task.created_at, completedAt: task.completed_at, expiresAt: null,
-            inputAssets: store.taskAssets(task.id), outputAssets: store.taskAssets(task.id, 'output') };
-    }
+    // One projection for task HTTP/WS/action responses and storage history.
+    function publicTask(task) { return task ? store.getTask(task.id) : null; }
+
     async function drainDownloads() {
-        if (closed || updatePaused || !downloadWorker || downloadsRunning >= 1) return;
-        const job = db.prepare("SELECT * FROM task_downloads WHERE state='waiting' ORDER BY created_at,rowid LIMIT 1").get();
-        if (!job) return;
+        if (closed || updatePaused || !downloadWorker) return;
+        const limits=settings(), running={image:0,video:0};
+        for (const entry of inFlight.entries()) if(entry[0].startsWith('download:'))running[entry[1].kind]++;
+        for (const job of db.prepare("SELECT d.* FROM task_downloads d JOIN tasks t ON t.id=d.task_id WHERE d.state='waiting' AND t.requires_continue=0 ORDER BY d.created_at,d.rowid").all()) {
+            const task=row(job.task_id), media=kind(task);
+            if(inFlight.has('download:'+task.id)||inFlight.has(task.id)||running[media]>=limits[media+'Concurrency']||physicalCount(media)>=5)continue;
+            if(localOutcome(task)&&!retryJob(task.id))continue;
+            running[media]++; background(runDownload(job,task));
+        }
+    }
+    async function runDownload(job, original) {
+        let ctx;
+        try {ctx=context(original);}catch(error){if(error.code==='TASK_EXECUTION_ENDED')return;throw error;}
         downloadsRunning++;
-        const promise = (async () => {
+        return track('download:'+job.task_id,original,async () => {
+            ctx.checkpoint(); ctx.phase('downloading');
             update(job.task_id, 'downloading'); db.prepare("UPDATE task_downloads SET state='running',updated_at=? WHERE task_id=?").run(iso(), job.task_id);
             try {
                 // T08 must return an independently verifiable proof; no caller can merely set completed.
-                const task=row(job.task_id),controller=new AbortController();controllers.add(controller);
+                const task=row(job.task_id);
                 let proof;
-                try {
                     let sources=ephemeralSources.get(task.id)||JSON.parse(task.result_sources_json || 'null');
                     let refreshed=false;
-                    if(!sources||sources.some(source=>source.kind==='ephemeral')){sources=await refreshDownload(task,controller.signal);refreshed=true;}
-                    try { proof=await downloadWorker(task,sources,{signal:controller.signal}); }
+                    if(!sources||sources.some(source=>source.kind==='ephemeral')){sources=await refreshDownload(task,ctx);refreshed=true;}
+                    try { proof=await downloadWorker(task,sources,ctx.options); }
                     catch(error) { if(error.code!=='DOWNLOAD_EXPIRED'||refreshed||!task.upstream_task_id)throw error;
-                        sources=await refreshDownload(task,controller.signal);proof=await downloadWorker(task,sources,{signal:controller.signal}); }
-                } finally {controllers.delete(controller);}
+                        ctx.checkpoint();sources=await refreshDownload(task,ctx);proof=await downloadWorker(task,sources,ctx.options); }
+                ctx.checkpoint(); ctx.phase('saving');
                 if (!proof?.assetIds?.length) throw fail('DOWNLOAD_FAILED');
                 for (const id of proof.assetIds) { const checked = store.readAsset(id); if (checked.asset.validationState !== 'verified') throw fail('DOWNLOAD_FAILED'); }
-                if (closed) return;
-                db.transaction(() => { store.bindTaskAssets(job.task_id, proof.assetIds.map((assetId, position) => ({ assetId, position, role: 'reference' })), 'output'); update(job.task_id, 'completed', { completed_at: iso() }); db.prepare("UPDATE task_downloads SET state='completed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); })();
+                ctx.checkpoint();
+                db.transaction(() => { ctx.checkpoint(); store.bindTaskAssets(job.task_id, proof.assetIds.map((assetId, position) => ({ assetId, position, role: 'reference' })), 'output'); ctx.checkpoint(); update(job.task_id, 'completed', ctx.downloadAttempt ? {} : { completed_at: iso() }); db.prepare("UPDATE task_downloads SET state='completed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); if(ctx.downloadAttempt)db.prepare("UPDATE task_download_attempts SET outcome='completed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),ctx.token); })();
+                runtime.finish(task.id);
                 ephemeralSources.delete(job.task_id);
             } catch (error) {
-                if (!closed) { const code=DETAILS[error.code]?error.code:'DOWNLOAD_FAILED';setError(job.task_id, 'download_failed', code, DETAILS[code]?.[0] || 'download'); db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), job.task_id); }
+                // A synchronous bind may cross the deadline inside a transaction. Its rollback
+                // must not roll back the winning local terminal state as well.
+                if(error.code==='TASK_EXECUTION_ENDED'&&ctx.endedOutcome&&(ctx.downloadAttempt?retryJob(job.task_id)?.id===ctx.token:!localOutcome(row(job.task_id))))finishLocal(job.task_id,ctx.endedOutcome,ctx.endedOutcome==='timed_out'?'TASK_TIMED_OUT':'TASK_CANCELLED',ctx);
+                if (!closed && error.code!=='TASK_EXECUTION_ENDED' && (ctx.downloadAttempt ? retryJob(job.task_id)?.id===ctx.token : !localOutcome(row(job.task_id)))) {
+                    ctx.checkpoint();const code=DETAILS[error.code]?error.code:'DOWNLOAD_FAILED';setError(job.task_id, 'download_failed', code, DETAILS[code]?.[0] || 'download'); db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(), job.task_id);
+                    if(ctx.downloadAttempt)db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),ctx.token);runtime.finish(job.task_id);
+                }
             }
-        })();
-        inFlight.set('download:' + job.task_id, promise);
-        try { await promise; } finally { downloadsRunning--; inFlight.delete('download:' + job.task_id); if (!closed) background(drainDownloads()); }
+        }).finally(()=>{downloadsRunning--;wake();});
     }
     function recover() {
         db.transaction(() => {
             for (const task of db.prepare('SELECT * FROM tasks ORDER BY created_at,id').all()) {
-                if (TERMINAL.has(task.status)) continue;
+                const retry=retryJob(task.id);
+                if(retry){db.prepare("UPDATE task_download_attempts SET outcome='failed',finished_at=? WHERE id=? AND outcome IS NULL").run(iso(),retry.id);db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);db.prepare("UPDATE tasks SET status='download_failed' WHERE id=?").run(task.id);event(task.id,'download_attempt_interrupted',{sameGeneration:true});continue;}
+                if (localOutcome(task)) continue;
                 if (['queued', '排队中', 'local_queued'].includes(task.status) && !task.dispatch_started_at && !task.upstream_task_id) {
-                    update(task.id, 'local_queued', { requires_continue: 1 }, 'recovery_queue_waiting'); continue;
+                    if(task.status!=='local_queued'||!task.requires_continue)update(task.id, 'local_queued', { requires_continue: 1 }, 'recovery_queue_waiting'); continue;
                 }
+                if (!task.execution_attempt_id || !task.execution_deadline_at) { finishLocal(task.id,'failed','LEGACY_EXECUTION_ENDED');continue; }
+                const deadline=Date.parse(task.execution_deadline_at), dispatched=Date.parse(task.dispatch_started_at);
+                if(!Number.isFinite(deadline)||!Number.isFinite(dispatched)||deadline<=now()||now()<dispatched||deadline-now()>(task.execution_timeout_seconds??((deadline-dispatched)/1000))*1000){finishLocal(task.id,'timed_out','TASK_TIMED_OUT');continue;}
                 if (['remote_completed', 'downloading', 'download_failed'].includes(task.status)) {
                     const saved=JSON.parse(task.result_sources_json || 'null');
-                    if(saved?.some(source=>source.kind==='ephemeral')&&!task.upstream_task_id){setError(task.id,'download_failed','RESULT_NOT_RECOVERABLE','download');db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);continue;}
-                    if (task.status === 'downloading') update(task.id, 'remote_completed', {}, 'recovery_download_waiting');
+                    if((!saved||saved.some(source=>source.kind==='ephemeral'))&&!task.upstream_task_id){setError(task.id,'download_failed','RESULT_NOT_RECOVERABLE','download');db.prepare("UPDATE task_downloads SET state='failed',updated_at=? WHERE task_id=?").run(iso(),task.id);continue;}
+                    if (task.status !== 'remote_completed'||!task.requires_continue) update(task.id, 'remote_completed', {requires_continue:1}, 'recovery_download_waiting');
                     db.prepare("UPDATE task_downloads SET state=CASE WHEN state='running' THEN 'waiting' ELSE state END,updated_at=? WHERE task_id=?").run(iso(), task.id); continue;
                 }
-                if (task.status === 'polling_paused') continue;
                 const legacy = JSON.parse(task.request_json || '{}');
                 const id = task.upstream_task_id || (typeof legacy.upstreamTaskId === 'string' ? legacy.upstreamTaskId : null);
                 if (id && !isQueryableUpstreamTaskId(id)) {
-                    setError(task.id, 'polling_paused', 'REMOTE_STATUS_UNKNOWN', 'poll', { pause_reason: 'upstream_id_unqueryable', upstream_task_id: id, next_poll_at: null });
+                    if(task.pause_reason!=='upstream_id_unqueryable'||!task.requires_continue)setError(task.id, 'polling_paused', 'REMOTE_STATUS_UNKNOWN', 'poll', { pause_reason: 'upstream_id_unqueryable', upstream_task_id: id, next_poll_at: null,requires_continue:1 });
                 } else if (id) {
-                    update(task.id, 'remote_queued', { upstream_task_id: id, remote_state: 'queued', next_poll_at: task.next_poll_at || iso(), requires_continue: 0 }, 'recovery_poll_only');
-                } else setError(task.id, 'submission_unknown', 'SUBMISSION_UNKNOWN', 'submit', { pause_reason: 'restart_after_dispatch', dispatch_started_at: task.dispatch_started_at || task.created_at }, { transmission: 'may_have_reached_upstream' });
+                    if(task.status!=='polling_paused'||!task.requires_continue)update(task.id,'polling_paused',{upstream_task_id:id,pause_reason:task.status==='polling_paused'?task.pause_reason:'restart_resume_required',requires_continue:1,next_poll_at:null},'recovery_user_continue_required');
+                } else finishLocal(task.id,'failed','RESTART_RESULT_UNAVAILABLE');
             }
         })();
-        for (const task of db.prepare("SELECT * FROM tasks WHERE status IN ('remote_queued','generating')").all()) schedule(task.id, Math.max(Date.parse(task.next_poll_at || '') || now(), Date.parse(task.not_before_at || '') || 0));
-        background(drainDownloads());
+        for (const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL AND execution_attempt_id IS NOT NULL').all()) if(ACTIVE.has(task.status))runtime.start(task);
     }
     function stats() {
         const counts = Object.fromEntries(db.prepare('SELECT status,count(*) AS n FROM tasks GROUP BY status').all().map(item => [item.status, item.n]));
-        const processing = [...RESERVING].reduce((sum, state) => sum + (counts[state] || 0), 0), queued = counts.local_queued || 0;
-        return { concurrencyLimit: 1, configuredConcurrency: 1, processingCount: processing, queuedCount: queued, pendingCount: processing + queued,
-            displayConcurrency: Math.min(1, processing), displayQueued: queued, downloadConcurrency: 1, downloadsRunning, schedulerError, acceptingNewTasks:!closed && !updatePaused && !schedulerError,
+        const limits=settings(),byMedia=reservationCounts();
+        const processing=byMedia.image+byMedia.video,queued=counts.local_queued||0;
+        return { concurrencyLimit: limits.imageConcurrency+limits.videoConcurrency, configuredConcurrency: limits.imageConcurrency+limits.videoConcurrency, imageConcurrency:limits.imageConcurrency,videoConcurrency:limits.videoConcurrency,imageProcessing:byMedia.image,videoProcessing:byMedia.video,processingCount: processing, queuedCount: queued, pendingCount: processing + queued,
+            displayConcurrency: processing, displayQueued: queued, downloadConcurrency: limits.imageConcurrency+limits.videoConcurrency, downloadsRunning, physicalOperations:inFlight.size, schedulerError, acceptingNewTasks:!closed && !updatePaused && !schedulerError,
             downloadQueued: db.prepare("SELECT count(*) AS n FROM task_downloads WHERE state='waiting'").get().n, pausedCount: counts.polling_paused || 0,
             awaitingContinueCount: db.prepare("SELECT count(*) AS n FROM tasks WHERE status='local_queued' AND requires_continue=1").get().n };
     }
@@ -424,12 +531,13 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         if (inFlight.size || pumping || downloadsRunning) { updatePaused = false; throw fail('UPDATE_BUSY', '任务或媒体仍在处理中，请稍后更新。', 503); }
         if (ephemeralSources.size) { updatePaused = false; throw fail('UPDATE_UNSAVED_RESULT', '仍有仅在本次运行中可取回的结果，请先完成结果保存。', 503); }
         if (db.prepare('SELECT 1 FROM workbench_submission_intents i WHERE NOT EXISTS (SELECT 1 FROM tasks t WHERE t.local_request_id=i.local_request_id) LIMIT 1').get()) { updatePaused = false; throw fail('UPDATE_SUBMISSION_PENDING', '请先核对未完成的本地提交意图。', 503); }
-        for (const timer of timers.values()) clearTimeout(timer); timers.clear();
+        for (const timer of timers.values()) clearTimer(timer); timers.clear();
         return { remoteMayContinue: !!db.prepare("SELECT 1 FROM tasks WHERE status IN ('submitting','submission_unknown','remote_queued','generating','polling_paused') AND (dispatch_started_at IS NOT NULL OR upstream_task_id IS NOT NULL) LIMIT 1").get() };
     }
     function releaseUpdate() {
         if (closed || !updatePaused) return;
         updatePaused = false;
+        for(const task of db.prepare('SELECT * FROM tasks WHERE local_outcome IS NULL').all())if(ACTIVE.has(task.status)&&task.execution_attempt_id)runtime.start(task);
         for (const task of db.prepare("SELECT * FROM tasks WHERE status IN ('remote_queued','generating')").all()) schedule(task.id, Math.max(Date.parse(task.next_poll_at || '') || now(), Date.parse(task.not_before_at || '') || 0));
         background(pump()); background(drainDownloads());
     }
@@ -439,9 +547,10 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             for (const task of db.prepare("SELECT id FROM tasks WHERE status IN ('remote_queued','generating')").all()) pause(task.id, 'application_update');
             db.prepare("UPDATE tasks SET requires_continue=1 WHERE status='local_queued' AND dispatch_started_at IS NULL AND upstream_task_id IS NULL").run();
         })();
+        runtime.close();
     }
-    function finishUpdate() { closed = true; ephemeralSources.clear(); }
-    async function close() { closed = true; for (const controller of controllers) controller.abort(); for (const timer of timers.values()) clearTimeout(timer); timers.clear(); await Promise.allSettled([...inFlight.values()]); ephemeralSources.clear(); }
-    return { enqueue, findDuplicate, action, recover, stats, close, prepareUpdate, releaseUpdate, persistUpdatePause, finishUpdate, get: id => publicTask(row(id)), poll, pump, drainDownloads };
+    function finishUpdate() { closed = true; runtime.close(); ephemeralSources.clear(); }
+    async function close() { closed = true; runtime.close(); for(const entry of inFlight.values())entry.controller.abort(); for (const timer of timers.values()) clearTimer(timer); timers.clear(); await Promise.allSettled([...inFlight.values()].map(entry=>entry.promise)); ephemeralSources.clear(); }
+    return { enqueue, findDuplicate, action, recover, stats, close, prepareUpdate, releaseUpdate, persistUpdatePause, finishUpdate, settingsChanged:wake, get: id => publicTask(row(id)), poll, pump, drainDownloads };
 }
 module.exports = { createTaskService, canonical, retryAfter, DEFAULT_POLICY, STATES };

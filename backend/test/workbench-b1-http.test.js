@@ -30,6 +30,7 @@ async function rig(t,behavior={}){
     await new Promise(resolve=>upstream.listen(0,'127.0.0.1',resolve));
     const opensosenOrigin='http://127.0.0.1:'+upstream.address().port;
     let runtime=await start(directory,{opensosenOrigin,...(behavior.timeout?{pluginRequestTimeoutMs:behavior.timeout}:{})});
+    assert.equal((await runtime.request('/api/nova/storage/settings/taskExecution',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0})})).status,200);
     t.after(async()=>{await runtime.stop();upstream.closeAllConnections();await new Promise(resolve=>upstream.close(resolve));assert.ok(path.resolve(directory).startsWith(path.resolve(os.tmpdir())+path.sep));fs.rmSync(directory,{recursive:true,force:true,maxRetries:5,retryDelay:50});});
     const connection=await runtime.saveConnection({baseUrl:'https://newapi.opensosen.com/v1',apiKey:KEY});
     const models=await(await runtime.request('/api/nova/connections/'+connection.connectionId+'/models')).json();
@@ -62,7 +63,7 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
     const snapshot=JSON.parse(post.dispatch.input_snapshot_json);assert.equal(snapshot.prompt,prompt);assert.deepEqual(snapshot.inputAssets,input.inputAssets);assert.equal(snapshot.adapterVersion,'1.1.0');assert.equal(snapshot.capabilityVersionId,input.capabilityVersionId);
     assert.equal(await f.create(input),id);
     await f.runtime.saveConnection({connectionId:f.connection.connectionId,expectedVersionId:f.connection.connectionVersionId,baseUrl:'https://other.invalid/v1',apiKey:'synthetic-new-b1'});
-    await f.restart();await until(async()=>(await f.task(id)).status==='completed');
+    await f.restart();assert.equal((await f.task(id)).requiresContinue,true);assert.equal(f.gets().length,0);assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);await until(async()=>(await f.task(id)).status==='completed');
     assert.equal(f.posts().length,1);assert.equal(f.gets().length,2);assert.equal(f.gets()[0].path,'/v1/videos/task_b1_original');assert.equal(f.gets()[1].path,'/v1/videos/task_b1_original/content');assert.ok(f.gets().every(call=>call.authorization==='Bearer '+KEY));
     const dto=await f.task(id);assert.ok(dto.completedAt);assert.equal(dto.outputAssets[0].validationState,'verified');assert.equal(JSON.stringify(dto).includes('opensosen.com'),false);
     const stored=f.inspect(db=>({task:db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id),download:db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id)}));
@@ -110,14 +111,14 @@ test('script accepted ID persists before encoded credential contamination; query
     // The following queued task was explicitly cancelled before it could be dispatched.
     assert.equal(f.posts().length,1);
 });
-for(const kind of['disconnect','stalled-body'])test('actual B1 '+kind+' becomes submission_unknown, survives restart and attach-ID never queries before explicit resume',async t=>{
+for(const kind of['disconnect','stalled-body'])test('actual B1 '+kind+' becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery',async t=>{
     const f=await rig(t,{submit:kind==='disconnect'?{disconnect:true}:{stall:true},timeout:250}),id=await f.create();
     await until(async()=>(await f.task(id)).status==='submission_unknown');
     assert.equal((await f.task(id)).generationReserved,true);const next=await f.create();
-    await f.restart();assert.equal((await f.task(id)).status,'submission_unknown');assert.equal(f.posts().length,1);assert.equal(f.gets().length,0);
+    assert.equal(f.posts().length,1);assert.equal(f.gets().length,0);
     assert.equal((await f.post('/api/nova/tasks/'+id+'/attach-upstream-id',{upstreamTaskId:KEY})).status,400);
     assert.equal((await f.post('/api/nova/tasks/'+id+'/attach-upstream-id',{upstreamTaskId:'known/A?B#C'})).status,200);
-    assert.equal((await f.task(id)).status,'polling_paused');assert.equal(f.gets().length,0);
+    assert.equal((await f.task(id)).status,'polling_paused');assert.equal(f.gets().length,0);await f.restart();assert.equal((await f.task(id)).requiresContinue,true);assert.equal(f.gets().length,0);
     assert.equal((await f.post('/api/nova/tasks/'+next+'/cancel-queued')).status,200);
     assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
     await until(()=>f.gets().length===1);assert.equal(f.gets()[0].path,'/v1/videos/known%2FA%3FB%23C');assert.equal(f.posts().length,1);
@@ -128,7 +129,7 @@ for(const response of[
     {name:'long Retry-After',status:429,headers:{'retry-after':'180'},body:{error:'synthetic throttle'},code:'RATE_LIMITED'},
     {name:'unknown status',body:{status:'NEW_STATUS'},code:'REMOTE_STATUS_UNKNOWN'},
 ])test('actual B1 GET '+response.name+' retains ID, original credential and conservative occupied slot',async t=>{
-    const f=await rig(t,{poll:response}),id=await f.create();await until(async()=>(await f.task(id)).status==='remote_queued');await f.restart();
+    const f=await rig(t,{poll:response}),id=await f.create();await until(async()=>(await f.task(id)).status==='remote_queued');await f.restart();assert.equal(f.gets().length,0);assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
     const dto=await until(async()=>{const value=await f.task(id);return value.status==='polling_paused'?value:null;});
     assert.equal(dto.upstreamTaskId,'task_b1_original');assert.equal(dto.taskError.code,response.code);assert.equal(dto.generationReserved,true);
     await f.create();await sleep(30);assert.equal(f.posts().length,1);assert.equal(f.gets()[0].authorization,'Bearer '+KEY);
@@ -156,10 +157,9 @@ for(const invalid of ['.','..'])test('review actual HTTP accepted dot ID '+inval
     }
     assert.equal(f.inspect(db=>db.prepare('SELECT count(*) n FROM task_events WHERE task_id=?').get(id).n),eventCount);
     assert.equal(f.posts().length,1);assert.equal(f.gets().length,0);assert.equal((await f.task(id)).upstreamTaskId,null);
-    await f.restart();dto=await f.task(id);assert.equal(dto.status,'submission_unknown');assert.equal(dto.generationReserved,true);
-    await f.post('/api/nova/tasks/'+next+'/continue-queued');await sleep(30);assert.equal(f.posts().length,1);assert.equal(f.gets().length,0);
+    dto=await f.task(id);assert.equal(dto.status,'submission_unknown');assert.equal(dto.generationReserved,true);assert.equal(f.posts().length,1);assert.equal(f.gets().length,0);
     const normal='任务/opaque%.版本';assert.equal((await f.post('/api/nova/tasks/'+id+'/attach-upstream-id',{upstreamTaskId:normal})).status,200);
-    assert.equal((await f.task(id)).status,'polling_paused');assert.equal(f.gets().length,0);
+    assert.equal((await f.task(id)).status,'polling_paused');assert.equal(f.gets().length,0);await f.restart();assert.equal((await f.task(id)).requiresContinue,true);assert.equal(f.gets().length,0);
     await f.post('/api/nova/tasks/'+next+'/cancel-queued');
     assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
     await until(async()=>(await f.task(id)).status==='completed');

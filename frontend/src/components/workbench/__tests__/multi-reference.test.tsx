@@ -26,7 +26,9 @@ it('two references keep verified dual; 3..7 use only the exact unverified scope 
   expect(generationPlan({...draft,inputAssets:assets.slice(0,2)},connection,models).capability).toBe(dual);
   for(const count of [3,5,MAX_VIDEO_REFERENCE_ASSETS]) {const value={...draft,inputAssets:assets.slice(0,count)},plan=generationPlan(value,connection,models);expect(plan.mode).toBe('video.multi_reference');expect(plan.capability).toBe(multi);expect(plan.unverifiedMulti).toBe(true);expect(plan.blocked).toBe('');expect(generationEvidenceVerified(plan.capability)).toBe(false);expect(value.inputAssets).toHaveLength(count);}
   expect(generationPlan({...draft,inputAssets:assets.slice(0,8)},connection,models).blocked).toMatch(/最多 7 张/);
-  for(const c of [{...connection,provider:'openai-compatible'},{...connection,baseUrl:'https://other.invalid/v1'},{...connection,protocol:'other'}])expect(generationPlan(draft,c,models).blocked).not.toBe('');
+  for(const c of [{...connection,provider:'openai-compatible'},{...connection,baseUrl:'https://other.invalid/v1'}])expect(generationPlan(draft,c,models).blocked).not.toBe('');
+  // @ts-expect-error Deliberately invalid persisted protocol must also be rejected at runtime.
+  expect(generationPlan(draft,{...connection,protocol:'other'},models).blocked).not.toBe('');
   for(const cap of [{...multi,evidenceVersion:'unknown'},{...multi,evidence:{...multi.evidence,applicationVerified:true}},{...multi,parameters:{...multi.parameters,maximumReferences:7}}])expect(generationPlan(draft,connection,{...models,capabilities:[cap]}).blocked).not.toBe('');
   expect(generationPlan({...draft,mode:'video.single_reference'},connection,models).blocked).toMatch(/需要 1 张/);
   expect(generationPlan({...draft,mode:'video.text'},connection,models).blocked).toMatch(/需要 0 张/);

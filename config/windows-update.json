@@ -13,6 +13,10 @@
     "release": {
       "appId": "com.novaimage.studio",
       "productName": "Nova Image Studio"
+    },
+    "github-test": {
+      "appId": "com.novaimage.studio.github-test",
+      "productName": "Nova Studio GitHub Test"
     }
   },
   "githubFeed": {
@@ -27,5 +31,13 @@
     "status": "pending",
     "publisherNames": []
   },
-  "runtimeReady": false
+  "runtimeReady": false,
+  "githubTestFeed": {
+    "provider": "github",
+    "owner": "hanjiyou",
+    "repo": "nova-video-studio",
+    "private": false,
+    "channel": "nova-test",
+    "releaseType": "release"
+  }
 }

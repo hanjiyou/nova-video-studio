@@ -1,0 +1,7 @@
+Nova Studio GitHub 更新测试版（未签名）
+
+本安装包仅供已批准的 GitHub 更新测试，不是正式发布版。Windows 可能显示“未知发布者”。
+固定测试源：公开 GitHub 仓库 hanjiyou/nova-video-studio 的 nova-test.yml。
+资料独立保存在当前用户 AppData/Roaming/Nova Studio GitHub Test，不迁移旧 nova-image 资料。
+每次启动只检查一次，不自动下载或安装。下载后须由用户明确选择“重启并安装”。
+A→B 安装更新、真实网络分发与资料保持仍需后续验收；缓存缺失时可能下载完整安装包。

@@ -5,6 +5,7 @@ import {
   type StreamAgentCallbacks,
   type StreamAgentInput,
 } from '@/lib/agent-chat-client';
+import type { AgentProposal } from '@/lib/agent-chat-config';
 import type { TextProviderProtocol } from '@/lib/nova-text-protocol';
 
 // ===== SSE 构造辅助 =====
@@ -89,7 +90,7 @@ function baseInput(protocol: TextProviderProtocol, extra?: Partial<StreamAgentIn
 interface Collected {
   deltas: string[];
   toolActivity: string[];
-  done: { text: string; proposal: { prompt?: string } | null; proposals?: Array<{ prompt?: string }> } | null;
+  done: { text: string; proposal: AgentProposal | null; proposals?: AgentProposal[] } | null;
   error: Error | null;
 }
 
@@ -99,7 +100,7 @@ function makeCallbacks(): { callbacks: StreamAgentCallbacks; collected: Collecte
     onDelta: token => collected.deltas.push(token),
     onReasoning: () => undefined,
     onToolActivity: text => collected.toolActivity.push(text),
-    onDone: ((text, proposal, proposals) => { collected.done = { text, proposal, proposals }; }) as StreamAgentCallbacks['onDone'],
+    onDone: (text, proposal, proposals) => { collected.done = { text, proposal, proposals }; },
     onError: err => { collected.error = err; },
   };
   return { callbacks, collected };

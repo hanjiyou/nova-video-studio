@@ -4,10 +4,15 @@ export interface AssetSummary {
   availability: 'available' | 'missing' | 'corrupt'; validationState: string; previewUrl: string;
 }
 /** Local completion is distinct from remote completion and download progress. */
-export type WorkbenchTaskState = 'local_queued' | 'submitting' | 'submission_unknown' | 'remote_queued' | 'generating' | 'polling_paused' | 'remote_completed' | 'downloading' | 'download_failed' | 'completed' | 'failed' | 'local_cancelled' | 'remote_cancelled';
+export type WorkbenchTaskState = 'local_queued' | 'submitting' | 'submission_unknown' | 'remote_queued' | 'generating' | 'polling_paused' | 'remote_completed' | 'downloading' | 'download_failed' | 'completed' | 'failed' | 'local_cancelled' | 'remote_cancelled' | 'timed_out';
+export type TaskExecutionPhase = 'reference_upload' | 'submitting' | 'receiving' | 'parsing' | 'remote_waiting' | 'downloading' | 'validating' | 'saving';
+export interface DownloadAttemptDto {
+  id: string; active: boolean; startedAt: string; deadlineAt: string; timeoutSeconds: number;
+  outcome: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null; finishedAt: string | null;
+}
 export interface TaskErrorDto {
   code: string;
-  phase: 'validation' | 'credential' | 'submit' | 'poll' | 'download' | 'storage' | 'media';
+  phase: 'validation' | 'credential' | 'submit' | 'poll' | 'download' | 'storage' | 'media' | TaskExecutionPhase;
   message: string;
   httpStatus?: number;
   retryAction: 'none' | 'edit_input' | 'reauthenticate' | 'reconcile_submission' | 'retry_poll' | 'retry_download';
@@ -15,7 +20,23 @@ export interface TaskErrorDto {
   localTaskId: string;
   upstreamTaskId?: string;
 }
+/** Additive execution contract; generation and explicit download-attempt outcomes remain separate. */
+export interface TaskExecutionSettings {
+  imageConcurrency: number; videoConcurrency: number;
+  imageTimeoutSeconds: number; videoTimeoutSeconds: number;
+}
 export interface DurableTaskFields {
+  removedFromWorkbench?: boolean;
+  mediaKind?: 'image' | 'video' | null;
+  localOutcome?: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null;
+  remoteOutcome?: 'not_dispatched' | 'unknown' | 'confirmed_result' | 'confirmed_rejected' | 'confirmed_failed' | 'confirmed_cancelled';
+  executionAttemptId?: string | null;
+  timeoutSeconds?: number | null;
+  dispatchStartedAt?: string | null;
+  deadlineAt?: string | null;
+  localFinishedAt?: string | null;
+  phase?: TaskExecutionPhase | null;
+  phaseStartedAt?: string | null;
   localTaskId?: string;
   localRequestId?: string;
   connectionVersionId?: string;
@@ -27,6 +48,8 @@ export interface DurableTaskFields {
   nextPollAt?: string | null;
   requiresContinue?: boolean;
   generationReserved?: boolean;
+  localExecutionActive?: boolean;
+  downloadAttempt?: DownloadAttemptDto | null;
   remoteMayContinue?: boolean;
   schedulingNotice?: string | null;
   taskError?: TaskErrorDto | null;
@@ -43,7 +66,7 @@ export interface WorkbenchTaskResponse extends DurableTaskFields {
   expiresAt: null;
   error?: string | null;
 }
-export type WorkbenchTaskAction = 'cancel-queued' | 'continue-queued' | 'stop-polling' | 'resume-polling' | 'attach-upstream-id' | 'retry-download';
+export type WorkbenchTaskAction = 'cancel' | 'cancel-queued' | 'continue-queued' | 'stop-polling' | 'resume-polling' | 'attach-upstream-id' | 'retry-download';
 export class WorkbenchTaskActionError extends Error {
   constructor(public code: string, message: string, public statusCode: number, public notBeforeAt?: string) { super(message); this.name = 'WorkbenchTaskActionError'; }
 }

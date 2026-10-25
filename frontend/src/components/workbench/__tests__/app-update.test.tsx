@@ -45,3 +45,5 @@ it('an asynchronous closed-error event keeps the creation surface frozen',async(
 it('check IPC transport rejection is absorbed and offers a fixed retry message',async()=>{
  bridge.checkForUpdates.mockRejectedValue(Error('private path and URL'));render(<AppUpdate state={{...downloaded,phase:'idle',update:undefined}} onInstall={vi.fn(async()=>{})}/>);fireEvent.click(screen.getByRole('button',{name:'检查更新'}));expect(await screen.findByRole('alert')).toHaveTextContent('暂时无法执行更新操作，请稍后重试。');expect(screen.getByRole('button',{name:'检查更新'})).toBeEnabled();
 });
+
+it('identifies the unsigned GitHub test build in settings',()=>{render(<AppUpdate state={{...downloaded,testBuild:true,currentVersion:'3.6.0'}} onInstall={vi.fn(async()=>{})}/>);expect(screen.getByText('GitHub 更新测试版 · 未签名')).toBeInTheDocument();});

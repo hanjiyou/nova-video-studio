@@ -40,7 +40,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
         if (typeof deleteOutputs !== 'boolean') throw fail('INVALID_STORAGE_INPUT');
         const task = getTask(idValue);
         if (!task) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
-        if (!['completed','failed','local_cancelled','remote_cancelled'].includes(task.status)) throw fail('TASK_ACTIVE', '任务尚未明确结束，请先查看任务状态；记录未移除。', 409);
+        if (task.localExecutionActive || task.downloadAttempt?.active) throw fail('TASK_ACTIVE', '任务仍在本地执行，请先取消，等待取消确认后再移除。', 409);
         let deletedAssets = 0, retainedAssets = 0; const fileErrors = [];
         db.prepare('INSERT OR IGNORE INTO workbench_hidden_tasks VALUES(?,?)').run(idValue, new Date().toISOString());
         if (!deleteOutputs) return { removed: true, deletedAssets, retainedAssets, fileErrors };
@@ -73,7 +73,15 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
         }
         return { removed: true, deletedAssets, retainedAssets, fileErrors };
     }
-    return { prepareSubmission, submissions,
+    function removeTaskDisplay(idValue) {
+        id(idValue);
+        const task = getTask(idValue);
+        if (!task) throw fail('TASK_NOT_FOUND', '找不到任务。', 404);
+        if (task.localExecutionActive || task.downloadAttempt?.active) throw fail('TASK_ACTIVE', '任务仍在本地执行，请先取消，等待取消确认后再移除。', 409);
+        db.prepare('INSERT OR IGNORE INTO workbench_removed_tasks(task_id,removed_at) VALUES(?,?)').run(idValue, new Date().toISOString());
+        return { removed: true, worksRetained: true };
+    }
+    return { prepareSubmission, submissions, removeTaskDisplay: idValue => db.transaction(() => removeTaskDisplay(idValue)).immediate(),
         validateSubmissionInput: input => { if (!input || typeof input !== 'object' || Array.isArray(input)) throw fail('INPUT_INVALID'); const saved = db.prepare('SELECT input_json FROM workbench_submission_intents WHERE local_request_id=?').get(input.localRequestId); if (saved && canonical(JSON.parse(saved.input_json)) !== canonical(input)) throw fail('LOCAL_REQUEST_CONFLICT', '创建输入与已保存的本地意图不同。', 409); },
         markSubmissionAttempt: requestId => { id(requestId); const result = db.prepare('UPDATE workbench_submission_intents SET attempt_started_at=? WHERE local_request_id=? AND attempt_started_at IS NULL').run(new Date().toISOString(), requestId); if (!result.changes) throw fail('SUBMISSION_ALREADY_ATTEMPTED', '该意图已尝试提交，请只核对本地记录。', 409); return { marked: true }; },
         dismissSubmission: requestId => { id(requestId); db.prepare('DELETE FROM workbench_submission_intents WHERE local_request_id=?').run(requestId); return { dismissed: true }; }, removeHistory: (...args) => db.transaction(() => removeHistory(...args)).immediate() };

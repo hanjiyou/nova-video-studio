@@ -28,6 +28,7 @@ async function rig(t, respond) {
     await new Promise(r => upstream.listen(0, '127.0.0.1', r));
     const options = { opensosenOrigin: 'http://127.0.0.1:' + upstream.address().port };
     let runtime = await start(directory, options);
+    assert.equal((await runtime.request('/api/nova/storage/settings/taskExecution',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0})})).status,200);
     t.after(async () => { await runtime.stop(); upstream.closeAllConnections(); await new Promise(r => upstream.close(r)); cleanup(directory); });
     const connection = await runtime.saveConnection({ baseUrl: base, apiKey: key });
     const models = await (await runtime.request('/api/nova/connections/' + connection.connectionId + '/models')).json(), assets = [];
@@ -124,13 +125,13 @@ test('edit preflight catches a missing or changed original before the dispatch b
     assert.throws(() => image.createFlareImageAdapter({ ...options, readAsset: () => ({ asset, bytes: Buffer.from('changed') }) }).preflight({}, snapshot, auth), { code: 'INPUT_INVALID' });
 });
 
-for (const failure of ['empty', 'server-error', 'connection-lost']) test('edit ' + failure + ' keeps one unknown placeholder across restart and never resends or frees the queue slot', async t => {
+for (const failure of ['empty', 'server-error', 'connection-lost']) test('edit ' + failure + ' ends unrecoverable local wait across restart while retaining unknown remote outcome and never resending', async t => {
     const f = await rig(t, (req, res) => { if (failure === 'connection-lost') return req.socket.destroy(); res.writeHead(failure === 'server-error' ? 503 : 200, { 'content-type': 'application/json' }); res.end(JSON.stringify(failure === 'empty' ? { data: [] } : { error: { message: 'synthetic temporary rejection' } })); });
     const body = f.input(), response = await f.post('/api/nova/workbench/tasks', body); assert.equal(response.status, 202); const id = (await response.json()).taskId;
     await until(async () => (await f.task(id)).status === 'submission_unknown');
     const queued = (await (await f.post('/api/nova/workbench/tasks', f.input())).json()).taskId;
-    await f.restart(); const task = await f.task(id); assert.equal(task.status, 'submission_unknown'); assert.equal(task.generationReserved, true); assert.equal(task.upstreamTaskId, null);
-    assert.equal((await f.task(queued)).status, 'local_queued'); assert.equal((await (await f.post('/api/nova/workbench/tasks', body)).json()).taskId, id);
+    await f.restart(); const task = await f.task(id); assert.equal(task.status, 'failed'); assert.equal(task.generationReserved, false);assert.equal(task.remoteOutcome,'unknown'); assert.equal(task.upstreamTaskId, null);
+    assert.equal((await f.task(queued)).status, 'local_queued');assert.equal((await f.task(queued)).requiresContinue,true); assert.equal((await (await f.post('/api/nova/workbench/tasks', body)).json()).taskId, id);
     assert.equal(f.calls.length, 1); assert.equal(f.calls[0].path, '/v1/images/edits');
 });
 

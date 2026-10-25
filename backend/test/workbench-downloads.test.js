@@ -42,10 +42,10 @@ test('production queue only completes after actual decode and managed publicatio
     assert.deepEqual(f.store.readAsset(asset.assetId).bytes,video);assert.equal(fs.readdirSync(f.store.downloadDirectory(task.outputRootRef)).length,0);
     await f.restart();assert.equal(f.service.get(id).status,'completed');assert.equal(f.submits,1);assert.equal(f.polls,0);
 });
-test('download concurrency is one while independent generation advances; no unverified output is bound',async t=>{
+test('slow download does not serialize the second admitted download; unverified output is never bound',async t=>{
     let release,entered=0;const pending=new Promise(resolve=>{release=resolve;});
     const f=await setup(t,{worker:{fetchImpl:async()=>{entered++;if(entered===1)await pending;return new Response(video);}}}),first=f.enqueue(),second=f.enqueue();
-    try {await until(()=>entered===1&&f.submits===2);assert.equal(f.service.get(first).status,'downloading');assert.equal(f.service.get(first).outputAssets.length,0);assert.equal(f.service.get(second).status,'remote_completed');assert.equal(f.service.stats().downloadsRunning,1);}
+    try {await until(()=>entered===2&&f.submits===2&&f.service.get(second).status==='completed');assert.equal(f.service.get(first).status,'downloading');assert.equal(f.service.get(first).outputAssets.length,0);assert.equal(f.service.get(second).status,'completed');assert.equal(f.service.stats().downloadsRunning,1);}
     finally {release();}
     await until(()=>f.service.get(second).status==='completed');assert.equal(entered,2);
 });
@@ -71,7 +71,7 @@ test('actual production URL policy rejects private/downgrade redirects before a 
     }
 });
 test('cleared original version pauses download and never selects another connection; no transport call',async t=>{
-    let calls=0;const f=await setup(t,{worker:{fetchImpl:async()=>{calls++;return new Response(video);}},service:{downloadWorker:null}}),id=f.enqueue();await until(()=>f.service.get(id).status==='remote_completed');f.credential(false);await f.restart();await until(()=>f.service.get(id).status==='download_failed');assert.equal(f.service.get(id).taskError.code,'CREDENTIAL_REQUIRED');assert.equal(calls,0);assert.equal(f.submits,1);
+    let calls=0;const f=await setup(t,{worker:{fetchImpl:async()=>{calls++;return new Response(video);}},service:{downloadWorker:null}}),id=f.enqueue();await until(()=>f.service.get(id).status==='remote_completed');f.credential(false);await f.restart();assert.equal(f.service.get(id).requiresContinue,true);f.service.action(id,'continue-queued');await until(()=>f.service.get(id).status==='download_failed');assert.equal(f.service.get(id).taskError.code,'CREDENTIAL_REQUIRED');assert.equal(calls,0);assert.equal(f.submits,1);
 });
 for(const item of[{name:'JSON 伪 MP4',code:'MEDIA_INVALID',response:()=>new Response('{"error":"not media"}',{headers:{'content-type':'video/mp4'}})},
     {name:'字节数短缺',code:'DOWNLOAD_INCOMPLETE',response:()=>new Response(video,{headers:{'content-length':String(video.length+10)}})},
@@ -93,7 +93,7 @@ test('same-session signed URL and inline PNG both reach verified local output wi
 });
 test('restart with ID refreshes signed result by original read-only ID and downloads; never creates again',async t=>{
     const f=await setup(t,{adapter:{submit:async()=>({upstreamTaskId:'original/中文',resultSources:[{kind:'url',url:'https://cdn.invalid/v?sig=old',mediaKind:'video'}]}),poll:async task=>{assert.equal(task.upstream_task_id,'original/中文');return {remoteState:'completed',resultSources:[{kind:'url',url:'https://cdn.invalid/v?sig=new',mediaKind:'video'}]};}},service:{downloadWorker:null}}),id=f.enqueue();await until(()=>f.service.get(id).status==='remote_completed');
-    await f.restart();await until(()=>f.service.get(id).status==='completed');assert.equal(f.submits,1);assert.equal(f.polls,1);assert.equal(f.db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id).result_sources_json.includes('sig='),false);
+    await f.restart();assert.equal(f.service.get(id).requiresContinue,true);f.service.action(id,'continue-queued');await until(()=>f.service.get(id).status==='completed');assert.equal(f.submits,1);assert.equal(f.polls,1);assert.equal(f.db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id).result_sources_json.includes('sig='),false);
 });
 test('expired URL refresh obeys long Retry-After and explicit retry never queries too early',async t=>{
     const f=await setup(t,{adapter:{submit:async()=>({upstreamTaskId:'original',resultSources:[{kind:'url',url:'https://cdn.invalid/expired',mediaKind:'video'}]}),poll:async()=>{throw Object.assign(new Error(),{httpStatus:429,retryAfter:'300'});}},worker:{fetchImpl:async()=>new Response(null,{status:410})}}),id=f.enqueue();await until(()=>f.service.get(id).status==='download_failed');
@@ -108,7 +108,7 @@ test('missing/corrupt files preserve records; selected output roots freeze and d
 });
 test('disappeared output root fails without creating a replacement or retargeting a saved task',async t=>{
     const f=await setup(t,{service:{downloadWorker:null}}),selected=path.join(f.directory,'removed-volume');fs.mkdirSync(selected);const version=f.store.selectOutputDirectory(selected),id=f.enqueue();await until(()=>f.service.get(id).status==='remote_completed');fs.rmdirSync(selected);
-    await f.restart();await until(()=>f.service.get(id).status==='download_failed');assert.equal(f.service.get(id).taskError.code,'DIRECTORY_NOT_WRITABLE');assert.equal(fs.existsSync(selected),false);assert.equal(f.service.get(id).outputRootRef,version.outputRootRef);
+    await f.restart();assert.equal(f.service.get(id).requiresContinue,true);f.service.action(id,'continue-queued');await until(()=>f.service.get(id).status==='download_failed');assert.equal(f.service.get(id).taskError.code,'DIRECTORY_NOT_WRITABLE');assert.equal(fs.existsSync(selected),false);assert.equal(f.service.get(id).outputRootRef,version.outputRootRef);
 });
 test('asset binding/completed transaction failure rolls back outputs and retry only downloads',async t=>{
     const f=await setup(t);f.db.exec("CREATE TRIGGER b2_completion_failure BEFORE UPDATE OF status ON tasks WHEN NEW.status='completed' BEGIN SELECT RAISE(ABORT,'SYNTHETIC_DB_FAILURE');END;");const id=f.enqueue();await until(()=>f.service.get(id).status==='download_failed');assert.equal(f.service.get(id).outputAssets.length,0);assert.equal(f.db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id).state,'failed');

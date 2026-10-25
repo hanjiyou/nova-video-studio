@@ -221,6 +221,42 @@ CREATE TABLE workbench_submission_intents (
  local_request_id TEXT PRIMARY KEY COLLATE NOCASE, input_json TEXT NOT NULL, created_at TEXT NOT NULL, attempt_started_at TEXT
 );
 ` },
+    { version: 7, name: 'task-lifecycle-contract', sql: `
+
+ALTER TABLE tasks ADD COLUMN execution_media_kind TEXT CHECK(execution_media_kind IS NULL OR execution_media_kind IN ('image','video'));
+ALTER TABLE tasks ADD COLUMN execution_timeout_seconds INTEGER CHECK(execution_timeout_seconds IS NULL OR (typeof(execution_timeout_seconds)='integer' AND execution_timeout_seconds BETWEEN 30 AND 1800));
+ALTER TABLE tasks ADD COLUMN execution_attempt_id TEXT;
+ALTER TABLE tasks ADD COLUMN execution_deadline_at TEXT;
+ALTER TABLE tasks ADD COLUMN local_outcome TEXT CHECK(local_outcome IS NULL OR local_outcome IN ('completed','failed','timed_out','cancelled'));
+ALTER TABLE tasks ADD COLUMN local_finished_at TEXT;
+ALTER TABLE tasks ADD COLUMN remote_outcome TEXT CHECK(remote_outcome IS NULL OR remote_outcome IN ('not_dispatched','unknown','confirmed_result','confirmed_rejected','confirmed_failed','confirmed_cancelled'));
+ALTER TABLE tasks ADD COLUMN execution_phase TEXT CHECK(execution_phase IS NULL OR execution_phase IN ('reference_upload','submitting','receiving','parsing','remote_waiting','downloading','validating','saving'));
+ALTER TABLE tasks ADD COLUMN execution_phase_started_at TEXT;
+CREATE TRIGGER task_execution_snapshot_immutable BEFORE UPDATE OF execution_media_kind,execution_timeout_seconds ON tasks
+WHEN NEW.execution_media_kind IS NOT OLD.execution_media_kind OR NEW.execution_timeout_seconds IS NOT OLD.execution_timeout_seconds
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_EXECUTION_SNAPSHOT'); END;
+CREATE TRIGGER task_execution_boundary_immutable BEFORE UPDATE OF execution_attempt_id,execution_deadline_at ON tasks
+WHEN (OLD.execution_attempt_id IS NOT NULL AND NEW.execution_attempt_id IS NOT OLD.execution_attempt_id)
+ OR (OLD.execution_deadline_at IS NOT NULL AND NEW.execution_deadline_at IS NOT OLD.execution_deadline_at)
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_EXECUTION_BOUNDARY'); END;
+CREATE UNIQUE INDEX idx_task_execution_attempt ON tasks(execution_attempt_id) WHERE execution_attempt_id IS NOT NULL;
+-- I05 will use this task-display scope. Existing library-wide hiding is untouched.
+CREATE TABLE workbench_removed_tasks (
+ task_id TEXT PRIMARY KEY REFERENCES tasks(id) ON DELETE CASCADE, removed_at TEXT NOT NULL
+);
+` },
+    { version: 8, name: 'task-execution-runtime', sql: `
+CREATE TABLE task_download_attempts (
+ id TEXT PRIMARY KEY,task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,
+ started_at TEXT NOT NULL,deadline_at TEXT NOT NULL,timeout_seconds INTEGER NOT NULL CHECK(timeout_seconds BETWEEN 30 AND 1800),
+ outcome TEXT CHECK(outcome IS NULL OR outcome IN ('completed','failed','timed_out','cancelled')),finished_at TEXT
+);
+CREATE UNIQUE INDEX idx_task_active_download_attempt ON task_download_attempts(task_id) WHERE outcome IS NULL;
+CREATE TRIGGER task_local_outcome_immutable BEFORE UPDATE OF local_outcome,local_finished_at ON tasks
+WHEN (OLD.local_outcome IS NOT NULL AND NEW.local_outcome IS NOT OLD.local_outcome)
+ OR (OLD.local_finished_at IS NOT NULL AND NEW.local_finished_at IS NOT OLD.local_finished_at)
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_LOCAL_OUTCOME'); END;
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

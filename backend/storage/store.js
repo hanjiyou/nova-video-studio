@@ -5,7 +5,8 @@ const { createHash, randomUUID } = require('node:crypto');
 const { createOutputDirectories } = require('./output-directories');
 const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const MODES = new Set(['image.text', 'image.reference', 'video.text', 'video.single_reference', 'video.dual_reference', 'video.multi_reference']);
+const { MODES: TASK_MODES, DEFAULT_EXECUTION_SETTINGS, validateExecutionSettings, taskFields } = require('../tasks/lifecycle-contract');
+const MODES = new Set(Object.keys(TASK_MODES));
 const MIME_EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/gif': 'gif',
     'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/mp4': 'm4a', 'audio/aac': 'aac', 'audio/ogg': 'ogg', 'audio/flac': 'flac' };
 const { MAX_REFERENCE_ASSETS } = require('./application-limits');
@@ -274,8 +275,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function putSetting(key, value) {
         exactKeys(value, ['value', 'expectedRevision']);
-        if (!['theme', 'workspace', 'onboarding'].includes(key))
+        if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
             throw fail('INVALID_SETTING_KEY');
+        if (key === 'taskExecution') value = { ...value, value: validateExecutionSettings(value.value) };
         if (key === 'theme' && !['system', 'light', 'dark'].includes(value.value))
             throw fail('INVALID_SETTING_VALUE');
         if (key === 'workspace') {
@@ -304,10 +306,12 @@ function createWorkbenchStore({ db, rootDirectory }) {
         return getSetting(key);
     }
     function getSetting(key) {
-        if (!['theme', 'workspace', 'onboarding'].includes(key))
+        if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
             throw fail('INVALID_SETTING_KEY');
         const item = db.prepare('SELECT * FROM app_settings WHERE key=?').get(key);
-        return item ? { key, value: JSON.parse(item.value_json), revision: item.revision, updatedAt: item.updated_at } : { key, value: null, revision: 0, updatedAt: null };
+        const result = item ? { key, value: JSON.parse(item.value_json), revision: item.revision, updatedAt: item.updated_at } : { key, value: key === 'taskExecution' ? { ...DEFAULT_EXECUTION_SETTINGS } : null, revision: 0, updatedAt: null };
+        if (key === 'taskExecution') result.value = validateExecutionSettings(result.value);
+        return result;
     }
     function linkLegacyAsset(kind, relativeKey, assetId) {
         if (!['image', 'plugin-media'].includes(kind) || !/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(relativeKey) || relativeKey.includes('..'))
@@ -347,21 +351,20 @@ function createWorkbenchStore({ db, rootDirectory }) {
             request = JSON.parse(task.input_snapshot_json || task.request_json);
         }
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
-        const reserved = ['submitting','submission_unknown','remote_queued','generating','polling_paused'].includes(task.status) && Boolean(task.dispatch_started_at || task.upstream_task_id);
         const rootRow = db.prepare('SELECT directory FROM storage_roots WHERE id=?').get(task.output_root_ref || outputDirectories.DEFAULT);
-        return { id: task.id, localTaskId: task.id, status: task.status, mode: request.mode || task.mode, prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id, createdAt: task.created_at, completedAt: task.completed_at, expiresAt: null,
-            localRequestId: task.local_request_id, connectionVersionId: task.connection_version_id, upstreamTaskId: task.upstream_task_id,
-            outputDirectoryVersionId:task.output_directory_version_id,outputRootRef:task.output_root_ref,
+        const downloadAttempt = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='task_download_attempts'").get() ? db.prepare('SELECT id,started_at,deadline_at,timeout_seconds,outcome,finished_at FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(task.id) : null;
+        return { ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
+            downloadAttempt: downloadAttempt ? { id:downloadAttempt.id,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
             outputLocation: rootRow ? path.basename(rootRow.directory) : null,
-            generationReserved: reserved, remoteMayContinue: reserved && ['submission_unknown','polling_paused'].includes(task.status),
-            remoteState: task.remote_state, rawStatus: task.raw_status, pauseReason: task.pause_reason, notBeforeAt: task.not_before_at, requiresContinue: Boolean(task.requires_continue),
-            taskError: task.task_error_json ? JSON.parse(task.task_error_json) : null, inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
+            inputAssets: taskAssets(task.id), outputAssets: taskAssets(task.id, 'output') };
     }
-    function listTasks({ limit = 50, offset = 0, kind = '', search = '', model = '', status = '' } = {}) {
+    function listTasks({ limit = 50, offset = 0, kind = '', search = '', model = '', status = '', scope = 'workbench' } = {}) {
         if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0)
             throw fail('INVALID_PAGINATION');
         if (!['','image','video'].includes(kind) || [search,model,status].some(value => typeof value !== 'string' || value.length > 512)) throw fail('INVALID_HISTORY_FILTER');
-        const where = ['NOT EXISTS (SELECT 1 FROM workbench_hidden_tasks h WHERE h.task_id=tasks.id)'], args = [];
+        if (!['workbench', 'library'].includes(scope)) throw fail('INVALID_HISTORY_FILTER');
+        const visible = 'NOT EXISTS (SELECT 1 FROM workbench_hidden_tasks h WHERE h.task_id=tasks.id)' + (scope === 'workbench' ? ' AND NOT EXISTS (SELECT 1 FROM workbench_removed_tasks r WHERE r.task_id=tasks.id)' : '');
+        const where = [visible], args = [];
         const value = field => `COALESCE(json_extract(CASE WHEN json_valid(input_snapshot_json) THEN input_snapshot_json ELSE '{}' END,'$.${field}'),json_extract(CASE WHEN json_valid(request_json) THEN request_json ELSE '{}' END,'$.${field}'),'')`;
         if (kind) { where.push(kind === 'image' ? "(mode LIKE 'image.%' OR mode IN ('text-to-image','image-to-image'))" : "(mode LIKE 'video.%' OR mode='plugin')"); }
         if (search) { where.push(`(instr(lower(${value('prompt')}),lower(?))>0 OR instr(lower(${value('model')}),lower(?))>0)`); args.push(search,search); }

@@ -48,7 +48,10 @@ function runChild() {
                 if (message.imageRequestTimeoutMs !== undefined) {
                     assert.ok(Number.isInteger(message.imageRequestTimeoutMs) && message.imageRequestTimeoutMs>0 && message.imageRequestTimeoutMs<=1000);
                     const originalTimeout=global.setTimeout;
-                    // Test-only compression of the existing 30-minute REQUEST_TIMEOUT_MS, not a production env override.
+                    // Desktop adapter receives a shorter existing remainingMs budget only in this test host.
+                    // The service deadline remains its normal 120s; Web keeps its existing timer compression.
+                    const imageAdapter=require('../../tasks/flare-image-adapter'),make=imageAdapter.createFlareImageAdapter;
+                    imageAdapter.createFlareImageAdapter=options=>{const instance=make(options),submit=instance.submit.bind(instance);return {...instance,submit(task,snapshot,auth){return submit(task,snapshot,{...auth,remainingMs:()=>Math.min(auth.remainingMs?.()??Infinity,message.imageRequestTimeoutMs)});}};};
                     global.setTimeout=(callback,delay,...args)=>originalTimeout(callback,delay===30*60*1000?message.imageRequestTimeoutMs:delay,...args);
                 }
                 if (message.trackResponseReads) {

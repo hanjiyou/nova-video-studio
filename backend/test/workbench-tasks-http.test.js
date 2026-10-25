@@ -24,6 +24,8 @@ async function rig(t, behavior = {}) {
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const pluginOrigin = 'http://127.0.0.1:' + server.address().port;
     let runtime = await start(directory, { pluginOrigin });
+    // These protocol/recovery scenarios intentionally use one slot; default 3+3 is tested by I02.
+    assert.equal((await runtime.request('/api/nova/storage/settings/taskExecution',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0})})).status,200);
     t.after(async () => { held.splice(0).forEach(fn => fn()); await runtime.stop(); server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); const actual = path.resolve(directory); assert.ok(actual.startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(actual, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); });
     const connection = await runtime.saveConnection({ baseUrl: 'https://pro.ccode.vip/v1', apiKey: 'synthetic-http-A' });
     const input = (extra = {}) => ({ localRequestId: randomUUID(), connectionVersionId: connection.connectionVersionId, pluginId: 'ccode-h3', facets: { tier: 'standard', resolution: '768P' }, fields: { mode: 'multi-reference', aspectRatio: '9:16', seconds: 8, prompt: '  中文\n"完整台词"\r\n第二行  ' }, media: {}, ...extra });
@@ -40,23 +42,27 @@ test('actual desktop HTTP persists dispatch, deduplicates a lost ACK, survives f
     await until(() => f.calls.length === 1); assert.equal(f.calls[0].method, 'POST'); assert.equal(JSON.parse(f.calls[0].body).prompt, original.fields.prompt);
     const queued = await f.create(), conflict = await f.post('/api/nova/plugin-tasks', { ...original, fields: { ...original.fields, prompt: 'changed' } }); assert.equal(conflict.status, 409); assert.equal((await conflict.json()).code, 'LOCAL_REQUEST_CONFLICT');
     const persisted = f.inspect(db => db.prepare('SELECT status,dispatch_started_at,upstream_task_id,input_snapshot_json FROM tasks WHERE id=?').get(id)); assert.equal(persisted.status, 'submitting'); assert.ok(persisted.dispatch_started_at); assert.equal(persisted.upstream_task_id, null);
-    await f.crashRestart(); assert.equal((await f.task(id)).status, 'submission_unknown'); assert.equal((await f.task(queued)).requiresContinue, true); assert.equal((await f.task(id)).generationReserved, true);
-    await f.post('/api/nova/tasks/' + queued + '/continue-queued'); await pause(50); assert.equal(f.calls.length, 1);
+    await f.crashRestart(); assert.equal((await f.task(id)).status, 'failed');assert.equal((await f.task(id)).remoteOutcome,'unknown'); assert.equal((await f.task(queued)).requiresContinue, true); assert.equal((await f.task(id)).generationReserved, false);
+    await pause(50); assert.equal(f.calls.length, 1); // restart does not submit the preserved queue
     assert.equal(await f.create(original), id); assert.equal(f.calls.length, 1);
     assert.equal((await f.post('/api/nova/tasks/' + id + '/cancel-queued')).status, 409);
     assert.equal((await f.post('/api/nova/tasks/' + queued + '/cancel-queued')).status, 200); assert.equal((await f.task(queued)).status, 'local_cancelled');
     assert.equal((await fetch(f.runtime.origin + '/api/nova/tasks/' + id + '/attach-upstream-id', { method: 'POST' })).status, 403);
-    assert.equal((await f.post('/api/nova/tasks/' + id + '/attach-upstream-id', { upstreamTaskId: 'known/A?part#opaque' })).status, 200); assert.equal(f.calls.length, 1);
-    assert.equal((await f.post('/api/nova/tasks/' + id + '/resume-polling')).status, 200);
-    await until(() => f.calls.length === 2); assert.equal(f.calls[1].method, 'GET'); assert.equal(f.calls[1].path, '/v1/videos/known%2FA%3Fpart%23opaque');
-    assert.equal(f.calls[1].authorization, 'Bearer synthetic-http-A'); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
+    assert.equal((await f.post('/api/nova/tasks/' + id + '/attach-upstream-id', { upstreamTaskId: 'known/A?part#opaque' })).status, 409);assert.equal((await f.post('/api/nova/tasks/' + id + '/resume-polling')).status,409);assert.equal(f.calls.filter(call=>call.method==='GET').length,0);assert.equal(f.calls.filter(call=>call.method==='POST').length,1);
 });
+test('actual HTTP user-attached opaque ID survives restart and explicit resume uses its encoded path and original authorization',async t=>{
+    const f=await rig(t,{submit:{status:503,body:{error:'synthetic ambiguous response'}}}),id=await f.create();await until(async()=>(await f.task(id)).status==='submission_unknown');
+    assert.equal((await f.post('/api/nova/tasks/'+id+'/attach-upstream-id',{upstreamTaskId:'known/A?part#opaque'})).status,200);assert.equal(f.calls.filter(call=>call.method==='GET').length,0);
+    await f.crashRestart();assert.equal((await f.task(id)).status,'polling_paused');assert.equal((await f.task(id)).requiresContinue,true);assert.equal(f.calls.filter(call=>call.method==='GET').length,0);assert.equal(f.calls.filter(call=>call.method==='POST').length,1);
+    assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);await until(()=>f.calls.filter(call=>call.method==='GET').length===1);const query=f.calls.find(call=>call.method==='GET');assert.equal(query.path,'/v1/videos/known%2FA%3Fpart%23opaque');assert.equal(query.authorization,'Bearer synthetic-http-A');assert.equal(f.calls.filter(call=>call.method==='POST').length,1);
+});
+
 test('actual process exits after upstream ID persistence and during GET recover only the original GET, with immutable connection and conservative pause reservation', async t => {
     const behavior = { poll: { hold: true, body: { status: 'generating', progress: 37 } } }, f = await rig(t, behavior);
     const id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued');
     assert.equal(f.inspect(db => db.prepare('SELECT upstream_task_id FROM tasks WHERE id=?').get(id).upstream_task_id), 'synthetic-remote-A');
-    await f.crashRestart(); await until(() => f.calls.some(call => call.method === 'GET')); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
-    await f.crashRestart(); await until(() => f.calls.filter(call => call.method === 'GET').length === 2); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
+    await f.crashRestart();assert.equal(f.calls.filter(call=>call.method==='GET').length,0);assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200); await until(() => f.calls.some(call => call.method === 'GET')); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
+    await f.crashRestart();assert.equal(f.calls.filter(call=>call.method==='GET').length,1);assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200); await until(() => f.calls.filter(call => call.method === 'GET').length === 2); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
     const newer = await f.runtime.saveConnection({ connectionId: f.connection.connectionId, expectedVersionId: f.connection.connectionVersionId, baseUrl: 'https://pro.ccode.vip/v1', apiKey: 'synthetic-http-B' }); assert.notEqual(newer.connectionVersionId, f.connection.connectionVersionId);
     const stopped = await f.post('/api/nova/tasks/' + id + '/stop-polling'); assert.equal(stopped.status, 200); assert.equal((await stopped.json()).task.remoteMayContinue, true);
     const queued = await f.create(); f.release(); await pause(50); assert.equal((await f.task(id)).status, 'polling_paused'); assert.equal((await f.task(queued)).status, 'local_queued'); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
@@ -70,7 +76,7 @@ for (const response of [
     { name: '429 with long Retry-After', status: 429, headers: { 'retry-after': '180' }, body: { error: 'synthetic throttling' }, code: 'RATE_LIMITED' },
     { name: 'unknown status', body: { status: 'NEW_PENDING_STATE' }, code: 'REMOTE_STATUS_UNKNOWN' },
 ]) test('actual HTTP GET ' + response.name + ' pauses, preserves ID, blocks queued POST and does not become remote failure', async t => {
-    const f = await rig(t, { poll: response }), id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued'); await f.crashRestart();
+    const f = await rig(t, { poll: response }), id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued'); await f.crashRestart();assert.equal((await f.task(id)).requiresContinue,true);assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
     const paused = await until(async () => { const task = await f.task(id); return task.status === 'polling_paused' ? task : null; }); assert.equal(paused.taskError.code, response.code); assert.equal(paused.upstreamTaskId, 'synthetic-remote-A');
     await f.create(); await pause(50); assert.equal(f.calls.filter(call => call.method === 'POST').length, 1);
     if (response.status === 429) { const resumed = await f.post('/api/nova/tasks/' + id + '/resume-polling'); assert.equal(resumed.status, 409); assert.equal((await resumed.json()).notBeforeAt, paused.notBeforeAt); }
@@ -78,7 +84,7 @@ for (const response of [
     const history = await (await f.runtime.request('/api/nova/storage/tasks')).json(); assert.equal(JSON.stringify(history).includes('synthetic-http-A'), false); assert.equal(f.runtime.output().includes('synthetic-http-A'), false);
 });
 test('unavailable result remains download_failed after B2 worker, without remote URL exposure or repeated generation', async t => {
-    const f = await rig(t, { poll: { body: { status: 'completed', progress: 100, video_url: 'https://cdn.invalid/synthetic.mp4' } } }), id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued'); await f.crashRestart();
+    const f = await rig(t, { poll: { body: { status: 'completed', progress: 100, video_url: 'https://cdn.invalid/synthetic.mp4' } } }), id = await f.create(); await until(async () => (await f.task(id)).status === 'remote_queued'); await f.crashRestart();assert.equal((await f.post('/api/nova/tasks/'+id+'/resume-polling')).status,200);
     await until(async () => (await f.task(id)).status === 'download_failed');
     const task = await f.task(id); assert.equal(task.outputAssets.length, 0); assert.equal(task.completedAt, null); assert.equal(JSON.stringify(task).includes('cdn.invalid'), false);
     assert.equal(task.taskError.code,'DOWNLOAD_FORBIDDEN');

@@ -1,5 +1,6 @@
 export interface AppUpdateState {
   supported: boolean;
+  testBuild?: boolean;
   currentVersion: string;
   phase: 'unsupported' | 'idle' | 'checking' | 'available' | 'downloading' | 'downloaded' | 'preparing' | 'installing' | 'error' | 'closed-error';
   reason?: string;

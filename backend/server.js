@@ -2926,7 +2926,7 @@ function ackTask(res, taskId) {
   sendJson(res, 200, { ok: true });
 }
 
-const handleStorage = createStorageHttp({getStore:()=>workbenchStore,getConnections:()=>connectionService,readRawBody,sendJson});
+const handleStorage = createStorageHttp({getStore:()=>workbenchStore,getConnections:()=>connectionService,onSettingChanged:key=>{if(key==='taskExecution')taskService?.settingsChanged();},readRawBody,sendJson});
 const handleConnections = createConnectionHttp({getService:()=>connectionService,readJsonBody,sendJson});
 async function handleApi(req, res, pathname, searchParams) {
   try {
@@ -2934,7 +2934,7 @@ async function handleApi(req, res, pathname, searchParams) {
     if (desktopSession.isDesktopMode() && (apiPathname.startsWith('/api/nova/proxy/') || req.headers['x-nova-api-key'] || searchParams.has('apiKey'))) throw createHttpError(400,'DESKTOP_CREDENTIAL_INPUT_FORBIDDEN','桌面请求请使用连接版本。');
     if (await handleConnections(req,res,apiPathname)) return true;
     if (await handleStorage(req,res,apiPathname,searchParams)) return true;
-    const taskAction = apiPathname.match(/^\/api\/nova\/(?:tasks|plugin-tasks)\/([^/]+)\/(cancel-queued|continue-queued|stop-polling|resume-polling|attach-upstream-id|retry-download)$/);
+    const taskAction = apiPathname.match(/^\/api\/nova\/(?:tasks|plugin-tasks)\/([^/]+)\/(cancel|cancel-task|cancel-queued|continue-queued|stop-polling|resume-polling|attach-upstream-id|retry-download)$/);
     if (taskService && taskAction) {
       if (req.method !== 'POST') { sendJson(res,405,{code:'TASK_METHOD_NOT_ALLOWED'});return true; }
       const input=await readJsonBody(req);

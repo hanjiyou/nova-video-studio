@@ -44,13 +44,14 @@ async function fixture(directory, plan) {
   await writeUpdateInfoFiles(tasks, { emitArtifactCreated: async () => {} });
   const resources = path.join(directory, 'win-unpacked/resources');
   fs.mkdirSync(resources, { recursive: true });
+  if (plan.profile === 'github-test') for (const name of ['GITHUB-TEST-NOTICE.txt', 'GitHub测试版使用说明.md']) fs.writeFileSync(path.join(resources, name), 'GitHub update test, unsigned inert fixture');
   const source = path.join(directory, 'fixture-asar-source');
   fs.mkdirSync(source);
-  fs.writeFileSync(path.join(source, 'package.json'), JSON.stringify({ name: 'nova-image', version: plan.version, dependencies: { 'electron-updater': '6.8.11' }, novaUpdate: plan.metadata, ...(plan.source ? { novaBuild: plan.source } : {}) }));
+  fs.writeFileSync(path.join(source, 'package.json'), JSON.stringify({ name: 'nova-image', version: plan.version, ...(plan.profile === 'github-test' ? { productName: plan.productName } : {}), dependencies: { 'electron-updater': '6.8.11' }, novaUpdate: plan.metadata, ...(plan.source ? { novaBuild: plan.source } : {}) }));
   await asar.createPackage(source, path.join(resources, 'app.asar'));
   fs.writeFileSync(path.join(resources, 'app-update.yml'), yaml.dump({ ...plan.feed, updaterCacheDirName: plan.updaterCacheDirName, ...(plan.signature.mode === 'authenticode' ? { publisherName: plan.signature.publisherNames } : {}) }));
   fs.writeFileSync(path.join(directory, 'win-unpacked', plan.productName + '.exe'), 'MZ inert app fixture');
-  return { installer, manifest: path.join(directory, 'latest.yml'), resources };
+  return { installer, manifest: path.join(directory, plan.manifestName), resources };
 }
 
 function mutateManifest(file, change) {
@@ -246,4 +247,87 @@ test('formal source record must equal the source embedded in the signed applicat
   assert.deepEqual(summary.source, plan.source);
   const mismatch = { ...plan, source: { commit: 'b'.repeat(40), clean: true } };
   await assert.rejects(verifyArtifacts(directory, mismatch, { inspectWindowsFiles }), /Packaged clean source commit/);
+});
+
+const githubInput = { profile: 'github-test', version: '3.6.0' };
+test('GitHub test plan fixes its separate identity, manifest and unsigned policy without approving release', () => {
+  const plan = makePlan(githubInput), legacy = makePlan(input);
+  assert.equal(plan.minimumUpdatableVersion, '3.6.0'); assert.equal(plan.runtimeReady, true);
+  assert.equal(plan.manifestName, 'nova-test.yml'); assert.equal(plan.feed.channel, 'nova-test');
+  assert.equal(plan.signature.mode, 'unsigned-github-test');
+  assert.equal(plan.appId, 'com.novaimage.studio.github-test');
+  assert.notEqual(plan.updaterCacheDirName, legacy.updaterCacheDirName);
+  assert.equal(readPolicy().signing.status, 'pending'); assert.equal(readPolicy().runtimeReady, false);
+  assert.throws(() => makePlan({ ...githubInput, version: '3.5.9' }), /minimum/);
+  assert.throws(() => makePlan({ ...githubInput, testFeedUrl: input.testFeedUrl }), /fixed feed/);
+  assert.throws(() => makePlan({ ...githubInput, enableTestRuntime: true }), /local-test/);
+  for (const mutation of [p => p.githubTestFeed.channel = 'latest', p => p.githubTestFeed.repo = 'other', p => p.githubTestFeed.token = 'inert', p => p.identities['github-test'].appId = legacy.appId]) {
+    const policy = readPolicy(); mutation(policy); assert.throws(() => makePlan(githubInput, policy));
+  }
+  assert.throws(() => makePlan({ profile: 'release', version: '3.6.0' }), /signing/);
+});
+test('GitHub test builder includes package productName, keeps resource editing and replaces stale offline notices', () => {
+  const plan = makePlan(githubInput), config = builderConfiguration(plan, 'C:/inert-attempt');
+  assert.equal(config.extraMetadata.productName, plan.productName);
+  assert.equal(config.win.signAndEditExecutable, true); assert.equal(config.win.signExecutable, false);
+  assert.equal(config.win.verifyUpdateCodeSignature, false); assert.equal(config.forceCodeSigning, false);
+  assert.equal(config.nsis.createDesktopShortcut, true);
+  assert.ok(config.extraResources.some(e => e.to === 'GitHub测试版使用说明.md'));
+  assert.ok(config.extraResources.some(e => e.to === 'licenses/FFmpeg-GPLv3.txt'));
+  assert.ok(!config.extraResources.some(e => e.from.includes('本地离线') || e.from.includes('LOCAL-TEST-NOTICE')));
+  assert.equal(builderConfiguration(makePlan(input), 'C:/inert').extraMetadata.productName, undefined);
+});
+test('locked builder generates only nova-test.yml and strict complete package verification accepts it', async t => {
+  const directory = sandbox(t), plan = makePlan(githubInput); await fixture(directory, plan);
+  assert.equal(fs.existsSync(path.join(directory, 'latest.yml')), false);
+  const summary = await verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) });
+  assert.equal(summary.manifest.name, 'nova-test.yml'); assert.equal(summary.signature.mode, 'unsigned-github-test');
+  const record = { ...githubInput, testFeedUrl: null, metadata: plan.metadata };
+  assert.equal(planForRecord(record).runtimeReady, true);
+  assert.throws(() => planForRecord({ ...record, metadata: { ...plan.metadata, runtimeReady: false } }), /enabled/);
+  fs.writeFileSync(path.join(directory, 'latest.yml'), fs.readFileSync(path.join(directory, 'nova-test.yml')));
+  await assert.rejects(verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) }), /formal latest/);
+});
+test('GitHub test package verification rejects missing productName rather than sharing nova-image data', async t => {
+  const directory = sandbox(t), plan = makePlan(githubInput); await fixture(directory, plan);
+  const source = path.join(directory, 'fixture-asar-source'); const filename = path.join(source, 'package.json');
+  const pkg = JSON.parse(fs.readFileSync(filename)); delete pkg.productName; fs.writeFileSync(filename, JSON.stringify(pkg));
+  await asar.createPackage(source, path.join(directory, 'win-unpacked/resources/app.asar'));
+  await assert.rejects(verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) }), /productName/);
+});
+for (const missing of [false, true]) test('locked GitHubProvider uses latest stable release and only test manifest; missing=' + missing, async t => {
+  const { GitHubProvider } = require('electron-updater/out/providers/GitHubProvider');
+  const { HttpError } = require('builder-util-runtime');
+  const directory = sandbox(t), plan = makePlan({ ...githubInput, version: '3.6.1' }); await fixture(directory, plan);
+  const requests = [], executor = { request: async options => {
+    const url = options.protocol + '//' + options.hostname + options.path; requests.push(url);
+    if (url === 'https://github.com/hanjiyou/nova-video-studio/releases.atom') return '<feed><entry><title>Test B</title><link href="https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.1"/><content>Inert notes</content></entry></feed>';
+    if (url === 'https://github.com/hanjiyou/nova-video-studio/releases/latest') return JSON.stringify({ tag_name: 'v3.6.1' });
+    if (url === 'https://github.com/hanjiyou/nova-video-studio/releases/download/v3.6.1/nova-test.yml') {
+      if (missing) throw new HttpError(404, 'inert missing test manifest');
+      return fs.readFileSync(path.join(directory, 'nova-test.yml'), 'utf8');
+    }
+    throw Error('Unexpected provider request: ' + url);
+  } };
+  const provider = new GitHubProvider(plan.feed, { allowPrerelease: false, currentVersion: new (require('semver').SemVer)('3.6.0'), fullChangelog: false }, { platform: 'win32', executor });
+  assert.equal(provider.isUseMultipleRangeRequest, false);
+  if (missing) await assert.rejects(provider.getLatestVersion(), { code: 'ERR_UPDATER_CHANNEL_FILE_NOT_FOUND' });
+  else { const info = await provider.getLatestVersion(); assert.equal(info.version, '3.6.1'); assert.equal(provider.resolveFiles(info)[0].url.href, 'https://github.com/hanjiyou/nova-video-studio/releases/download/v3.6.1/' + plan.artifactName); }
+  assert.equal(requests.length, 3); assert.ok(requests.every(u => !u.endsWith('/latest.yml')));
+});
+
+test('GitHub test afterPack removes only obsolete copied notices and complete verifier enforces new guide', async t => {
+  const directory = sandbox(t), plan = makePlan({ profile: 'github-test', version: '3.6.1' });
+  const { resources } = await fixture(directory, plan);
+  fs.writeFileSync(path.join(resources, 'LOCAL-TEST-NOTICE.txt'), 'obsolete offline notice');
+  fs.writeFileSync(path.join(resources, '本地离线测试版使用说明.md'), 'obsolete offline guide');
+  fs.writeFileSync(path.join(resources, 'preserve.txt'), 'keep');
+  await assert.rejects(verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) }), /obsolete/);
+  await require('./finalize-windows-update.cjs')({ appOutDir: path.dirname(resources), packager: { info: { metadata: { novaUpdate: plan.metadata } }, appInfo: { id: plan.appId } } });
+  assert.equal(fs.existsSync(path.join(resources, 'LOCAL-TEST-NOTICE.txt')), false);
+  assert.equal(fs.existsSync(path.join(resources, '本地离线测试版使用说明.md')), false);
+  assert.equal(fs.readFileSync(path.join(resources, 'preserve.txt'), 'utf8'), 'keep');
+  await verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) });
+  fs.unlinkSync(path.join(resources, 'GitHub测试版使用说明.md'));
+  await assert.rejects(verifyArtifacts(directory, plan, { inspectWindowsFiles: inspection(plan) }), /ENOENT/);
 });

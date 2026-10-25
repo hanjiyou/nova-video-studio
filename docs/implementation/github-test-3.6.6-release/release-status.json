@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-10-25T16:40:54.821Z",
+  "tag": "v3.6.6",
+  "url": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.6",
+  "releaseId": 423522798,
+  "draft": false,
+  "prerelease": false,
+  "publishedAt": "2026-10-25T16:40:24Z",
+  "target": "2fef5eaff573c147be1520508072cd3eb42a9438",
+  "assets": [
+    {
+      "id": 675544712,
+      "name": "Nova-Studio-3.6.6-github-test-x64.exe",
+      "size": 133783907,
+      "state": "uploaded",
+      "digest": "sha256:507ee9827347703e3dc292c9c4b6ea56839ce8267b0d8516c19a7a9a3d60b828"
+    },
+    {
+      "id": 675545859,
+      "name": "Nova-Studio-3.6.6-github-test-x64.exe.blockmap",
+      "size": 139986,
+      "state": "uploaded",
+      "digest": "sha256:66177127bbca1e1b1fb7b1b3c95276c94ae6df1a10f342e7c9b6566eaaf845ac"
+    },
+    {
+      "id": 675545884,
+      "name": "nova-test.yml",
+      "size": 371,
+      "state": "uploaded",
+      "digest": "sha256:fe023fb469a09fbf4ae1305a0e4efe60cb5a5dc8dc120f4a24ea94cbdb3e659d"
+    }
+  ]
+}

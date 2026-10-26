@@ -1,0 +1,120 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/connection-client.test.ts (7 tests) 23ms
+ ✓ src/components/workbench/__tests__/model-refresh.test.tsx (6 tests) 279ms
+ ✓ src/components/workbench/__tests__/download-status.test.tsx (11 tests) 490ms
+ ✓ src/components/workbench/__tests__/app-update.test.tsx (12 tests) 781ms
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 external removal clears details, but the same work remains readable from library
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 old synchronous image without upstream ID offers no fabricated attach/query capability
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 video stop/resume keeps the original deadline; ended video cannot resume
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/components/workbench/__tests__/connection-routes.test.tsx (14 tests) 1231ms
+ ✓ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests) 1659ms
+   ✓ connection form > requires key and valid base, switches custom to empty, and shows canonical read-only target  306ms
+   ✓ skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation  725ms
+ ❯ src/components/workbench/__tests__/workbench-lifecycle.test.tsx (20 tests | 1 failed) 2252ms
+   ✓ I07 task controls read defaults without a connection and save independent values with revision  356ms
+   ✓ I07 rejects invalid integer ranges locally, preserves dirty inputs on failure and revision conflict until reload 204ms
+   ✓ I07 failed initial settings read permits an explicit reload without inventing a saved revision 71ms
+   ✓ I07 generation time freezes at original finish while a download attempt has its own clock and cancellation 17ms
+   ✓ I07 queued cancellation/timeout freeze and unknown legacy timing never invents dispatch or progress 3ms
+   ✓ I07 failed cancellation never hides, and ended removal waits for service confirmation and ignores double clicks 46ms
+   ✓ I07 removal failure retains display and can be retried 32ms
+   ✓ I07 refresh does not revive a removed selection through a readable getTask or a stale list 73ms
+   ✓ I07 external removal clears details, but the same work remains readable from library 75ms
+   ✓ I07 old synchronous image without upstream ID offers no fabricated attach/query capability 34ms
+   ✓ I07 video stop/resume keeps the original deadline; ended video cannot resume 149ms
+   ✓ I07 local create receipt unlocks a different draft while earlier generation remains active, with one POST per intent 88ms
+   ✓ I07 image offline cards demonstrate 3 running, fourth queued, cancellation refill, terminal removal and retained library 104ms
+   ✓ I07 video offline cards demonstrate 3 running, fourth queued, cancellation refill, terminal removal and retained library 91ms
+   ✓ I07 settings page exposes task controls when no service connection exists 160ms
+   ✓ I07 a slow detail read after confirmed create ACK never locks another draft or lets late details replace its selection 168ms
+   ✓ I07 old cleanup cannot release a newer create lock or clear its unknown receipt intent with a late reconciliation list 265ms
+   ✓ I07 switching image/video while image detail is late preserves the current video selection 233ms
+   ✓ D01 first download waiting has no invented deadline, no retry label, and freezes generation duration 3ms
+   × a route conflict during submission preflight stops before persisting an intent or posting generation 80ms
+     → expected '' to contain '访问线路'
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/workbench/__tests__/workbench-lifecycle.test.tsx > a route conflict during submission preflight stops before persisting an intent or posting generation
+AssertionError: expected '' to contain '访问线路'
+
+- Expected
++ Received
+
+- 访问线路
+
+ ❯ src/components/workbench/__tests__/workbench-lifecycle.test.tsx:94:959
+
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 80 passed (81)
+   Start at  12:18:11
+   Duration  4.61s (transform 1.10s, setup 929ms, collect 3.52s, tests 6.71s, environment 5.96s, prepare 1.22s)

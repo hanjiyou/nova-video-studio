@@ -1,0 +1,66 @@
+import {useState} from 'react';
+import {act, cleanup, fireEvent, render, screen, waitFor} from '@testing-library/react';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
+import {ConnectionForm} from '../ConnectionForm';
+import {WorkbenchShell} from '../WorkbenchShell';
+import {hasUpdateBlockers, setUpdateFrozen} from '@/lib/update-readiness';
+import type {ConnectionSummary, SaveConnectionInput} from '@/lib/connection-client';
+const base: ConnectionSummary = {connectionId:'route-connection',connectionVersionId:'fixed-version',displayName:'线路测试',provider:'opensosen',protocol:'openai',baseUrl:'https://newapi.opensosen.com/v1',routeSupported:true,route:'cn',routeRevision:1,hasCredential:true,credentialState:'ready',validationState:'unverified',lastCheckedAt:null,lastSuccessAt:null,modelsFetchedAt:null,errorCode:null,defaultImageModel:'gpt-image-2.5-flare',defaultVideoModel:'grok-imagine-video-1.5-6s',isDefault:true};
+function deferred<T>() {let resolve!:(value:T)=>void;const promise=new Promise<T>(r=>{resolve=r;});return {promise,resolve};}
+function bridge() {return {getOutputDirectory:vi.fn(async()=>({ok:true,displayName:'synthetic output'})),saveConnection:vi.fn(async(_input:SaveConnectionInput)=>({ok:true,connection:{...base,route:'com' as const,routeRevision:2}})),validateAndSaveConnection:vi.fn(async(_input:SaveConnectionInput & {operationId:string;expectedOnboardingRevision?:number})=>({ok:true,connection:{...base,route:'com' as const,routeRevision:2},connectionVersionId:base.connectionVersionId,routeSupported:true,route:'com' as const,routeRevision:2,models:[],capabilities:[]})),cancelConnectionValidation:vi.fn(async()=>({ok:true,cancelled:true}))};}
+let host:ReturnType<typeof bridge>;
+beforeEach(()=>{host=bridge();window.novaDesktop=host as unknown as Window['novaDesktop'];vi.stubGlobal('fetch',vi.fn(async()=>Response.json({connection:{...base,routeRevision:4,displayName:'其他操作保存'}})));});
+afterEach(()=>{cleanup();delete window.novaDesktop;setUpdateFrozen(false);vi.restoreAllMocks();vi.unstubAllGlobals();});
+function form(connection:ConnectionSummary|null=base, onboarding=false) {const onSaved=vi.fn(),onModels=vi.fn(),onContinue=vi.fn(async()=>{});const view=render(<ConnectionForm connection={connection} onboarding={onboarding} onboardingRevision={7} onSaved={onSaved} onModels={onModels} onContinue={onContinue}/>);return {view,onSaved,onModels,onContinue};}
+const select=(route:string)=>fireEvent.change(screen.getByLabelText('访问线路'),{target:{value:route}});
+describe('OpenSosen connection transport routes',()=>{
+  it('defaults a new built-in connection to cn and shows its actual read-only models target',async()=>{
+    form(null,true);expect(screen.getByLabelText('访问线路')).toHaveValue('cn');expect(screen.getByLabelText('接口基础地址')).toHaveValue('https://newapi.opensosen.cn/v1');expect(screen.getByLabelText('接口基础地址')).toHaveAttribute('readonly');expect(screen.getByText('只读检查目标：https://newapi.opensosen.cn/v1/models')).toBeInTheDocument();expect(hasUpdateBlockers()).toBe(false);
+    fireEvent.change(screen.getByLabelText('API Key',{selector:'input'}),{target:{value:'synthetic-only'}});fireEvent.click(screen.getByRole('button',{name:'保存，稍后验证'}));await waitFor(()=>expect(host.saveConnection).toHaveBeenCalled());expect(host.saveConnection.mock.calls[0][0]).toMatchObject({baseUrl:base.baseUrl,route:'cn'});expect(host.saveConnection.mock.calls[0][0]).not.toHaveProperty('expectedRouteRevision');
+  });
+  it('saves only a route with the same identity and no Key, tracks dirty state and restores com on remount',async()=>{
+    const events=form();expect(hasUpdateBlockers()).toBe(false);expect(screen.getByText('当前已保存：线路测试 · https://newapi.opensosen.cn/v1')).toBeInTheDocument();select('com');expect(hasUpdateBlockers()).toBe(true);expect(screen.getByText('有未保存的修改')).toBeInTheDocument();expect(screen.getByText('只读检查目标：https://newapi.opensosen.com/v1/models')).toBeInTheDocument();fireEvent.click(screen.getByRole('button',{name:'保存连接'}));await waitFor(()=>expect(events.onSaved).toHaveBeenCalled());
+    expect(host.saveConnection.mock.calls[0][0]).toMatchObject({connectionId:base.connectionId,expectedVersionId:base.connectionVersionId,baseUrl:base.baseUrl,route:'com',expectedRouteRevision:1});expect(host.saveConnection.mock.calls[0][0]).not.toHaveProperty('apiKey');expect(events.onSaved.mock.calls[0][0].connectionVersionId).toBe(base.connectionVersionId);expect(hasUpdateBlockers()).toBe(false);events.view.unmount();form({...base,route:'com',routeRevision:2});expect(screen.getByLabelText('访问线路')).toHaveValue('com');expect(screen.getByText('当前已保存：线路测试 · https://newapi.opensosen.com/v1')).toBeInTheDocument();
+  });
+  it('tests the current route and onboarding revision without requiring a replacement Key',async()=>{
+    const events=form(base,true);select('com');fireEvent.click(screen.getByRole('button',{name:'测试连接并继续'}));await waitFor(()=>expect(events.onContinue).toHaveBeenCalled());expect(host.validateAndSaveConnection).toHaveBeenCalledWith(expect.objectContaining({route:'com',expectedRouteRevision:1,baseUrl:base.baseUrl,expectedOnboardingRevision:7}));expect(host.validateAndSaveConnection.mock.calls[0][0]).not.toHaveProperty('apiKey');
+  });
+  it.each(['cancel','edit','unmount'])('invalidates a pending route candidate on %s and ignores its late result',async action=>{
+    const pending=deferred<Awaited<ReturnType<typeof host.validateAndSaveConnection>>>();host.validateAndSaveConnection.mockReturnValueOnce(pending.promise);const events=form();select('com');fireEvent.click(screen.getByRole('button',{name:'测试连接 / 刷新模型'}));
+    if(action==='cancel')fireEvent.click(screen.getByRole('button',{name:'取消检查'}));else if(action==='edit')select('cn');else events.view.unmount();
+    expect(host.cancelConnectionValidation).toHaveBeenCalledWith({operationId:expect.any(String)});await act(async()=>pending.resolve({ok:true,connection:{...base,route:'com',routeRevision:2},connectionVersionId:base.connectionVersionId,routeSupported:true,route:'com',routeRevision:2,models:[],capabilities:[]}));expect(events.onSaved).not.toHaveBeenCalled();expect(events.onModels).not.toHaveBeenCalled();expect(events.onContinue).not.toHaveBeenCalled();
+  });
+  it.each(['save','check'])('preserves all draft inputs on a %s conflict and rereads the baseline before explicit retry',async action=>{
+    if(action==='save')host.saveConnection.mockResolvedValueOnce({ok:false,code:'CONNECTION_ROUTE_CONFLICT'} as never);else host.validateAndSaveConnection.mockResolvedValueOnce({ok:false,code:'CONNECTION_ROUTE_CONFLICT'} as never);
+    const events=form();select('com');fireEvent.change(screen.getByLabelText('连接名称'),{target:{value:'保留名称'}});const key=screen.getByLabelText('API Key',{selector:'input'});fireEvent.change(key,{target:{value:'synthetic-only'}});fireEvent.click(screen.getByRole('button',{name:action==='save'?'保存连接':'测试连接 / 刷新模型'}));expect(await screen.findByRole('alert')).toHaveTextContent('本次输入仍保留');expect(key).toHaveValue('synthetic-only');
+    fireEvent.click(screen.getByRole('button',{name:'重新读取线路与版本（保留输入）'}));await screen.findByText(/已重新读取保存的线路与版本/);expect(screen.getByLabelText('连接名称')).toHaveValue('保留名称');expect(screen.getByLabelText('访问线路')).toHaveValue('com');expect(key).toHaveValue('synthetic-only');expect(events.onSaved).toHaveBeenCalledTimes(1);fireEvent.click(screen.getByRole('button',{name:'保存连接'}));await waitFor(()=>expect(events.onSaved).toHaveBeenCalledTimes(2));expect(host.saveConnection.mock.calls.at(-1)?.[0]).toMatchObject({route:'com',expectedRouteRevision:4,displayName:'保留名称'});
+  });
+  it('reports a host-stale receipt without saving or advancing onboarding',async()=>{
+    host.validateAndSaveConnection.mockResolvedValueOnce({ok:true,stale:true} as never);const events=form(base,true);select('com');fireEvent.click(screen.getByRole('button',{name:'测试连接并继续'}));await screen.findByText(/检查结果已过期/);expect(events.onSaved).not.toHaveBeenCalled();expect(events.onContinue).not.toHaveBeenCalled();expect(screen.getByRole('button',{name:'重新读取线路与版本（保留输入）'})).toBeEnabled();
+  });
+  it.each([{...base,provider:'openai-compatible',routeSupported:false,route:null,routeRevision:null},{...base,baseUrl:'https://legacy.invalid/v1',routeSupported:false,route:null,routeRevision:null}])('keeps a custom source editable and requires a Key when its address changes',connection=>{
+    form(connection);expect(screen.queryByLabelText('访问线路')).not.toBeInTheDocument();expect(screen.getByLabelText('接口基础地址')).not.toHaveAttribute('readonly');fireEvent.change(screen.getByLabelText('接口基础地址'),{target:{value:'https://another.invalid/v1'}});expect(screen.getByRole('button',{name:'保存连接'})).toBeDisabled();fireEvent.change(screen.getByLabelText('API Key',{selector:'input'}),{target:{value:'synthetic-only'}});expect(screen.getByRole('button',{name:'保存连接'})).toBeEnabled();
+  });
+  it('supports old summaries without route fields and explains later queries and downloads accurately',()=>{
+    const {routeSupported,route,routeRevision,...old}=base;void routeSupported;void route;void routeRevision;form(old);expect(screen.queryByLabelText('访问线路')).not.toBeInTheDocument();expect(screen.getByLabelText('接口基础地址')).toHaveValue(base.baseUrl);expect(screen.getByText('只读检查目标：https://newapi.opensosen.com/v1/models')).toBeInTheDocument();expect(screen.getByText('当前已保存：线路测试 · https://newapi.opensosen.com/v1')).toBeInTheDocument();cleanup();form();expect(screen.getByText(/后续查询、重新下载/)).toHaveTextContent('已发出的请求保持原线路');expect(screen.getByText(/线路不控制 VPN/)).toBeInTheDocument();expect(screen.getByText(/国内线路的真实生成及媒体下载仍待验证/)).toBeInTheDocument();
+  });
+});
+
+it('synchronizes a reread version with its parent without remounting or losing draft fields',async()=>{
+  host.saveConnection.mockResolvedValueOnce({ok:false,code:'CONNECTION_VERSION_CONFLICT'} as never);vi.mocked(fetch).mockResolvedValue(Response.json({connection:{...base,connectionVersionId:'new-version',route:'cn',routeRevision:4}}));
+  function Parent(){const [current,setCurrent]=useState(base);return <><span data-testid="parent-version">{current.connectionVersionId}:{current.routeRevision}</span><ConnectionForm key={current.connectionId} connection={current} onSaved={setCurrent} onModels={vi.fn()}/></>;}
+  render(<Parent/>);select('com');fireEvent.change(screen.getByLabelText('连接名称'),{target:{value:'保留名称'}});fireEvent.change(screen.getByLabelText('API Key',{selector:'input'}),{target:{value:'synthetic-only'}});fireEvent.click(screen.getByRole('button',{name:'保存连接'}));await screen.findByRole('alert');fireEvent.click(screen.getByRole('button',{name:'重新读取线路与版本（保留输入）'}));await waitFor(()=>expect(screen.getByTestId('parent-version')).toHaveTextContent('new-version:4'));expect(screen.getByLabelText('访问线路')).toHaveValue('com');expect(screen.getByLabelText('连接名称')).toHaveValue('保留名称');expect(screen.getByLabelText('API Key',{selector:'input'})).toHaveValue('synthetic-only');fireEvent.click(screen.getByRole('button',{name:'保存连接'}));await waitFor(()=>expect(host.saveConnection).toHaveBeenCalledTimes(2));expect(host.saveConnection.mock.calls[1][0]).toMatchObject({expectedVersionId:'new-version',expectedRouteRevision:4,route:'com',displayName:'保留名称'});
+});
+
+it('the workbench rejects a late old-route catalog while the saved connection version stays fixed',async()=>{
+  vi.spyOn(window,'scrollTo').mockImplementation(()=>{});const pending=deferred<Response>();let reads=0;const catalog=(route:'cn'|'com',revision:number)=>({connectionVersionId:base.connectionVersionId,routeSupported:true,route,routeRevision:revision,modelsFetchedAt:'2026-10-26T00:00:00Z',models:[{model:route+'-only',visibility:'visible'}],capabilities:[]});
+  vi.stubGlobal('fetch',vi.fn(async(url:string,options?:RequestInit)=>{
+    if(url==='/api/nova/connections/current')return Response.json({connection:base});
+    if(url.endsWith('/models'))return Response.json(++reads===1?catalog('cn',1):catalog('com',2));
+    if(url.endsWith('/check'))return JSON.parse(String(options?.body)).reason==='startup'?pending.promise:Response.json({...catalog('com',2),stale:false});
+    if(url.includes('/storage/settings/'))return Response.json({setting:{key:url.split('/').pop(),value:url.endsWith('/onboarding')?{dismissed:true}:url.endsWith('/workspace')?{activePage:'settings'}:null,revision:0,updatedAt:null}});
+    if(url.includes('/storage/drafts/'))return Response.json({draft:{mode:url.split('/').pop(),prompt:'',model:'',parameters:{},inputAssets:[],revision:0,updatedAt:null}});
+    if(url.includes('/storage/submissions')||url.includes('/storage/tasks'))return Response.json({items:[],total:0});throw Error(url);
+  }));
+  render(<WorkbenchShell/>);await screen.findByLabelText('访问线路');select('com');fireEvent.click(screen.getByRole('button',{name:'保存连接'}));await waitFor(()=>expect(screen.getByLabelText('选择已有型号')).toHaveTextContent('com-only'));await act(async()=>pending.resolve(Response.json({...catalog('cn',1),stale:false})));expect(screen.getByLabelText('选择已有型号')).toHaveTextContent('com-only');expect(screen.getByLabelText('选择已有型号')).not.toHaveTextContent('cn-only');expect(screen.getByLabelText('访问线路')).toHaveValue('com');
+});

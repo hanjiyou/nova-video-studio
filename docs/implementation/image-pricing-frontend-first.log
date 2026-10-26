@@ -1,0 +1,10 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/image-pricing.test.tsx (8 tests) 525ms
+   ✓ image range is numerical, currency-free, one image, and independent of size and quality  317ms
+
+ Test Files  1 passed (1)
+      Tests  8 passed (8)
+   Start at  17:19:38
+   Duration  26.32s (transform 254ms, setup 2.79s, collect 2.20s, tests 525ms, environment 17.43s, prepare 687ms)

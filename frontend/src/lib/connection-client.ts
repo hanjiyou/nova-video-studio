@@ -1,6 +1,11 @@
 'use client';
 import { generateUUID } from '@/lib/uuid';
-export interface ConnectionSummary {
+export type TransportRoute = 'cn' | 'com';
+/** Optional only for summaries returned by an older host. */
+export interface ConnectionRouteFields {
+  routeSupported?: boolean; route?: TransportRoute | null; routeRevision?: number | null;
+}
+export interface ConnectionSummary extends ConnectionRouteFields {
   connectionId: string;
   connectionVersionId: string;
   displayName: string;
@@ -28,6 +33,8 @@ export interface SaveConnectionInput {
   apiKey?: string;
   defaultImageModel?: string;
   defaultVideoModel?: string;
+  route?: TransportRoute;
+  expectedRouteRevision?: number;
 }
 export interface ConnectionVersionInput { connectionId: string; expectedVersionId: string }
 export interface ConnectionResult { ok: boolean; connection?: ConnectionSummary; code?: string }
@@ -36,7 +43,8 @@ export interface CapabilitySummary {
   parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean;
   evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string; submissionPolicy?: string; supplierMaximumReferences?: number | null };
 }
-export interface ConnectionModels {
+export interface ConnectionModels extends ConnectionRouteFields {
+  transportEvidence?: 'generation_unverified' | 'see_capability_evidence';
   connectionVersionId: string; modelsFetchedAt: string | null;
   models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean}>;
   refreshError?: string | null;
@@ -56,8 +64,13 @@ async function read<T>(route: string, options?: RequestInit): Promise<T> {
 export async function getCurrentConnection(): Promise<ConnectionSummary | null> {
   return (await read<{connection: ConnectionSummary | null}>('/api/nova/connections/current')).connection;
 }
+export const getConnection = (connectionId: string) => read<{connection: ConnectionSummary}>('/api/nova/connections/' + encodeURIComponent(connectionId)).then(value => value.connection);
+/** Connection identity stays fixed when only the transport route changes. */
+export function sameConnectionTransport(connection: ConnectionSummary, value: ConnectionModels): boolean {
+  return value.connectionVersionId === connection.connectionVersionId && (connection.routeRevision == null || (value.routeRevision === connection.routeRevision && value.route === connection.route));
+}
 export const getConnectionModels = (connectionId: string) => read<ConnectionModels>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/models');
-export const checkConnection = (connection: ConnectionSummary, force = false, reason = 'manual') => read<ConnectionCheck>('/api/nova/connections/' + encodeURIComponent(connection.connectionId) + '/check', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({connectionVersionId: connection.connectionVersionId, force, ...(reason==='manual'?{}:{reason})})});
+export const checkConnection = (connection: ConnectionSummary, force = false, reason = 'manual') => read<ConnectionCheck>('/api/nova/connections/' + encodeURIComponent(connection.connectionId) + '/check', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify({connectionVersionId: connection.connectionVersionId, ...(connection.routeRevision != null ? {expectedRouteRevision: connection.routeRevision} : {}), force, ...(reason==='manual'?{}:{reason})})});
 export async function saveConnection(input: SaveConnectionInput): Promise<ConnectionSummary> {
   const transient = {...input};
   try {
@@ -103,3 +116,12 @@ export async function desktopTaskPayload<T extends object>(input: T): Promise<Om
 }
 
 export const saveModelSettings = (connection: ConnectionSummary, fields: {model:string;categories?:string[]|null;custom?:boolean;defaultSeconds?:number}) => read<ConnectionModels>('/api/nova/connections/'+encodeURIComponent(connection.connectionId)+'/model-settings',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({connectionVersionId:connection.connectionVersionId,...fields})});
+
+/** Public fixed-per-image numbers; no currency or account-group inference. */
+export interface ConnectionPricing {
+  connectionVersionId: string; route: TransportRoute | null; routeRevision: number | null;
+  model: string; group: string; stale: boolean; cached: boolean; reason: string | null;
+  estimate: { perImage: number } | null;
+}
+export const getConnectionPricing = (connectionId: string, signal?: AbortSignal) =>
+  read<ConnectionPricing>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/pricing', { signal });

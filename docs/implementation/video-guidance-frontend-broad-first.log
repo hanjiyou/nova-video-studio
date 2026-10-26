@@ -1,0 +1,804 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/workbench-task-client.test.ts (10 tests) 28ms
+ ✓ src/components/workbench/__tests__/model-refresh.test.tsx (6 tests) 287ms
+ ✓ src/components/workbench/__tests__/workbench-b5.test.tsx (5 tests) 473ms
+ ✓ src/components/workbench/__tests__/capability-upgrade.test.tsx (6 tests) 553ms
+   ✓ normal image UI selects the current application version even with legacy row first, enables only minimum text and reports actual verification  361ms
+ ✓ src/components/workbench/__tests__/image-pricing.test.tsx (9 tests) 657ms
+   ✓ medium reference design shows a numeric per-image price and keeps size, quality and generation unchanged  392ms
+ ✓ src/components/workbench/__tests__/model-catalog.test.tsx (7 tests) 876ms
+   ✓ direct seconds input updates integer-cent price and invalid input removes quotation and disables submit  532ms
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 external removal clears details, but the same work remains readable from library
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 old synchronous image without upstream ID offers no fabricated attach/query capability
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/components/workbench/__tests__/draft-guidance.test.tsx (19 tests) 1365ms
+   ✓ duration uses the real effective default, editing is not auto-saving, and failed default saves can retry  514ms
+stderr | src/components/workbench/__tests__/workbench-lifecycle.test.tsx > I07 video stop/resume keeps the original deadline; ended video cannot resume
+An update to DownloadStatus inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+An update to TaskDetails inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+ ✓ src/components/workbench/__tests__/image-controls.test.tsx (6 tests) 1416ms
+   ✓ default selects proven minimum while displaying separate specs; explicit controls and clearing back to auto use the correct immutable capability  527ms
+   ✓ result-to-edit shell flow checks the original asset, updates the image draft and performs no generation  412ms
+ ✓ src/components/workbench/__tests__/connection-routes.test.tsx (14 tests) 1589ms
+   ✓ OpenSosen connection transport routes > defaults a new built-in connection to cn and shows its actual read-only models target  354ms
+ ✓ src/components/workbench/__tests__/workbench-b4.test.tsx (9 tests) 1990ms
+   ✓ image ratio and size are linked only to capability configuration; unknown values are preserved and blocked  436ms
+   ✓ library pages all 61 records and preserves selection order across pages without generation  1042ms
+ ✓ src/components/workbench/__tests__/workbench-lifecycle.test.tsx (20 tests) 2544ms
+   ✓ I07 task controls read defaults without a connection and save independent values with revision  425ms
+   ✓ I07 rejects invalid integer ranges locally, preserves dirty inputs on failure and revision conflict until reload  319ms
+ ❯ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests | 1 failed) 2813ms
+   ✓ connection form > requires key and valid base, switches custom to empty, and shows canonical read-only target  391ms
+   ✓ connection form > checks via host then accepts saved result and clears key; Enter never submits a generation or check 124ms
+   ✓ connection form > editing or cancel invalidates host operation and ignores a late successful response 59ms
+   ✓ connection form > distinguishes models_unsupported/404 without persisting a failed candidate 92ms
+   ✓ connection form > distinguishes auth_rejected/401 without persisting a failed candidate 76ms
+   ✓ connection form > distinguishes auth_rejected/403 without persisting a failed candidate 66ms
+   ✓ connection form > does not report success when safeStorage save fails, and clear requires explicit impact confirmation 143ms
+   ✓ defaults keep missing exact models and block completion when directory check fails 105ms
+   × skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation 1589ms
+     → Unable to find a label with the text of: 接口基础地址
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"nova-workbench wb-shell"[39m
+    [36m>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"wb-sidebar"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"wb-brand"[39m
+          [33mhref[39m=[32m"#"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sparkles"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"21"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"21"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 2v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M22 4h-4"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"4"[39m
+                [33mcy[39m=[32m"20"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+          [36m<div>[39m
+            [0m影像工作台[0m
+            [36m<small>[39m
+              [0mNOVA STUDIO[0m
+            [36m</small>[39m
+          [36m</div>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"主要导航"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-image"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mry[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"9"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m图片生成[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-film"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M7 3v18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 7.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 12h18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 16.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 3v18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 7.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 16.5h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m视频生成[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-folder-heart"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10.638 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.417"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m作品库[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[3...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"nova-workbench wb-shell"[39m
+    [36m>[39m
+      [36m<aside[39m
+        [33mclass[39m=[32m"wb-sidebar"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33mclass[39m=[32m"wb-brand"[39m
+          [33mhref[39m=[32m"#"[39m
+        [36m>[39m
+          [36m<span>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-sparkles"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"21"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"21"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M20 2v4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M22 4h-4"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"4"[39m
+                [33mcy[39m=[32m"20"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</span>[39m
+          [36m<div>[39m
+            [0m影像工作台[0m
+            [36m<small>[39m
+              [0mNOVA STUDIO[0m
+            [36m</small>[39m
+          [36m</div>[39m
+        [36m</a>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"主要导航"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-image"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mry[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<circle[39m
+                [33mcx[39m=[32m"9"[39m
+                [33mcy[39m=[32m"9"[39m
+                [33mr[39m=[32m"2"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m图片生成[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-current[39m=[32m"page"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-film"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<rect[39m
+                [33mheight[39m=[32m"18"[39m
+                [33mrx[39m=[32m"2"[39m
+                [33mwidth[39m=[32m"18"[39m
+                [33mx[39m=[32m"3"[39m
+                [33my[39m=[32m"3"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M7 3v18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 7.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 12h18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M3 16.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 3v18"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 7.5h4"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M17 16.5h4"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m视频生成[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"lucide lucide-folder-heart"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mheight[39m=[32m"19"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-linecap[39m=[32m"round"[39m
+              [33mstroke-linejoin[39m=[32m"round"[39m
+              [33mstroke-width[39m=[32m"2"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mwidth[39m=[32m"19"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M10.638 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.417"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span>[39m
+              [0m作品库[0m
+            [36m</span>[39m
+          [36m</button>[39m
+          [36m<button[39m
+            [33mtype[39m=[32m"button"[3...
+   ✓ an asynchronous reference edit keeps a later explicit model selection and serialized revisions 97ms
+   ✓ an already configured profile enters the workbench without forcing welcome and refreshes the model list once 70ms
+ ✓ src/components/workbench/__tests__/multi-reference.test.tsx (4 tests) 3014ms
+   ✓ ordinary submit remains enabled with an honest warning; drag, keyboard and removal preserve displayed order  542ms
+   ✓ library keeps ordered selections across pages and supports moving or removing off-page images without generation  2361ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/workbench/__tests__/workbench-b3.test.tsx > skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation
+TestingLibraryElementError: Unable to find a label with the text of: 接口基础地址
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="nova-workbench wb-shell"
+    >
+      <aside
+        class="wb-sidebar"
+      >
+        <a
+          class="wb-brand"
+          href="#"
+        >
+          <span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-sparkles"
+              fill="none"
+              height="21"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="21"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+              />
+              <path
+                d="M20 2v4"
+              />
+              <path
+                d="M22 4h-4"
+              />
+              <circle
+                cx="4"
+                cy="20"
+                r="2"
+              />
+            </svg>
+          </span>
+          <div>
+            影像工作台
+            <small>
+              NOVA STUDIO
+            </small>
+          </div>
+        </a>
+        <nav
+          aria-label="主要导航"
+        >
+          <button
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-image"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="18"
+                rx="2"
+                ry="2"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <circle
+                cx="9"
+                cy="9"
+                r="2"
+              />
+              <path
+                d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
+              />
+            </svg>
+            <span>
+              图片生成
+            </span>
+          </button>
+          <button
+            aria-current="page"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-film"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <path
+                d="M7 3v18"
+              />
+              <path
+                d="M3 7.5h4"
+              />
+              <path
+                d="M3 12h18"
+              />
+              <path
+                d="M3 16.5h4"
+              />
+              <path
+                d="M17 3v18"
+              />
+              <path
+                d="M17 7.5h4"
+              />
+              <path
+                d="M17 16.5h4"
+              />
+            </svg>
+            <span>
+              视频生成
+            </span>
+          </button>
+          <button
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-folder-heart"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.638 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.417"
+              />
+              <path
+                d="M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"
+              />
+            </svg>
+            <span>
+              作品库
+            </span>
+          </button>
+          <button
+            type="button"[3...
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="nova-workbench wb-shell"
+    >
+      <aside
+        class="wb-sidebar"
+      >
+        <a
+          class="wb-brand"
+          href="#"
+        >
+          <span>
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-sparkles"
+              fill="none"
+              height="21"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="21"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"
+              />
+              <path
+                d="M20 2v4"
+              />
+              <path
+                d="M22 4h-4"
+              />
+              <circle
+                cx="4"
+                cy="20"
+                r="2"
+              />
+            </svg>
+          </span>
+          <div>
+            影像工作台
+            <small>
+              NOVA STUDIO
+            </small>
+          </div>
+        </a>
+        <nav
+          aria-label="主要导航"
+        >
+          <button
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-image"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="18"
+                rx="2"
+                ry="2"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <circle
+                cx="9"
+                cy="9"
+                r="2"
+              />
+              <path
+                d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"
+              />
+            </svg>
+            <span>
+              图片生成
+            </span>
+          </button>
+          <button
+            aria-current="page"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-film"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                height="18"
+                rx="2"
+                width="18"
+                x="3"
+                y="3"
+              />
+              <path
+                d="M7 3v18"
+              />
+              <path
+                d="M3 7.5h4"
+              />
+              <path
+                d="M3 12h18"
+              />
+              <path
+                d="M3 16.5h4"
+              />
+              <path
+                d="M17 3v18"
+              />
+              <path
+                d="M17 7.5h4"
+              />
+              <path
+                d="M17 16.5h4"
+              />
+            </svg>
+            <span>
+              视频生成
+            </span>
+          </button>
+          <button
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="lucide lucide-folder-heart"
+              fill="none"
+              height="19"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+              width="19"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10.638 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v3.417"
+              />
+              <path
+                d="M14.62 18.8A2.25 2.25 0 1 1 18 15.836a2.25 2.25 0 1 1 3.38 2.966l-2.626 2.856a.998.998 0 0 1-1.507 0z"
+              />
+            </svg>
+            <span>
+              作品库
+            </span>
+          </button>
+          <button
+            type="button"[3...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ src/components/workbench/__tests__/workbench-b3.test.tsx:37:77
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 12 passed (13)
+      Tests  1 failed | 125 passed (126)
+   Start at  20:09:32
+   Duration  5.97s (transform 1.61s, setup 2.38s, collect 8.50s, tests 17.61s, environment 16.61s, prepare 2.36s)

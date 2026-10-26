@@ -21,10 +21,10 @@ function runChild() {
             if (message.action === 'start') {
                 if(message.opensosenOrigin||message.pluginOrigin){
                     const worker=require('../../storage/download-worker'),production=worker.createDownloadWorker;
-                    const origin=message.opensosenOrigin?'https://newapi.opensosen.com':'https://pro.ccode.vip';
+                    const origins=message.opensosenOrigin?['https://newapi.opensosen.com','https://newapi.opensosen.cn']:['https://pro.ccode.vip'];
                     // Test-only destination check; global.fetch below maps this exact synthetic
                     // service to loopback. There is no production env/route capability bypass.
-                    worker.createDownloadWorker=options=>production({...options,checkUrl:async url=>{if(url.origin!==origin)throw require('../../storage/download-errors').failure('DOWNLOAD_FORBIDDEN');}});
+                    worker.createDownloadWorker=options=>production({...options,checkUrl:async url=>{if(!origins.includes(url.origin))throw require('../../storage/download-errors').failure('DOWNLOAD_FORBIDDEN');}});
                 }
                 if (message.session) {
                     require('../../desktop-session').configureDesktopSession(message.session);
@@ -38,7 +38,7 @@ function runChild() {
                 if (message.opensosenOrigin) {
                     const destination=new URL(message.opensosenOrigin);assert.equal(destination.hostname,'127.0.0.1');
                     const originalFetch=global.fetch;
-                    global.fetch=(url,init)=>{const target=new URL(url);assert.equal(target.origin,'https://newapi.opensosen.com');return originalFetch(new URL(target.pathname+target.search,destination),init);};
+                    global.fetch=(url,init)=>{const target=new URL(url);assert.ok(['https://newapi.opensosen.com','https://newapi.opensosen.cn'].includes(target.origin));return originalFetch(new URL(target.pathname+target.search,destination),init);};
                 }
                 if (message.pluginRequestTimeoutMs !== undefined) {
                     assert.ok(Number.isInteger(message.pluginRequestTimeoutMs) && message.pluginRequestTimeoutMs>0 && message.pluginRequestTimeoutMs<=1000);

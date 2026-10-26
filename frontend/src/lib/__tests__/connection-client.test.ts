@@ -1,5 +1,5 @@
 import {afterEach,describe,expect,it,vi} from 'vitest';
-import {saveConnection,desktopTaskPayload,checkConnection,type ConnectionSummary} from '@/lib/connection-client';
+import {saveConnection,desktopTaskPayload,checkConnection,sameConnectionTransport,type ConnectionSummary} from '@/lib/connection-client';
 import {loadRegistry,saveRegistry} from '@/lib/nova-models';
 import {getPluginCredential,setPluginCredential} from '@/lib/plugin-registry-client';
 import {createNovaTask} from '@/lib/ccode-task-client';
@@ -38,4 +38,9 @@ describe('desktop credentials and connections',()=>{
     desktop();const calls:Array<{url:string;body:unknown}>=[];vi.stubGlobal('fetch',vi.fn(async(url,init)=>{calls.push({url:String(url),body:init?.body});return String(url).endsWith('/current')?Response.json({connection}):Response.json({stale:false,cached:false,connection:{...connection,validationState:'verified'},models:[{model:connection.defaultImageModel,visibility:'visible'}]});}));
     expect(await fetchUpstreamModels({apiKey:'never-http',baseUrl:'https://forged.invalid',protocol:'openai'})).toEqual([connection.defaultImageModel]);expect(calls[1].url).toBe('/api/nova/connections/fixture-connection/check');expect(JSON.parse(String(calls[1].body))).toEqual({connectionVersionId:connection.connectionVersionId,force:true});expect(JSON.stringify(calls)).not.toContain('never-http');await checkConnection(connection);expect(JSON.parse(String(calls[2].body)).connectionVersionId).toBe(connection.connectionVersionId);
   });
+});
+
+it('binds model checks and replies to the selected route revision without upgrading capability evidence',async()=>{
+  const current={...connection,routeSupported:true,route:'cn' as const,routeRevision:3};vi.stubGlobal('fetch',vi.fn(async()=>Response.json({})));await checkConnection(current,true,'startup');expect(JSON.parse(String(vi.mocked(fetch).mock.calls[0][1]?.body))).toEqual({connectionVersionId:connection.connectionVersionId,expectedRouteRevision:3,force:true,reason:'startup'});
+  const models={connectionVersionId:connection.connectionVersionId,modelsFetchedAt:null,models:[],capabilities:[],route:'cn' as const,routeRevision:3,transportEvidence:'generation_unverified' as const};expect(sameConnectionTransport(current,models)).toBe(true);expect(sameConnectionTransport(current,{...models,route:'com'})).toBe(false);expect(sameConnectionTransport(current,{...models,routeRevision:1})).toBe(false);expect(sameConnectionTransport(current,{...models,routeRevision:undefined})).toBe(false);expect(sameConnectionTransport(connection,{...models,routeRevision:undefined})).toBe(true);expect(sameConnectionTransport(current,{...models,connectionVersionId:'old'})).toBe(false);
 });

@@ -1,0 +1,21 @@
+✔ reference quote uses only the exact medium group and multiplies the changing base price (1.7372ms)
+✔ zero is valid; missing, ambiguous or invalid medium group never falls back to another group or a range (0.3552ms)
+✔ unknown billing expressions remain data; exact model, quota, price and fixed expression must agree (0.2371ms)
+✔ first GET initializes and merges; elapsed time and repeated page reads never refresh the public source (84.5343ms)
+✔ actual model refresh updates price once, cached model reads do not, and price failure never changes model verification (71.7815ms)
+✔ initialization and concurrent model refresh share one in-flight public request (48.3795ms)
+✔ unchanged saved validation refreshes pricing without adding awaits after persistence; a new candidate initializes on its first GET (53.6793ms)
+✔ only exact built-in connections fetch public prices; custom hosts never fetch or read keys (45.7649ms)
+✔ route revision scopes reject late quotes and initialize again when switching back to the same origin (44.314ms)
+✔ changing the key/version isolates late callbacks and the next initialization from old caches (46.0013ms)
+✔ failed initialization is cached until explicit model refresh; it does not leak upstream errors or modify connection state (44.6381ms)
+✔ non-200, upstream failure, redirects, oversized/malformed data and stalled reads cannot become quotes (75.1579ms)
+✔ actual protected HTTP pricing GET is anonymous upstream and repeated local reads never refresh it (423.4563ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1046.2759

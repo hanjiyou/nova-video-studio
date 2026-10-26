@@ -16,9 +16,12 @@ const uuid=value=>typeof value==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}
 const read=value=>{try{const parsed=JSON.parse(value);return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};}catch{return {};}};
 function safePoint(value={}){
  const point={};
+ if(['cn','com'].includes(value.route))point.route=value.route;
+ if(integer(value.routeRevision)!==null&&value.routeRevision>0)point.routeRevision=value.routeRevision;
+ if(['newapi.opensosen.cn','newapi.opensosen.com'].includes(value.targetHost))point.targetHost=value.targetHost;
  if(['invalid_json','missing_task_id','invalid_task_id','no_result','unexpected_schema'].includes(value.parseOutcome))point.parseOutcome=value.parseOutcome;
  if(CATEGORIES.has(value.errorCategory))point.errorCategory=value.errorCategory;
- if(['submit','poll','download'].includes(value.operation))point.operation=value.operation;
+ if(['models','submit','poll','download'].includes(value.operation))point.operation=value.operation;
  if(['direct','system','direct-first'].includes(value.networkMode))point.networkMode=value.networkMode;
  for(const key of ['elapsedMs','durationMs','redirectHop'])if(integer(value[key])!==null)point[key]=value[key];
  if(uuid(value.sessionId))point.sessionId=value.sessionId;if(POINTS.has(value.point))point.point=value.point;
@@ -84,7 +87,8 @@ function createDiagnosticTimeline({db,now=Date.now}){
 function safeDownloadAttempt(row,number,lifecycleVersion){
  const value=read(row.progress_json),progress={};
  for(const key of ['fileIndex','fileCount','receivedBytes','totalBytes','overallReceivedBytes','overallTotalBytes','reusedBytes','completedBytes','savedFileCount','elapsedMs','transferNumber','stallCount'])progress[key]=integer(value[key]);
- return {attemptId:uuid(row.id),attemptNumber:number,retryCount:Math.max(0,number-(lifecycleVersion===2?1:0)),queuedAt:validDate(row.queued_at),startedAt:validDate(row.started_at),deadlineAt:validDate(row.deadline_at),finishedAt:validDate(row.finished_at),timeoutSeconds:integer(row.timeout_seconds),budgetSource:lifecycleVersion===2?'independent_download':'historical_download_attempt',outcome:OUTCOMES.has(row.outcome)?row.outcome:null,reason:REASONS.has(row.error_code)?row.error_code:null,httpStatus:Number.isInteger(row.http_status)&&row.http_status>=100&&row.http_status<=599?row.http_status:null,phase:['waiting','refreshing','downloading','validating','saving','completed','failed','cancelled'].includes(value.phase)?value.phase:null,lastByteAt:validDate(value.lastByteAt),lastStalledAt:validDate(value.lastStalledAt),bytesPerSecond:row.outcome?0:integer(value.bytesPerSecond),stalled:!row.outcome&&value.stalled===true,...progress};
+ const transportRoute=read(row.transport_route_json);
+ return {transportRoute:['cn','com'].includes(transportRoute.route)&&integer(transportRoute.revision)>0?{route:transportRoute.route,revision:transportRoute.revision}:null,attemptId:uuid(row.id),attemptNumber:number,retryCount:Math.max(0,number-(lifecycleVersion===2?1:0)),queuedAt:validDate(row.queued_at),startedAt:validDate(row.started_at),deadlineAt:validDate(row.deadline_at),finishedAt:validDate(row.finished_at),timeoutSeconds:integer(row.timeout_seconds),budgetSource:lifecycleVersion===2?'independent_download':'historical_download_attempt',outcome:OUTCOMES.has(row.outcome)?row.outcome:null,reason:REASONS.has(row.error_code)?row.error_code:null,httpStatus:Number.isInteger(row.http_status)&&row.http_status>=100&&row.http_status<=599?row.http_status:null,phase:['waiting','refreshing','downloading','validating','saving','completed','failed','cancelled'].includes(value.phase)?value.phase:null,lastByteAt:validDate(value.lastByteAt),lastStalledAt:validDate(value.lastStalledAt),bytesPerSecond:row.outcome?0:integer(value.bytesPerSecond),stalled:!row.outcome&&value.stalled===true,...progress};
 }
 function timelineFor(db,task,at){
  const rows=db.prepare("SELECT type,payload_json,created_at FROM task_events WHERE task_id=? AND type IN ('execution_diagnostic','execution_summary_generation','execution_summary_download') ORDER BY id").all(task.id);

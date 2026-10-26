@@ -1,0 +1,98 @@
+{
+  "date": "2026-10-26",
+  "stage": "medium_reference",
+  "status": "main_review_passed_source_and_scoped_validation",
+  "sourceHead": "4c62dacb4c0dae41c36cec58d1ff88474a8df130",
+  "sourceFilesSha256": {
+    "backend/connections/image-pricing.js": "0162ec32f0e15ad209ed9a691148841e0eb44918d4abe689c0e5e097dd4e093e",
+    "backend/connections/service.js": "9e9667cb1b7ee3748fec198b9f8b9be09e2997378d1653105be108fbb51db9b4",
+    "backend/connections/http.js": "0a62e2784078f69d2682f325fb23849859631556626ed37387babf9ba186b41d",
+    "backend/test/workbench-image-pricing.test.js": "910f4e1cfb136619605000028b7af7be9eecbdb8726cc0fe0c6b51fddf33d77e",
+    "backend/test/workbench-connections.test.js": "aacffbb0669864ed7a2dd8251484a8c2327671b9081115a80cf62fbf3d7e3c7c",
+    "backend/test/workbench-routes.test.js": "3e5bc1a3e8651ca55e05f56773d1f7a3031887c5c1ebb2f7f144bb743d975f52",
+    "frontend/src/lib/connection-client.ts": "d02ddffb632db5e3d313976260d9e1bd48293894e0878219fe2bd3a5cdb28810",
+    "frontend/src/components/workbench/ImagePrice.tsx": "ecab14da60d3ad3753419a455733a8427ebe62438d77d568a52d3921d0f0fe9b",
+    "frontend/src/components/workbench/DraftEditor.tsx": "7b15c62f4436daeadf6d3141e33cfc78cb2030f4d57a33c34da71a5ae39f3cc6",
+    "frontend/src/components/workbench/__tests__/image-pricing.test.tsx": "4a9f368000eb711eebc3739de914937a67faa4b67e84aad2000730ceb7202e08",
+    "frontend/src/components/workbench/__tests__/model-catalog.test.tsx": "e7ef0999059443238eabe7fe634be8e010b2ff95a0b22458f9076ef0d24e8c93"
+  },
+  "referenceGroup": "【生图分组】Image2原生-中质量",
+  "formula": "model_price * group_ratio[exact_reference_group]",
+  "currencyConversion": false,
+  "cache": {
+    "scope": [
+      "connectionVersionId",
+      "route",
+      "revision"
+    ],
+    "maxEntries": 64,
+    "ttl": null,
+    "initializesOnFirstRead": true,
+    "refreshOnActualModelProbe": true,
+    "mergeInFlight": true,
+    "failedRefreshClearsOldPrice": true
+  },
+  "firstBackend": {
+    "tests": 13,
+    "passed": 13,
+    "failed": 0,
+    "log": "image-reference-backend-first.log"
+  },
+  "firstFrontend": {
+    "tests": 9,
+    "passed": 9,
+    "failed": 0,
+    "log": "image-reference-frontend-first.log"
+  },
+  "finalBackend": {
+    "tests": 76,
+    "passed": 74,
+    "failed": 2,
+    "skipped": 0,
+    "log": "image-reference-backend-final.log",
+    "historicalBaseline": "docs/implementation/d01-d03-evidence/verification-summary.json",
+    "failureBaselineLines": [
+      20,
+      23
+    ]
+  },
+  "finalFrontend": {
+    "files": 7,
+    "tests": 60,
+    "passed": 60,
+    "failed": 0,
+    "log": "image-reference-frontend-final.log"
+  },
+  "typescript": {
+    "exitCode": 0,
+    "log": "image-reference-typescript-final.log"
+  },
+  "diffCheck": {
+    "exitCode": 0
+  },
+  "mainSessionPublicCheck": {
+    "route": "cn",
+    "anonymous": true,
+    "generation": false,
+    "model": "gpt-image-2.5-flare",
+    "group": "【生图分组】Image2原生-中质量",
+    "estimate": {
+      "perImage": 0.12
+    },
+    "reason": null,
+    "cached": false
+  },
+  "priorStageEvidence": "image-pricing-range-verification.json",
+  "developerTestScope": "synthetic data, temporary database, fake keys and loopback HTTP only",
+  "notPerformed": [
+    "real generation",
+    "authenticated upstream query",
+    "billing acceptance",
+    "installed UI acceptance",
+    "commit",
+    "push",
+    "package",
+    "publish"
+  ],
+  "mainReview": "主会话审核精确中质量解析、匿名请求边界、有界缓存和实际刷新、并发合并、连接版本/线路修订迟到保护、保存验证原子性及前端原位展示；核对11个文件指纹一致。专用13/13、扩展前端60/60及完整TS通过；后端扩展74/76的两条失败逐名对应既有基线，未宣称全量通过。匿名生产模块cn实测返回0.12/张；未做真实生成、计费或安装态UI验收。"
+}

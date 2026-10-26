@@ -40,6 +40,7 @@ export async function importReference(file: File): Promise<AssetSummary> {
 }
 export const PRESET_MODELS = ['gpt-image-2.5-flare', 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s'] as const;
 export const OPENSOSEN_BASE = 'https://newapi.opensosen.com/v1';
+export const OPENSOSEN_ROUTE_BASES: Record<import('./connection-client').TransportRoute, string> = { cn: 'https://newapi.opensosen.cn/v1', com: OPENSOSEN_BASE };
 export function validateBaseUrl(value: string): { canonical?: string; error?: string } {
   try {
     const url = new URL(value.trim());
@@ -77,6 +78,7 @@ export function connectionBanner(connection: import('./connection-client').Conne
 export function localErrorMessage(error: unknown) {
   const code = error instanceof Error ? error.message : 'LOCAL_SERVICE_FAILED';
   const messages: Record<string, string> = {
+    CONNECTION_ROUTE_CONFLICT: '访问线路已在其他操作中更新。请重新读取线路与版本；本次输入仍保留。', TRANSPORT_ROUTE_INVALID: '访问线路或线路版本无效，请重新读取设置。',
     CONNECTION_VERSION_CONFLICT: '连接已在其他操作中更新，请重新读取设置。', CONNECTION_URL_INVALID: '接口基础地址无效。',
     CREDENTIAL_REQUIRED: '请填写 API Key；修改服务地址后也需要重新填写。', CREDENTIAL_UNAVAILABLE: '系统无法解密凭据，请重新填写 API Key。',
     CREDENTIAL_PROTECTION_UNAVAILABLE: 'Windows 系统保护暂不可用，未保存凭据。', CREDENTIAL_ENCRYPTION_FAILED: '凭据加密失败，未保存配置。',

@@ -1,4 +1,5 @@
 'use strict';
+const routing = require('../connections/route-policy');
 const { modelRejected } = require('../connections/model-catalog');
 const { resolveTemplate } = require('../plugin-runtime/template');
 const { pickFirstString, extractProgress, normalizeResult } = require('../plugin-runtime/extract');
@@ -13,7 +14,7 @@ function credentialFree(value, key) {
 function contextFor(plugin, task, auth, getAsset) {
     const request = JSON.parse(task.request_json), snapshot = JSON.parse(task.input_snapshot_json || '{}');
     const context = executor.buildContext({ ...request, ...auth, plugin, upstreamTaskId: task.upstream_task_id });
-    context.provider=auth.provider; context.protocol=auth.protocol;
+    context.provider=auth.provider; context.protocol=auth.protocol;context.transportRoute=auth.transportRoute;
     if (snapshot.mode && snapshot.mode !== 'legacy.plugin') Object.assign(context, { mode: snapshot.mode, parameters: snapshot.parameters, fields: { prompt: snapshot.prompt },
         model: snapshot.model, inputAssets: (snapshot.inputAssets || []).map(item => ({ ...item, mimeType: getAsset?.(item.assetId)?.mimeType })) });
     return context;
@@ -43,7 +44,8 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
         if (new URL(url).origin !== new URL(context.baseUrl).origin || containsCredential(url, context.apiKey)) throw failure('ADAPTER_UNAVAILABLE');
         if (polling && (request.body !== undefined || request.parts !== undefined || request.json !== undefined)) throw failure('ADAPTER_UNAVAILABLE');
         const init = buildRequestInit({ ...request, method: polling ? 'GET' : 'POST' }, context, readAsset);
-        return { url, init };
+        const transport=plugin.id==='opensosen-video'?routing.resolveRequest(context,{url,method:init.method},polling?'poll':'submit',context.transportRoute):{url};
+        return { ...transport, init };
     }
     async function send(context, polling) {
         context.checkpoint?.();
@@ -57,7 +59,7 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
         if (context.signal?.aborted) controller.abort();
         try {
             if (!polling) context.phase?.('submitting');
-            const requestStarted=performance.now(); context.diagnostic?.('request_started',{operation:polling?'poll':'submit'});
+            const requestStarted=performance.now(); context.diagnostic?.('request_started',{operation:polling?'poll':'submit',...routing.diagnostic(request)});
             const response = await fetch(request.url, { ...request.init, signal: controller.signal });
             if(polling)context.diagnostic?.('query_response',{operation:'poll',httpStatus:response.status,durationMs:Math.round(performance.now()-requestStarted)});
             if (!polling) { context.phase?.('receiving'); context.diagnostic?.('response_headers',{httpStatus:response.status}); }

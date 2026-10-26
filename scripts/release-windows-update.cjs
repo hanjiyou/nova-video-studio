@@ -106,7 +106,7 @@ async function remoteHash(assetId, token, network) {
 }
 async function checkedHash(asset, expected, report, id, hashAsset, cache) {
   // Missing immutable metadata disables reuse. Cache lives only in this delivery invocation.
-  const key = asset.id && asset.updated_at && asset.digest ? JSON.stringify([REPO, id, report.source.commit, report.tag, asset.id, asset.name, asset.size, asset.state, asset.updated_at, asset.digest, expected.sha512]) : null;
+  const key = asset.id && asset.updated_at && asset.digest ? JSON.stringify([REPO, String(id), report.source.commit, report.tag, asset.id, asset.name, asset.size, asset.state, asset.updated_at, asset.digest, expected.sha512]) : null;
   if (key && cache?.has(key)) return cache.get(key);
   const actual = await hashAsset(asset.id);
   need(actual.size === expected.size && actual.sha512 === expected.sha512, 'Remote asset bytes differ from the locally validated/signed artifacts.');

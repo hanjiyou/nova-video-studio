@@ -7,6 +7,11 @@ import { unverifiedImageCapability } from './image-policy';
 export const generationEvidenceVerified = (capability?: CapabilitySummary) => capability?.evidenceLevel === 'historically_verified' || capability?.evidenceLevel === 'application_verified' && capability.evidence.applicationVerified === true && Array.isArray(capability.evidence.sourceIds) && capability.evidence.sourceIds.length > 0;
 export const TASK_LABELS: Record<string, string> = { local_queued: '等待处理', submitting: '提交中', submission_unknown: '提交结果待核对', remote_queued: '远端排队', generating: '生成中', polling_paused: '查询已暂停', remote_completed: '等待下载', downloading: '下载中', download_failed: '下载失败', completed: '已保存到本机', failed: '失败', local_cancelled: '已取消本地等待', remote_cancelled: '远端已取消', timed_out: '超时失败' };
 export const terminalTask = (status: string) => ['completed', 'failed', 'download_failed', 'local_cancelled', 'remote_cancelled', 'timed_out'].includes(status);
+export interface GenerationIssue {
+  code: string;
+  message: string;
+  action?: 'configure' | 'model' | 'prompt' | 'add-references' | 'review-references' | 'duration' | 'parameters';
+}
 export function generationPlan(draft: Draft, connection: ConnectionSummary | null, models: ConnectionModels | null) {
   const image = draft.mode === 'image.text';
   const model = draft.model || (image ? connection?.defaultImageModel : connection?.defaultVideoModel) || (image ? 'gpt-image-2.5-flare' : 'grok-imagine-video-1.5-6s');
@@ -24,17 +29,35 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const qualities = imageControls ? imageControls.parameters.qualities as string[] : [];
   const parameters: Record<string, unknown> = image ? { ...draft.parameters } : Object.keys(draft.parameters).length ? { ...draft.parameters } : rule && videoConfiguration ? videoDefaults(model,rule,models) : { seconds: capability?.parameters.seconds ?? 6, ...(typeof capability?.parameters.size === 'string' ? { size: capability.parameters.size } : draft.mode === 'video.text' ? {} : { size: '1280x720' }) };
   const expectedCount = draft.mode === 'video.text' ? 0 : draft.mode === 'video.dual_reference' ? 2 : 1;
-  let blocked = !connection?.hasCredential || connection.credentialState !== 'ready' ? '请先配置可用的连接凭据。' : '';
-  if (!blocked && models?.modelsFetchedAt && models.models.find(item => item.model === model)?.visibility !== 'visible' && !models?.models.find(item=>item.model===model)?.custom) blocked = '该完整型号不在当前模型列表中，请明确选择型号或刷新列表。';
-  if (!blocked && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled)) blocked = '当前完整模型、模式与规格尚未取得成功协议证据，暂不开放提交。';
-  if (!blocked && !draft.prompt.trim()) blocked = '请填写提示词。';
-  if (!blocked && !image && (mode === 'video.multi_reference' ? draft.inputAssets.length < 3 || draft.inputAssets.length > MAX_VIDEO_REFERENCE_ASSETS : draft.inputAssets.length !== expectedCount)) blocked = draft.mode === 'video.dual_reference' ? `当前模式需要 2 张及以上参考图，应用最多 ${MAX_VIDEO_REFERENCE_ASSETS} 张。服务实际支持数量待确认。` : `当前模式需要 ${expectedCount} 张参考图。`;
-  if (!blocked && image && draft.inputAssets.length > 1) blocked = '图片编辑每次使用 1 张参考图；已保留全部引用，请明确移除多余图片。';
-  if (!blocked && draft.inputAssets.some(asset => asset.availability !== 'available')) blocked = '参考图缺失或损坏，请移除后重新导入。';
-  if (!blocked && image && (Object.keys(parameters).some(key => !['size', 'quality'].includes(key)) || parameters.size !== undefined && !sizes.includes(String(parameters.size)) || parameters.quality !== undefined && !qualities.includes(String(parameters.quality)))) blocked = '草稿保留了当前能力未确认的图片规格，请核对后明确调整。';
-  if (!blocked && !image && rule && videoConfiguration && !validVideoParameters(rule,parameters)) blocked = `请输入 ${rule.minSeconds}～${rule.maxSeconds} 的整数秒，并核对画面尺寸。`;
-  if (!blocked && !image && !videoConfiguration && (parameters.seconds !== capability?.parameters.seconds || parameters.size !== capability?.parameters.size || Object.keys(parameters).some(key => !(typeof capability?.parameters.size === 'string' ? ['seconds','size'] : ['seconds']).includes(key)))) blocked = '历史规格与当前能力不一致，未自动修改，请核对草稿。';
-  return { image, model, mode, capability, rule, videoConfiguration, unverifiedMulti, unverifiedImage, sizes, qualities, parameters: parameters as WorkbenchTaskInput['parameters'], blocked };
+  const issues: GenerationIssue[] = [];
+  const add = (code: string, message: string, action?: GenerationIssue['action']) => issues.push({ code, message, ...(action ? { action } : {}) });
+  const connectionReady = Boolean(connection?.hasCredential && connection.credentialState === 'ready');
+  if (!connectionReady) add('connection', '请先配置可用的连接凭据。', 'configure');
+  if (connectionReady && models?.modelsFetchedAt && models.models.find(item => item.model === model)?.visibility !== 'visible' && !models.models.find(item => item.model === model)?.custom)
+    add('model-unavailable', '该完整型号不在当前模型列表中，请明确选择型号或刷新列表。', 'model');
+  if (connectionReady && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled))
+    add('capability', '当前完整模型、模式与规格尚未取得成功协议证据，暂不开放提交。', 'model');
+  if (!draft.prompt.trim()) add('prompt', '请填写提示词。', 'prompt');
+  const count = draft.inputAssets.length;
+  if (!image) {
+    if (draft.mode === 'video.dual_reference' && count < 2)
+      add('references-missing', '当前模式至少需要 2 张参考图，还需添加 ' + (2 - count) + ' 张（最多 ' + MAX_VIDEO_REFERENCE_ASSETS + ' 张）。', 'add-references');
+    else if (draft.mode === 'video.dual_reference' && count > MAX_VIDEO_REFERENCE_ASSETS)
+      add('references-excess', '当前模式需要 2 张及以上参考图，应用最多 ' + MAX_VIDEO_REFERENCE_ASSETS + ' 张；请明确移除多余图片。', 'review-references');
+    else if (draft.mode !== 'video.dual_reference' && count !== expectedCount)
+      add(count < expectedCount ? 'references-missing' : 'references-excess', '当前模式需要 ' + expectedCount + ' 张参考图。' + (count < expectedCount ? '还需添加 ' + (expectedCount - count) + ' 张。' : '请明确移除多余图片。'), count < expectedCount ? 'add-references' : 'review-references');
+  } else if (count > 1) add('references-excess', '图片编辑每次使用 1 张参考图；已保留全部引用，请明确移除多余图片。', 'review-references');
+  if (draft.inputAssets.some(asset => asset.availability !== 'available'))
+    add('references-unavailable', '参考图缺失或损坏，请移除后重新导入。', 'review-references');
+  if (image && imageControls && (Object.keys(parameters).some(key => !['size', 'quality'].includes(key)) || parameters.size !== undefined && !sizes.includes(String(parameters.size)) || parameters.quality !== undefined && !qualities.includes(String(parameters.quality))))
+    add('image-parameters', '草稿保留了当前能力未确认的图片规格，请核对后明确调整。', 'parameters');
+  // Without a matching capability, report that missing evidence rather than inventing parameter errors.
+  if (!image && rule && videoConfiguration && !validVideoParameters(rule, parameters))
+    add('video-parameters', '请输入 ' + rule.minSeconds + '～' + rule.maxSeconds + ' 的整数秒，并核对画面尺寸。', !Number.isInteger(parameters.seconds) || Number(parameters.seconds) < rule.minSeconds || Number(parameters.seconds) > rule.maxSeconds ? 'duration' : 'parameters');
+  if (!image && capability && !videoConfiguration && (parameters.seconds !== capability.parameters.seconds || parameters.size !== capability.parameters.size || Object.keys(parameters).some(key => !(typeof capability.parameters.size === 'string' ? ['seconds', 'size'] : ['seconds']).includes(key))))
+    add('historical-parameters', '历史规格与当前能力不一致，未自动修改，请核对草稿。', 'parameters');
+  const blocked = issues[0]?.message || '';
+  return { image, model, mode, capability, rule, videoConfiguration, unverifiedMulti, unverifiedImage, sizes, qualities, parameters: parameters as WorkbenchTaskInput['parameters'], issues, blocked };
 }
 export function reusableDraft(task: HistoryTask): Pick<Draft, 'model' | 'prompt' | 'parameters' | 'inputAssets'> {
   return { model: task.model, prompt: task.prompt, parameters: { ...task.parameters }, inputAssets: [...(task.inputAssets || [])] };

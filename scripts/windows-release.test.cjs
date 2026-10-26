@@ -76,9 +76,14 @@ test('upload resumes a partial draft, checks existing bytes first and only adds 
   const uploads = f.calls.filter(c => c.method === 'POST'); assert.equal(uploads.length, 2);
   assert.ok(uploads.every(c => c.url.includes('uploads.github.com'))); assert.equal(f.state.published, false);
 });
-test('existing wrong draft bytes block all uploads and are never replaced', async t => {
-  const f = fixture(t); f.state.assets = [f.assets[0]]; f.deps.remote.hashAsset = async () => ({ size: f.assets[0].size, sha512: 'wrong' });
+test('existing wrong draft bytes block all uploads and are never cached or replaced', async t => {
+  const f = fixture(t); f.state.assets = [f.assets[0]];
+  Object.assign(f.assets[0], { updated_at: '2026-10-25T00:00:00Z', digest: 'sha256:fixture1' });
+  f.deps.verificationCache = new Map(); let hashes = 0;
+  f.deps.remote.hashAsset = async () => { hashes++; return { size: f.assets[0].size, sha512: 'wrong' }; };
   await assert.rejects(release.run({ ...f.options, phase: 'upload' }, f.deps), /Remote asset bytes differ/);
+  await assert.rejects(release.run({ ...f.options, phase: 'upload' }, f.deps), /Remote asset bytes differ/);
+  assert.equal(hashes, 2); assert.equal(f.deps.verificationCache.size, 0);
   assert.equal(f.calls.some(c => c.method !== 'GET'), false);
 });
 test('same-version draft prevents new release creation even without tag', async t => {
@@ -162,22 +167,34 @@ test('incomplete upload is diagnosed before hashing or mutating anything', async
  await assert.rejects(release.run({...f.options,phase:'upload'},f.deps),/Incomplete draft asset/);
  assert.equal(f.calls.some(c=>c.method!=='GET'),false);
 });
-test('one invocation reuses byte verification only with unchanged live metadata', async t => {
+test('one delivery reuses numeric draft ID verification for string publish ID only with unchanged live metadata', async t => {
  const f=fixture(t); for (const a of f.assets) { a.updated_at='2026-10-25T00:00:00Z'; a.digest='sha256:fixture'+a.id; }
+ f.state.assets=[];const notes=path.join(f.directory,'notes.txt');fs.writeFileSync(notes,'INERT release notes');
  f.deps.verificationCache=new Map(); let hashes=0;
  const original=f.deps.remote.hashAsset; f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
- await release.run({...f.options,phase:'upload'},f.deps); assert.equal(hashes,3);
- await release.run({...f.options,phase:'publish'},f.deps); assert.equal(hashes,3);
+ const uploaded=await release.run({...f.options,phase:'draft',notesFile:notes},f.deps);
+ assert.equal(uploaded.releaseId,42);assert.equal(hashes,3);assert.equal(f.state.published,false);
+ const beforePublish=f.calls.length;
+ const published=await release.run({...f.options,phase:'publish',releaseId:String(uploaded.releaseId)},f.deps);
+ assert.equal(published.published,true);assert.equal(hashes,3);
+ assert.ok(f.calls.slice(beforePublish).some(c=>c.method==='GET'&&c.url.endsWith('/releases/42')));
+ assert.ok(f.calls.slice(beforePublish).some(c=>c.method==='GET'&&c.url.includes('/assets?')));
+ assert.equal(f.calls.filter(c=>c.method==='PATCH').length,1);
  f.assets[0].updated_at='2026-10-25T01:00:00Z';
  await release.run(f.options,f.deps); assert.equal(hashes,4);
+ f.assets[0].digest='sha256:changed';
+ await release.run(f.options,f.deps); assert.equal(hashes,5);
  f.state.assets[0]={...f.assets[0],state:'starter'};
  await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/name\/state\/size/);
+ assert.equal(f.calls.filter(c=>c.method==='PATCH').length,1);
 });
 test('cache does not bypass source identity or carry across separate invocations', async t=>{
  const f=fixture(t); for(const a of f.assets){a.updated_at='now';a.digest='fixture'+a.id;}
  let hashes=0;const original=f.deps.remote.hashAsset;f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
  await release.run(f.options,f.deps);await release.run(f.options,f.deps);assert.equal(hashes,6);
- f.deps.verificationCache=new Map();await release.run(f.options,f.deps);f.state.target=OTHER;
+ f.deps.verificationCache=new Map();await release.run(f.options,f.deps);assert.equal(hashes,9);f.state.target=OTHER;
  await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/target commit/);
- assert.equal(f.state.published,false);
+ f.state.target=SHA;f.state.tag={object:{type:'commit',sha:OTHER}};
+ await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/Existing tag/);
+ assert.equal(hashes,9);assert.equal(f.state.published,false);assert.equal(f.calls.some(c=>c.method==='PATCH'),false);
 });

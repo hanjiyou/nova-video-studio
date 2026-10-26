@@ -1,5 +1,13 @@
 # B1 图片与视频适配接口 v1
 
+## 统一访问线路补充（2026-10-26）
+
+模型列表、flare图片生成/编辑、既有OpenSosen视频创建/查询和受管content下载复用单一后端路由策略；仅两个精确内置HTTPS源之间映射合法端点。保持原请求路径、编码任务ID、参数和不可变连接/能力身份，不把当前线路写回 `getAuth().baseUrl`。此前固定cn下载特例由所选cn/com替代。
+
+生成在任务创建时冻结 `transportRoute`；查询在每次请求前读取原任务所属连接当前线路，已发出请求不中断。原版本Key被清除仍暂停，不读取新版本Key；生成不自动重定向、切线回退或重复POST。CDN、签名URL和其他供应商不替换域名，认证仍按每跳精确目标判定。
+
+com身份和原能力ID可通过线路控件选择cn；不将com成功证据复制为cn真实证据，不扩展直接编辑cn基础地址的能力矩阵。models 的 `generation_unverified` / `see_capability_evidence` 与具体模式能力分别解释，后者不代表所有模式验证。Preview、未实测窄例外与原图/参数约束保持。见[后端记录](implementation/R01-R05-统一线路后端实施记录.md)及[第二批记录](implementation/R06-R08-统一线路界面与整体验收.md)；真实cn生成尚未执行。
+
 B2/T08当前已完成下载、完整媒体校验、目录版本、Range及系统文件动作的实现和离线/原生验证，基础范围已由主会话审核接受并明确批准提交推送，见[B2审核](implementation/b2-evidence/approval-review.json)；下文“待B2”保留为B1交付时的历史边界，当前行为见[B2媒体契约](b2-media-v1.md)。能力闸门与真实线路证据等级没有变化。
 
 日期：2026-10-23。B1=T06+T07 的离线实现基础范围及上游 ID 补修已由主会话复审通过，明确批准提交并推送 origin/dev，见[审核记录](implementation/b1-evidence/approval-review.json)。本页不将参考编辑或文生视频标为完整验收。61 项需求、17 个任务编号和 B2–B7 计划保持。

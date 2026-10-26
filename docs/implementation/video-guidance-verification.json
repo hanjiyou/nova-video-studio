@@ -1,0 +1,92 @@
+{
+  "date": "2026-10-26",
+  "scope": [
+    "V01",
+    "V02",
+    "V03"
+  ],
+  "status": "main_review_passed_source_and_scoped_validation",
+  "sourceHead": "4c62dacb4c0dae41c36cec58d1ff88474a8df130",
+  "sourceFilesSha256": {
+    "frontend/src/components/workbench/DraftEditor.tsx": "2315fae386ab9946709f76dcf6a7536e7fc20b5375b1b3959b73bbd5399a62b9",
+    "frontend/src/components/workbench/VideoDurationControl.tsx": "c280a4045088015e0c02bc95806ffa1a4058b046e3bf6bf9050783198b088f1c",
+    "frontend/src/components/workbench/WorkbenchShell.tsx": "83c18325b31f412ee45699885531b412e86ecf1fd82d0e8ac1224283323f42bb",
+    "frontend/src/lib/workbench-generation.ts": "2f51bf894c152aa4f44203388db50d4eadd22c6a911c94ba844446b87b916851",
+    "frontend/src/app/globals.css": "a63ce65362bfb84912382aeaf203c76aeafef7d5ef1079493b20682477ad4b00",
+    "frontend/src/components/workbench/__tests__/draft-guidance.test.tsx": "031b8020485990543045c093045a2f64b7d741e931c49e45429c6f36257bae19",
+    "frontend/src/components/workbench/__tests__/model-catalog.test.tsx": "53f4031a834e5320f42a12db5ebd955505b8e34125a3cb1978b75d5f29e2a970",
+    "scripts/verify-video-guidance-layout.cjs": "1a3315ce1e3eac6538a6133752455a2f9014d6647f0928281eca17314a408e06"
+  },
+  "firstTargeted": {
+    "files": 2,
+    "tests": 26,
+    "passed": 26,
+    "failed": 0,
+    "log": "video-guidance-frontend-first.log"
+  },
+  "firstBroad": {
+    "files": 13,
+    "tests": 126,
+    "passed": 125,
+    "failed": 1,
+    "log": "video-guidance-frontend-broad-first.log",
+    "regression": "Configuration navigation was incorrectly disabled during draft autosave; fixed in production code and covered by new test"
+  },
+  "fixTargeted": {
+    "files": 3,
+    "tests": 38,
+    "passed": 38,
+    "failed": 0,
+    "log": "video-guidance-frontend-fix.log"
+  },
+  "finalFrontend": {
+    "files": 13,
+    "tests": 128,
+    "passed": 128,
+    "failed": 0,
+    "skipped": 0,
+    "dedicatedTests": 21,
+    "log": "video-guidance-frontend-final.log",
+    "retainedWarnings": "Existing DownloadStatus / TaskDetails act warnings"
+  },
+  "typescript": {
+    "exitCode": 0,
+    "log": "video-guidance-typescript-final.log"
+  },
+  "diffCheck": {
+    "exitCode": 0
+  },
+  "visual": {
+    "status": "passed",
+    "method": "Actual DraftEditor SSR + current workbench CSS, synthetic props, headless Chrome local debugging pipe with isolated profile and network-blocking page CSP",
+    "viewports": [
+      720,
+      390
+    ],
+    "inputHeight": 44,
+    "buttonHeight": 44,
+    "rowAligned": true,
+    "horizontalOverflow": false,
+    "report": "video-guidance-visual/report.json",
+    "screenshots": [
+      "video-guidance-visual/wide.png",
+      "video-guidance-visual/narrow.png"
+    ],
+    "firstFailureLog": "video-guidance-visual-first.log",
+    "intermediateLog": "video-guidance-visual-intermediate.log",
+    "finalLog": "video-guidance-visual-final.log"
+  },
+  "notPerformed": [
+    "backend full suite",
+    "frontend full suite",
+    "full build",
+    "installed app acceptance",
+    "authenticated upstream request",
+    "real generation",
+    "commit",
+    "push",
+    "package",
+    "publish"
+  ],
+  "mainReview": "主会话已核对8个文件指纹、时长保存成功/失败与身份切换隔离、结构化条件与原提交门槛、导入/聚焦操作不自动生成、父级提交保护来源及样式；目检390px实际组件截图并核对720/390布局证据。128/128相关回归及完整TypeScript通过。首轮配置入口误禁用已修复并保留失败记录。不等同安装态验收或全量测试。"
+}

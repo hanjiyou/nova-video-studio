@@ -1,0 +1,834 @@
+✔ startup adds immutable application versions idempotently, preserving legacy rows and historical task bindings (179.168ms)
+✔ only exact provider scope upgrades and minimum image parameters remain strict; old unverified image ID stays blocked (121.7787ms)
+✖ normal production HTTP image entry succeeds without a controlled grant and still rejects legacy ID/edit/extra fields before dispatch (13392.0865ms)
+✔ legacy unverified capability stays denied with no explicit host grant (3.9651ms)
+✔ grant validates exact identifiers and rejects configuration through data alone (3.3561ms)
+✔ only exact candidate minimum image request matches; other models modes inputs and prompts stay denied (0.5114ms)
+✔ dispatch reservation immediately closes the grant and callback failures fail closed (0.3808ms)
+✔ revocation cannot be configured again (0.3042ms)
+✔ production validator uses the host grant without mutating evidence and rejects mismatch or exhausted budget (0.3919ms)
+✔ unverified text defaults to denial at both gates; renderer flags cannot authorize it (3.1855ms)
+✔ exact host permit rejects tuple, prompt, reference, parameter and budget mismatches (2.3266ms)
+✔ canonical adapter preflight and submit require host authority; one refused POST is never retried (54.2017ms)
+✔ desktop boundary fails closed for no-Origin clients, hostile sources, wrong host and revoked sessions (2.3276ms)
+✔ session injection requires the actual main frame and strips caller headers on all other requests (2.1869ms)
+✔ narrow IPC accepts only the main frame and opaque selections/asset IDs (45.1217ms)
+✔ data policy precedence and bounded loopback port selection (56.4455ms)
+✔ production network policy sends exactly one generation POST: accepted (92.9553ms)
+✔ production network policy sends exactly one generation POST: timeout (57.3632ms)
+✔ production network policy sends exactly one generation POST: after_accept (12.9758ms)
+✔ production network policy sends exactly one generation POST: mid_body (43.8344ms)
+✔ production network policy sends exactly one generation POST: http429 (7.3806ms)
+✔ production network policy sends exactly one generation POST: http503 (70.4495ms)
+✔ production network policy sends exactly one generation POST: redirect307 (15.895ms)
+✔ GET fallback is bounded, respects Retry-After and cancellation; internal redirects stay manual (5.1847ms)
+✔ system mode uses one configured transport and abortPending cancels in-flight creation (1.8124ms)
+✔ actual backend protects HTTP and WS including no-Origin clients and never retries rejected desktop stream POST (3085.5119ms)
+✖ server refresh authority, concurrent idempotency, remote model failure refresh and no retry after absence (6963.1819ms)
+✔ metadata/name classification never treats openai or a brand as media; exact overrides win (3.4383ms)
+✔ ten-minute boundary, deduplication, failures retain successful cache and back off (261.0231ms)
+✔ a successful absence preserves defaults and history then restores the same model (157.5346ms)
+✔ settings isolated on key changes, retained when only defaults change; late responses discarded (153.9279ms)
+✔ user custom models are explicit and cannot create protocol evidence; credentials cannot become model names (269.8225ms)
+✔ explicit auth rejection does not silently permit generation with cached models (106.7498ms)
+✔ model rejection forces one refresh within fresh TTL and throttles subsequent rejections (110.2967ms)
+✔ 6s configured policy serializes every mode without size, including 1 and 6 seconds; old evidence untouched (93.663ms)
+✔ preview accepts candidate dimensions and 1..15 seconds for serialization but stays gated even if listed (97.5243ms)
+✔ only exact structured model errors classify as unavailable (1.1376ms)
+✔ readers await rejection refresh even while the previous success cache is fresh (137.3409ms)
+✔ fresh success never masks a later auth failure or its thirty-second recovery check (111.5984ms)
+✔ malformed fresh lists preserve cache; only a valid empty list removes models (139.9235ms)
+✔ no-size candidate needs exact host grant; every other request keeps ordinary parameter rules (5.1561ms)
+✖ canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once (27.0818ms)
+✔ activity barrier admits only save/read during preparation and refuses commit until every operation settles (2.8832ms)
+✔ strict SQLite checkpoint/close refuses busy/failure/false proof (0.7938ms)
+✔ real HTTP active body blocks prepare; controlled draft PUT works, generation/import actions are locked, release resumes (3731.5894ms)
+✔ live POST blocks prepare and unknown records survive strict close without another POST (162.5048ms)
+✔ live POST blocks prepare and paused records survive strict close without another POST (130.6912ms)
+✔ active media save and only-memory signed result both refuse install without dropping retry data (146.8218ms)
+✔ text capability upgrades additively with no size guarantee, preserving old immutable text rows and task snapshots (167.9077ms)
+✖ normal authenticated production HTTP text entry uses new evidence without an experiment grant and sends only three scalars once (33609.8424ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✖ new package registers both exact models, with only fixed application controls and ordered references (4.2081ms)
+✔ production driver builds 1 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (62.157ms)
+✔ production driver builds 2 repeated file parts, then host FormData preserves raw PNG/JPEG bytes and prompt (3.5227ms)
+✔ grok-imagine-video-1.5-6s / video.text / 0 inputs rejects without guessing a protocol (0.8591ms)
+✔ grok-imagine-video-6s / video.text / 0 inputs rejects without guessing a protocol (0.1768ms)
+✔ grok-imagine-video-6s / video.single_reference / 1 inputs rejects without guessing a protocol (0.1468ms)
+✔ grok-imagine-video-6s / video.dual_reference / 2 inputs rejects without guessing a protocol (0.109ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 0 inputs rejects without guessing a protocol (0.1087ms)
+✔ grok-imagine-video-1.5-6s / video.single_reference / 2 inputs rejects without guessing a protocol (0.192ms)
+✔ grok-imagine-video-1.5-6s / video.dual_reference / 1 inputs rejects without guessing a protocol (0.2455ms)
+✔ grok-imagine-video-1.5-6s / video.text / 1 inputs rejects without guessing a protocol (0.1547ms)
+✔ driver rejects another service, unsupported size/seconds/extra fields and nonconsecutive input order (0.3406ms)
+✔ multipart host rejects paths, MIME spoofing, manual boundary and assets outside frozen input (0.7455ms)
+✔ safe accepted driver ID is exposed before a later parser or credential error; only one POST (5.2028ms)
+✔ new multipart POST 400 remains single attempt and has bounded safe rejection metadata (2.794ms)
+✔ new multipart POST 401 remains single attempt and has bounded safe rejection metadata (1.5673ms)
+✔ new multipart POST 403 remains single attempt and has bounded safe rejection metadata (1.0216ms)
+✔ new multipart POST 429 remains single attempt and has bounded safe rejection metadata (0.9546ms)
+✔ new multipart POST 503 remains single attempt and has bounded safe rejection metadata (0.8232ms)
+✔ driver GET encodes one opaque segment, keeps progress, normalizes only observed states and supplies stable authenticated content source (26.3586ms)
+✔ unknown video status is not invented as complete/failure; empty create ID is not accepted (0.7139ms)
+✔ flare candidate is a precise nonstream minimum and preserves prompt without extra size/quality fields (1.0149ms)
+✔ flare reference builds only the edit path, and production preflight remains gated by the selected capability (0.7574ms)
+✔ flare synthetic URL/base64 outputs normalize into temporary sources; empty, invalid and credential outputs reject (0.8873ms)
+✔ flare synthetic 503 and empty result use exactly one POST and no fallback model (1.6123ms)
+✔ canonical snapshot rejects mode/count mismatch and unknown request/path overrides (1.7089ms)
+✔ shared script executor supports host-only ordered multipart while old JSON remains unchanged (2.2109ms)
+✔ candidate flare deadline covers headers and stalled JSON body, with one POST and one body read (323.881ms)
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (13729.8257ms)
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (10418.5149ms)
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (315.1224ms)
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (10348.9237ms)
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (377.665ms)
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (358.7726ms)
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (10343.0656ms)
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (10404.6237ms)
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (10387.8655ms)
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (10375.0205ms)
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (10399.129ms)
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (432.404ms)
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (422.3007ms)
+✖ candidate validates read-only before any encrypted row; success saves check and resumable defaults atomically (258.7863ms)
+✔ 401,403,unsupported lists,invalid responses,offline and rate limits never persist candidate credentials/connections (903.2907ms)
+✔ explicit cancel/edit invalidation blocks late response even when transport ignores abort (100.4136ms)
+✔ newer candidate wins out-of-order responses; older candidate cannot create/switch connection (115.345ms)
+✔ saving or clearing while candidate checks invalidates it; old version auth and old task snapshots do not change (114.2255ms)
+✔ onboarding revision conflict and encryption failure roll back new connection and check rows (96.9339ms)
+✔ default completion is atomic with onboarding, keeps absent model and old versions, and checks selected directory (148.2483ms)
+✔ saved credential is read only inside host when checking unchanged configuration; check does not create new version (87.4823ms)
+✔ workspace page schema is narrow; unknown pages and sensitive setting fields rejected (122.4841ms)
+✔ startup error is visible and excludes raw exception details (1.3977ms)
+✔ failed recheck of unchanged saved profile updates health while preserving cached models and credential (102.4874ms)
+✔ invalid newer check also invalidates an older in-flight candidate (73.1839ms)
+✔ actual main entry catches top-level mkdir failure and reports visible startup error (5.5647ms)
+✔ candidate and save-later reject raw/twice-encoded credential echoes in non-secret fields before any request or persistence (89.3836ms)
+✔ clearing a profile invalidates pending candidate before it can re-add credentials (85.6873ms)
+✔ B4 same directory reselected preserves physical alias held by task-output (338.995ms)
+✔ B4 same directory reselected preserves physical alias held by task-input (179.8478ms)
+✔ B4 same directory reselected preserves physical alias held by draft (154.425ms)
+✔ B4 same directory reselected preserves physical alias held by download-candidate (205.6103ms)
+✔ B4 same directory reselected preserves physical alias held by submission-intent (154.9847ms)
+✔ B4 same directory reselected preserves physical alias held by legacy-link (199.4426ms)
+✔ B4 default plus explicit same directory preserves physical alias held by task-output (160.3149ms)
+✔ B4 default plus explicit same directory preserves physical alias held by task-input (150.0139ms)
+✔ B4 default plus explicit same directory preserves physical alias held by draft (157.823ms)
+✔ B4 default plus explicit same directory preserves physical alias held by download-candidate (203.4927ms)
+✔ B4 default plus explicit same directory preserves physical alias held by submission-intent (128.8132ms)
+✔ B4 default plus explicit same directory preserves physical alias held by legacy-link (130.4235ms)
+✔ B4 an alias used as the removed task input also protects the physical file (124.8989ms)
+✔ B4 unreferenced aliases of an exclusive generated file can be cleaned once (131.9472ms)
+✔ B4 identical bytes in a different physical directory do not block exclusive cleanup (141.598ms)
+✔ B4 history pagination/search/type/status use frozen snapshots and preserve over fifty records (328.032ms)
+✔ B4 default record removal preserves files, immutable deduplication and shared references (259.4226ms)
+✔ B4 explicit output cleanup rechecks every task/draft/input and never deletes imported source (157.4129ms)
+✔ B4 independent generated output can be explicitly removed; corrupt or failed deletion is never success (179.6184ms)
+✔ B4 pending download candidates also protect shared generated bytes (135.1147ms)
+✖ B4 active, ambiguous, paused and unfinished download records cannot be removed (134.399ms)
+✔ B4 prepared intention freezes output/version/order and attempt marker survives reopening without scheduling (135.3359ms)
+✔ B4 completed missing output retries only original download without another generation (140.7313ms)
+✖ B4 actual local HTTP: persisted intent + double create = one multipart POST; read/reuse/delete never create (7111.4886ms)
+✔ B5 diagnostics uses positive projection: no key, encoded key, ciphertext, prompt, path, URL, raw response or image bytes (275.4286ms)
+✔ B5 diagnostics includes hidden history and bounds large exports with accurate omissions (1108.3087ms)
+✔ B5 unexpected model/parameter/error/status strings become safe classifications rather than echoed text (145.0788ms)
+✔ B5 export writes a user selected JSON atomically and returns only counts, never target paths or content (159.393ms)
+✔ B5 export cancellation is normal and does not collect or write diagnostics (121.5071ms)
+✔ B5 export protects application data, custom output directories and existing managed bytes (133.0456ms)
+✔ B5 export rechecks target after collection, preserving a changed target and cleaning temporary file (95.0571ms)
+✔ B5 export serializes dialogs and fails safely for an unavailable save directory (78.8318ms)
+✔ B5 diagnostic IPC rejects hostile frames, all caller arguments and returns no arbitrary diagnostic read API (79.8078ms)
+✔ B5 a missing old output volume does not prevent exporting useful diagnostics elsewhere (94.62ms)
+✔ B5 selecting a volume root also protects its descendants despite its trailing separator (75.6577ms)
+✔ export includes persisted prior update observations after restart, with no private payload (103.7037ms)
+✖ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (3862.93ms)
+✖ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (10603.818ms)
+✔ actual image result URL containing the protected credential is rejected before any download or history disclosure (400.611ms)
+✔ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (426.2701ms)
+ℹ {"case":"fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (403.7114ms)
+ℹ {"case":"twice fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (392.9183ms)
+ℹ {"case":"fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (402.204ms)
+ℹ {"case":"twice fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (323.5793ms)
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (311.1065ms)
+✔ safeStorage vault persists ciphertext only; connection summary never exposes key/ciphertext/ref (271.351ms)
+✔ encryption unavailable/basic_text/encryption error fails closed without inserting plaintext or partial versions (104.5012ms)
+✔ changing address/key creates immutable versions; old auth and defaults never follow current configuration (105.8485ms)
+✔ a new destination requires explicit credential input; keeping a versioned credential at the same address is allowed (114.9283ms)
+✔ clear revokes every version of a connection while preserving versions/tasks/assets and other connections (112.3482ms)
+✔ decryption failure is explicit and recoverable by new version; no replacement fallback for old task auth (99.5091ms)
+✔ base URL normalization handles pasted endpoints and rejects embedded credentials/query/fragment/protocol tricks (0.7221ms)
+✔ read-only check uses only GET /models, no text-model requirement; caches visibility separately from capabilities (160.3465ms)
+✔ model absence preserves exact selected defaults; unknown visible IDs do not manufacture capabilities or upgrade evidence (125.7181ms)
+✔ historical capability evidence is source/model/mode/parameters scoped and immutable (141.7521ms)
+✔ in-flight model check is deduplicated and stale result cannot overwrite a new configuration (97.4238ms)
+✔ model check classifies HTTP 401 without exposing upstream errors or forwarding redirects (104.3964ms)
+✔ model check classifies HTTP 403 without exposing upstream errors or forwarding redirects (88.7478ms)
+✔ model check classifies HTTP 404 without exposing upstream errors or forwarding redirects (94.5176ms)
+✔ model check classifies HTTP 405 without exposing upstream errors or forwarding redirects (97.9193ms)
+✔ model check classifies HTTP 503 without exposing upstream errors or forwarding redirects (97.6657ms)
+✔ model check classifies HTTP 302 without exposing upstream errors or forwarding redirects (136.0976ms)
+✔ model response validation and network/decryption errors remain distinct without raw error leakage (96.6801ms)
+✔ credential IPC validates actual sender and exact argument shape before invoking the vault (74.6058ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ v3 additive upgrade preserves v2 history and creates a consistent pre-v3 backup exactly once (68.8504ms)
+✔ version-bound legacy plugin uses exact original host, one /v1 suffix and manual redirects for submit/poll (25.9397ms)
+✔ version-bound plugin cannot send credentials to another manifest-allowed origin or in an encoded URL (0.7855ms)
+✔ check cache expires and transient failure preserves prior model timestamps without claiming current availability (95.6604ms)
+✔ bound declarative and driver responses cannot echo credentials into task IDs, errors or result assets (3.5154ms)
+✔ known credential detection handles full/mixed/twice percent encoding and malformed neighbors while preserving unrelated errors (1.3826ms)
+✔ acceptance ledger covers exactly the 61 baseline IDs with owners and separate evidence channels (22.9522ms)
+✔ historical fixtures have provenance and synthetic replacements, not private raw media or live URLs (46.2769ms)
+✔ observed provider response types/envelopes stay distinct from a successful local asset (8.0203ms)
+✔ known rejected formats preserve the original error nesting without broad capability claims (3.7645ms)
+✔ text protocols and unobserved provider guarantees remain explicitly unverified (2.074ms)
+✔ selected cn maps only transport, accepts encoded ID segment and keeps source unchanged across retry (70.285ms)
+✔ mapped authorization is stripped on redirect to https://cdn.invalid/video (11.5621ms)
+✔ mapped authorization is stripped on redirect to https://newapi.opensosen.cn/v1/models (6.3594ms)
+✔ mapped authorization is stripped on redirect to https://newapi.opensosen.cn/v1/videos/another/content (7.9939ms)
+✔ mapped authorization is stripped on redirect to https://newapi.opensosen.com/v1/videos/original%2F%E4%B8%AD%E6%96%87/content (26.522ms)
+✔ mapped authorization is stripped on redirect to https://newapi.opensosen.cn/v1/videos/original%2F%E4%B8%AD%E6%96%87/content?x=1 (16.5525ms)
+✔ foreign or direct cn connection-auth source is still forbidden (3.7787ms)
+✔ no mapping for other service, media kind, scope or non-exact content URL (50.0638ms)
+✔ mapped failure never falls back to com or resubmits generation (3.8965ms)
+✔ selected com keeps old com content on com and maps approved cn identity back to com (23.6046ms)
+✔ one worker attempt freezes route across several files; next invocation reads new selection (23.7217ms)
+✔ D03 real byte sliding window, throttling, stall zero, file semantics and no stale timer (3.6035ms)
+✔ D03 trusted size only for matching payload encoding {"content-length":"4"} (46.5185ms)
+✔ D03 trusted size only for matching payload encoding {} (5.2614ms)
+✔ D03 trusted size only for matching payload encoding {"content-length":"2","content-encoding":"gzip"} (7.0819ms)
+✔ D03 invalid or incomplete declared length nonsense cannot publish (4.3565ms)
+✔ D03 invalid or incomplete declared length -4 cannot publish (15.1732ms)
+✔ D03 invalid or incomplete declared length 4.5 cannot publish (2.1541ms)
+✔ D03 invalid or incomplete declared length 5 cannot publish (6.4707ms)
+✔ D03 loopback two files share absolute budget; injected budget replaces old worker cap (608.0985ms)
+✔ D03 inline payload has no fabricated network speed or downloaded bytes (10.7284ms)
+✔ D03 disk write failure still counts the received block and never publishes (4.6789ms)
+✔ D09 refreshed list resets effective totals/reuse but keeps actual transferred network bytes (0.5854ms)
+✔ D09 unauthenticated CDN forbidden does not assert link expiry (9.9728ms)
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (13451.8152ms)
+✔ bundled full decoder verifies every image/video frame, dimensions, duration; JSON MP4 and truncated media fail (867.5954ms)
+✔ production queue only completes after actual decode and managed publication; read is offline and verified (422.125ms)
+✔ slow download does not serialize the second admitted download; unverified output is never bound (419.3668ms)
+✔ each redirect recomputes auth: CDN and redirect back never receive the original version Key (301.0268ms)
+✔ cross-origin auth scope, private redirects and encoded credential URL are rejected without leaking Key (93.3499ms)
+✔ actual production URL policy rejects private/downgrade redirects before a second transport call (90.4286ms)
+✔ cleared original version pauses download and never selects another connection; no transport call (121.1004ms)
+✔ JSON 伪 MP4 has explicit download_failed; retry is download only (280.5133ms)
+✔ 字节数短缺 has explicit download_failed; retry is download only (244.4376ms)
+✔ 断流 has explicit download_failed; retry is download only (207.6451ms)
+✔ 超预算 has explicit download_failed; retry is download only (488.3782ms)
+✔ signed synchronous URL is handed off only in memory; restart explains no-ID expiry without POST (121.2159ms)
+✔ same-session signed URL and inline PNG both reach verified local output without URL/base64 exposure (378.3972ms)
+✔ restart with ID refreshes signed result by original read-only ID and downloads; never creates again (234.9437ms)
+✔ expired URL refresh obeys long Retry-After and explicit retry never queries too early (106.5182ms)
+✔ missing/corrupt files preserve records; selected output roots freeze and default change does not retarget old intent (418.8209ms)
+✔ disappeared output root fails without creating a replacement or retargeting a saved task (119.0729ms)
+✔ asset binding/completed transaction failure rolls back outputs and retry only downloads (274.4271ms)
+✔ output-directory transaction failure leaves prior default and version count intact (77.131ms)
+✔ publication ENOSPC preserves explicit status and no completed output (260.6093ms)
+✔ publication EBUSY preserves explicit status and no completed output (202.602ms)
+✔ publication EACCES preserves explicit status and no completed output (203.9431ms)
+✔ publication ENAMETOOLONG preserves explicit status and no completed output (232.4282ms)
+✔ save copy uses only resolved asset and OS target, atomically overwrites confirmed file; cancel and reveal are separate (130.1499ms)
+✔ single byte ranges include suffix/open bounds and reject invalid/multi/unsatisfiable forms (1.0441ms)
+✔ v4 to v5 keeps referenced asset IDs, foreign keys, immutable old SQL and upgrade backup (187.2513ms)
+✔ download diagnostics show headers, full bytes, media verification and publication in order (283.7869ms)
+✔ download DNS failure preserves safe cause before normalization into download_failed (100.3901ms)
+✔ publication error ENOSPC is classified before file error normalization (198.4889ms)
+✔ publication error EBUSY is classified before file error normalization (193.7557ms)
+✔ publication error EPERM is classified before file error normalization (192.7213ms)
+✔ stream reset distinguishes body failure from response header delay (82.0256ms)
+✔ D04 request receipt replay after completion returns original attempt and never queues another (212.9726ms)
+✔ D04 multi-file failure reuses verified first file after restart, duplicate URLs retain output slots (329.3121ms)
+✔ D04 all checkpoints recover binding after restart without a retained signed URL (218.2119ms)
+✔ D05 final change broadcasts a terminal attempt and monotonic revision survives restart (209.7605ms)
+✔ D08 failed attempts expose bounded byte snapshots with whitelist and proxy uncertainty (302.4664ms)
+✔ D09 original ID refresh with identical URLs still receives a new result identity and never guesses checkpoint reuse (435.1715ms)
+✔ actual Web Gemini 400 preserves its upstream error and consumes the response body exactly once (3446.456ms)
+✔ actual Web Gemini 401 preserves its upstream error and consumes the response body exactly once (546.3474ms)
+✔ actual Web Gemini 403 preserves its upstream error and consumes the response body exactly once (448.9626ms)
+✔ actual Web Gemini 429 preserves its upstream error and consumes the response body exactly once (453.4615ms)
+✔ actual desktop image 400 reads once, retains safe rejection/auth classification and never repeats POST (699.6057ms)
+✔ actual desktop image 401 reads once, retains safe rejection/auth classification and never repeats POST (565.2958ms)
+✔ actual desktop image 403 reads once, retains safe rejection/auth classification and never repeats POST (709.2813ms)
+✔ actual desktop image 429 reads once, retains safe rejection/auth classification and never repeats POST (556.0449ms)
+✔ actual desktop JSON headers followed by a hanging body time out as submission_unknown without a second POST (680.8014ms)
+ℹ {"headersToBodyAbortMs":160,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+✔ actual desktop SSE headers followed by a hanging body time out as submission_unknown without a second POST (685.4429ms)
+ℹ {"headersToBodyAbortMs":162,"compressedRequestDeadlineMs":180,"upstreamPosts":1,"localState":"submission_unknown"}
+✔ actual Web Gemini headers followed by a hanging body retain the request deadline through parsing (531.8502ms)
+✔ I01 exact image/video classification and finite integer settings reject coercion and unknown fields (5.0971ms)
+✔ I01 taskExecution defaults are read-only, writes are revisioned, and invalid values never change persisted config (140.9075ms)
+✔ I01 v6 A-shaped WAL database upgrades with readable hashed backup, no rewrites, no network and no invented legacy budgets (257.0104ms)
+✔ I01 historical migrations 1-6 keep their exact released SQL checksums (0.3686ms)
+✔ I01 v7 DDL and history roll back atomically on failure with a usable pre-upgrade backup (125.6665ms)
+✔ I01 every new mode snapshots its own timeout without modifying immutable input or enabling dispatch (198.8928ms)
+✔ I01 dispatch sets one attempt/deadline from the creation snapshot after queue time; setting changes and replay preserve it (165.7314ms)
+✔ I01 service/history/list share lifecycle semantics, separate local timeout/cancel/download failure from unknown remote outcome and expose no source (166.6513ms)
+✔ D01 legacy writes preserve configured download budgets and revision; partial new schema is rejected (121.3895ms)
+✔ D01 v8 migration retains attempt rowid order, timestamps and original checksum history (121.1467ms)
+✔ I06 distinguishes slow headers and preserves unknown stages as null (171.7328ms)
+✔ I06 distinguishes slow body and preserves unknown stages as null (198.2196ms)
+✔ I06 distinguishes slow download and preserves unknown stages as null (119.4678ms)
+✔ I06 distinguishes slow save and preserves unknown stages as null (99.6533ms)
+✔ I06 inline and URL adapters expose headers, decoded body bytes and parsing without recording raw payloads (109.387ms)
+✔ I06 bounded polling summary does not consume phase timeline; overflow keeps early boundaries and terminal with complete durations (466.0828ms)
+✔ I06 collection and export whitelist reject malicious metadata and synthetic secrets, unknown legacy values remain null (117.3013ms)
+✔ I06 a manual download has an independent summary and never overwrites generation terminal or frozen timing (84.6024ms)
+✔ I06 service captures completed terminal without a new POST or raw errors (245.1194ms)
+✔ I06 service captures failed terminal without a new POST or raw errors (146.2622ms)
+✔ I06 service captures cancelled terminal without a new POST or raw errors (135.3842ms)
+✔ I06 service captures timed_out terminal without a new POST or raw errors (109.8388ms)
+✔ I06 wall-clock jump 3600000 never inflates or erases monotonic phase durations (88.2085ms)
+✔ I06 wall-clock jump -3600000 never inflates or erases monotonic phase durations (80.529ms)
+✔ I06 cross-restart unobserved phase gap and total are unknown, never inferred from wall timestamps (81.6653ms)
+✔ I06 a second explicit download attempt starts a known independent monotonic measurement (82.789ms)
+✔ extended lifecycle boundaries preserve session correlation, query timings and safe failures over restart (78.1886ms)
+✔ diagnostic database write failures do not change task control flow (0.6094ms)
+✔ no-context recovery overflow preserves full generation and independent download summaries (89.8515ms)
+✔ I05 image.text removes both task displays durably while keeping library, outputs, aliases and dedup identity (229.8756ms)
+✔ I05 video.text removes both task displays durably while keeping library, outputs, aliases and dedup identity (171.9042ms)
+✔ I05 legacy library hiding keeps its prior meaning and does not restore previously hidden records (109.1034ms)
+✔ I05 refuses active local_queued without hiding either task or works (108.2737ms)
+✔ I05 refuses active submitting without hiding either task or works (123.3289ms)
+✔ I05 refuses active polling_paused without hiding either task or works (111.0947ms)
+✔ I05 refuses active downloading without hiding either task or works (117.3974ms)
+✔ I05 cancelled/timeout/download failure can be removed, but active independent download requires cancellation confirmation (94.5492ms)
+✔ I05 HTTP action validates an empty body and keeps library DELETE distinct (111.9026ms)
+✔ D09 deleting one work cannot remove a file retained by another unfinished download checkpoint (165.6108ms)
+✔ I02 independent 3+1 admission, held image requests, cancellation refills and dedup stays one POST (305.0107ms)
+✔ I02 independent 3+1 admission, held video requests, cancellation refills and dedup stays one POST (274.9647ms)
+✔ I02 independent 3+1 admission, held both requests, cancellation refills and dedup stays one POST (301.9298ms)
+✔ I02 slow download reserves only its own media slot; all other image/video saves finish and fourth image refills (535.9491ms)
+✔ I02 lower limit drains existing work without interruption; raising limit wakes waiting work (204.5923ms)
+✔ I03 queue time does not consume frozen budget, and adapter receives committed attempt/deadline (133.1835ms)
+✔ I03 one deadline covers reference_upload and rejects a late result/save (112.8511ms)
+✔ I03 one deadline covers receiving and rejects a late result/save (103.4028ms)
+✔ I03 one deadline covers parsing and rejects a late result/save (102.4993ms)
+✔ I03 one deadline covers downloading and rejects a late result/save (107.9949ms)
+✔ I03 one deadline covers validating and rejects a late result/save (111.4871ms)
+✔ I03 one deadline covers saving and rejects a late result/save (101.9023ms)
+✔ I03 synchronous save crossing deadline rolls back binding and persists the timeout outside rollback (93.9818ms)
+✔ I03 cancel/complete race has one terminal winner and preserves another task sharing the physical output (157.2224ms)
+✔ I03 video GETs are independent and nonoverlapping; stopping queries retains original deadline and times out (304.6694ms)
+✔ I03 Retry-After and transient retry waits never reset the 300 second total deadline (146.1203ms)
+✔ I03 queued cancellation and cancellation during asynchronous preflight never POST (123.0628ms)
+✔ I04 legacy unknown image/video and paused ID end once, release slots, and old queued records require continue (151.8699ms)
+✔ I04 restart preserves same ID and remaining budget, requires explicit GET resume, and expiry is idempotent (124.9708ms)
+✔ I04 fresh signed result without ID is accurately unrecoverable; durable result resumes only with remaining budget (146.9872ms)
+✔ I03 manual download retry has its own immutable history/budget, never generates and preserves generation conclusion (116.6195ms)
+✔ I03 cleanup IO gate is bounded after repeated cancellations and update waits for actual late IO (186.9375ms)
+✔ I04 persisted expiry and backward wall-clock anomaly never grant a fresh budget (108.8141ms)
+✖ I04 migration v7 to v8 preserves released checksums and backs up before adding attempt history (90.5232ms)
+✔ I03 real loopback headers wait is aborted by total deadline, with zero external traffic (157.9233ms)
+✔ I03 real loopback body wait is aborted by total deadline, with zero external traffic (133.8465ms)
+✔ I02 three undispatched preflight pauses never reserve slots or block a valid task (138.7172ms)
+✔ I03 timer storage failure closes admission safely without uncaught exception or false timeout (83.3366ms)
+✔ I03 upload, response and save consume one cumulative budget without resetting each phase (124.6634ms)
+✔ I03 single-process elapsed time uses a monotonic clock even when wall time jumps forward (127.3636ms)
+✔ I03 abort during an uncancellable URL/DNS check never starts a late download fetch (90.3169ms)
+✔ I03 active download retry has a shared DTO contract and cancellation preserves original generation outcome (107.7317ms)
+✔ D02 video generated at 290s gets full 180s download; old timer cannot terminate new attempt (109.5099ms)
+✔ D02 waiting attempt freezes configuration but spends no budget; cancellation before runtime preserves result (133.625ms)
+✔ D02 image download timeout and late old progress cannot overwrite a successful manual retry (137.6148ms)
+✔ D02 generation expiry wins over late result and never registers first download (72.7774ms)
+✔ D02 v2 synchronous final binding crosses download deadline: rollback assets, preserve generation (136.1767ms)
+✔ D03 disk final snapshot includes a throttled second received block (108.1528ms)
+✔ D03 timeout final snapshot includes a throttled second received block (112.6494ms)
+✔ route save changes only revision, keeps identity/key, validates conflicts and preserves legacy requests (162.4984ms)
+✔ migration v10 to v11 clears old line checks but preserves versions, credentials, preferences and checksums (120.5579ms)
+✔ late route initialization clears old checks before the very first summary projection (200.2255ms)
+✔ resolver maps both approved aliases only after validating methods, exact origins and endpoints (2.0091ms)
+✔ models success/failure caches and in-flight responses cannot cross route revisions or switch back (131.5441ms)
+✔ candidate validation 200 is stale after external route revision, including failure writes (87.2995ms)
+✔ candidate validation 401 is stale after external route revision, including failure writes (81.7312ms)
+✔ candidate checks selected route; saving only route reuses key and version, and rejection refresh uses generation route (141.3883ms)
+✔ generation freezes at enqueue, duplicate after switch returns same task; poll uses current route and original credential version (210.4828ms)
+✔ queued download freezes attempt route and manual retry reads new route (154.295ms)
+✔ legacy queued snapshot stays immutable and acquires its first transport selection before dispatch (104.5163ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ production image text/reference and video POST/GET use selected target with original identity and no redirect POST replay (132.9036ms)
+✔ HTTP check accepts route revision and IPC saves it through the existing restricted boundary (149.113ms)
+✔ expired source refresh and next worker call keep the queued attempt route after switching connection (121.1623ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (3431.0104ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (858.1901ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (477.2922ms)
+✔ schema versions apply once, backup is independently readable, unchanged restart makes no new backup (120.1792ms)
+✔ upgrade preserves existing custom-app rows/status/TTL and consistent backup includes committed WAL data (163.1287ms)
+✔ failed multi-step upgrade rolls all DDL/data/history back and leaves consistent pre-upgrade backup (118.8144ms)
+✔ unknown/corrupted migration history fails closed without creating a new backup (88.2631ms)
+✔ existing unknown database schema is not cleared or overwritten on upgrade failure (67.9115ms)
+✔ native file import copies exact JPEG/PNG bytes and survives moving the selected source (129.538ms)
+✔ content-addressed assets reuse one identity and preserve original bytes and reference order (104.1593ms)
+✔ unknown object-file collisions are preserved and failed publication creates no asset row (90.1712ms)
+✔ missing media retains metadata, task associations and draft references (84.2121ms)
+✔ tampered media is rejected by digest without deleting metadata or content (86.4144ms)
+✔ asset IDs cannot resolve traversal paths even when a database path is corrupted (70.8654ms)
+✔ symlinked managed file cannot disclose a file outside the managed root (71.3991ms)
+✔ drafts are independent per mode, preserve Chinese/newlines and swap/remove only references (101.3339ms)
+✔ stale draft revisions and invalid asset lists roll back without partial writes (71.0371ms)
+✔ task snapshot and connection versions remain immutable when draft/current connection changes (64.8699ms)
+✔ failed/deleted task never deletes a shared input or another draft/task reference (81.2651ms)
+✔ settings and events are durable, ordered, revisioned, and reject credential/path fields (73.6764ms)
+✔ history pagination preserves more than fifty records and does not include raw request secrets/paths (190.8484ms)
+✔ desktop plugin media retention protects shared files during failure/TTL cleanup; Web policy remains explicit (265.392ms)
+✔ backup failure prevents every schema/data update and preserves the blocked destination (58.673ms)
+✔ unrelated existing SQLite file is rejected before schema or backup writes (61.5801ms)
+✔ batch file selection is transactional for metadata and never removes either selected source (87.6305ms)
+✔ current generated output route is backed by an asset ID and survives removing its compatibility file (100.4767ms)
+✔ import IPC accepts no renderer paths, rejects untrusted senders before dialog, and returns opaque assets (90.0469ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ desktop plugin POST 400 is single-attempt, with explicit rejection only for complete 4xx (48.8502ms)
+✔ desktop plugin POST 429 is single-attempt, with explicit rejection only for complete 4xx (3.0515ms)
+✔ desktop plugin POST 503 is single-attempt, with explicit rejection only for complete 4xx (1.4562ms)
+✔ usable task ID from an error HTTP response is retained rather than triggering another POST (2.3535ms)
+✔ poll only GETs an encoded opaque ID at the frozen origin and preserves raw unknown status without inventing failure (5.0607ms)
+✔ 401 response metadata survives JSON and never becomes a remote task failure (3.2526ms)
+✔ 401 response metadata survives HTML and never becomes a remote task failure (1.1798ms)
+✔ driver POST-style queries and attempts to leave the frozen origin are rejected before fetch (1.7755ms)
+✔ percent-encoded key echoes are rejected before IDs, unknown states or result URLs escape parsing (3.3112ms)
+✔ remote completed without usable candidates remains remote completed for the download boundary, never local completed (2.0907ms)
+✔ a safe accepted ID is persisted before a later credential-contaminated field is rejected (1.1205ms)
+✔ poll response timing is observable without exporting IDs, credentials, response body or URL (1.6378ms)
+✔ malformed successful POST is distinguished as invalid_json (0.9358ms)
+✔ malformed successful POST is distinguished as missing_task_id (2.93ms)
+✔ malformed successful POST is distinguished as invalid_task_id (0.5191ms)
+✔ structured model rejection without message is definite and observable (0.564ms)
+✔ structured model rejection without message is definite and observable (0.5281ms)
+✔ plugin usage error is not model disappearance and accepted IDs always win (1.1155ms)
+✔ actual desktop HTTP persists dispatch, deduplicates a lost ACK, survives forced exit with no ID, and never automatically POSTs the waiting queue (2294.9558ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP user-attached opaque ID survives restart and explicit resume uses its encoded path and original authorization (1065.9713ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual process exits after upstream ID persistence and during GET recover only the original GET, with immutable connection and conservative pause reservation (1859.942ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 401 pauses, preserves ID, blocks queued POST and does not become remote failure (998.243ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 429 with long Retry-After pauses, preserves ID, blocks queued POST and does not become remote failure (952.0526ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET unknown status pauses, preserves ID, blocks queued POST and does not become remote failure (915.5783ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ unavailable result remains download_failed after B2 worker, without remote URL exposure or repeated generation (1174.6357ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ enqueue commits snapshot and dispatch_started before exactly one POST; ID is committed before GET (138.7402ms)
+✔ localRequestId is durable, case-insensitive, object-key independent; replay after revoked credential returns original and changed snapshot conflicts (100.7665ms)
+✔ queued cancellation races preflight safely and never dispatches cancelled intent (94.122ms)
+✔ restart of never-dispatched queue requires explicit continue; cancel is available before dispatch (123.0543ms)
+✔ uncertain submit network never retries POST, retains bounded reservation, and restart releases unrecoverable local wait (117.7397ms)
+✔ uncertain submit 503 never retries POST, retains bounded reservation, and restart releases unrecoverable local wait (107.2745ms)
+✔ uncertain submit empty-id never retries POST, retains bounded reservation, and restart releases unrecoverable local wait (106.3327ms)
+✔ complete explicit POST rejection permits queue progress; POST 429 never follows Retry-After (83.4432ms)
+✔ restart after dispatch without recoverable ID ends local wait; an existing ID requires explicit GET resume (94.7031ms)
+✔ stop polling retains reservation, ignores late GET, survives restart, and resume uses original ID only (93.2291ms)
+✔ attach upstream ID requires an unknown task, validates opaque ID, persists it, and does no POST or GET until explicit resume (79.6007ms)
+✔ GET 401 pauses without treating remote as failed or releasing the reservation (111.3496ms)
+✔ GET 403 pauses without treating remote as failed or releasing the reservation (156.7973ms)
+✔ cleared original credential pauses before GET, retains ID/snapshot, and cannot silently select a new version (209.6225ms)
+✔ unrecognized remote state preserves safe raw status and pauses; no false failure/completion (132.6531ms)
+✔ GET transient retry count is bounded and persists across restarts; no POST retry (116.2365ms)
+✔ GET Retry-After beyond cap is never truncated, persists notBeforeAt, and rejects early resume (103.1761ms)
+✔ short Retry-After controls next GET and successful status clears failure budget (97.0976ms)
+✔ Retry-After numeric/date parsing and invalid values (0.6139ms)
+✔ remote completion keeps its media slot until verified save; admitted jobs never claim completed without verifier (101.2825ms)
+✔ inline output is a managed unverified candidate, never an exposed base64 result or local completion (97.6694ms)
+✔ query-bearing or credential-bearing candidate URL is not saved/exported; failure cannot generate again (78.3006ms)
+✔ download interruption recovers only the download queue, with no submit or poll (104.7289ms)
+✔ download worker failure remains retryable and never uses the generation slot or marks unverified bytes completed (118.6349ms)
+✔ schema v3 to current keeps historical SQL checksums, committed WAL rows and a consistent rollback backup (149.7025ms)
+✔ GET failure count limit pauses after five automatic retries even with a larger elapsed-time budget (103.5235ms)
+✔ dispatch persistence failure stops scheduling before any adapter POST and keeps the durable queued snapshot (81.6575ms)
+✔ an ID callback is persisted before later adapter parsing fails; only GET recovery remains available (100.5426ms)
+✔ complete POST authentication rejection is classified for reauthentication, never as a remote generation failure (96.1188ms)
+✔ review dot ID . stays unknown and unqueryable; normal ID recovery is explicit GET only (126.9166ms)
+✔ review dot ID .. stays unknown and unqueryable; normal ID recovery is explicit GET only (113.0854ms)
+✔ review legacy dot ID . ends local wait, retains original ID and never queries it (100.7533ms)
+✔ review legacy dot ID .. ends local wait, retains original ID and never queries it (123.8357ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ WHATWG normalizes literal and percent-encoded dot segments, so percent-encoding dots is not a safe workaround (1.4875ms)
+✔ pure dot ID . is rejected at helper, driver query/content, declarative query and shared executor before fetch (3.8644ms)
+✔ pure dot ID .. is rejected at helper, driver query/content, declarative query and shared executor before fetch (0.4835ms)
+✔ ordinary dotted, slash, percent and Chinese opaque IDs keep one exact query/content segment in script and declarative paths (49.8179ms)
+✔ declarative accepted dot ID . never escapes to onAccepted or immediate content normalization (1.6333ms)
+✔ declarative accepted dot ID .. never escapes to onAccepted or immediate content normalization (0.7137ms)
+ℹ tests 438
+ℹ suites 0
+ℹ pass 413
+ℹ fail 25
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 88629.8551
+
+✖ failing tests:
+
+test at test\capability-upgrade.test.js:9:1
+✖ normal production HTTP image entry succeeds without a controlled grant and still rejects legacy ID/edit/extra fields before dispatch (13392.0865ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'submission_unknown'
+  - 'completed'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\capability-upgrade.test.js:9:2226)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'submission_unknown',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\model-catalog-http.test.js:4:1
+✖ server refresh authority, concurrent idempotency, remote model failure refresh and no retry after absence (6963.1819ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'submission_unknown'
+  - 'failed'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\model-catalog-http.test.js:8:546)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'submission_unknown',
+    expected: 'failed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\t15-video-text-no-size.test.js:28:1
+✖ canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once (27.0818ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\t15-video-text-no-size.test.js:31:9)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'INPUT_INVALID' },
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at test\video-text-capability.test.js:21:1
+✖ normal authenticated production HTTP text entry uses new evidence without an experiment grant and sends only three scalars once (33609.8424ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'submission_unknown'
+  - 'completed'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\video-text-capability.test.js:27:242)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'submission_unknown',
+    expected: 'completed',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-adapters.test.js:22:1
+✖ new package registers both exact models, with only fixed application controls and ordered references (4.2081ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      'grok-imagine-video-6s',
+      'grok-imagine-video-1.5-6s',
+  -   'grok-imagine-video-1.5-preview'
+    ]
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-adapters.test.js:23:12)
+      at Test.runInAsyncScope (node:async_hooks:228:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.start (node:internal/test_runner/test:1015:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s' ],
+    expected: [ 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s', 'grok-imagine-video-1.5-preview' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (13729.8257ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:57:36)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (10418.5149ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:57:36)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:79:1
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (315.1224ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  202 !== 400
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:84:87)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 202,
+    expected: 400,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:95:1
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (10348.9237ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:98:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (377.665ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (358.7726ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (10343.0656ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:62)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (10404.6237ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:62)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (10387.8655ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:62)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (10375.0205ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:62)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:138:1
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (10399.129ms)
+  Error: B1 synthetic HTTP timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:10:143)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:139:46)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (432.404ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (422.3007ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b3.test.js:18:1
+✖ candidate validates read-only before any encrypted row; success saves check and resumable defaults atomically (258.7863ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'https://newapi.opensosen.cn/v1/models'
+  - 'https://newapi.opensosen.com/v1/models'
+                               ^
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b3.test.js:18:748)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'https://newapi.opensosen.cn/v1/models',
+    expected: 'https://newapi.opensosen.com/v1/models',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b4.test.js:15:2
+✖ B4 active, ambiguous, paused and unfinished download records cannot be removed (134.399ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4.test.js:15:290)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'TASK_ACTIVE' },
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at test\workbench-b4.test.js:18:1
+✖ B4 actual local HTTP: persisted intent + double create = one multipart POST; read/reuse/delete never create (7111.4886ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  0 !== 1
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4.test.js:18:2529)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:51:1
+✖ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (3862.93ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'submitting'
+  - 'local_queued'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:83:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'submitting',
+    expected: 'local_queued',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:119:1
+✖ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (10603.818ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:21:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:135:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)
+
+test at test\workbench-downloads-http.test.js:4:1
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (13451.8152ms)
+  Error: B2 HTTP timeout
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-downloads-http.test.js:18:266)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-downloads-http.test.js:22:276)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at test\workbench-lifecycle-runtime.test.js:107:1
+✖ I04 migration v7 to v8 preserves released checksums and backs up before adding attempt history (90.5232ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      8,
+      9,
+      10,
+  +   11
+    ]
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-runtime.test.js:108:423)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 8, 9, 10, 11 ],
+    expected: [ 8, 9, 10 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

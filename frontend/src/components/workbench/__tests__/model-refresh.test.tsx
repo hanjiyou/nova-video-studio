@@ -32,3 +32,11 @@ it('ignores late results after switching connections',async()=>{
   hook.rerender({selected:{...connection,connectionVersionId:'v2'},tasks:[]});
   await act(async()=>resolve(Response.json(result())));expect(accept).not.toHaveBeenCalled();
 });
+
+it('does not refresh a new route from an old route, connection version or unrecorded historical failure',async()=>{
+  const cn={...connection,routeSupported:true,route:'cn' as const,routeRevision:1},com={...cn,route:'com' as const,routeRevision:2};const failed={...task,connectionVersionId:'v1',transportRoute:{route:'cn' as const,revision:1}};
+  const fetch=vi.fn(async()=>Response.json({...result(),routeSupported:true,route:'cn',routeRevision:1}));vi.stubGlobal('fetch',fetch);const accept=vi.fn();const h=renderHook(({selected,tasks})=>useRejectedModelRefresh(selected,tasks,accept),{initialProps:{selected:com as ConnectionSummary,tasks:[failed] as HistoryTask[]}});await act(async()=>{});expect(fetch).not.toHaveBeenCalled();h.rerender({selected:cn,tasks:[{...failed,connectionVersionId:'old'}]});expect(fetch).not.toHaveBeenCalled();h.rerender({selected:cn,tasks:[task]});expect(fetch).not.toHaveBeenCalled();h.rerender({selected:cn,tasks:[failed]});await waitFor(()=>expect(accept).toHaveBeenCalledTimes(1));expect(fetch).toHaveBeenCalledTimes(1);
+});
+it('ignores late models after a route change with an unchanged connection version',async()=>{
+  let resolve!:(r:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(r=>{resolve=r;})));const accept=vi.fn();const cn={...connection,route:'cn' as const,routeRevision:1};const h=renderHook(({selected,tasks})=>useRejectedModelRefresh(selected,tasks,accept),{initialProps:{selected:cn as ConnectionSummary,tasks:[{...task,connectionVersionId:'v1',transportRoute:{route:'cn' as const,revision:1}}] as HistoryTask[]}});h.rerender({selected:{...cn,route:'com',routeRevision:2},tasks:[]});await act(async()=>resolve(Response.json({...result(),route:'cn',routeRevision:1})));expect(accept).not.toHaveBeenCalled();
+});

@@ -1,0 +1,16 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/connection-client.test.ts (7 tests) 23ms
+ ✓ src/components/workbench/__tests__/model-refresh.test.tsx (6 tests) 260ms
+ ✓ src/components/workbench/__tests__/image-pricing.test.tsx (8 tests) 496ms
+ ✓ src/components/workbench/__tests__/model-catalog.test.tsx (7 tests) 553ms
+   ✓ direct seconds input updates integer-cent price and invalid input removes quotation and disables submit  318ms
+ ✓ src/components/workbench/__tests__/image-controls.test.tsx (6 tests) 961ms
+   ✓ default selects proven minimum while displaying separate specs; explicit controls and clearing back to auto use the correct immutable capability  354ms
+ ✓ src/components/workbench/__tests__/connection-routes.test.tsx (14 tests) 1126ms
+
+ Test Files  6 passed (6)
+      Tests  48 passed (48)
+   Start at  17:21:03
+   Duration  3.39s (transform 753ms, setup 736ms, collect 2.58s, tests 3.42s, environment 4.85s, prepare 1.04s)

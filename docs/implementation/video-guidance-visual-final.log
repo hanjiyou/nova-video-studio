@@ -1,0 +1,32 @@
+{
+  "scope": "Actual DraftEditor and global workbench CSS; static SSR with synthetic props; CSP blocks all network; no user data, credentials or generation",
+  "checks": [
+    {
+      "name": "wide",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\video-guidance-visual\\wide.png",
+      "viewport": 720,
+      "inputHeight": 44,
+      "buttonHeight": 44,
+      "rowAligned": true,
+      "noHorizontalOverflow": true,
+      "guidanceWithinViewport": true,
+      "guidanceTextColor": "rgb(240, 221, 190)",
+      "issues": 2
+    },
+    {
+      "name": "narrow",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\video-guidance-visual\\narrow.png",
+      "viewport": 390,
+      "inputHeight": 44,
+      "buttonHeight": 44,
+      "rowAligned": true,
+      "noHorizontalOverflow": true,
+      "guidanceWithinViewport": true,
+      "guidanceTextColor": "rgb(240, 221, 190)",
+      "issues": 2
+    }
+  ],
+  "status": "passed"
+}

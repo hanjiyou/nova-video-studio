@@ -1,0 +1,19 @@
+✔ fixed image prices multiply base price by enabled groups only, including medium 0.12 (2.4976ms)
+✔ zero base and group ratios are valid; empty, missing or invalid enabled groups cannot invent a lower price (0.4167ms)
+✔ unknown billing expressions are data and never evaluated; exact model, quota, base and expression must agree (0.2965ms)
+✔ public requests use only the fixed selected origin, anonymous GET and manual redirects; cache and in-flight work merge (122.3349ms)
+✔ only exact built-in connections fetch public prices; custom hosts never fetch or read keys (45.1019ms)
+✔ route and version changes cannot accept a late quote; returning to an origin may reuse only that origin cache (47.7087ms)
+✔ connection version changes discard late pricing without altering the new connection (45.564ms)
+✔ failure has a 30-second backoff independent of successful origin cache and connection state (53.9218ms)
+✔ non-200 status, explicit upstream failure and redirects never become a quote (2.45ms)
+✔ response size and total fetch/body time are bounded; malformed data and unsupported routes fail safely (67.4357ms)
+✔ actual protected HTTP pricing GET projects only numbers and forwards no Authorization or local session header (3418.528ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4263.5473

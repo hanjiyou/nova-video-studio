@@ -1,0 +1,185 @@
+{
+  "date": "2026-10-26",
+  "status": "main_review_passed_source_and_offline_scope",
+  "scope": "R01-R05 and backend R07; synthetic/offline only",
+  "sourceHead": "4c62dacb4c0dae41c36cec58d1ff88474a8df130",
+  "baselineEvidence": "docs/implementation/d01-d03-evidence/verification-summary.json",
+  "firstBroadRun": {
+    "tests": 438,
+    "passed": 413,
+    "failed": 25,
+    "skipped": 0,
+    "log": "docs/implementation/opensosen-routes-backend-test.log"
+  },
+  "secondBroadRun": {
+    "tests": 438,
+    "passed": 418,
+    "failed": 20,
+    "skipped": 0,
+    "log": "docs/implementation/opensosen-routes-backend-retest.log",
+    "failuresMappedToHistoricalBaseline": [
+      {
+        "test": "canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 13,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "new package registers both exact models, with only fixed application controls and ordered references",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 20,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual desktop B1 1 file request freezes original assets and completes through B2 verified local download",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 10,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual desktop B1 2 file request freezes original assets and completes through B2 verified local download",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 11,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 14,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 24,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 6,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 7,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 GET 401 retains ID, original credential and conservative occupied slot",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 2,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 GET 403 retains ID, original credential and conservative occupied slot",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 3,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 4,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual B1 GET unknown status retains ID, original credential and conservative occupied slot",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 5,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 15,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 22,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 23,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "B4 active, ambiguous, paused and unfinished download records cannot be removed",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 0,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "B4 actual local HTTP: persisted intent + double create = one multipart POST; read/reuse/delete never create",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 1,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 9,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      },
+      {
+        "test": "actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input",
+        "baselineSource": "docs/implementation/d01-d03-evidence/verification-summary.json",
+        "baselineFailureIndex": 12,
+        "baselineCommit": "e2ef3eb66a912a82da51dc5a749e535996b5b735"
+      }
+    ],
+    "newFailureSinceResolved": [
+      "candidate validates read-only before any encrypted row; success saves check and resumable defaults atomically"
+    ]
+  },
+  "finalRelatedBackend": {
+    "cwd": "backend",
+    "command": "node --test test/capability-upgrade.test.js test/controlled-image-validation.test.js test/controlled-video-text-validation.test.js test/desktop-boundary.test.js test/model-catalog-http.test.js test/model-catalog.test.js test/update-safe-install.test.js test/video-text-capability.test.js test/workbench-b3.test.js test/workbench-b4-physical-aliases.test.js test/workbench-b5-diagnostics.test.js test/workbench-connections.test.js test/workbench-contracts.test.js test/workbench-download-cn.test.js test/workbench-download-progress.test.js test/workbench-downloads-http.test.js test/workbench-downloads.test.js test/workbench-image-boundary.test.js test/workbench-lifecycle-contract.test.js test/workbench-lifecycle-diagnostics.test.js test/workbench-lifecycle-display.test.js test/workbench-lifecycle-runtime.test.js test/workbench-routes.test.js test/workbench-storage-http.test.js test/workbench-storage.test.js test/workbench-task-adapter.test.js test/workbench-tasks-http.test.js test/workbench-tasks.test.js test/workbench-upstream-id.test.js",
+    "tests": 377,
+    "passed": 377,
+    "failed": 0,
+    "skipped": 0,
+    "exitCode": 0,
+    "log": "docs/implementation/opensosen-routes-backend-final.log"
+  },
+  "newRouteCoverage": {
+    "routeTests": 14,
+    "downloadRouteTests": 11,
+    "passed": 25,
+    "productionAdapters": "Both cn/com image text/reference POST and video multipart POST/query GET; original identity and bytes; manual redirect, no POST replay",
+    "migration": "Synthetic v10 -> v11, old checksum preserved; first lazy initialization clears previous route checks",
+    "refresh": "Real task service DOWNLOAD_EXPIRED -> refreshDownload -> worker retry stays queued route after setting change",
+    "httpIpc": "Real loopback connection HTTP check + desktop IPC existing save boundary"
+  },
+  "notPerformed": [
+    "real user database or credential reads",
+    "real models/query/media download against OpenSosen",
+    "real generation or paid API calls",
+    "VPN changes",
+    "frontend acceptance",
+    "commit/push/build/package/publish"
+  ],
+  "fileSha256": {
+    "backend/connections/route-policy.js": "26bf9f2c99d51d73241195457c4738ecb296c8ad2bb6eeedb949b75198c74ad6",
+    "backend/connections/service.js": "804d383040873a1fef645d44f800732956aed6c9b7efea119ca5c555700b1cc1",
+    "backend/storage/migrations.js": "9ab88d6da703e0fba62c8b8ad38bec1d53cb4f4d44fd12f8334280b7270426f3",
+    "backend/storage/download-worker.js": "fc5aa50ef954b9495086c3429f52a3ed05070960922fbf42abbd863a238d351d",
+    "backend/storage/diagnostics.js": "641ac801aeeeae7b244d33c62cac3048d813f9cef0b53552799fb86727ee3498",
+    "backend/storage/store.js": "c4768a4dde2c7240c1d63cf608e36888463820f9eaf65b6d6625e96ea525a2ab",
+    "backend/tasks/service.js": "208179cf9b30a93a7815cd8a8236da6264663b3f7aa2a9bd092ed9dbf07cec16",
+    "backend/tasks/flare-image-adapter.js": "75c052845fab48b0530cd5460b862cfeb727c843f3d254e6a0c06604f60944d7",
+    "backend/tasks/plugin-adapter.js": "daf82d33cff49804586b5d1bcfdaf869d7cb05bb141b7c2ab09aebef7f8cdb01",
+    "backend/tasks/diagnostic-timeline.js": "1bec262c3a1b7450277f28a979694bca81c260b0eb747a1ccc36e03b08923f0e",
+    "backend/test/workbench-routes.test.js": "b2ad1ce516666a93cbb1a8b1841b237322c07d45d3769213b89bc6904bc6a2ae",
+    "backend/test/workbench-download-cn.test.js": "40a3340d39c9a862c8a3add1910764eda211dea9eeeb708680d5f0b585c66ed7",
+    "backend/test/workbench-connections.test.js": "4bcb50612e1db2862e5f53fe40471724ddf9c7f781de3a3aaa08d98a9b9257c3",
+    "backend/test/workbench-b3.test.js": "ae139dae4b9bb79f559fe68bb78b32a5ea68d7758b178df68a398b4ecc577218",
+    "backend/test/workbench-lifecycle-runtime.test.js": "ab4084bed570066d2859186da8adb761b9456616a51cc101e492fac001cc71b0",
+    "backend/test/support/desktop-http-runtime.cjs": "6748f239c854d573125704c01073f0d8eb17749190b40ea38f0ceb19d998f5d0"
+  }
+}

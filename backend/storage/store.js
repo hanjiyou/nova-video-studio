@@ -215,7 +215,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function setTaskSnapshot(taskId, snapshot) {
         uuid(taskId);
-        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef']);
+        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef', 'transportRoute']);
         if (snapshot.contractVersion !== 1 || ![...MODES, 'legacy.plugin'].includes(snapshot.mode) || typeof snapshot.prompt !== 'string' || snapshot.prompt.length > 65536 || typeof snapshot.model !== 'string' || !snapshot.model || snapshot.model.length > 256)
             throw fail('INVALID_TASK_SNAPSHOT');
         for (const field of ['adapterId', 'adapterVersion'])
@@ -225,6 +225,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         for (const field of ['localRequestId', 'connectionVersionId', 'capabilityVersionId', 'outputDirectoryVersionId', 'outputRootRef'])
             if (snapshot[field] != null)
                 uuid(snapshot[field]);
+        if(snapshot.transportRoute!==undefined)require('../connections/route-policy').snapshot(snapshot.transportRoute);
         const json = JSON.stringify({ ...snapshot, inputAssets: input });
         if (Buffer.byteLength(json) > 262144)
             throw fail('STORAGE_INPUT_TOO_LARGE');
@@ -357,9 +358,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
         const downloadAttempt = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='task_download_attempts'").get() ? db.prepare('SELECT *, (SELECT count(*) FROM task_download_attempts older WHERE older.task_id=task_download_attempts.task_id AND older.rowid<=task_download_attempts.rowid) AS attempt_number FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(task.id) : null;
         const recovery=recoveryResolver(task),inputs=taskAssets(task.id),outputs=taskAssets(task.id,'output');
         const revision=db.prepare('SELECT revision FROM tasks WHERE id=?').get(task.id)?.revision||0;
-        return { revision,...recovery, ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
+        return { transportRoute:task.transport_route_json?JSON.parse(task.transport_route_json):request.transportRoute||null,revision,...recovery, ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
             downloadProgress: downloadAttempt ? liveDownloadProgress.get(downloadAttempt.id) || (downloadAttempt.progress_json ? JSON.parse(downloadAttempt.progress_json) : null) : null,
-            downloadAttempt: downloadAttempt ? { id:downloadAttempt.id,attemptNumber:downloadAttempt.attempt_number,queuedAt:downloadAttempt.queued_at,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
+            downloadAttempt: downloadAttempt ? { transportRoute:downloadAttempt.transport_route_json?JSON.parse(downloadAttempt.transport_route_json):null,id:downloadAttempt.id,attemptNumber:downloadAttempt.attempt_number,queuedAt:downloadAttempt.queued_at,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
             outputLocation: rootRow ? path.basename(rootRow.directory) : null,
             inputAssets: inputs, outputAssets: outputs };
     }

@@ -8,7 +8,9 @@ export interface AssetSummary {
 /** Local completion is distinct from remote completion and download progress. */
 export type WorkbenchTaskState = 'local_queued' | 'submitting' | 'submission_unknown' | 'remote_queued' | 'generating' | 'polling_paused' | 'remote_completed' | 'downloading' | 'download_failed' | 'completed' | 'failed' | 'local_cancelled' | 'remote_cancelled' | 'timed_out';
 export type TaskExecutionPhase = 'reference_upload' | 'submitting' | 'receiving' | 'parsing' | 'remote_waiting' | 'downloading' | 'validating' | 'saving';
+export interface TransportRouteSnapshot { route: 'cn' | 'com'; revision: number }
 export interface DownloadAttemptDto {
+  transportRoute?: TransportRouteSnapshot | null;
   id: string; active: boolean; attemptNumber?: number; queuedAt?: string | null; startedAt: string | null; deadlineAt: string | null; timeoutSeconds: number;
   outcome: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null; finishedAt: string | null;
 }
@@ -37,6 +39,8 @@ export interface DownloadProgressDto {
   elapsedMs: number; lastByteAt: string | null; startedAt: string | null; deadlineAt: string | null; timeoutSeconds: number; stalled: boolean;
 }
 export interface DurableTaskFields {
+  /** Missing/null means this historical request did not record its route. */
+  transportRoute?: TransportRouteSnapshot | null;
   revision?: number; acceptedAttemptId?: string; canRetryDownload?: boolean; recoveryKind?: string; recoveryReason?: string | null;
   lifecycleVersion?: 1 | 2;
   generationOutcome?: 'completed' | 'failed' | 'timed_out' | 'cancelled' | null;

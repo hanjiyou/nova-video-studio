@@ -21,3 +21,21 @@ it('video 100% remains validation/save, then completed healthy cards hide transf
 it('missing fresh revision clears old speed; fresh update restores actual speed',async()=>{
  vi.useFakeTimers();try{const value={...task,status:'downloading' as const,downloadAttempt:{id:'first',active:true,startedAt:null,deadlineAt:null,timeoutSeconds:30,outcome:null,finishedAt:null},downloadProgress:{...task.downloadProgress!,phase:'downloading' as const}};acceptTask(value);render(<DownloadStatus task={value}/>);expect(screen.getByText(/620.0 KB\/s/)).toBeInTheDocument();await act(async()=>vi.advanceTimersByTime(6000));expect(screen.getByText('进度暂不可用，正在重新连接')).toBeInTheDocument();expect(screen.getByText(/0 B\/s/)).toBeInTheDocument();act(()=>acceptTask({...value,revision:2,downloadProgress:{...value.downloadProgress,bytesPerSecond:200000}}));expect(screen.getByText(/200.0 KB\/s/)).toBeInTheDocument();expect(screen.queryByText('进度暂不可用，正在重新连接')).not.toBeInTheDocument();}finally{vi.useRealTimers();}
 });
+it('retry response follows waiting, failure and completion without retaining a running notice',async()=>{
+ vi.stubGlobal('fetch',vi.fn(async()=>Response.json({task:{...task,revision:2,status:'downloading',canRetryDownload:false,downloadAttempt:{id:'retry',active:true},downloadProgress:{...task.downloadProgress,attemptId:'retry',phase:'waiting'}}})));
+ render(<DownloadStatus task={task}/>);fireEvent.click(screen.getByRole('button',{name:'重新下载'}));await waitFor(()=>expect(screen.getByText('等待下载')).toBeInTheDocument());
+ act(()=>acceptTask({...currentTask(task),revision:3,downloadProgress:{...task.downloadProgress!,phase:'downloading'}}));expect(screen.getByText('下载中')).toBeInTheDocument();
+ act(()=>acceptTask({...task,revision:4,downloadAttempt:null}));expect(screen.getByText('图片已生成，下载失败')).toBeInTheDocument();expect(screen.queryByText('下载中')).not.toBeInTheDocument();expect(document.body).not.toHaveTextContent('正在下载原任务结果');expect(screen.getByRole('button',{name:'重新下载'})).toBeEnabled();
+ act(()=>acceptTask({...task,revision:5,status:'completed',canRetryDownload:false}));expect(document.querySelector('.wb-download-status')).toBeNull();
+});
+it('late retry HTTP success cannot add a running notice after newer failed WS state',async()=>{
+ let resolve!:(value:Response)=>void;vi.stubGlobal('fetch',vi.fn(()=>new Promise<Response>(done=>resolve=done)));render(<DownloadStatus task={task}/>);fireEvent.click(screen.getByRole('button',{name:'重新下载'}));act(()=>acceptTask({...task,revision:4}));
+ await act(async()=>resolve(Response.json({task:{...task,revision:2,status:'downloading',canRetryDownload:false,downloadAttempt:{id:'retry',active:true}}})));
+ expect(screen.getByText('图片已生成，下载失败')).toBeInTheDocument();expect(screen.getByRole('button',{name:'重新下载'})).toBeEnabled();expect(document.body).not.toHaveTextContent('正在下载原任务结果');
+});
+it('request errors distinguish rejection from unknown receipt and clear on newer task state',async()=>{
+ vi.stubGlobal('fetch',vi.fn().mockRejectedValueOnce(Error('offline')).mockResolvedValueOnce(Response.json({code:'TASK_CAPACITY_BUSY',error:'下载名额已满。'},{status:409})));
+ render(<DownloadStatus task={task}/>);fireEvent.click(screen.getByRole('button',{name:'重新下载'}));await waitFor(()=>expect(screen.getByRole('status')).toHaveTextContent('请求回执未确认'));
+ fireEvent.click(screen.getByRole('button',{name:'重新下载'}));await waitFor(()=>expect(screen.getByRole('status')).toHaveTextContent('请求未受理：下载名额已满。'));
+ act(()=>acceptTask({...task,revision:2}));expect(screen.queryByRole('status')).not.toBeInTheDocument();
+});

@@ -843,3 +843,20 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-generation-price small { color:#aaa5b5; }
 .wb-generation-price small:last-child { flex-basis:100%; }
 .wb-video-parameters { display:flex; flex-direction:column; gap:10px; }
+
+/* Compact duration controls and actionable generation readiness, within the existing editor. */
+.wb-duration-control { display:flex; flex-direction:column; gap:8px; }
+.wb-duration-label { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.wb-duration-label small { white-space:nowrap; }
+.wb-duration-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.nova-workbench .wb-duration-row input { flex:1 1 130px; width:130px; min-width:100px; height:44px; min-height:44px; padding:8px 12px; }
+.nova-workbench button.wb-duration-default { flex:0 0 auto; align-self:center; height:44px; min-height:44px; padding:8px 12px; font-size:12px; background:#26232f; border-color:#51465f; color:#d3c2ef; }
+.nova-workbench button.wb-duration-default:disabled { opacity:1; color:#aaa4b9; border-color:#3e3949; background:#22212a; }
+.wb-generation-guidance { border:1px solid #675742; border-radius:9px; background:#29252a; padding:11px 12px; color:#f0ddbe; font-size:13px; }
+.wb-guidance-title { display:flex; align-items:center; gap:7px; font-weight:600; margin-bottom:3px; }
+.wb-generation-guidance ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:3px; }
+.wb-generation-guidance li { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+.wb-generation-guidance li>span { flex:1; min-width:0; overflow-wrap:anywhere; }
+.nova-workbench button.wb-guidance-action { flex:0 0 auto; min-height:44px; padding:6px 8px; border-color:transparent; background:transparent; color:#ddc7ff; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
+.nova-workbench button.wb-guidance-action:hover:not(:disabled) { background:#39303f; border-color:#61516c; }
+@media(max-width:480px) { .wb-generation-guidance li { flex-wrap:wrap; gap:0 8px; } .wb-generation-guidance li>span { flex-basis:70%; } .wb-duration-row { gap:8px; } }

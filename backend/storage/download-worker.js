@@ -1,4 +1,5 @@
 'use strict';
+const routing=require('../connections/route-policy');
 const {createDownloadProgress}=require('./download-progress');
 const {classifyError}=require('../tasks/diagnostic-error');
 const fs = require('node:fs');
@@ -23,24 +24,28 @@ async function assertPublicUrl(url) {
     if(!addresses.length||addresses.some(item=>privateAddress(item.address)))throw failure('DOWNLOAD_FORBIDDEN');
 }
 function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(...args), validate=validateMedia, checkUrl=assertPublicUrl, timeoutMs=180000 }) {
-    async function download(source, task, file, signal, checkpoint, diagnostic, progress) {
+    async function download(source, task, file, signal, checkpoint, diagnostic, progress, transportRoute) {
         const initial=new URL(source.url);
         // The original immutable connection is the only possible authorization source.
         const original=connections.getAuth(task.connection_version_id), service=new URL(original.baseUrl);
         if(source.authScope==='connection'&&(initial.origin!==service.origin||!initial.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/')))throw failure('DOWNLOAD_FORBIDDEN');
-        let url=initial, leftService=false;
+        // Only a stable, managed content endpoint participates. Signed/CDN sources stay exact.
+        const mapped=routing.isBuiltin(original)&&source.mediaKind==='video'&&source.authScope==='connection'&&routing.managedPath(initial,'download');
+        const transport=mapped?routing.resolveRequest(original,{url:source.url,method:'GET'},'download',transportRoute):{url:source.url};
+        const target=new URL(transport.url);
+        let url=target, leftService=false;
         for(let hop=0;hop<=5;hop++) {
             checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
             try{await checkUrl(url);}catch(error){diagnostic('request_failed',{operation:'download',errorCategory:classifyError(error)});throw error.code==='DOWNLOAD_FORBIDDEN'?error:failure('DOWNLOAD_CONNECTION_FAILED');}
             checkpoint(); if(signal.aborted)throw failure('DOWNLOAD_FAILED');
             if(containsCredential(url.href,original.apiKey))throw failure('DOWNLOAD_FORBIDDEN');
-            const sameService=url.origin===service.origin&&url.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/');
+            const sameService=mapped?url.href===target.href:url.origin===service.origin&&url.pathname.startsWith(service.pathname.replace(/\/$/,'')+'/');
             // Once redirected away, a redirect back cannot regain the connection credential.
             if(!sameService)leftService=true;
             const headers={Accept:source.mediaKind==='video'?'video/*':'image/*','Accept-Encoding':'identity'};
             if(source.authScope==='connection'&&sameService&&!leftService)headers.Authorization='Bearer '+connections.getAuth(task.connection_version_id).apiKey;
             let response; const started=performance.now();
-            diagnostic('download_started',{operation:'download',redirectHop:hop});
+            diagnostic('download_started',{operation:'download',redirectHop:hop,...routing.diagnostic({...transport,url:url.href})});
             try{response=await fetchImpl(url.href,{method:'GET',headers,redirect:'manual',signal});}catch(error){diagnostic('request_failed',{operation:'download',errorCategory:classifyError(error),durationMs:Math.round(performance.now()-started)});throw failure('DOWNLOAD_CONNECTION_FAILED');}
             diagnostic('download_headers',{operation:'download',httpStatus:response.status,durationMs:Math.round(performance.now()-started)});
             if([301,302,303,307,308].includes(response.status)) {
@@ -73,7 +78,9 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
             diagnostic('download_received',{byteLength:size}); return;
         }
     }
-    return async function worker(task,sources,{signal,checkpoint=()=>{},phase=()=>{},diagnostic=()=>{},remainingMs=()=>timeoutMs,onProgress=()=>{},progressTracker,progressOptions,readCheckpoint=()=>null,saveCheckpoint=()=>{},legacyDownloadLimit=false}={}) {
+    return async function worker(task,sources,{signal,checkpoint=()=>{},phase=()=>{},diagnostic=()=>{},remainingMs=()=>timeoutMs,onProgress=()=>{},progressTracker,progressOptions,readCheckpoint=()=>null,saveCheckpoint=()=>{},legacyDownloadLimit=false,transportRoute}={}) {
+        if(transportRoute===undefined)transportRoute=connections.getTransportRoute?.(task.connection_version_id)||null;
+        transportRoute=routing.snapshot(transportRoute);
         let timedOut=false;const controller=new AbortController(),abort=()=>controller.abort(),timer=setTimeout(()=>{timedOut=true;abort();},legacyDownloadLimit?Math.min(120000,remainingMs()):remainingMs());
         const progress=progressTracker || createDownloadProgress({...progressOptions,onProgress:progressOptions?.onProgress || onProgress,checkpoint,fileCount:sources.length});
         signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)abort();
@@ -90,7 +97,7 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
                         const original=store.readAsset(source.assetId);expectedKind=original.asset.kind;
                         diagnostic('download_received',{byteLength:original.bytes.length,sourceKind:'asset'});progress.total(original.bytes.length);progress.receive(original.bytes.length,false);
                         const fd=fs.openSync(file,'wx');try{fs.writeFileSync(fd,original.bytes);fs.fsyncSync(fd);}finally{fs.closeSync(fd);}
-                    } else if(source.kind==='url')await download(source,task,file,controller.signal,checkpoint,diagnostic,progress);
+                    } else if(source.kind==='url')await download(source,task,file,controller.signal,checkpoint,diagnostic,progress,transportRoute);
                     else throw failure('RESULT_NOT_RECOVERABLE');
                     if(controller.signal.aborted)throw failure(timedOut?'DOWNLOAD_TIMEOUT':'DOWNLOAD_FAILED');
                     checkpoint(); observedPhase='validating'; phase('validating');progress.phase('validating');

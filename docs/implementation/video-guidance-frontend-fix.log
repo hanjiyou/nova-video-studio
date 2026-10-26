@@ -1,0 +1,14 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/model-catalog.test.tsx (7 tests) 577ms
+   ✓ direct seconds input updates integer-cent price and invalid input removes quotation and disables submit  358ms
+ ✓ src/components/workbench/__tests__/draft-guidance.test.tsx (20 tests) 959ms
+   ✓ duration uses the real effective default, editing is not auto-saving, and failed default saves can retry  395ms
+ ✓ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests) 1417ms
+   ✓ skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation  624ms
+
+ Test Files  3 passed (3)
+      Tests  38 passed (38)
+   Start at  20:17:56
+   Duration  3.70s (transform 484ms, setup 299ms, collect 1.52s, tests 2.95s, environment 2.29s, prepare 372ms)

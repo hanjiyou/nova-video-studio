@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-26",
+  "status": "main_review_passed_source_and_scoped_validation",
+  "sourceHead": "4c62dacb4c0dae41c36cec58d1ff88474a8df130",
+  "sourceFilesSha256": {
+    "backend/connections/image-pricing.js": "77b897bb307f11d84a76c9ba065dbd00fa981f15c888d729e6972f914df25964",
+    "backend/connections/service.js": "202430c5db813fec4bae33bedd352f15dec2db3f9aa80189d5f1eb2544217d4f",
+    "backend/connections/http.js": "0a62e2784078f69d2682f325fb23849859631556626ed37387babf9ba186b41d",
+    "backend/test/workbench-image-pricing.test.js": "13da20719180be1deaca4fcccd56cf1cc660c79e0caae5ff2aa9795c0f61f3f2",
+    "frontend/src/lib/connection-client.ts": "f7b9546b10511c070eed35c2f867e255ac7fe34181884955af9cde116436f9dd",
+    "frontend/src/components/workbench/ImagePrice.tsx": "96900f445551f02ed19cccb4e703fa3910f122fd02ae43e329d8a92f26dcf694",
+    "frontend/src/components/workbench/DraftEditor.tsx": "f8b954ce606120405b626e5e3723377b3fc9443a07e1a1ed7159670ec3190501",
+    "frontend/src/components/workbench/__tests__/image-pricing.test.tsx": "81313d4f899b98687c867c8920efb3e89d693137ffd03f6d652408c36f76ae42"
+  },
+  "firstBackend": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "log": "image-pricing-backend-first.log"
+  },
+  "firstFrontend": {
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "log": "image-pricing-frontend-first.log"
+  },
+  "finalBackend": {
+    "tests": 59,
+    "passed": 57,
+    "failed": 2,
+    "skipped": 0,
+    "log": "image-pricing-backend-final.log",
+    "historicalBaseline": "docs/implementation/d01-d03-evidence/verification-summary.json",
+    "failureBaselineLines": [
+      20,
+      23
+    ]
+  },
+  "finalFrontend": {
+    "files": 6,
+    "tests": 48,
+    "passed": 48,
+    "failed": 0,
+    "log": "image-pricing-frontend-final.log"
+  },
+  "typescript": {
+    "exitCode": 0,
+    "log": "image-pricing-typescript-final.log"
+  },
+  "developerTestScope": "synthetic data, temporary database, fake keys and loopback HTTP only",
+  "mainSessionPublicCheck": {
+    "module": "createImagePricing({fetchImpl:fetch,clock:Date.now})",
+    "route": "cn",
+    "anonymous": true,
+    "generation": false,
+    "estimate": {
+      "minPerImage": 0.05,
+      "maxPerImage": 0.4
+    },
+    "reason": null,
+    "cached": false
+  },
+  "notPerformed": [
+    "real generation",
+    "billing acceptance",
+    "installed UI acceptance",
+    "commit",
+    "push",
+    "package",
+    "publish"
+  ],
+  "mainReview": "主会话已审阅请求/解析/缓存、线路迟到保护、前端数字区间和回归用例；8文件指纹一致，两条扩展失败逐名核对历史基线。另匿名验证生产报价模块读取cn返回0.05–0.4。没有真实计费或安装态验收。",
+  "stage": "historical_available_group_range",
+  "supersededBy": "image-pricing-verification.json (medium_reference)"
+}

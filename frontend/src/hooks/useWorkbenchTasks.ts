@@ -59,7 +59,7 @@ export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', conne
     busy.current = true; setSubmitting(true); setNotice('');
     let prepared = false, attempting = false, acknowledged=false, preparedId: string | null=null;
     try {
-      const refreshed=await checkConnection(connection,false,'submit').catch(error=>{if(error?.message==='CONNECTION_VERSION_CONFLICT')throw error;return null;});
+      const refreshed=await checkConnection(connection,false,'submit').catch(error=>{if(['CONNECTION_VERSION_CONFLICT','CONNECTION_ROUTE_CONFLICT'].includes(error?.message))throw error;return null;});
       if(refreshed?.stale)throw Error('CONNECTION_VERSION_CONFLICT');
       if(refreshed?.models){onModels?.(refreshed as ConnectionModels);plan=generationPlan(draft,connection,refreshed as ConnectionModels);if(plan.blocked||!plan.capability){setNotice(plan.blocked||localErrorMessage(Error('CAPABILITY_UNVERIFIED')));return;}}
       const frozen = await prepareSubmission({localRequestId:generateUUID(),connectionVersionId:connection.connectionVersionId,capabilityVersionId:plan.capability.capabilityVersionId,mode:plan.mode,model:plan.model,prompt:draft.prompt,parameters:plan.parameters,inputAssets:draft.inputAssets.map((asset,position) => ({assetId:asset.assetId,role:'reference',position}))});

@@ -1,0 +1,172 @@
+{
+  "date": "2026-10-26T12:24:03.992167+08:00",
+  "status": "主会话源码与离线范围审核通过",
+  "scope": "第二批R06/前端R07/R08已授权离线部分",
+  "productionFiles": 7,
+  "testFilesChanged": 5,
+  "sharedDocuments": 13,
+  "tests": {
+    "command": "npx vitest run src/components/workbench/__tests__/connection-routes.test.tsx src/components/workbench/__tests__/workbench-b3.test.tsx src/lib/__tests__/connection-client.test.ts src/components/workbench/__tests__/model-refresh.test.tsx src/components/workbench/__tests__/download-status.test.tsx src/components/workbench/__tests__/app-update.test.tsx src/components/workbench/__tests__/workbench-lifecycle.test.tsx",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "files": 7,
+    "passed": 81,
+    "failed": 0,
+    "skipped": 0,
+    "log": "docs/implementation/opensosen-routes-frontend-final.log",
+    "warnings": "Three existing lifecycle tests print React act warnings for DownloadStatus/TaskDetails; assertions pass."
+  },
+  "typescript": {
+    "command": "npx tsc --noEmit --incremental false",
+    "cwd": "frontend",
+    "exitCode": 0,
+    "diagnostics": 0,
+    "log": "docs/implementation/opensosen-routes-typescript-final.log",
+    "logNote": "No diagnostics; empty log explicitly retained because Tee-Object does not create a file for empty output."
+  },
+  "diffCheck": {
+    "command": "git diff --check",
+    "exitCode": 0,
+    "warning": "Existing download-status.test.tsx has LF-to-CRLF normalization notice."
+  },
+  "developmentFailures": [
+    {
+      "stage": "Initial TypeScript",
+      "result": "New test mock tuple/literal narrowing and saved-null guard diagnostics; fixed before final successful check."
+    },
+    {
+      "stage": "Added submission preflight regression",
+      "passed": 80,
+      "failed": 1,
+      "reason": "Incorrect assertion read error instead of existing notice feedback field; corrected and final 81 passed.",
+      "log": "docs/implementation/opensosen-routes-frontend-pre-final.log"
+    }
+  ],
+  "preservedExistingChanges": [
+    "frontend/src/components/workbench/DownloadStatus.tsx",
+    "frontend/src/components/workbench/__tests__/download-status.test.tsx"
+  ],
+  "notPerformed": [
+    "Real credentials or user database access",
+    "Paid generation",
+    "Real cn media download, speed or remote Range validation",
+    "VPN modification",
+    "Full frontend test suite, lint or production build",
+    "Install, commit, push, package or publish"
+  ],
+  "files": [
+    {
+      "path": "frontend/src/components/workbench/ConnectionForm.tsx",
+      "sha256": "ef72b9df8037b17b8e8a44cddeb4ed6990eb3ead83ea8e1d594430ff859e6db7"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchShell.tsx",
+      "sha256": "a90cba2180f42f7ce236bcf1a8ecd6ec065d4ea11581bec6472f0e7aba19313f"
+    },
+    {
+      "path": "frontend/src/hooks/useRejectedModelRefresh.ts",
+      "sha256": "e80e3eb66ace7f114d192aaa26b5bd29c499ab9f27cc477efb16353b8f2caed1"
+    },
+    {
+      "path": "frontend/src/hooks/useWorkbenchTasks.ts",
+      "sha256": "c7d3bce226910c04b85885fa64f37ba7ad326d756bbcb2b926765ef8bde12a16"
+    },
+    {
+      "path": "frontend/src/lib/connection-client.ts",
+      "sha256": "f5903e06053e7b4b95d0387e6d8df619c3ea33899658552d08956d4b88d90c49"
+    },
+    {
+      "path": "frontend/src/lib/workbench-client.ts",
+      "sha256": "fc2b105b853d75e5339fdaa99f2ba76ac816e29c701615be4b332a05790c610a"
+    },
+    {
+      "path": "frontend/src/lib/workbench-task-client.ts",
+      "sha256": "92b9d755ce8952a587091f36e010a9191574ddcfeb369a9189680c070b1c2f1c"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/connection-routes.test.tsx",
+      "sha256": "756ad949a09a003ae0d1944c4a1b377664c9c3ee8abed7692f132634bdb79890"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/model-refresh.test.tsx",
+      "sha256": "f6d53f7c3d691ed3eb5abca634db3f1d0198cb5a118fa6f7317a0f604506f887"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "sha256": "951116393e712b47311019e7face69a0bed228d48a021a4338dd37d095d6696e"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-lifecycle.test.tsx",
+      "sha256": "d8c5e1c90c1ccc184d1c9eec39d4ffc0625c24e1b6df7c012e965d34429338d2"
+    },
+    {
+      "path": "frontend/src/lib/__tests__/connection-client.test.ts",
+      "sha256": "c7ee058db96cef1efba61b884f71ee27a1b05e9f4ad5e4703f55828d87a3119a"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "6e9779c137423cb4cc12b746fb38f6fe3187d16fc51f7335043857188262f3c2"
+    },
+    {
+      "path": "docs/connections-v1.md",
+      "sha256": "33150afdfed3667629ea90e2e71f925520a2a2acb1b089bee67ae75ad3997443"
+    },
+    {
+      "path": "docs/tasks-v1.md",
+      "sha256": "8f203a481c3ab43a7195fff2ac485bd8de498fec589d2d387cc12523d7c73af5"
+    },
+    {
+      "path": "docs/b1-adapters-v1.md",
+      "sha256": "533a6969fd4b02adb3d4ecda818f79c718f17acdbe80adf7c190e2f9f632061c"
+    },
+    {
+      "path": "docs/b2-media-v1.md",
+      "sha256": "3f0c2e7d2a41bba2880e7c1363b2101cf94865143ae40b868094bbbedd867f11"
+    },
+    {
+      "path": "docs/diagnostics-v1.md",
+      "sha256": "0fef7ec4e6e35b6a49095b44708c92f9cae65ac57a104a94f3c1df7ad0a51002"
+    },
+    {
+      "path": "docs/contracts/workbench-v1.md",
+      "sha256": "82e0e02e0573129cd12fcafe831cd8ca7b9a30aa1ed8d5340ce304547557c3a3"
+    },
+    {
+      "path": "docs/Windows-GitHub测试版使用说明.md",
+      "sha256": "9f47bca5e22d42f48d7feebbbb0dbfeaf4d5f5901cb192cc4b9e6e2ca8ffea5b"
+    },
+    {
+      "path": "docs/OpenSosen线路切换实施规划.md",
+      "sha256": "6239ea1936a20c6ddc0604e85107d0e6d4188abfb22b86a39eff18fdb42c5cb5"
+    },
+    {
+      "path": "docs/图片视频结果下载体验规划.md",
+      "sha256": "fc668eab4de0dc3835da735699dd72b8dff131da87e93070976a1f801744532c"
+    },
+    {
+      "path": "docs/Nova-Studio落地任务清单.md",
+      "sha256": "085d3765592d0cd5bb3f0482ea252aa8129398e689d99a7f01f826c7ebffa706"
+    },
+    {
+      "path": "docs/implementation/视频下载cn受控映射.md",
+      "sha256": "7657d22b89175747129816bd85523695d7e79fc2f914f4eeca2a76c291fc23b6"
+    },
+    {
+      "path": "docs/implementation/R06-R08-统一线路界面与整体验收.md",
+      "sha256": "6bd72c5183420a3f44d25123bb10b38bbd64442cfd2dbc425c1d6cd368914058"
+    },
+    {
+      "path": "docs/implementation/opensosen-routes-frontend-final.log",
+      "sha256": "2516b17e85960d2fb30d4f7d7aa444e6e91f939f683bddb613b638f2c20ef770"
+    },
+    {
+      "path": "docs/implementation/opensosen-routes-typescript-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/implementation/opensosen-routes-frontend-pre-final.log",
+      "sha256": "4537ffe4c271910c481a6fa047a6a40ac8ec597871fafef4b8262cbe0b7fe31a"
+    }
+  ],
+  "mainReview": "已审核线路表单、原任务绑定、冲突保留输入、旧响应隔离及相应回归；28份交接文件哈希核对一致。主审后仅更新文档状态并重新计算文档哈希，生产代码及测试未改。真实cn生成、媒体下载与发布不在通过范围。"
+}

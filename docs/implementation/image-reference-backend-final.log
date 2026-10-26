@@ -1,0 +1,122 @@
+✔ candidate validates read-only before any encrypted row; success saves check and resumable defaults atomically (166.2587ms)
+✔ 401,403,unsupported lists,invalid responses,offline and rate limits never persist candidate credentials/connections (827.6265ms)
+✔ explicit cancel/edit invalidation blocks late response even when transport ignores abort (78.8618ms)
+✔ newer candidate wins out-of-order responses; older candidate cannot create/switch connection (131.9119ms)
+✔ saving or clearing while candidate checks invalidates it; old version auth and old task snapshots do not change (99.8319ms)
+✔ onboarding revision conflict and encryption failure roll back new connection and check rows (95.4338ms)
+✔ default completion is atomic with onboarding, keeps absent model and old versions, and checks selected directory (112.1192ms)
+✔ saved credential is read only inside host when checking unchanged configuration; check does not create new version (98.3289ms)
+✔ workspace page schema is narrow; unknown pages and sensitive setting fields rejected (73.8885ms)
+✔ startup error is visible and excludes raw exception details (1.0476ms)
+✔ failed recheck of unchanged saved profile updates health while preserving cached models and credential (105.2606ms)
+✔ invalid newer check also invalidates an older in-flight candidate (86.4103ms)
+✔ actual main entry catches top-level mkdir failure and reports visible startup error (10.2044ms)
+✔ candidate and save-later reject raw/twice-encoded credential echoes in non-secret fields before any request or persistence (65.4975ms)
+✔ clearing a profile invalidates pending candidate before it can re-add credentials (62.6345ms)
+✖ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (1065.3737ms)
+✖ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (10690.159ms)
+✔ actual image result URL containing the protected credential is rejected before any download or history disclosure (424.2687ms)
+✔ actual desktop HTTP image failure rejects fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (422.2277ms)
+ℹ {"case":"fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded credential echoes before HTTP/WS/SQLite/history/log disclosure (481.6779ms)
+ℹ {"case":"twice fully percent-encoded","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (411.1756ms)
+ℹ {"case":"fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual desktop HTTP image failure rejects twice fully percent-encoded after malformed percent escapes credential echoes before HTTP/WS/SQLite/history/log disclosure (499.3355ms)
+ℹ {"case":"twice fully percent-encoded after malformed percent escapes","leakChannels":{"http":false,"websocket":false,"sqliteTask":false,"sqliteTaskItems":false,"sqliteTaskEvents":false,"history":false,"historyEvents":false,"processLog":false}}
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 1 (336.1451ms)
+✔ actual Web HTTP image failure preserves legacy upstream errors for percent-encoding depth 2 (329.8657ms)
+✔ safeStorage vault persists ciphertext only; connection summary never exposes key/ciphertext/ref (144.3615ms)
+✔ encryption unavailable/basic_text/encryption error fails closed without inserting plaintext or partial versions (111.6551ms)
+✔ changing address/key creates immutable versions; old auth and defaults never follow current configuration (77.8463ms)
+✔ a new destination requires explicit credential input; keeping a versioned credential at the same address is allowed (72.0284ms)
+✔ clear revokes every version of a connection while preserving versions/tasks/assets and other connections (86.0912ms)
+✔ decryption failure is explicit and recoverable by new version; no replacement fallback for old task auth (88.6022ms)
+✔ base URL normalization handles pasted endpoints and rejects embedded credentials/query/fragment/protocol tricks (0.7808ms)
+✔ read-only check uses only GET /models, no text-model requirement; caches visibility separately from capabilities (156.7824ms)
+✔ model absence preserves exact selected defaults; unknown visible IDs do not manufacture capabilities or upgrade evidence (90.127ms)
+✔ historical capability evidence is source/model/mode/parameters scoped and immutable (83.1639ms)
+✔ in-flight model check is deduplicated and stale result cannot overwrite a new configuration (83.8406ms)
+✔ model check classifies HTTP 401 without exposing upstream errors or forwarding redirects (90.6048ms)
+✔ model check classifies HTTP 403 without exposing upstream errors or forwarding redirects (124.7508ms)
+✔ model check classifies HTTP 404 without exposing upstream errors or forwarding redirects (87.3234ms)
+✔ model check classifies HTTP 405 without exposing upstream errors or forwarding redirects (77.5961ms)
+✔ model check classifies HTTP 503 without exposing upstream errors or forwarding redirects (82.4049ms)
+✔ model check classifies HTTP 302 without exposing upstream errors or forwarding redirects (80.6288ms)
+✔ model response validation and network/decryption errors remain distinct without raw error leakage (80.3396ms)
+✔ credential IPC validates actual sender and exact argument shape before invoking the vault (86.9915ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ v3 additive upgrade preserves v2 history and creates a consistent pre-v3 backup exactly once (74.6063ms)
+✔ version-bound legacy plugin uses exact original host, one /v1 suffix and manual redirects for submit/poll (30.1581ms)
+✔ version-bound plugin cannot send credentials to another manifest-allowed origin or in an encoded URL (0.9385ms)
+✔ check cache expires and transient failure preserves prior model timestamps without claiming current availability (91.773ms)
+✔ bound declarative and driver responses cannot echo credentials into task IDs, errors or result assets (2.643ms)
+✔ known credential detection handles full/mixed/twice percent encoding and malformed neighbors while preserving unrelated errors (1.022ms)
+✔ reference quote uses only the exact medium group and multiplies the changing base price (3.5249ms)
+✔ zero is valid; missing, ambiguous or invalid medium group never falls back to another group or a range (0.8177ms)
+✔ unknown billing expressions remain data; exact model, quota, price and fixed expression must agree (0.7574ms)
+✔ first GET initializes and merges; elapsed time and repeated page reads never refresh the public source (159.7745ms)
+✔ actual model refresh updates price once, cached model reads do not, and price failure never changes model verification (125.7063ms)
+✔ initialization and concurrent model refresh share one in-flight public request (80.4766ms)
+✔ unchanged saved validation refreshes pricing without adding awaits after persistence; a new candidate initializes on its first GET (94.7921ms)
+✔ only exact built-in connections fetch public prices; custom hosts never fetch or read keys (94.9611ms)
+✔ route revision scopes reject late quotes and initialize again when switching back to the same origin (111.8538ms)
+✔ changing the key/version isolates late callbacks and the next initialization from old caches (100.7302ms)
+✔ failed initialization is cached until explicit model refresh; it does not leak upstream errors or modify connection state (85.9908ms)
+✔ non-200, upstream failure, redirects, oversized/malformed data and stalled reads cannot become quotes (111.029ms)
+✔ actual protected HTTP pricing GET is anonymous upstream and repeated local reads never refresh it (720.0167ms)
+✔ route save changes only revision, keeps identity/key, validates conflicts and preserves legacy requests (137.626ms)
+✔ migration v10 to v11 clears old line checks but preserves versions, credentials, preferences and checksums (94.2969ms)
+✔ late route initialization clears old checks before the very first summary projection (148.2406ms)
+✔ resolver maps both approved aliases only after validating methods, exact origins and endpoints (1.9296ms)
+✔ models success/failure caches and in-flight responses cannot cross route revisions or switch back (125.9702ms)
+✔ candidate validation 200 is stale after external route revision, including failure writes (107.0616ms)
+✔ candidate validation 401 is stale after external route revision, including failure writes (75.0095ms)
+✔ candidate checks selected route; saving only route reuses key and version, and rejection refresh uses generation route (92.3828ms)
+✔ generation freezes at enqueue, duplicate after switch returns same task; poll uses current route and original credential version (214.3562ms)
+✔ queued download freezes attempt route and manual retry reads new route (157.8971ms)
+✔ legacy queued snapshot stays immutable and acquires its first transport selection before dispatch (103.3979ms)
+[plugin-registry] 已加载插件 ccode-h3@1.0.0（8 个模型）
+[plugin-registry] 已加载插件 opensosen-video@1.1.0（2 个模型）
+✔ production image text/reference and video POST/GET use selected target with original identity and no redirect POST replay (138.7446ms)
+✔ HTTP check accepts route revision and IPC saves it through the existing restricted boundary (161.5717ms)
+✔ expired source refresh and next worker call keep the queued attempt route after switching connection (138.4574ms)
+ℹ tests 76
+ℹ suites 0
+ℹ pass 74
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14874.7957
+
+✖ failing tests:
+
+test at test\workbench-connections-http.test.js:51:1
+✖ actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys (1065.3737ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + 'submitting'
+  - 'local_queued'
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:83:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'submitting',
+    expected: 'local_queued',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-connections-http.test.js:119:1
+✖ actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input (10690.159ms)
+  Error: Timed out
+      at until (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:21:11)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-connections-http.test.js:135:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7)

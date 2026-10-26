@@ -2,6 +2,7 @@
 const { createHash, randomUUID } = require('node:crypto');
 const { UUID, fail } = require('../storage/store');
 const uuid = value => { if (typeof value !== 'string' || !UUID.test(value)) throw fail('INVALID_ID'); return value; };
+const routing = require('../connections/route-policy');
 const { containsCredential } = require('../connections/redaction');
 const { isQueryableUpstreamTaskId } = require('../plugin-runtime/upstream-id');
 const { DETAILS, failure: downloadFailure } = require('../storage/download-errors');
@@ -204,6 +205,8 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const existing = db.prepare('SELECT * FROM tasks WHERE local_request_id=?').get(checked.localRequestId);
         if (!existing) return null;
         const saved = JSON.parse(existing.input_snapshot_json);
+        // Transport is server-owned and does not change the user's generation intent.
+        delete saved.transportRoute; delete checked.transportRoute;
         if (!checked.outputDirectoryVersionId && !checked.outputRootRef) {
             if(saved.outputDirectoryVersionId)checked.outputDirectoryVersionId=saved.outputDirectoryVersionId;
             if(saved.outputRootRef)checked.outputRootRef=saved.outputRootRef;
@@ -213,14 +216,18 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     function enqueue({ snapshot: input, request, mode }) {
         if (closed || updatePaused) throw fail('SERVER_NOT_ACCEPTING_TASKS', '服务正在关闭或准备更新。', 503);
+        if(Object.hasOwn(input,'transportRoute'))throw fail('INPUT_INVALID');
         let snapshot = snapshotFor(input); const duplicate = findDuplicate(snapshot);
         if (duplicate) return duplicate;
         snapshot = store.freezeOutputDirectory(snapshot);
         // A controlled preflight can establish not_dispatched. No key is kept in the record.
         connections.getAuth(snapshot.connectionVersionId);
+        const transportRoute=connections.getTransportRoute?.(snapshot.connectionVersionId)||null;
+        if(transportRoute)snapshot.transportRoute=transportRoute;
         const id = randomUUID(), execution = executionSnapshot(snapshot.mode, store.getSetting('taskExecution').value);
         db.transaction(() => {
             db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at,execution_media_kind,execution_timeout_seconds,lifecycle_version) VALUES(?,?,?,?,?,?,?,2)').run(id, 'local_queued', mode, JSON.stringify(request), iso(), execution.mediaKind, execution.timeoutSeconds);
+            if(transportRoute)db.prepare('UPDATE tasks SET transport_route_json=? WHERE id=?').run(JSON.stringify(transportRoute),id);
             store.setTaskSnapshot(id, snapshot);
             event(id, 'task_enqueued', { contractVersion: 1 }); telemetry.record(id,'queued');
         }).immediate();
@@ -271,6 +278,8 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             ctx.checkpoint();
             update(id, 'remote_completed', { result_sources_json: JSON.stringify(sources), remote_state: 'completed', raw_status: rawStatus, remote_progress: 100, task_error_json: null, error: null, next_poll_at: null, pause_reason: null });
             db.prepare("INSERT INTO task_downloads(task_id,state,created_at,updated_at) VALUES(?,'waiting',?,?) ON CONFLICT(task_id) DO UPDATE SET state='waiting',updated_at=excluded.updated_at").run(id, iso(), iso());
+            const queuedRoute=connections.getTransportRoute?.(row(id).connection_version_id)||null;
+            if(queuedRoute)db.prepare('UPDATE task_downloads SET transport_route_json=? WHERE task_id=? AND transport_route_json IS NULL').run(JSON.stringify(queuedRoute),id);
             if (row(id).lifecycle_version === 2) {
                 db.prepare("UPDATE tasks SET generation_outcome='completed',generation_finished_at=?,remote_outcome='confirmed_result' WHERE id=? AND generation_outcome IS NULL").run(iso(),id);
                 queueDownloadAttempt(id);
@@ -283,7 +292,10 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     async function submit(id, signal) {
         let task = row(id), auth, chosen;
         try {
-            auth = connections.getAuth(task.connection_version_id); chosen = adapter(task);
+            auth = connections.getAuth(task.connection_version_id);
+            let selected=task.transport_route_json?JSON.parse(task.transport_route_json):JSON.parse(task.input_snapshot_json).transportRoute;
+            if(!selected){selected=connections.getTransportRoute?.(task.connection_version_id)||null;if(selected){db.prepare('UPDATE tasks SET transport_route_json=? WHERE id=? AND transport_route_json IS NULL').run(JSON.stringify(selected),id);task=row(id);}}
+            auth.transportRoute=routing.snapshot(selected);chosen = adapter(task);
             if (chosen.preflight) await chosen.preflight(task, JSON.parse(task.input_snapshot_json), {...auth,signal});
         } catch (error) {
             if (closed || localOutcome(row(id))) return;
@@ -325,7 +337,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (row(id).upstream_task_id) {pause(id,'accepted_response_unrecognized','REMOTE_STATUS_UNKNOWN');return;}
             const rejected = error.transmission === 'response_received' && error.definiteRejection === true && !row(id).upstream_task_id;
             const authenticationRejected = rejected && [401,403].includes(error.httpStatus);
-            if(rejected && error.modelUnavailable) void connections.modelRejected?.(JSON.parse(row(id).input_snapshot_json).connectionVersionId)?.catch(()=>{});
+            if(rejected && error.modelUnavailable) void connections.modelRejected?.(JSON.parse(row(id).input_snapshot_json).connectionVersionId,auth.transportRoute)?.catch(()=>{});
             setError(id, rejected ? 'failed' : 'submission_unknown', authenticationRejected ? 'AUTH_REJECTED' : rejected && error.modelUnavailable ? 'MODEL_UNAVAILABLE' : rejected ? 'REMOTE_REJECTED' : 'SUBMISSION_UNKNOWN', authenticationRejected ? 'credential' : 'submit', { pause_reason: rejected ? null : 'submission_unknown' }, { transmission: rejected ? 'response_received' : 'may_have_reached_upstream', ...(Number.isInteger(error.httpStatus) ? { httpStatus: error.httpStatus } : {}), ...(error.credentialRedacted ? { message: '上游错误包含连接凭据，已隐藏详情。' } : {}) });
         }
     }
@@ -379,7 +391,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         return track(id, task, async () => {
             let auth;
             try {
-                auth = connections.getAuth(task.connection_version_id);
+                auth = {...connections.getAuth(task.connection_version_id),transportRoute:connections.getTransportRoute?.(task.connection_version_id)||null};
                 ctx.checkpoint();
                 telemetry.query(id,ctx);
                 const outcome = await adapter(task).poll(task, JSON.parse(task.input_snapshot_json), { ...auth, ...ctx.options });
@@ -462,7 +474,8 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     function queueDownloadAttempt(id) {
         const task=row(id), attemptId=randomUUID(), timeoutSeconds=settings()[kind(task)+'DownloadTimeoutSeconds'];
-        db.prepare('INSERT INTO task_download_attempts(id,task_id,timeout_seconds,queued_at) VALUES(?,?,?,?)').run(attemptId,id,timeoutSeconds,iso());
+        const selected=connections.getTransportRoute?.(task.connection_version_id)||null;
+        db.prepare('INSERT INTO task_download_attempts(id,task_id,timeout_seconds,queued_at,transport_route_json) VALUES(?,?,?,?,?)').run(attemptId,id,timeoutSeconds,iso(),selected?JSON.stringify(selected):null);
         return attemptId;
     }
     async function refreshDownload(task, ctx) {
@@ -474,7 +487,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
         const started=job.refresh_budget_started_at?Date.parse(job.refresh_budget_started_at):now();
         if(now()-started>=rules.budgetMs)throw downloadFailure('DOWNLOAD_EXPIRED');
         db.prepare('UPDATE task_downloads SET refresh_attempts=refresh_attempts+1,refresh_budget_started_at=? WHERE task_id=?').run(iso(started),task.id);
-        const auth=connections.getAuth(task.connection_version_id);
+        const auth={...connections.getAuth(task.connection_version_id),transportRoute:ctx.options.transportRoute};
         try {
             telemetry.query(task.id,ctx);
             const outcome=await adapter(task).poll(task,JSON.parse(task.input_snapshot_json),{...auth,...ctx.options}); ctx.checkpoint();
@@ -536,6 +549,9 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if (attempt && !attempt.started_at) db.prepare('UPDATE task_download_attempts SET started_at=?,deadline_at=? WHERE id=? AND started_at IS NULL AND outcome IS NULL').run(iso(),iso(now()+attempt.timeout_seconds*1000),attempt.id);
             ctx=context(row(original.id));
         }catch(error){if(error.code==='TASK_EXECUTION_ENDED')return;throw error;}
+        const queuedRoute=ctx.downloadAttempt?.transport_route_json||(!ctx.downloadAttempt?job.transport_route_json:null);
+        ctx.options.transportRoute=queuedRoute?JSON.parse(queuedRoute):connections.getTransportRoute?.(original.connection_version_id)||null;
+        if(ctx.downloadAttempt&&!ctx.downloadAttempt.transport_route_json&&ctx.options.transportRoute)db.prepare('UPDATE task_download_attempts SET transport_route_json=? WHERE id=? AND transport_route_json IS NULL').run(JSON.stringify(ctx.options.transportRoute),ctx.token);
         ctx.options.readCheckpoint=source=>readCheckpoint(original.id,source);
         ctx.options.saveCheckpoint=(source,index,assetId)=>{ctx.checkpoint();if(!source.sourceKey)return;const asset=store.getAsset(assetId);db.prepare('INSERT INTO task_download_files VALUES(?,?,?,?,?,?) ON CONFLICT(task_id,source_key) DO UPDATE SET asset_id=excluded.asset_id,sha256=excluded.sha256,byte_length=excluded.byte_length,position=excluded.position').run(original.id,source.sourceKey,assetId,asset.sha256,asset.byteLength,index);};
         ctx.options.legacyDownloadLimit=original.lifecycle_version===1&&!ctx.downloadAttempt;

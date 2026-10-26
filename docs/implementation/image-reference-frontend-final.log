@@ -1,0 +1,22 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/lib/__tests__/connection-client.test.ts (7 tests) 26ms
+ ✓ src/components/workbench/__tests__/model-refresh.test.tsx (6 tests) 311ms
+ ✓ src/components/workbench/__tests__/image-pricing.test.tsx (9 tests) 753ms
+   ✓ medium reference design shows a numeric per-image price and keeps size, quality and generation unchanged  445ms
+ ✓ src/components/workbench/__tests__/model-catalog.test.tsx (7 tests) 795ms
+   ✓ direct seconds input updates integer-cent price and invalid input removes quotation and disables submit  468ms
+ ✓ src/components/workbench/__tests__/image-controls.test.tsx (6 tests) 1502ms
+   ✓ default selects proven minimum while displaying separate specs; explicit controls and clearing back to auto use the correct immutable capability  556ms
+   ✓ result-to-edit shell flow checks the original asset, updates the image draft and performs no generation  423ms
+ ✓ src/components/workbench/__tests__/connection-routes.test.tsx (14 tests) 1697ms
+   ✓ OpenSosen connection transport routes > defaults a new built-in connection to cn and shows its actual read-only models target  376ms
+ ✓ src/components/workbench/__tests__/workbench-b3.test.tsx (11 tests) 2234ms
+   ✓ connection form > requires key and valid base, switches custom to empty, and shows canonical read-only target  428ms
+   ✓ skip persists and four draft modes survive navigation/remount; configuring returns to exact draft without generation  904ms
+
+ Test Files  7 passed (7)
+      Tests  60 passed (60)
+   Start at  18:12:12
+   Duration  5.41s (transform 1.33s, setup 1.03s, collect 5.56s, tests 7.32s, environment 6.77s, prepare 1.44s)

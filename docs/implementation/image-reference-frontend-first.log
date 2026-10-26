@@ -1,0 +1,9 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/image-pricing.test.tsx (9 tests) 365ms
+
+ Test Files  1 passed (1)
+      Tests  9 passed (9)
+   Start at  18:11:37
+   Duration  2.13s (transform 156ms, setup 99ms, collect 426ms, tests 365ms, environment 641ms, prepare 90ms)

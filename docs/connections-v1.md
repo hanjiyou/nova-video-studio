@@ -1,5 +1,27 @@
 # 连接、凭据与能力接口 v1
 
+## 2026-10-26 中质量公开参考价（已实现，源码与定向验证主审通过）
+
+GET /api/nova/connections/:id/pricing 保持受保护的本地只读入口。上游只允许精确内置OpenSosen所选cn/com源的 /api/pricing，匿名GET、不读Key、不转发本地授权头、不跟随重定向。保留响应大小及超时上限。
+
+仅投影flare模型已知固定按张规则，精确使用“【生图分组】Image2原生-中质量”的基础价×倍率，返回单一每张数字，不再返回min/max范围。响应携带连接版本、线路及修订号、陈旧标记和不可用原因。缺目标组或非法规则明确不可用，合法0保留；不执行表达式。首次初始化或实际模型刷新更新；普通读取使用内存快照、不因TTL或重挂载外呼，并发合并，换身份隔离及迟到保护。报价失败不改变模型验证结论或生成能力，无新增持久化、定时轮询或账号计费查询。见[需求补充](模型清单与参数费用联动实施计划.md)。
+
+
+## 统一访问线路补充（2026-10-26）
+
+第一批后端已通过源码与离线范围主审；第二批界面与契约已完成，源码与离线范围主审通过，见[实施规划](OpenSosen线路切换实施规划.md)和[第二批记录](implementation/R06-R08-统一线路界面与整体验收.md)。本节替代下文“每次保存均创建版本”、仅按版本缓存及早期固定检查策略中同主题的旧描述。
+
+- 仅 provider=opensosen 且 baseUrl 精确为 `https://newapi.opensosen.com/v1` 或 `https://newapi.opensosen.cn/v1` 的内置源支持线路。SQLite v11 追加 `connection_routes(connection_id,route,revision)`，新建及旧内置连接初始化为 cn/revision=1，并清除旧线路检查；其他供应商/自定义地址不自动纳入。
+- `baseUrl`、`connectionVersionId` 和原 Key 引用仍为不可变身份；只切线不创建新连接版本，不需重新输入 Key。使用既有 com 身份的线路控件切 cn，不以改地址模拟切线；直接编辑 cn 身份不扩展生成能力矩阵。其他地址变化仍需新 Key。
+- `ConnectionSummary` 和 models 新增 `routeSupported:boolean`、`route:'cn'|'com'|null`、`routeRevision:number|null`。自定义源为 false/null/null。前端兼容旧摘要缺字段：保留原 baseUrl 与检查目标，不猜测其已保存 cn，也不假装宿主支持线路。
+- `saveConnection` / `validateAndSaveConnection` 增加可选 `route` 和 `expectedRouteRevision`。更新现有连接时，若显式带 route，必须携带当前修订；不匹配返回 409 `CONNECTION_ROUTE_CONFLICT`，不覆盖其他操作。省略 route 保留当前线路；省略字段的旧调用继续兼容。原 `expectedVersionId` 保护仍保留。
+- `check` 增加可选 `expectedRouteRevision`，页面读取到修订后须带上；仅 GET 所选实际目标的 `/v1/models`。候选验证使用当前表单线路，编辑/取消/卸载使旧候选作废；线路冲突或宿主 stale 回执不推进首次引导。
+- 成功缓存10分钟、失败退避30秒、在途合并及候选验证按连接版本与 route/revision 隔离。设置/模型清单旧线路的迟到响应不覆盖当前线路；这不丢弃已派发生成响应。明确型号拒绝刷新也必须匹配原任务版本和线路，历史缺记录不推断当前 cn。
+- models 的 `transportEvidence` 为 `generation_unverified`（cn）或 `see_capability_evidence`。后者只表示查看具体能力证据，不能等同所有 com 模式已验证；列表可见/检查成功不授予生成能力，Preview 等既有闸门保持。
+- 设置显示实际所选只读地址、当前保存地址和只读检查目标；自定义地址仍可编辑。切线参与 dirty、更新安装阻止及候选取消。冲突“重新读取线路与版本”同步外层当前连接，并保留本次名称、地址、线路和 Key；须再次明确保存/测试，不能静默覆盖用户输入。
+
+线路不控制VPN，不保证更快。新建任务冻结所选线路；已发出的请求保持原线路，后续查询和新的下载尝试使用原任务所属连接的当前线路，始终使用原版本Key。详见[任务契约](tasks-v1.md)与[媒体契约](b2-media-v1.md)。
+
 T05 已接入原版本凭据闸门、完整查询暂停和保守占位，动作语义见[任务服务契约](tasks-v1.md)；不会把旧损坏/撤销版本重绑到新凭据。下文保留 T04 的原始阶段边界。
 
 T04提供宿主服务和接口基础，图片、视频使用同一个默认连接。完整设置表单和首次启动界面由T10接入；生成适配、完整队列与恢复由T05–T08接入。本阶段不读取、导入或迁移旧版exe/data、localStorage或IndexedDB中的凭据。

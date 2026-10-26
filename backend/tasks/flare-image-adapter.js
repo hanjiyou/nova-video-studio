@@ -1,4 +1,5 @@
 'use strict';
+const routing = require('../connections/route-policy');
 const { modelRejected } = require('../connections/model-catalog');
 const { containsCredential } = require('../connections/redaction');
 const { buildRequestInit } = require('../plugin-runtime/request-body');
@@ -77,8 +78,9 @@ function createFlareImageAdapter({ validateCapability, readAsset, getAsset, vers
                 const init=buildRequestInit(request, { ...auth, inputAssets: snapshot.inputAssets }, readAsset);
                 auth.checkpoint?.();
                 auth.phase?.('submitting');
-                auth.diagnostic?.('request_started',{operation:'submit'});
-                const response = await fetch(request.url, { ...init, signal: controller.signal });
+                const transport=routing.resolveRequest(auth,request,'submit',auth.transportRoute);
+                auth.diagnostic?.('request_started',{operation:'submit',...routing.diagnostic(transport)});
+                const response = await fetch(transport.url, { ...init, signal: controller.signal });
                 auth.phase?.('receiving'); auth.diagnostic?.('response_headers',{httpStatus:response.status});
                 const text = await response.text(); // Includes the complete body in the request deadline.
                 auth.checkpoint?.(); auth.diagnostic?.('body_received',{byteLength:Buffer.byteLength(text)}); auth.phase?.('parsing');

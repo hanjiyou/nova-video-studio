@@ -295,6 +295,25 @@ CREATE TRIGGER task_removed_revision AFTER INSERT ON workbench_removed_tasks BEG
 CREATE TABLE task_download_actions(request_id TEXT PRIMARY KEY,task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,attempt_id TEXT NOT NULL REFERENCES task_download_attempts(id),created_at TEXT NOT NULL);
 CREATE TABLE task_download_files(task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,source_key TEXT NOT NULL,asset_id TEXT NOT NULL REFERENCES assets(id),sha256 TEXT NOT NULL,byte_length INTEGER NOT NULL,position INTEGER NOT NULL,PRIMARY KEY(task_id,source_key));
 ` },
+    { version: 11, name: 'opensosen-transport-routes', sql: `
+CREATE TABLE connection_routes (
+ connection_id TEXT PRIMARY KEY REFERENCES connections(id),route TEXT NOT NULL CHECK(route IN ('cn','com')),
+ revision INTEGER NOT NULL CHECK(typeof(revision)='integer' AND revision>=1)
+);
+INSERT INTO connection_routes(connection_id,route,revision)
+ SELECT c.id,'cn',1 FROM connections c JOIN connection_versions v ON v.id=c.current_version_id
+ WHERE v.provider='opensosen' AND v.base_url IN ('https://newapi.opensosen.com/v1','https://newapi.opensosen.cn/v1');
+DELETE FROM connection_checks WHERE connection_version_id IN (SELECT v.id FROM connection_versions v JOIN connection_routes r ON r.connection_id=v.connection_id);
+ALTER TABLE tasks ADD COLUMN transport_route_json TEXT;
+ALTER TABLE task_download_attempts ADD COLUMN transport_route_json TEXT;
+ALTER TABLE task_downloads ADD COLUMN transport_route_json TEXT;
+CREATE TRIGGER task_transport_route_immutable BEFORE UPDATE OF transport_route_json ON tasks
+WHEN OLD.transport_route_json IS NOT NULL AND NEW.transport_route_json IS NOT OLD.transport_route_json
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_TRANSPORT_ROUTE'); END;
+CREATE TRIGGER download_transport_route_immutable BEFORE UPDATE OF transport_route_json ON task_download_attempts
+WHEN OLD.transport_route_json IS NOT NULL AND NEW.transport_route_json IS NOT OLD.transport_route_json
+BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DOWNLOAD_ROUTE'); END;
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

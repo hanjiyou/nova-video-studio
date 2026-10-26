@@ -30,7 +30,10 @@ async function setup(t, options = {}) {
     const db = new Database(path.join(directory, 'tasks.sqlite'));
     await migrateDatabase({ db, dbPath: db.name });
     const safeStorage = protection(), vault = createCredentialVault({ db, safeStorage });
-    const service = createConnectionService({ db, vault, ...options });
+    // These cases assert the model protocol; public price requests have their own dedicated suite.
+    const fetchImpl = options.fetchImpl ? async (url, init) => new URL(url).pathname === '/api/pricing'
+        ? Response.json({ data: [] }) : options.fetchImpl(url, init) : undefined;
+    const service = createConnectionService({ db, vault, ...options, ...(fetchImpl ? { fetchImpl } : {}) });
     t.after(() => {
         if (db.open)
             db.close();
@@ -127,7 +130,7 @@ test('read-only check uses only GET /models, no text-model requirement; caches v
     const checked = await f.service.check(connection.connectionId, { connectionVersionId: connection.connectionVersionId });
     assert.equal(checked.connection.validationState, 'verified');
     assert.equal(calls.length, 1);
-    assert.equal(calls[0].url, OPENSOSEN_URL + '/models');
+    assert.equal(calls[0].url, 'https://newapi.opensosen.cn/v1/models');
     assert.equal(calls[0].init.method, 'GET');
     assert.equal(calls[0].init.redirect, 'manual');
     assert.equal(calls[0].init.headers.Authorization, 'Bearer ' + fixtureKey);

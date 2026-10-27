@@ -105,6 +105,7 @@ export async function actOnWorkbenchTask(taskId: string, action: WorkbenchTaskAc
 
 /** Canonical B1 input. The caller persists this intent before sending; failed POSTs are never retried here. */
 export interface WorkbenchTaskInput {
+  groupId?: string; groupName?: string; groupDirectoryVersionId?: string;
   localRequestId: string;
   connectionVersionId: string;
   capabilityVersionId: string;

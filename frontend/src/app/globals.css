@@ -860,3 +860,96 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .nova-workbench button.wb-guidance-action { flex:0 0 auto; min-height:44px; padding:6px 8px; border-color:transparent; background:transparent; color:#ddc7ff; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
 .nova-workbench button.wb-guidance-action:hover:not(:disabled) { background:#39303f; border-color:#61516c; }
 @media(max-width:480px) { .wb-generation-guidance li { flex-wrap:wrap; gap:0 8px; } .wb-generation-guidance li>span { flex-basis:70%; } .wb-duration-row { gap:8px; } }
+
+/* Library previews keep the existing dialog and card actions within narrow viewports. */
+.wb-card-preview-hint { color:var(--wb-muted); font-size:11px; }
+.wb-library-preview { min-width:0; overflow-wrap:anywhere; }
+.wb-library-preview-media { display:flex; align-items:center; justify-content:center; background:#101117; border-radius:8px; overflow:hidden; }
+.wb-library-preview-media img,.wb-library-preview-media video { display:block; width:100%; min-width:0; max-width:100%; height:auto; max-height:65dvh; object-fit:contain; }
+.wb-library-preview .wb-empty { min-height:180px; }
+.wb-library-preview .wb-preview-actions { gap:8px; }
+
+.wb-recent-video-limit { max-width:240px; }
+
+/* Grouped media cards and real download state. */
+.wb-download-status { display:grid; gap:7px; min-width:0; margin:10px 0; font-size:12px; }
+.wb-download-status p { margin:0; overflow-wrap:anywhere; }
+.wb-download-phase { display:flex; gap:6px; align-items:center; font-weight:600; color:#d4b8ff; }
+.wb-download-data { display:flex; gap:10px; justify-content:space-between; align-items:baseline; color:#ddd5e8; font-variant-numeric:tabular-nums; }
+.wb-download-data strong { color:#cfb8fb; font-size:12px; white-space:nowrap; }
+.wb-download-speed { color:var(--wb-muted); font-size:11px; }
+.wb-download-progress { display:block; appearance:none; -webkit-appearance:none; width:100%; height:5px; border:0; border-radius:99px; overflow:hidden; background:#312b3c; }
+.wb-download-progress::-webkit-progress-bar { background:#312b3c; border-radius:99px; }
+.wb-download-progress::-webkit-progress-value { background:#a68ae9; border-radius:99px; }
+.wb-download-progress::-moz-progress-bar { background:#a68ae9; border-radius:99px; }
+.wb-download-indeterminate { height:5px; background:#312b3c; border-radius:99px; overflow:hidden; }
+.wb-download-indeterminate span { display:block; width:32%; height:100%; border-radius:99px; background:#8970bc; }
+.wb-download-actions:empty { display:none; }
+
+.wb-library-grid,.wb-recent-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),320px)); gap:16px; align-items:stretch; }
+.wb-library-grid .wb-media-card,.wb-recent-list .wb-media-card { display:flex; flex-direction:column; width:auto; max-width:none; min-width:0; padding:0; border:1px solid #40394b; border-radius:10px; background:#201d29; overflow:visible; }
+.nova-workbench .wb-media-card .wb-card-open { border-radius:10px 10px 0 0; overflow:hidden; }
+.wb-card-cover { position:relative; width:100%; aspect-ratio:16/9; background:#131219; overflow:hidden; border-radius:9px 9px 0 0; }
+.wb-media-card .wb-card-cover img,.wb-media-card .wb-card-cover video,.wb-media-card .wb-card-cover .wb-library-placeholder { display:block; width:100%; height:100%; margin:0; object-fit:cover; }
+.wb-media-card .wb-card-cover .wb-library-placeholder { display:flex; }
+.wb-cover-kind,.wb-cover-meta { position:absolute; padding:4px 7px; color:#fff; background:#101016c9; border-radius:5px; font-size:10px; line-height:1; }
+.wb-cover-kind { top:8px; left:8px; display:flex; gap:4px; align-items:center; }
+.wb-cover-meta { right:8px; bottom:8px; }
+.wb-cover-meta:empty { display:none; }
+.wb-cover-play { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:grid; place-items:center; width:42px; height:42px; border-radius:50%; color:#fff; background:#11111180; }
+.wb-card-info { padding:12px 12px 8px; }
+.wb-task-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 7px; border-radius:5px; line-height:1.25; font-size:11px; background:#382c49; color:#d4b8ff; }
+.wb-task-badge.wb-badge-completed { color:#a4d8be; background:#213a30; }
+.wb-task-badge.wb-badge-warning { color:#f0c68b; background:#443321; }
+.wb-media-card .wb-card-prompt { margin:8px 0; font-size:13px; line-height:1.6; -webkit-line-clamp:2; }
+.wb-media-card .wb-card-model { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#c0b6ce; font-size:11px; }
+.wb-media-card small { color:var(--wb-muted); font-size:10px; }
+.wb-card-state { padding:0 12px 8px; font-size:12px; }
+.wb-card-state .wb-download-status { margin:2px 0; }
+.wb-media-card .wb-card-actions { margin:auto 0 0; padding:10px 12px; display:flex; align-items:center; gap:7px; border-top:1px solid #383140; flex-wrap:wrap; }
+.wb-task-controls { display:flex; gap:7px; align-items:center; flex-wrap:wrap; min-width:0; }
+.wb-task-controls>p { flex-basis:100%; }
+.wb-card-menu { position:relative; margin-left:auto; }
+.nova-workbench .wb-card-menu summary { display:grid; place-items:center; cursor:pointer; padding:6px; border-radius:5px; border:1px solid #494052; list-style:none; }
+.wb-card-menu summary::-webkit-details-marker { display:none; }
+.wb-card-menu>div { position:absolute; z-index:3; min-width:140px; right:0; top:calc(100% + 5px); display:grid; gap:5px; padding:6px; background:#282330; border:1px solid #655373; border-radius:7px; box-shadow:0 7px 25px #0005; }
+.wb-card-menu button { text-align:left; white-space:nowrap; }
+.wb-card-open:focus-visible,.wb-card-menu summary:focus-visible { outline:2px solid #b89aef; outline-offset:3px; }
+@media(max-width:520px) { .wb-library-grid,.wb-recent-list { grid-template-columns:minmax(0,1fr); } }
+
+.wb-draft-fieldset { min-width:0; margin:0; padding:0; border:0; }
+.wb-draft-fieldset:disabled { opacity:.7; }
+.wb-group-picker { margin:12px 0 18px; padding:12px 16px; background:#211d2a; border:1px solid #40364d; border-radius:10px; }
+.wb-group-picker>div { display:flex; gap:12px; align-items:end; }
+.wb-group-picker label { flex:1; max-width:360px; }
+.wb-group-picker select { margin-top:6px; }
+.wb-output-location { overflow-wrap:anywhere; word-break:break-word; }
+.wb-group-management { list-style:none; padding:0; display:grid; gap:8px; }
+.wb-group-management li { padding:10px; border:1px solid #44384f; border-radius:7px; display:flex; gap:10px; flex-wrap:wrap; }
+.wb-group-management .wb-output-location { width:100%; font-size:11px; color:var(--wb-muted); }
+@media(max-width:520px) { .wb-group-picker>div { align-items:stretch; flex-direction:column; } }
+
+.wb-library-layout { display:grid; grid-template-columns:180px minmax(0,1fr); gap:20px; margin-top:18px; }
+.wb-library-content { min-width:0; }
+.wb-group-sidebar { display:flex; flex-direction:column; gap:6px; border-right:1px solid #40364b; padding-right:14px; }
+.nova-workbench .wb-group-sidebar button { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:10px; background:transparent; border-color:transparent; text-align:left; overflow-wrap:anywhere; }
+.nova-workbench .wb-group-sidebar button[aria-current=page] { background:#49345e; color:#e3caff; border-color:#74518d; }
+.wb-group-sidebar small { color:var(--wb-muted); }
+.wb-library-filters { grid-template-columns:minmax(0,1fr) 140px; }
+@media(max-width:850px) { .wb-library-layout { grid-template-columns:minmax(0,1fr); } .wb-group-sidebar { flex-direction:row; flex-wrap:wrap; border-right:0; border-bottom:1px solid #40364b; padding:0 0 12px; } .wb-library-filters { grid-template-columns:1fr; } }
+
+.wb-all-tasks-filters { display:flex; gap:12px; flex-wrap:wrap; margin:14px 0; }
+.wb-all-tasks-filters label { flex:1; min-width:180px; }
+.wb-dialog:has(.wb-all-tasks-filters) { width:min(1150px,calc(100vw - 32px)); max-width:none; }
+
+.wb-recent-list { align-items:start; }
+
+.wb-group-sidebar button[data-drop-active=true] { outline:2px solid #c4a0ff; background:#52396a; }
+.wb-media-card[draggable=true] .wb-card-cover { cursor:grab; }
+.wb-media-card[data-group-moving=true] { opacity:.7; }
+.wb-history-organize-list { max-height:50vh; overflow:auto; display:grid; gap:10px; margin:14px 0; }
+.wb-history-organize-list article { border:1px solid #4b3d57; border-radius:8px; padding:12px; }
+.wb-history-paths { display:grid; grid-template-columns:60px minmax(0,1fr); gap:6px; font-size:11px; color:var(--wb-muted); }
+.wb-history-paths dd { margin:0; overflow-wrap:anywhere; }
+
+.wb-library-layout[data-dragging-task] .wb-group-sidebar button[data-drop-disabled=true] { opacity:.5; cursor:not-allowed; }

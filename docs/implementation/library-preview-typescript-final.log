@@ -1,0 +1,1 @@
+Command: npx tsc --noEmit --incremental false (cwd: frontend); stdout/stderr: empty; exit code: 0. Metadata recorded after the completed run.

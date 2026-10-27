@@ -1,0 +1,28 @@
+✔ G02 library requires durable complete-save fact and formal bound outputs; partial checkpoints and remote completion are excluded (187.6479ms)
+✔ G02 missing/corrupt previously saved work remains in library and saved_at cannot be erased (106.7697ms)
+✔ G02 failed first download enters library only after retry succeeds, retains initial failure and stays after later failed retry (466.5212ms)
+✔ G02 library hiding and task-display removal are independent, with matching group work/task counts (154.0679ms)
+✔ G02 group/type/search/category filters run before SQL pagination and created-time ordering stays stable (1313.7085ms)
+✔ G02 category mapping keeps unknown/paused/restart/old failures discoverable, retry-active wins over prior local outcome (387.8068ms)
+✔ G02 actual HTTP query/count boundary accepts reviewed filters and rejects invalid categories (482.3529ms)
+✔ G02 unavailable default root preserves saved library record as missing and restores when volume returns (180.4322ms)
+✔ G01 v11 upgrade preserves all asset references/checksums/legacy paths and creates stable default membership (125.1581ms)
+✔ G01 groups persist, create Unicode media directories and reject reserved/invalid/case-equivalent names (89.2155ms)
+✔ G01 unregistered same-name files/directories are preserved and root aliases recognize their own groups (168.9323ms)
+✔ G01 group+mode drafts isolate revisions and grouped references protect output deletion (241.2181ms)
+✔ G01 new default and selected group outputs use stable readable names, distinct equal bytes and local creation time (454.0413ms)
+✔ G01 root changes keep old task snapshot/location and create new logical group location at current root (295.9004ms)
+✔ G01 collision allocation never overwrites user file; ownership survives publication-checkpoint interruption (249.9002ms)
+✔ G01 unsafe directory junctions are rejected before generation and reading, outside files stay intact (188.2905ms)
+✔ G01 complete and temporary path budgets reject before any upstream POST (91.9524ms)
+✔ G01 real video decode, worker save, asset read, native save-copy/reveal and restart work with Chinese spaces parentheses ampersands (396.9551ms)
+✔ G01 storage HTTP groups and grouped/default draft aliases persist across a real backend restart (902.1192ms)
+✔ G01 dispatch rechecks a queued task directory after adapter preflight and never submits when root becomes unsafe (111.5221ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3526.5193

@@ -10,7 +10,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
         const snapshot = freeze(boundary.snapshotFor(input, require('../plugins/opensosen-video/manifest.json').version));
         boundary.validateInputs(snapshot, auth, store);
         boundary.validateCapability(db, snapshot, auth);
-        const frozen = Object.fromEntries(['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef'].map(key => [key,snapshot[key]]));
+        const frozen = Object.fromEntries(['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId'].filter(key => snapshot[key] !== undefined).map(key => [key,snapshot[key]]));
         const prior = db.prepare('SELECT input_json FROM workbench_submission_intents WHERE local_request_id=?').get(input.localRequestId);
         if (prior && canonical(JSON.parse(prior.input_json)) !== canonical(frozen)) throw fail('LOCAL_REQUEST_CONFLICT', '该本地提交意图已存在，不能更改。', 409);
         db.prepare('INSERT OR IGNORE INTO workbench_submission_intents(local_request_id,input_json,created_at) VALUES(?,?,?)').run(input.localRequestId, canonical(frozen), new Date().toISOString());
@@ -56,7 +56,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
             if (handled.has(object.key)) continue;
             handled.add(object.key);
             const aliases = new Set(object.assets.map(item => item.id));
-            const other = object.assets.some(item => db.prepare("SELECT (SELECT count(*) FROM task_assets WHERE asset_id=? AND (task_id<>? OR role='input')) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) + (SELECT count(*) FROM task_download_files WHERE asset_id=? AND task_id<>?) AS n").get(item.id,idValue,item.id,item.id,idValue).n);
+            const other = object.assets.some(item => db.prepare("SELECT (SELECT count(*) FROM task_assets WHERE asset_id=? AND (task_id<>? OR role='input')) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) + (SELECT count(*) FROM group_draft_assets WHERE asset_id=?) + (SELECT count(*) FROM task_download_files WHERE asset_id=? AND task_id<>?) AS n").get(item.id,idValue,item.id,item.id,item.id,idValue).n);
             const intentUses = submissions().some(intent => !intent.taskId && intent.input.inputAssets.some(item => aliases.has(item.assetId)));
             const candidateUses = db.prepare('SELECT result_sources_json FROM tasks WHERE id<>? AND result_sources_json IS NOT NULL').all(idValue).some(task => { try { return JSON.parse(task.result_sources_json).some(source => aliases.has(source.assetId)); } catch { return true; } });
             const legacyUses = object.assets.some(item => db.prepare('SELECT 1 FROM asset_legacy_links WHERE asset_id=? LIMIT 1').get(item.id));

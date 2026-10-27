@@ -1,0 +1,336 @@
+{
+  "scope": "Actual mounted WorkbenchShell/Library/MediaTaskCard/DownloadStatus. Synthetic API state and media served only from loopback; no app build, real generation, vault or user database.",
+  "checks": [
+    {
+      "name": "generation-wide",
+      "status": "passed",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "covers": [
+        "cover"
+      ],
+      "progress": [
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        }
+      ],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "generation-narrow",
+      "status": "passed",
+      "viewport": 960,
+      "documentWidth": 960,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "covers": [
+        "cover"
+      ],
+      "progress": [
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        }
+      ],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "generation-390",
+      "status": "passed",
+      "viewport": 390,
+      "documentWidth": 390,
+      "cardWidths": [
+        326,
+        326,
+        326,
+        326,
+        326,
+        326
+      ],
+      "covers": [
+        "cover"
+      ],
+      "progress": [
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        }
+      ],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "library-wide",
+      "status": "passed",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320
+      ],
+      "covers": [
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "progress": [],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "library-390",
+      "status": "passed",
+      "viewport": 390,
+      "documentWidth": 390,
+      "cardWidths": [
+        326,
+        326,
+        326
+      ],
+      "covers": [
+        "cover",
+        "cover",
+        "cover"
+      ],
+      "progress": [],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "recovery-wide",
+      "status": "passed",
+      "viewport": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320,
+        320,
+        320
+      ],
+      "covers": [],
+      "progress": [
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        }
+      ],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "recovery-390",
+      "status": "passed",
+      "viewport": 390,
+      "documentWidth": 390,
+      "cardWidths": [
+        326,
+        326,
+        326,
+        326,
+        326,
+        326
+      ],
+      "covers": [],
+      "progress": [
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        },
+        {
+          "height": "5px",
+          "radius": "99px"
+        }
+      ],
+      "visibleButtonsFit": true
+    },
+    {
+      "name": "library-drop-target",
+      "status": "passed",
+      "viewport": 1280,
+      "width": 1280
+    },
+    {
+      "name": "library-menu",
+      "status": "passed",
+      "viewport": 1280,
+      "width": 1280
+    },
+    {
+      "name": "regroup-dialog",
+      "status": "passed",
+      "viewport": 1280,
+      "width": 1280
+    },
+    {
+      "name": "regroup-dialog-390",
+      "status": "passed",
+      "viewport": 390,
+      "width": 390
+    },
+    {
+      "name": "group-manager",
+      "status": "passed",
+      "viewport": 1280,
+      "width": 1280
+    },
+    {
+      "name": "history-preview",
+      "status": "passed",
+      "viewport": 1280,
+      "width": 1280
+    },
+    {
+      "name": "history-preview-390",
+      "status": "passed",
+      "viewport": 390,
+      "width": 390
+    }
+  ],
+  "media": {
+    "decoded": {
+      "width": 160,
+      "height": 96,
+      "duration": 2,
+      "controls": true,
+      "contain": "contain"
+    },
+    "play": true,
+    "seek": true,
+    "fullscreen": true,
+    "closeStopsAndReleases": true
+  },
+  "requests": [
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/connections/current",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/settings/workspace",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/settings/onboarding",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/image.text",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.text",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.single_reference",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.dual_reference",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=6&kind=video&scope=workbench&groupId=00000000-0000-4000-8000-000000000002",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/submissions",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/groups/history-preview",
+      "query": "",
+      "method": "GET"
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,448 @@
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (917.7718ms)
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (707.9372ms)
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (392.1916ms)
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (673.9956ms)
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (464.6023ms)
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (677.0183ms)
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (350.6228ms)
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (340.6102ms)
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (769.8991ms)
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (563.2328ms)
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (524.087ms)
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (347.1756ms)
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (357.3614ms)
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (1348.9782ms)
+✔ I01 exact image/video classification and finite integer settings reject coercion and unknown fields (3.1418ms)
+✔ I01 taskExecution defaults are read-only, writes are revisioned, and invalid values never change persisted config (74.8597ms)
+✖ I01 v6 A-shaped WAL database upgrades with readable hashed backup, no rewrites, no network and no invented legacy budgets (39.1122ms)
+✔ I01 historical migrations 1-6 keep their exact released SQL checksums (1.2259ms)
+✖ I01 v7 DDL and history roll back atomically on failure with a usable pre-upgrade backup (39.3739ms)
+✔ I01 every new mode snapshots its own timeout without modifying immutable input or enabling dispatch (208.9379ms)
+✔ I01 dispatch sets one attempt/deadline from the creation snapshot after queue time; setting changes and replay preserve it (126.6328ms)
+✔ I01 service/history/list share lifecycle semantics, separate local timeout/cancel/download failure from unknown remote outcome and expose no source (123.5895ms)
+✔ D01 legacy writes preserve configured download budgets and revision; partial new schema is rejected (58.851ms)
+✖ D01 v8 migration retains attempt rowid order, timestamps and original checksum history (43.4143ms)
+✔ I02 independent 3+1 admission, held image requests, cancellation refills and dedup stays one POST (359.099ms)
+✔ I02 independent 3+1 admission, held video requests, cancellation refills and dedup stays one POST (328.6789ms)
+✔ I02 independent 3+1 admission, held both requests, cancellation refills and dedup stays one POST (288.5941ms)
+✔ I02 slow download reserves only its own media slot; all other image/video saves finish and fourth image refills (348.5206ms)
+✔ I02 lower limit drains existing work without interruption; raising limit wakes waiting work (162.5704ms)
+✔ I03 queue time does not consume frozen budget, and adapter receives committed attempt/deadline (85.5856ms)
+✔ I03 one deadline covers reference_upload and rejects a late result/save (70.7672ms)
+✔ I03 one deadline covers receiving and rejects a late result/save (67.9395ms)
+✔ I03 one deadline covers parsing and rejects a late result/save (61.6942ms)
+✔ I03 one deadline covers downloading and rejects a late result/save (76.6668ms)
+✔ I03 one deadline covers validating and rejects a late result/save (79.944ms)
+✔ I03 one deadline covers saving and rejects a late result/save (81.5786ms)
+✔ I03 synchronous save crossing deadline rolls back binding and persists the timeout outside rollback (81.1049ms)
+✔ I03 cancel/complete race has one terminal winner and preserves another task sharing the physical output (133.2085ms)
+✔ I03 video GETs are independent and nonoverlapping; stopping queries retains original deadline and times out (144.4676ms)
+✔ I03 Retry-After and transient retry waits never reset the 300 second total deadline (69.7362ms)
+✔ I03 queued cancellation and cancellation during asynchronous preflight never POST (69.6925ms)
+✔ I04 legacy unknown image/video and paused ID end once, release slots, and old queued records require continue (66.8504ms)
+✔ I04 restart preserves same ID and remaining budget, requires explicit GET resume, and expiry is idempotent (85.9389ms)
+✔ I04 fresh signed result without ID is accurately unrecoverable; durable result resumes only with remaining budget (112.1351ms)
+✔ I03 manual download retry has its own immutable history/budget, never generates and preserves generation conclusion (85.1033ms)
+✔ I03 cleanup IO gate is bounded after repeated cancellations and update waits for actual late IO (241.7593ms)
+✔ I04 persisted expiry and backward wall-clock anomaly never grant a fresh budget (89.24ms)
+✖ I04 migration v7 to v8 preserves released checksums and backs up before adding attempt history (48.3594ms)
+✔ I03 real loopback headers wait is aborted by total deadline, with zero external traffic (106.07ms)
+✔ I03 real loopback body wait is aborted by total deadline, with zero external traffic (102.3408ms)
+✔ I02 three undispatched preflight pauses never reserve slots or block a valid task (130.6258ms)
+✔ I03 timer storage failure closes admission safely without uncaught exception or false timeout (60.3552ms)
+✔ I03 upload, response and save consume one cumulative budget without resetting each phase (67.8909ms)
+✔ I03 single-process elapsed time uses a monotonic clock even when wall time jumps forward (76.1765ms)
+✔ I03 abort during an uncancellable URL/DNS check never starts a late download fetch (47.8432ms)
+✔ I03 active download retry has a shared DTO contract and cancellation preserves original generation outcome (82.9444ms)
+✔ D02 video generated at 290s gets full 180s download; old timer cannot terminate new attempt (79.7305ms)
+✔ D02 waiting attempt freezes configuration but spends no budget; cancellation before runtime preserves result (97.7464ms)
+✔ D02 image download timeout and late old progress cannot overwrite a successful manual retry (101.3264ms)
+✔ D02 generation expiry wins over late result and never registers first download (66.5136ms)
+✔ D02 v2 synchronous final binding crosses download deadline: rollback assets, preserve generation (77.2831ms)
+✔ D03 disk final snapshot includes a throttled second received block (65.2184ms)
+✔ D03 timeout final snapshot includes a throttled second received block (68.1009ms)
+✔ workspace accepts old values and 1..100 recent video counts, preserves merged navigation and survives reopening (84.1162ms)
+✔ workspace rejects non-integer, out-of-range and non-number counts without changing revision or navigation (58.4559ms)
+✔ desktop HTTP persists count20 across restart, enforces invalid/conflict boundary and serves 20 video records (757.2161ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (1335.8849ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (576.8074ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (298.9101ms)
+✔ actual desktop HTTP persists dispatch, deduplicates a lost ACK, survives forced exit with no ID, and never automatically POSTs the waiting queue (919.3906ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP user-attached opaque ID survives restart and explicit resume uses its encoded path and original authorization (689.2722ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual process exits after upstream ID persistence and during GET recover only the original GET, with immutable connection and conservative pause reservation (1036.419ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 401 pauses, preserves ID, blocks queued POST and does not become remote failure (766.5975ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET 429 with long Retry-After pauses, preserves ID, blocks queued POST and does not become remote failure (749.9394ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ actual HTTP GET unknown status pauses, preserves ID, blocks queued POST and does not become remote failure (742.2818ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+✔ unavailable result remains download_failed after B2 worker, without remote URL exposure or repeated generation (822.1166ms)
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ Forced process exit {"code":null,"signal":"SIGKILL"}; restart uses a new loopback port and the same isolated SQLite profile.
+ℹ tests 76
+ℹ suites 0
+ℹ pass 58
+ℹ fail 18
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7201.4139
+
+✖ failing tests:
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (917.7718ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:66:85)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (707.9372ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:66:85)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:79:1
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (392.1916ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:93:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:95:1
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (673.9956ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + '/v1/models'
+  - '/v1/videos/task_b1_original'
+         ^
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:110:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '/v1/models',
+    expected: '/v1/videos/task_b1_original',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (464.6023ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (677.0183ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (350.6228ms)
+  AssertionError [ERR_ASSERTION]: {"error":"当前连接鉴权被拒绝。","code":"AUTH_REJECTED"}
+
+  401 !== 202
+
+      at Object.create (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:48:107)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:45)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (340.6102ms)
+  AssertionError [ERR_ASSERTION]: {"error":"当前连接鉴权被拒绝。","code":"AUTH_REJECTED"}
+
+  401 !== 202
+
+      at Object.create (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:48:107)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:45)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (769.8991ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:153)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (563.2328ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:153)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:138:1
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (524.087ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:141:79)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (347.1756ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (357.3614ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-downloads-http.test.js:4:1
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (1348.9782ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(calls.every(item=>item.authorized))
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-downloads-http.test.js:34:161)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at test\workbench-lifecycle-contract.test.js:70:1
+✖ I01 v6 A-shaped WAL database upgrades with readable hashed backup, no rewrites, no network and no invented legacy budgets (39.1122ms)
+  Error: 存储操作失败，已有记录和文件保留。
+      at fail (E:\Learn\AI\nova-image-studio\backend\storage\store.js:16:83)
+      at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:491:37)
+      at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+      ... 2 lines matching cause stack trace ...
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    code: 'STORAGE_OPERATION_FAILED',
+    statusCode: 500,
+    cause: Error [SqliteError]: no such table: workbench_groups
+        at Database.prepare (E:\Learn\AI\nova-image-studio\backend\node_modules\better-sqlite3\lib\methods\wrappers.js:5:21)
+        at get (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:66:26)
+        at Object.freeze (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:122:70)
+        at freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:450:51)
+        at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:485:24)
+        at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+        at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:71:62)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+      code: 'SQLITE_ERROR'
+    }
+  }
+
+test at test\workbench-lifecycle-contract.test.js:111:1
+✖ I01 v7 DDL and history roll back atomically on failure with a usable pre-upgrade backup (39.3739ms)
+  Error: 存储操作失败，已有记录和文件保留。
+      at fail (E:\Learn\AI\nova-image-studio\backend\storage\store.js:16:83)
+      at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:491:37)
+      at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+      ... 2 lines matching cause stack trace ...
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    code: 'STORAGE_OPERATION_FAILED',
+    statusCode: 500,
+    cause: Error [SqliteError]: no such table: workbench_groups
+        at Database.prepare (E:\Learn\AI\nova-image-studio\backend\node_modules\better-sqlite3\lib\methods\wrappers.js:5:21)
+        at get (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:66:26)
+        at Object.freeze (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:122:70)
+        at freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:450:51)
+        at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:485:24)
+        at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+        at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:112:37)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+      code: 'SQLITE_ERROR'
+    }
+  }
+
+test at test\workbench-lifecycle-contract.test.js:173:1
+✖ D01 v8 migration retains attempt rowid order, timestamps and original checksum history (43.4143ms)
+  Error: 存储操作失败，已有记录和文件保留。
+      at fail (E:\Learn\AI\nova-image-studio\backend\storage\store.js:16:83)
+      at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:491:37)
+      at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+      ... 2 lines matching cause stack trace ...
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    code: 'STORAGE_OPERATION_FAILED',
+    statusCode: 500,
+    cause: Error [SqliteError]: no such table: workbench_groups
+        at Database.prepare (E:\Learn\AI\nova-image-studio\backend\node_modules\better-sqlite3\lib\methods\wrappers.js:5:21)
+        at get (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:66:26)
+        at Object.freeze (E:\Learn\AI\nova-image-studio\backend\storage\groups.js:122:70)
+        at freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:450:51)
+        at Object.freezeOutputDirectory (E:\Learn\AI\nova-image-studio\backend\storage\store.js:485:24)
+        at Object.insertLegacy (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:39:40)
+        at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-contract.test.js:174:34)
+        at async Test.run (node:internal/test_runner/test:1125:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+      code: 'SQLITE_ERROR'
+    }
+  }
+
+test at test\workbench-lifecycle-runtime.test.js:107:1
+✖ I04 migration v7 to v8 preserves released checksums and backs up before adding attempt history (48.3594ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+
+    [
+      8,
+      9,
+      10,
+      11,
+  +   12
+    ]
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-lifecycle-runtime.test.js:108:423)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 8, 9, 10, 11, 12 ],
+    expected: [ 8, 9, 10, 11 ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,111 @@
+{
+  "date": "2026-10-27",
+  "environment": "Windows Node 24.14.0, isolated SQLite/temp files, project bundled full media decoder",
+  "generationCalls": "synthetic adapters/loopback only; no real generation",
+  "mainReviews": [
+    {
+      "scope": "G01 source and dedicated suite",
+      "passed": 12,
+      "failed": 0
+    },
+    {
+      "scope": "G02 SQL query source and dedicated suite",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "scope": "G03 HTTP and movement integration",
+      "passed": 26,
+      "failed": 0,
+      "skipped": 0
+    }
+  ],
+  "agentChecks": [
+    {
+      "command": "node --test test/workbench-groups.test.js test/workbench-storage.test.js test/workbench-downloads.test.js",
+      "passed": 74,
+      "failed": 0
+    },
+    {
+      "command": "node --test test/workbench-groups.test.js test/workbench-group-queries.test.js test/workbench-group-moves.test.js test/workbench-lifecycle-contract.test.js test/workbench-lifecycle-runtime.test.js",
+      "passed": 89,
+      "failed": 0,
+      "log": "groups-integrated-first.log"
+    },
+    {
+      "command": "node --test test/workbench-groups-http-integration.test.js",
+      "passed": 3,
+      "failed": 0,
+      "log": "groups-http-integration-final.log"
+    },
+    {
+      "command": "git diff --check",
+      "exitCode": 0
+    },
+    {
+      "command": "node --test test/workbench-groups.test.js test/workbench-group-queries.test.js",
+      "passed": 20,
+      "failed": 0,
+      "skipped": 0,
+      "log": "default-root-final.log",
+      "scope": "After final default-root availability fix; G01 12 + G02 8"
+    }
+  ],
+  "baselineComparisons": [
+    {
+      "scope": "B4 active legacy expectation",
+      "unchangedHeadFailed": 1,
+      "currentFailed": 1,
+      "log": "b4-head-baseline.log",
+      "reason": "Old assertion treats terminal download_failed as active; current contract allows explicit download recovery."
+    },
+    {
+      "scope": "B1/B2 old HTTP fixtures",
+      "unchangedHeadFailed": 14,
+      "currentFailed": 14,
+      "log": "http-head-baseline.log",
+      "reason": "Old task-GET counting includes model discovery and anonymous GET /api/pricing; blanket authorization check conflicts with public pricing; old unverified capability assertions predate accepted capability changes."
+    }
+  ],
+  "testHarnessFailuresFixed": [
+    "Old empty root and 15-column asset fixture assumptions after grouped directory creation and schema v12",
+    "Historical schema fixture now seeds historical shape directly; migration expected lists derive appended migrations",
+    "Windows short/canonical path comparison and native save() method in new tests",
+    "HTTP fixture stops its synthetic runtime before cleanup (EPERM first run)"
+  ],
+  "limits": [
+    "Not full backend suite success",
+    "No Electron installed-app or another-machine acceptance",
+    "Native dialogs/Explorer invoked through synthetic host mocks",
+    "No real DB/credentials, build, install, commit, push or release"
+  ],
+  "overlappingSuites": true,
+  "productionReviewFixes": [
+    "Production final review fix: default grouped root unavailable maps asset to missing; unsafe-link rejection preserved, actual unavailable/restore IO test added."
+  ],
+  "productionSourceFiles": [
+    "E:/Learn/AI/nova-image-studio/backend/server.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/groups.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/group-moves.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/workbench-query.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/migrations.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/store.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/http.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/workbench-library.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/download-worker.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/download-errors.js",
+    "E:/Learn/AI/nova-image-studio/backend/storage/diagnostics.js",
+    "E:/Learn/AI/nova-image-studio/backend/tasks/service.js",
+    "E:/Learn/AI/nova-image-studio/backend/tasks/workbench-input.js"
+  ],
+  "testSourceFiles": [
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-groups.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-group-queries.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-group-moves.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-groups-http-integration.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-downloads.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-lifecycle-contract.test.js",
+    "E:/Learn/AI/nova-image-studio/backend/test/workbench-lifecycle-runtime.test.js"
+  ],
+  "ownershipNote": "group-moves.js and workbench-group-moves.test.js are owned by group_moves; other listed backend integration changes owned by groups_backend; frontend/credential-vault/preexisting RV files preserved."
+}

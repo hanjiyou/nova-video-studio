@@ -1,0 +1,52 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ❯ src/components/workbench/__tests__/library-preview.test.tsx (17 tests | 1 failed | 16 skipped) 29ms
+   ↓ single click does nothing, double click previews only the first image, and details remain independent
+   ↓ selection and record removal do not open a preview or task details and preserve the existing deletion body
+   ↓ a page 2 old video uses native controls and closing preserves filters, page and ordered image selection
+   ↓ focused card supports "Enter" and Escape returns focus without opening details
+   ↓ focused card supports " " and Escape returns focus without opening details
+   ↓ close stops video and releases its source on close
+   ↓ escape stops video and releases its source on close
+   ↓ backdrop stops video and releases its source on close
+   ↓ 'no output' shows an explicit result state without a player or recovery request
+   ↓ 'generating' shows an explicit result state without a player or recovery request
+   ↓ 'download failed' shows an explicit result state without a player or recovery request
+   ↓ 'missing' shows an explicit result state without a player or recovery request
+   ↓ 'corrupt' shows an explicit result state without a player or recovery request
+   ↓ 'no local preview URL' shows an explicit result state without a player or recovery request
+   ↓ image load error stays explicit and leaves the original details entry available
+   ↓ video playback error replaces the player with Chinese guidance and releases the failed source
+   × StrictMode remount restores the local video source and real unmount still releases it 28ms
+     → expect(element).toHaveAttribute("src", "/api/nova/assets/old-video/content") // element.getAttribute("src") === "/api/nova/assets/old-video/content"
+
+Expected the element to have attribute:
+  src="/api/nova/assets/old-video/content"
+Received:
+  null
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/workbench/__tests__/library-preview.test.tsx > StrictMode remount restores the local video source and real unmount still releases it
+Error: expect(element).toHaveAttribute("src", "/api/nova/assets/old-video/content") // element.getAttribute("src") === "/api/nova/assets/old-video/content"
+
+Expected the element to have attribute:
+  src="/api/nova/assets/old-video/content"
+Received:
+  null
+ ❯ src/components/workbench/__tests__/library-preview.test.tsx:155:18
+    153|   const view = render(<StrictMode><WorkbenchLibraryPreview task={task(…
+    154|   const player = screen.getByLabelText('作品库视频预览') as HTMLVideoElement;
+    155|   expect(player).toHaveAttribute('src', video.previewUrl);
+       |                  ^
+    156|   expect(player).toHaveAttribute('controls');
+    157|   expect(player.pause).toHaveBeenCalledOnce(); expect(player.load).toH…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 skipped (17)
+   Start at  11:40:47
+   Duration  1.00s (transform 128ms, setup 53ms, collect 271ms, tests 29ms, environment 348ms, prepare 49ms)

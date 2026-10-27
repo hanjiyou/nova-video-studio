@@ -1,0 +1,19 @@
+"use client";
+import { useEffect, useRef, useState } from 'react';
+import { groupReceiptUnknown, organizeHistoryFiles, previewHistoryOrganization, unconfirmedGroupInput, type HistoryOrganizationPreview, type HistoryOrganizationResult } from '@/lib/workbench-group-client';
+import { localErrorMessage } from '@/lib/workbench-client';
+export function HistoryOrganizer({ onChanged, onBusyChange }: { onChanged: () => void; onBusyChange?: (busy: boolean) => void }) {
+  const retained = useRef(unconfirmedGroupInput('history'));
+  const [preview, setPreview] = useState<HistoryOrganizationPreview | null>(null), [selected, setSelected] = useState<string[]>(Array.isArray(retained.current) ? retained.current as string[] : []), [result, setResult] = useState<HistoryOrganizationResult | null>(null);
+  const [error, setError] = useState(''), [busy, setBusy] = useState(false), [unknown, setUnknown] = useState(Boolean(retained.current)), [reload, setReload] = useState(0);
+  const lock = useRef(false), sequence = useRef(0);
+  useEffect(() => { let active = true; const ticket = ++sequence.current; void previewHistoryOrganization().then(value => { if (active && ticket === sequence.current) { setPreview(value); setError(''); } }).catch(error => { if (active && ticket === sequence.current) setError(localErrorMessage(error)); }); return () => { active = false; }; }, [reload]);
+  async function organize() {
+    if (lock.current || !selected.length) return; lock.current = true; setBusy(true); onBusyChange?.(true); setError('');
+    try { const value = await organizeHistoryFiles(selected); setResult(value); setSelected(value.items.filter(item => !item.ok).map(item => item.taskId)); setUnknown(false); onChanged(); }
+    catch (error) { setUnknown(groupReceiptUnknown(error)); setError(localErrorMessage(error)); }
+    finally { lock.current = false; setBusy(false); onBusyChange?.(false); }
+  }
+  const completed = new Set(result?.items.filter(item => item.ok).map(item => item.taskId));
+  return <><p>这是显式历史文件整理。先核对每条任务的全部源文件、目标路径与冲突，再选择执行；升级和打开此窗口不会移动文件。</p><p className="wb-help">每次最多100条任务，整条任务的所有正式输出共同整理。用户导入原件与共享引用继续受保护。</p>{error && <p role="alert" className="wb-error">{error}</p>}{unknown && <p className="wb-warning">上次整理回执未确认，选择范围已锁定。请点击核对原整理请求，使用相同请求编号确认结果。</p>}{!preview ? <p>正在预览历史文件范围…</p> : <><div className="wb-history-organize-list">{preview.items.map(item => <article key={item.taskId}><label className="wb-checkbox"><input type="checkbox" disabled={busy || unknown || completed.has(item.taskId) || Boolean(item.conflicts.length) || (!selected.includes(item.taskId) && selected.length >= 100)} checked={selected.includes(item.taskId)} onChange={event => setSelected(previous => event.target.checked ? [...previous,item.taskId] : previous.filter(id => id !== item.taskId))}/>任务 {item.taskId}{completed.has(item.taskId) && ' · 已整理'}</label>{item.files.map(file => <dl key={file.assetId} className="wb-history-paths"><dt>源文件</dt><dd>{file.source}</dd><dt>目标文件</dt><dd>{file.target}</dd></dl>)}{item.conflicts.map((conflict,index) => <p key={index} className="wb-error">{conflict.message || localErrorMessage(Error(conflict.code))}</p>)}</article>)}</div>{!preview.total && <p className="wb-help">没有需要显式整理的历史文件。</p>}</>}{result && <div role="status" className="wb-notice"><p>已整理 {result.succeeded} 条，失败 {result.failed} 条。</p>{result.items.filter(item => !item.ok).map(item => <p key={item.taskId}>任务 {item.taskId}：{item.message || localErrorMessage(Error(item.code))}</p>)}</div>}<div className="wb-actions"><button type="button" disabled={busy || unknown} onClick={() => {setResult(null);setSelected([]);setReload(value => value+1);}}>重新预览范围</button><button type="button" disabled={busy || !selected.length} onClick={() => void organize()}>{busy ? '正在整理历史文件…' : unknown ? '核对原整理请求' : `整理所选 ${selected.length} 条任务`}</button></div></>;
+}

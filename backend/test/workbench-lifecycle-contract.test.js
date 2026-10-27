@@ -36,7 +36,7 @@ async function fixture(t, version = MIGRATIONS.length) {
     };
     function insertLegacy(input,status='local_queued',fields={}) {
         const id=randomUUID();db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at) VALUES(?,?,?,?,?)').run(id,status,input.mode,'{}',new Date(time).toISOString());
-        store.setTaskSnapshot(id,store.freezeOutputDirectory(input));
+        store.setTaskSnapshot(id,version < 12 ? require('../storage/output-directories').createOutputDirectories({db,defaultDirectory:path.join(directory,'storage')}).freeze(input) : store.freezeOutputDirectory(input));
         if(Object.keys(fields).length)db.prepare('UPDATE tasks SET '+Object.keys(fields).map(key=>key+'=?').join(',')+' WHERE id=?').run(...Object.values(fields),id);
         return id;
     }
@@ -72,7 +72,10 @@ test('I01 v6 A-shaped WAL database upgrades with readable hashed backup, no rewr
     const unknown=f.insertLegacy(f.snapshot('image.reference'),'submission_unknown',{dispatch_started_at:'2026-10-24T23:19:00Z'});
     const paused=f.insertLegacy(f.snapshot('video.single_reference'),'polling_paused',{dispatch_started_at:'2026-10-24T23:19:00Z',upstream_task_id:'realistic-opaque-id',remote_state:'generating',pause_reason:'user_stopped'});
     const done=f.insertLegacy(f.snapshot('video.dual_reference'),'completed',{completed_at:'2026-10-24T23:19:10Z',remote_state:'completed'});
-    const asset=f.store.importBuffer(fs.readFileSync(path.join(__dirname,'fixtures/workbench-v1/reference-a.png')),{mimeType:'image/png'});
+    // Seed the historical v6 shape directly; current store requires its current schema.
+    const bytes=fs.readFileSync(path.join(__dirname,'fixtures/workbench-v1/reference-a.png')),digest=hash(bytes),asset={assetId:randomUUID()},key=path.join(digest.slice(0,2),digest+'.png');
+    fs.mkdirSync(path.join(f.directory,'storage','assets',digest.slice(0,2)),{recursive:true});fs.writeFileSync(path.join(f.directory,'storage','assets',key),bytes);
+    f.db.prepare('INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,source_kind,created_at) VALUES(?,?,?,?,?,?,?,?,?)').run(asset.assetId,'image',key,'fixture','image/png',bytes.length,digest,'imported','2026-10-25');
     f.store.bindTaskAssets(done,[{assetId:asset.assetId,position:0,role:'reference'}],'output');
     f.db.prepare('INSERT INTO workbench_hidden_tasks VALUES(?,?)').run(done,'2026-10-24');
     f.db.pragma('journal_mode=WAL');
@@ -90,7 +93,7 @@ test('I01 v6 A-shaped WAL database upgrades with readable hashed backup, no rewr
     const backup=new Database(result.backupFile,{readonly:true,fileMustExist:true});try{assert.equal(backup.pragma('quick_check',{simple:true}),'ok');assert.deepEqual(backup.prepare('SELECT * FROM tasks ORDER BY id').all(),before);}finally{backup.close();}
     assert.equal(f.db.prepare('SELECT count(*) n FROM workbench_hidden_tasks WHERE task_id=?').get(done).n,1);
     assert.equal(f.db.prepare('SELECT count(*) n FROM workbench_removed_tasks').get().n,0);
-    assert.equal(f.store.listTasks().items.some(task=>task.id===done),false);assert.equal(f.store.getTask(done).outputAssets[0].assetId,asset.assetId);
+    assert.equal(f.store.listTasks({scope:'library'}).items.some(task=>task.id===done),false);assert.equal(f.store.getTask(done).outputAssets[0].assetId,asset.assetId);
     const service=f.service();f.revoke();assert.equal(service.enqueue({snapshot:input,mode:input.mode,request:{}}),queued);assert.equal(f.authCalls,0);assert.equal(f.submits,0);
     assert.throws(()=>service.findDuplicate({...input,prompt:'changed'}),{code:'LOCAL_REQUEST_CONFLICT'});
     assert.throws(()=>f.db.prepare('UPDATE tasks SET input_snapshot_json=? WHERE id=?').run('{}',queued),/IMMUTABLE_TASK_SNAPSHOT/);

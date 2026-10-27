@@ -10,7 +10,7 @@ function rangeFor(value, size) {
     if(!Number.isSafeInteger(start)||!Number.isSafeInteger(end)||start>=size||end<start||!match[1]&&Number(match[2])===0)return false;
     return {start,end};
 }
-function createStorageHttp({ getStore, getConnections, onSettingChanged = () => {}, readRawBody, sendJson }) {
+function createStorageHttp({ getStore, getConnections, onSettingChanged = () => {}, onTaskChanged = () => {}, onGroupChanged = () => {}, readRawBody, sendJson }) {
     const jsonBody = async (req) => {
         try {
             return JSON.parse((await readRawBody(req, 256 * 1024)).toString('utf8'));
@@ -55,6 +55,38 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
                 res.end(req.method === 'HEAD' ? undefined : selected?bytes.subarray(selected.start,selected.end+1):bytes);
                 return true;
             }
+            if (pathname === '/api/nova/storage/groups') {
+                if (req.method === 'GET') sendJson(res, 200, store.groups());
+                else if (req.method === 'POST') sendJson(res, 201, { group: store.createGroup(await jsonBody(req)) });
+                else throw fail('STORAGE_METHOD_NOT_ALLOWED');
+                return true;
+            }
+            if (pathname === '/api/nova/storage/groups/recover' && req.method === 'POST') {
+                const body=await jsonBody(req); if(!body||Object.getPrototypeOf(body)!==Object.prototype||Object.keys(body).length)throw fail('INVALID_STORAGE_INPUT');
+                sendJson(res,200,store.recoverGroupOperations());return true;
+            }
+            if (pathname === '/api/nova/storage/groups/history-preview' && req.method === 'GET') {
+                const groupId=searchParams.get('groupId'); sendJson(res, 200, store.previewHistoryGroups(groupId?{groupId}:{})); return true;
+            }
+            if (pathname === '/api/nova/storage/groups/organize-history' && req.method === 'POST') {
+                const result=store.organizeHistoryGroups(await jsonBody(req)); for(const item of result.items)if(item.ok)onTaskChanged(item.taskId); sendJson(res, 200, result); return true;
+            }
+            const groupAction=pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)\/(rename|archive)$/);
+            if (groupAction && req.method === 'POST') {
+                const result=store[groupAction[2]==='rename'?'renameGroup':'archiveGroup'](decodeURIComponent(groupAction[1]),await jsonBody(req));
+                if(groupAction[2]==='rename')onGroupChanged(groupAction[1]);
+                sendJson(res,200,result);return true;
+            }
+            const groupDelete=pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)$/);
+            if(groupDelete && req.method==='DELETE'){sendJson(res,200,store.deleteGroup(decodeURIComponent(groupDelete[1])));return true;}
+            const taskGroup=pathname.match(/^\/api\/nova\/storage\/tasks\/([^/]+)\/group$/);
+            if(taskGroup && req.method==='POST'){const result=store.moveTaskToGroup(decodeURIComponent(taskGroup[1]),await jsonBody(req));onTaskChanged(result.taskId);sendJson(res,200,result);return true;}
+            const groupDraft = pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)\/drafts\/([^/]+)$/);
+            if (groupDraft && ['GET','PUT'].includes(req.method)) {
+                const groupId = decodeURIComponent(groupDraft[1]), mode = decodeURIComponent(groupDraft[2]);
+                sendJson(res, 200, { draft: req.method === 'GET' ? store.getDraft(mode, groupId) : store.putDraft(mode, await jsonBody(req), groupId) });
+                return true;
+            }
             const draft = pathname.match(/^\/api\/nova\/storage\/drafts\/([^/]+)$/);
             if (draft && req.method === 'GET') {
                 sendJson(res, 200, { draft: store.getDraft(decodeURIComponent(draft[1])) });
@@ -75,7 +107,7 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
                 return true;
             }
             if (pathname === '/api/nova/storage/tasks' && req.method === 'GET') {
-                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0), scope: searchParams.get('scope') || 'workbench', ...Object.fromEntries(['kind','search','model','status'].map(key => [key, searchParams.get(key) || ''])) }));
+                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0), scope: searchParams.get('scope') || 'workbench', ...Object.fromEntries(['kind','search','model','status','groupId','category'].map(key => [key, searchParams.get(key) || ''])) }));
                 return true;
             }
             if (pathname === '/api/nova/storage/submissions') {

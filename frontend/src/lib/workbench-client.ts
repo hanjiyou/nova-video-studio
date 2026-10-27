@@ -7,10 +7,12 @@ export type WorkbenchPage = 'image' | 'video' | 'library' | 'settings';
 export const WORKBENCH_PAGES: WorkbenchPage[] = ['image', 'video', 'library', 'settings'];
 export const PRODUCT_FEATURES = Object.freeze({ image: true, video: true, library: true, settings: true, agent: false, canvas: false, gif: false, promptGallery: false, browserAutomation: false, pluginManagement: false });
 export interface Draft {
-  mode: DraftMode; prompt: string; model: string; parameters: Record<string, string | number | boolean>;
+  groupId?: string; mode: DraftMode; prompt: string; model: string; parameters: Record<string, string | number | boolean>;
   inputAssets: AssetSummary[]; revision: number; updatedAt: string | null;
 }
-export interface WorkspacePreferences { activeMode?: DraftMode; activePage?: WorkbenchPage; returnPage?: 'image' | 'video' | 'library'; wideMode?: boolean }
+export interface WorkspacePreferences { activeGroupId?: string; activeMode?: DraftMode; activePage?: WorkbenchPage; returnPage?: 'image' | 'video' | 'library'; wideMode?: boolean; recentVideoTaskLimit?: number }
+export const DEFAULT_RECENT_VIDEO_TASK_LIMIT = 6;
+export function getRecentVideoTaskLimit(value: unknown): number { return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 100 ? value : DEFAULT_RECENT_VIDEO_TASK_LIMIT; }
 export interface OnboardingPreferences { dismissed?: boolean; step?: 'connection' | 'defaults' | 'completed' }
 export interface Setting<T> { key: string; value: T | null; revision: number; updatedAt: string | null }
 export class LocalServiceError extends Error { constructor(public code: string) { super(code); } }
@@ -20,12 +22,19 @@ export async function localRead<T>(route: string, options?: RequestInit): Promis
   if (!response.ok) throw new LocalServiceError(result.code || 'LOCAL_SERVICE_FAILED');
   return result as T;
 }
-export const getDraft = async (mode: DraftMode) => (await localRead<{ draft: Draft }>('/api/nova/storage/drafts/' + mode)).draft;
-export const putDraft = async (draft: Draft) => (await localRead<{ draft: Draft }>('/api/nova/storage/drafts/' + draft.mode, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: draft.prompt, model: draft.model, parameters: draft.parameters, inputAssets: draft.inputAssets.map((asset, position) => ({ assetId: asset.assetId, role: 'reference', position })), expectedRevision: draft.revision }) })).draft;
+export const DEFAULT_GROUP_ID = '00000000-0000-4000-8000-000000000002';
+export interface WorkbenchGroup { groupId: string; name: string; isDefault: boolean; createdAt: string; outputLocation: string | null; archived?: boolean; workCount?: number; taskCount?: number; recoveryRequired?: boolean }
+export interface GroupRecovery { operationId: string; taskId: string | null; groupIds: string[]; code: string }
+export interface WorkbenchGroups { items: WorkbenchGroup[]; defaultGroupId: string; recovery?: GroupRecovery[] }
+export const getWorkbenchGroups = () => localRead<WorkbenchGroups>('/api/nova/storage/groups');
+export const createWorkbenchGroup = async (name: string) => (await localRead<{ group: WorkbenchGroup }>('/api/nova/storage/groups', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name }) })).group;
+const draftRoute = (mode: DraftMode, groupId = DEFAULT_GROUP_ID) => groupId === DEFAULT_GROUP_ID ? '/api/nova/storage/drafts/' + mode : '/api/nova/storage/groups/' + encodeURIComponent(groupId) + '/drafts/' + mode;
+export const getDraft = async (mode: DraftMode, groupId = DEFAULT_GROUP_ID) => { const draft = (await localRead<{ draft: Draft }>(draftRoute(mode, groupId))).draft; return { ...draft, groupId: draft.groupId || groupId }; };
+export const putDraft = async (draft: Draft) => { const saved = (await localRead<{ draft: Draft }>(draftRoute(draft.mode, draft.groupId), { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: draft.prompt, model: draft.model, parameters: draft.parameters, inputAssets: draft.inputAssets.map((asset, position) => ({ assetId: asset.assetId, role: 'reference', position })), expectedRevision: draft.revision }) })).draft; return { ...saved, groupId: saved.groupId || draft.groupId || DEFAULT_GROUP_ID }; };
 export const getSetting = async <T>(key: string) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key)).setting;
 export const putSetting = async <T>(key: string, value: T, expectedRevision: number) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value, expectedRevision }) })).setting;
-export interface HistoryTask extends WorkbenchTaskResponse { prompt: string; model: string; parameters: Record<string, string | number | boolean>; capabilityVersionId?: string; outputDirectoryVersionId?: string; outputRootRef?: string; outputLocation?: string }
-export interface HistoryQuery { limit?: number; offset?: number; kind?: string; search?: string; model?: string; status?: string; scope?: 'workbench' | 'library' }
+export interface HistoryTask extends WorkbenchTaskResponse { prompt: string; model: string; parameters: Record<string, string | number | boolean>; capabilityVersionId?: string; outputDirectoryVersionId?: string; outputRootRef?: string; outputLocation?: string; groupId?: string; groupName?: string; groupRevision?: number; submittedGroupId?: string; submittedGroupName?: string; savedAt?: string | null; taskCategory?: 'active' | 'unfinished' | 'completed' }
+export interface HistoryQuery { groupId?: string; category?: 'all' | 'active' | 'unfinished' | 'completed'; limit?: number; offset?: number; kind?: string; search?: string; model?: string; status?: string; scope?: 'workbench' | 'library' }
 export const getLocalHistory = async (query: HistoryQuery = { limit: 12 }) => {const result=await localRead<{ items: HistoryTask[]; total: number; unfilteredTotal: number }>('/api/nova/storage/tasks?' + new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined && value !== '').map(([key, value]) => [key, String(value)])));return {...result,items:result.items.map(acceptTask)};};
 export const getHistoryTask = async (id: string) => acceptTask((await localRead<{ task: HistoryTask }>('/api/nova/storage/tasks/' + encodeURIComponent(id))).task);
 export const removeTaskDisplay = async (id: string) => {const result=await localRead<{removed:boolean;worksRetained:boolean}>('/api/nova/storage/tasks/' + encodeURIComponent(id) + '/remove', {method:'POST',headers:{'content-type':'application/json'},body:'{}'});markTaskRemoved(id);return result;};
@@ -78,6 +87,8 @@ export function connectionBanner(connection: import('./connection-client').Conne
 export function localErrorMessage(error: unknown) {
   const code = error instanceof Error ? error.message : 'LOCAL_SERVICE_FAILED';
   const messages: Record<string, string> = {
+    DRAFT_SWITCH_BUSY: '草稿正在保存、切换或导入素材，请稍后重试。', GROUP_RECOVERY_REQUIRED: '文件整理尚未安全收尾，请解除文件占用后重试恢复。原文件与记录保留。', GROUP_MOVE_INTERRUPTED: '上次整理被中断，请先恢复整理状态后重试。', GROUP_ACTIVE: '剧本仍有活动任务或待提交意图，请处理后再管理。', GROUP_NOT_EMPTY: '仅可删除没有任务、作品、草稿内容和目录文件的空剧本。', GROUP_ARCHIVED: '剧本已归档，请先取消归档或选择其他分组。', GROUP_DEFAULT_IMMUTABLE: '未分组是系统分组，不能重命名、归档或删除。', GROUP_REQUEST_CONFLICT: '整理请求编号与原操作不一致，请刷新后重新操作。', GROUP_REQUEST_UNCONFIRMED: '上次整理回执未确认，请先按原目标重试核对，避免并行整理。', GROUP_REVISION_CONFLICT: '任务归属已被其他操作更新，请刷新后重试。', ASSET_FILE_CONFLICT: '目标已有同名文件或受管记录，原归属与文件保留，请先处理冲突。', GROUP_MOVE_FAILED: '文件改组失败，原归属与文件保留，请检查目录或占用后重试。', GROUP_RENAME_FAILED: '分组目录重命名失败，原记录保留，请检查目录或占用后重试。', EACCES: '目录没有写入权限，请检查权限后重试。', EPERM: '文件或目录被占用或无操作权限，请解除占用后重试。', ENOSPC: '磁盘空间不足，请清理后重试。',
+    GROUP_NAME_INVALID: '剧本名称最多48个字符，不能包含路径符号、Windows保留名或末尾点和空格。', GROUP_NAME_CONFLICT: '已存在同名剧本，请使用其他名称。', GROUP_DIRECTORY_CONFLICT: '同名目录已存在且不属于此分组，请更名或先整理该目录。', GROUP_NOT_FOUND: '剧本分组不存在，请重新读取。', PATH_TOO_LONG: '保存路径超过240个字符，请缩短根目录或剧本名称。', ASSET_PATH_REJECTED: '受管文件目录已改变或包含越界链接，请检查保存目录。',
     CONNECTION_ROUTE_CONFLICT: '访问线路已在其他操作中更新。请重新读取线路与版本；本次输入仍保留。', TRANSPORT_ROUTE_INVALID: '访问线路或线路版本无效，请重新读取设置。',
     CONNECTION_VERSION_CONFLICT: '连接已在其他操作中更新，请重新读取设置。', CONNECTION_URL_INVALID: '接口基础地址无效。',
     CREDENTIAL_REQUIRED: '请填写 API Key；修改服务地址后也需要重新填写。', CREDENTIAL_UNAVAILABLE: '系统无法解密凭据，请重新填写 API Key。',

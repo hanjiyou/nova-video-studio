@@ -1,0 +1,18 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  frontend/src/components/workbench/__tests__/library-preview.test.tsx [ frontend/src/components/workbench/__tests__/library-preview.test.tsx ]
+Error: Cannot find module 'E:/Learn/AI/nova-image-studio/src/test/setup.ts'
+Caused by: Error: Failed to load url E:/Learn/AI/nova-image-studio/src/test/setup.ts (resolved id: E:/Learn/AI/nova-image-studio/src/test/setup.ts). Does the file exist?
+ ❯ loadAndTransform frontend/node_modules/vite/dist/node/chunks/config.js:22679:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  11:40:29
+   Duration  674ms (transform 11ms, setup 0ms, collect 0ms, tests 0ms, environment 338ms, prepare 88ms)

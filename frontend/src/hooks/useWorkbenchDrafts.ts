@@ -1,8 +1,10 @@
 'use client';
 import { useCallback, useRef, useState } from 'react';
-import { DRAFT_MODES, Draft, DraftMode, getDraft, putDraft } from '@/lib/workbench-client';
+import { DEFAULT_GROUP_ID, DRAFT_MODES, Draft, DraftMode, getDraft, putDraft } from '@/lib/workbench-client';
 import { isUpdateFrozen } from '@/lib/update-readiness';
 export function useWorkbenchDrafts() {
+  const [groupId, setGroupId] = useState(DEFAULT_GROUP_ID), [switching, setSwitching] = useState(false);
+  const activeGroup = useRef(DEFAULT_GROUP_ID), switchLock = useRef(false), generation = useRef(0);
   const values = useRef<Partial<Record<DraftMode, Draft>>>({});
   const dirty = useRef(new Set<DraftMode>());
   const running = useRef(new Map<DraftMode, Promise<boolean>>());
@@ -11,7 +13,9 @@ export function useWorkbenchDrafts() {
   const [errors, setErrors] = useState<Partial<Record<DraftMode, unknown>>>({});
   const publish = useCallback(() => setDrafts({ ...values.current }), []);
   const load = useCallback(async () => {
-    const loaded = await Promise.all(DRAFT_MODES.map(getDraft));
+    const ticket = ++generation.current, group = activeGroup.current, previous = values.current;
+    const loaded = await Promise.all(DRAFT_MODES.map(mode => getDraft(mode, group)));
+    if (ticket !== generation.current || group !== activeGroup.current || switchLock.current || Object.keys(previous).some(mode => previous[mode as DraftMode] !== values.current[mode as DraftMode])) return;
     values.current = Object.fromEntries(loaded.map(draft => [draft.mode, draft]));
     publish();
   }, [publish]);
@@ -35,14 +39,17 @@ export function useWorkbenchDrafts() {
     });
     running.current.set(mode, operation); return operation;
   }, [publish]);
-  const update = useCallback((mode: DraftMode, patch: Partial<Pick<Draft, 'prompt' | 'model' | 'parameters' | 'inputAssets'>>, defaultModel?: string) => {
-    if (isUpdateFrozen() || !values.current[mode]) return;
+  const update = useCallback((mode: DraftMode, patch: Partial<Pick<Draft, 'prompt' | 'model' | 'parameters' | 'inputAssets'>>, defaultModel?: string, expectedGroup?: string) => {
+    if (isUpdateFrozen() || switchLock.current || (expectedGroup && expectedGroup !== activeGroup.current) || !values.current[mode]) return;
     values.current[mode] = { ...values.current[mode]!, model: values.current[mode]!.model || defaultModel || '', ...patch };
     dirty.current.add(mode); publish(); void persist(mode);
   }, [persist, publish]);
   const reload = useCallback(async (mode: DraftMode) => {
-    if (running.current.has(mode)) return;
-    values.current[mode] = await getDraft(mode); dirty.current.delete(mode);
+    if (running.current.has(mode) || switchLock.current) return;
+    const group = activeGroup.current, ticket = generation.current, previous = values.current[mode];
+    const loaded = await getDraft(mode, group);
+    if (switchLock.current || ticket !== generation.current || group !== activeGroup.current || previous !== values.current[mode]) return;
+    values.current[mode] = loaded; dirty.current.delete(mode);
     setErrors(old => ({ ...old, [mode]: undefined })); publish();
   }, [publish]);
   const flush = useCallback(async () => {
@@ -50,5 +57,17 @@ export function useWorkbenchDrafts() {
     const saved = await Promise.all(DRAFT_MODES.map(persist));
     if (saved.some(ok => !ok) || dirty.current.size || running.current.size) throw Error('UPDATE_SAVE_FAILED');
   }, [persist]);
-  return { drafts, saving, errors, load, update, retry: persist, reload, flush };
+  const switchGroup = useCallback(async (next: string) => {
+    if (switchLock.current || isUpdateFrozen()) return false;
+    if (next === activeGroup.current) return true;
+    switchLock.current = true; generation.current++; setSwitching(true);
+    try {
+      await flush();
+      const loaded = await Promise.all(DRAFT_MODES.map(mode => getDraft(mode, next)));
+      values.current = Object.fromEntries(loaded.map(draft => [draft.mode, draft]));
+      activeGroup.current = next; setGroupId(next); setErrors({}); publish();
+      return true;
+    } finally { switchLock.current = false; setSwitching(false); }
+  }, [flush, publish]);
+  return { drafts, saving, errors, load, update, retry: persist, reload, flush, groupId, switching, switchGroup };
 }

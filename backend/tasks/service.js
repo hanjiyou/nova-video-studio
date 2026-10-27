@@ -211,6 +211,13 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if(saved.outputDirectoryVersionId)checked.outputDirectoryVersionId=saved.outputDirectoryVersionId;
             if(saved.outputRootRef)checked.outputRootRef=saved.outputRootRef;
         }
+        // A raw first submission may omit server-frozen group metadata. Only an
+        // omitted default group can be replayed as default; custom intent stays explicit.
+        if (saved.groupId && !checked.groupId && saved.groupId === require('../storage/groups').DEFAULT_GROUP) checked.groupId = saved.groupId;
+        if (checked.groupId === saved.groupId) {
+            if (saved.groupName && checked.groupName === undefined) checked.groupName = saved.groupName;
+            if (saved.groupDirectoryVersionId && !checked.groupDirectoryVersionId) checked.groupDirectoryVersionId = saved.groupDirectoryVersionId;
+        }
         if (canonical(saved) !== canonical(checked)) throw fail('LOCAL_REQUEST_CONFLICT', '同一本地请求标识对应不同任务输入。', 409);
         return existing.id;
     }
@@ -297,10 +304,11 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if(!selected){selected=connections.getTransportRoute?.(task.connection_version_id)||null;if(selected){db.prepare('UPDATE tasks SET transport_route_json=? WHERE id=? AND transport_route_json IS NULL').run(JSON.stringify(selected),id);task=row(id);}}
             auth.transportRoute=routing.snapshot(selected);chosen = adapter(task);
             if (chosen.preflight) await chosen.preflight(task, JSON.parse(task.input_snapshot_json), {...auth,signal});
+            store.checkTaskOutputDirectory?.(task);
         } catch (error) {
             if (closed || localOutcome(row(id))) return;
-            const code = ['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE', 'ADAPTER_UNAVAILABLE', 'CAPABILITY_UNVERIFIED'].includes(error.code) ? error.code : 'INPUT_INVALID';
-            setError(id, ['INPUT_INVALID', 'CAPABILITY_UNVERIFIED'].includes(code) ? 'failed' : 'polling_paused', code, code.startsWith('CREDENTIAL_') ? 'credential' : 'validation', { pause_reason: code, requires_continue: 1 }, { transmission: 'not_dispatched' });
+            const code = ['CREDENTIAL_REQUIRED', 'CREDENTIAL_UNAVAILABLE', 'ADAPTER_UNAVAILABLE', 'CAPABILITY_UNVERIFIED','DIRECTORY_NOT_WRITABLE','PATH_TOO_LONG','ASSET_PATH_REJECTED','OUTPUT_DIRECTORY_INVALID'].includes(error.code) ? error.code : 'INPUT_INVALID';
+            setError(id, ['INPUT_INVALID', 'CAPABILITY_UNVERIFIED','DIRECTORY_NOT_WRITABLE','PATH_TOO_LONG','ASSET_PATH_REJECTED','OUTPUT_DIRECTORY_INVALID'].includes(code) ? 'failed' : 'polling_paused', code, code.startsWith('CREDENTIAL_') ? 'credential' : 'validation', { pause_reason: code, requires_continue: 1 }, { transmission: 'not_dispatched' });
             return;
         }
         if (closed || row(id).status !== 'local_queued') return;
@@ -454,6 +462,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             if(receipt){if(receipt.task_id!==id)throw fail('LOCAL_REQUEST_CONFLICT','重新下载请求标识冲突。',409);return {...publicTask(row(id)),acceptedAttemptId:receipt.attempt_id};}
             if(retryJob(id)){const active=retryJob(id);db.prepare('INSERT INTO task_download_actions VALUES(?,?,?,?)').run(requestId,id,active.id,iso());return {...publicTask(row(id)),acceptedAttemptId:active.id};}
 
+            store.checkTaskGroupReady?.(task);
             const missingResult = task.status === 'completed' && store.taskAssets(id, 'output').some(asset => asset.availability !== 'available');
             if (task.status !== 'download_failed' && !missingResult || retryJob(id)) throw fail('TASK_ACTION_INVALID', '该任务没有待重试的下载。', 409);
             if (!task.result_sources_json && !task.upstream_task_id) throw fail('RESULT_REFRESH_REQUIRED', '没有可恢复资源；不会重新生成。', 409);
@@ -576,6 +585,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
             try {
                 // T08 must return an independently verifiable proof; no caller can merely set completed.
                 const task=row(job.task_id);
+                store.checkTaskGroupReady?.(task);
                 let proof;
                     let sources=ephemeralSources.get(task.id)||JSON.parse(task.result_sources_json || 'null');
                     let refreshed=false;
@@ -667,6 +677,7 @@ function createTaskService({ db, store, connections, resolveAdapter, onChange = 
     }
     function finishUpdate() { closed = true; runtime.close(); ephemeralSources.clear(); }
     async function close() { closed = true; runtime.close(); for(const entry of inFlight.values())entry.controller.abort(); for (const timer of timers.values()) clearTimer(timer); timers.clear(); await Promise.allSettled([...inFlight.values()].map(entry=>entry.promise)); ephemeralSources.clear(); }
-    return { enqueue, findDuplicate, action, recover, stats, close, prepareUpdate, releaseUpdate, persistUpdatePause, finishUpdate, settingsChanged:wake, get: id => publicTask(row(id)), poll, pump, drainDownloads };
+    store.setGroupActivityGuard?.(id=>starting.has(id)||inFlight.has(id)||inFlight.has('download:'+id));
+    return { hasTaskIO:id=>starting.has(id)||inFlight.has(id)||inFlight.has('download:'+id), enqueue, findDuplicate, action, recover, stats, close, prepareUpdate, releaseUpdate, persistUpdatePause, finishUpdate, settingsChanged:wake, get: id => publicTask(row(id)), poll, pump, drainDownloads };
 }
 module.exports = { createTaskService, canonical, retryAfter, DEFAULT_POLICY, STATES };

@@ -3,6 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
 const { createOutputDirectories } = require('./output-directories');
+const { createGroups, DEFAULT_GROUP, bounded } = require('./groups');
 const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const { MODES: TASK_MODES, DEFAULT_EXECUTION_SETTINGS, validateExecutionSettings, normalizeExecutionSettings, taskFields } = require('../tasks/lifecycle-contract');
@@ -54,6 +55,8 @@ function createWorkbenchStore({ db, rootDirectory }) {
     fs.mkdirSync(assetRoot, { recursive: true });
     const canonicalRoot = fs.realpathSync.native(assetRoot);
     const outputDirectories = createOutputDirectories({ db, defaultDirectory: root });
+    const groups = createGroups({ db, outputDirectories });
+    let groupActivityGuard = () => false;
     function objectsFor(ref) {
         if (!ref || ref === outputDirectories.DEFAULT) return canonicalRoot;
         const base = outputDirectories.directory(ref), objects = path.join(base, 'assets');
@@ -61,19 +64,21 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function row(id) { return db.prepare('SELECT * FROM assets WHERE id=?').get(uuid(id)); }
     function trustedPath(asset) {
-        if (!asset || !/^[a-f0-9]{2}[\\/][a-f0-9]{64}\.[a-z0-9]+$/.test(asset.storage_key))
-            throw fail('ASSET_PATH_REJECTED');
-        let managedRoot;
-        try { managedRoot = objectsFor(asset.root_ref); } catch (error) { if (error.code === 'DIRECTORY_NOT_WRITABLE') return null; throw error; }
-        const candidate = path.resolve(managedRoot, asset.storage_key);
-        if (!candidate.startsWith(managedRoot + path.sep))
-            throw fail('ASSET_PATH_REJECTED');
-        if (!fs.existsSync(candidate))
-            return null;
-        const actual = fs.realpathSync.native(candidate);
-        if (!actual.startsWith(managedRoot + path.sep) || fs.lstatSync(candidate).isSymbolicLink() || !fs.statSync(actual).isFile())
-            throw fail('ASSET_PATH_REJECTED');
-        return actual;
+        if (!asset) throw fail('ASSET_PATH_REJECTED');
+        try {
+            const managedRoot = objectsFor(asset.root_ref);
+            if (asset.group_id) {
+                const parts = asset.storage_key.split(/[\\/]/);
+                if (!['图片','视频'].includes(parts[1]) || !db.prepare('SELECT 1 FROM group_directory_versions WHERE group_id=? AND root_ref=? AND directory_name=?').get(asset.group_id, asset.root_ref, parts[0])) throw fail('ASSET_PATH_REJECTED');
+                // Include assets itself and the default root in junction/containment checks.
+                const rootDirectory = outputDirectories.directory(asset.root_ref);
+                if (!groups.safeDirectory(rootDirectory, ['assets'])) return null;
+            }
+            return groups.safeFile(managedRoot, asset.storage_key, Boolean(asset.group_id));
+        } catch (error) {
+            if (error.code === 'DIRECTORY_NOT_WRITABLE') return null;
+            throw error; // Unsafe links remain explicit errors, never a missing-file bypass.
+        }
     }
     function summary(asset) {
         if (!asset)
@@ -104,7 +109,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         if (!fs.realpathSync.native(directory).startsWith(objectRoot + path.sep))
             throw fail('ASSET_PATH_REJECTED');
         const destination = path.join(objectRoot, storageKey);
-        const existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND sha256=? AND mime_type=? AND kind=?').get(rootRef, sha, mime, kind);
+        const existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND group_id IS NULL AND sha256=? AND mime_type=? AND kind=?').get(rootRef, sha, mime, kind);
         if (fs.existsSync(destination)) {
             if (fs.lstatSync(destination).isSymbolicLink() || digest(fs.readFileSync(destination)) !== sha)
                 throw fail('ASSET_FILE_CONFLICT', '受管理文件与记录不一致，原文件已保留。', 409);
@@ -146,6 +151,33 @@ function createWorkbenchStore({ db, rootDirectory }) {
         db.prepare(`INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,source_kind,created_at,root_ref,validation_state,duration_seconds)
       VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).run(id, kind, storageKey, name, mime, bytes.length, sha, validation?.width ?? width, validation?.height ?? height, sourceKind, new Date().toISOString(), rootRef, validation ? 'verified' : 'unverified', validation?.durationSeconds ?? null);
         return summary(row(id));
+    }
+    function publishGrouped(bytes, metadata, location) {
+        const objectRoot = objectsFor(location.root_ref), destination = bounded(path.join(objectRoot, location.storage_key));
+        const directory = groups.safeDirectory(outputDirectories.directory(location.root_ref), ['assets', ...location.storage_key.split(/[\\/]/).slice(0, -1)], true);
+        let existing = db.prepare('SELECT * FROM assets WHERE root_ref=? AND storage_key=?').get(location.root_ref, location.storage_key);
+        if (existing && existing.sha256 !== metadata.sha256) throw fail('ASSET_FILE_CONFLICT', '恢复结果与原输出摘要不一致。', 409);
+        if (fs.existsSync(destination)) {
+            if (!existing || fs.lstatSync(destination).isSymbolicLink() || digest(fs.readFileSync(destination)) !== metadata.sha256) throw fail('ASSET_FILE_CONFLICT', '目标文件已改变，已有文件保留。', 409);
+        }
+        // Persist ownership before publication. A crash between file publication and
+        // worker checkpoint can therefore recover this exact file and asset identity.
+        if (!existing) {
+            const id = randomUUID();
+            db.prepare(`INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`)
+                .run(id, metadata.mimeType.split('/')[0], location.storage_key, path.basename(location.storage_key), metadata.mimeType, bytes.length, metadata.sha256, metadata.width, metadata.height, metadata.durationSeconds ?? null, 'generated', 'unverified', 'missing', new Date().toISOString(), location.root_ref, location.group_id);
+            existing = row(id);
+        }
+        if (!fs.existsSync(destination)) {
+            const temporary = bounded(path.join(directory, '.' + randomUUID() + '.part'));
+            let fd;
+            try {
+                fd = fs.openSync(temporary, 'wx'); fs.writeFileSync(fd, bytes); fs.fsyncSync(fd); fs.closeSync(fd); fd = undefined;
+                fs.linkSync(temporary, destination);
+            } finally { if (fd !== undefined) fs.closeSync(fd); if (fs.existsSync(temporary)) fs.unlinkSync(temporary); }
+        }
+        db.prepare("UPDATE assets SET availability='available',validation_state='verified' WHERE id=?").run(existing.id);
+        return summary(row(existing.id));
     }
     function importFile(filePath, options = {}) {
         // Host-only entry. HTTP/IPC callers cannot supply this path.
@@ -215,14 +247,14 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function setTaskSnapshot(taskId, snapshot) {
         uuid(taskId);
-        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef', 'transportRoute']);
+        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef', 'transportRoute', 'groupId', 'groupName', 'groupDirectoryVersionId']);
         if (snapshot.contractVersion !== 1 || ![...MODES, 'legacy.plugin'].includes(snapshot.mode) || typeof snapshot.prompt !== 'string' || snapshot.prompt.length > 65536 || typeof snapshot.model !== 'string' || !snapshot.model || snapshot.model.length > 256)
             throw fail('INVALID_TASK_SNAPSHOT');
         for (const field of ['adapterId', 'adapterVersion'])
             if (snapshot[field] !== undefined && (typeof snapshot[field] !== 'string' || snapshot[field].length > 128))
                 throw fail('INVALID_TASK_SNAPSHOT');
         const input = references(snapshot.inputAssets || []);
-        for (const field of ['localRequestId', 'connectionVersionId', 'capabilityVersionId', 'outputDirectoryVersionId', 'outputRootRef'])
+        for (const field of ['localRequestId', 'connectionVersionId', 'capabilityVersionId', 'outputDirectoryVersionId', 'outputRootRef', 'groupId', 'groupDirectoryVersionId'])
             if (snapshot[field] != null)
                 uuid(snapshot[field]);
         if(snapshot.transportRoute!==undefined)require('../connections/route-policy').snapshot(snapshot.transportRoute);
@@ -241,20 +273,25 @@ function createWorkbenchStore({ db, rootDirectory }) {
             }
             db.prepare(`UPDATE tasks SET input_snapshot_json=?,local_request_id=?,connection_version_id=?,capability_version_id=?,adapter_id=?,adapter_version=?,output_directory_version_id=?,output_root_ref=? WHERE id=?`)
                 .run(json, snapshot.localRequestId || null, snapshot.connectionVersionId || null, snapshot.capabilityVersionId || null, snapshot.adapterId || null, snapshot.adapterVersion || null, snapshot.outputDirectoryVersionId || null, snapshot.outputRootRef || null, taskId);
+            groups.attach(taskId, snapshot);
             bindTaskAssets(taskId, input);
         })();
     }
-    function getDraft(mode) {
+    function getDraft(mode, groupId = DEFAULT_GROUP) {
+        const group = groups.get(groupId);
+        if (group.id !== DEFAULT_GROUP) return getGroupDraft(mode, group.id);
         if (!MODES.has(mode))
             throw fail('INVALID_DRAFT_MODE');
         const draft = db.prepare('SELECT * FROM drafts WHERE mode=?').get(mode);
         if (!draft)
-            return { mode, prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
+            return { mode, groupId: DEFAULT_GROUP, prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
         const assets = db.prepare('SELECT a.*,da.position FROM draft_assets da JOIN assets a ON a.id=da.asset_id WHERE da.mode=? ORDER BY da.position').all(mode);
-        return { mode, prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
+        return { mode, groupId: DEFAULT_GROUP, prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
             inputAssets: assets.map(asset => ({ ...summary(asset), position: asset.position, role: 'reference' })) };
     }
-    function putDraft(mode, value) {
+    function putDraft(mode, value, groupId = DEFAULT_GROUP) {
+        const group = groups.get(groupId);
+        if (group.id !== DEFAULT_GROUP) return putGroupDraft(mode, value, group.id);
         if (!MODES.has(mode))
             throw fail('INVALID_DRAFT_MODE');
         exactKeys(value, ['prompt', 'model', 'parameters', 'inputAssets', 'expectedRevision']);
@@ -275,6 +312,29 @@ function createWorkbenchStore({ db, rootDirectory }) {
         })();
         return getDraft(mode);
     }
+    function getGroupDraft(mode, groupId) {
+        if (!MODES.has(mode)) throw fail('INVALID_DRAFT_MODE');
+        const draft = db.prepare('SELECT * FROM group_drafts WHERE group_id=? AND mode=?').get(groupId, mode);
+        if (!draft) return { mode, groupId, prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
+        const assets = db.prepare('SELECT a.*,da.position FROM group_draft_assets da JOIN assets a ON a.id=da.asset_id WHERE da.group_id=? AND da.mode=? ORDER BY da.position').all(groupId, mode);
+        return { mode, groupId, prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
+            inputAssets: assets.map(asset => ({ ...summary(asset), position: asset.position, role: 'reference' })) };
+    }
+    function putGroupDraft(mode, value, groupId) {
+        if (!MODES.has(mode)) throw fail('INVALID_DRAFT_MODE');
+        exactKeys(value, ['prompt','model','parameters','inputAssets','expectedRevision']);
+        if (typeof value.prompt !== 'string' || value.prompt.length > 65536 || typeof value.model !== 'string' || value.model.length > 256) throw fail('INVALID_DRAFT');
+        const parameters = safeJson(value.parameters || {}), input = references(value.inputAssets || []);
+        db.transaction(() => {
+            const previous = db.prepare('SELECT revision FROM group_drafts WHERE group_id=? AND mode=?').get(groupId, mode);
+            if (value.expectedRevision !== undefined && value.expectedRevision !== (previous?.revision || 0)) throw fail('DRAFT_REVISION_CONFLICT', '草稿已更新，请先读取最新版本。', 409);
+            db.prepare('INSERT INTO group_drafts VALUES(?,?,?,?,?,?,?) ON CONFLICT(group_id,mode) DO UPDATE SET prompt=excluded.prompt,model=excluded.model,parameters_json=excluded.parameters_json,revision=excluded.revision,updated_at=excluded.updated_at').run(groupId, mode, value.prompt, value.model, parameters, (previous?.revision || 0) + 1, new Date().toISOString());
+            db.prepare('DELETE FROM group_draft_assets WHERE group_id=? AND mode=?').run(groupId, mode);
+            const insert = db.prepare('INSERT INTO group_draft_assets VALUES(?,?,?,?)');
+            for (const item of input) insert.run(groupId, mode, item.assetId, item.position);
+        })();
+        return getGroupDraft(mode, groupId);
+    }
     function putSetting(key, value) {
         exactKeys(value, ['value', 'expectedRevision']);
         if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
@@ -283,7 +343,10 @@ function createWorkbenchStore({ db, rootDirectory }) {
         if (key === 'theme' && !['system', 'light', 'dark'].includes(value.value))
             throw fail('INVALID_SETTING_VALUE');
         if (key === 'workspace') {
-            exactKeys(value.value, ['wideMode', 'activeMode', 'activePage', 'returnPage']);
+            exactKeys(value.value, ['wideMode', 'activeMode', 'activePage', 'returnPage', 'recentVideoTaskLimit', 'activeGroupId']);
+            if (value.value.activeGroupId !== undefined) groups.get(value.value.activeGroupId);
+            if (value.value.recentVideoTaskLimit !== undefined && (!Number.isInteger(value.value.recentVideoTaskLimit) || value.value.recentVideoTaskLimit < 1 || value.value.recentVideoTaskLimit > 100))
+                throw fail('INVALID_SETTING_VALUE');
             if (value.value.wideMode !== undefined && typeof value.value.wideMode !== 'boolean')
                 throw fail('INVALID_SETTING_VALUE');
             if (value.value.activeMode !== undefined && !MODES.has(value.value.activeMode))
@@ -354,6 +417,8 @@ function createWorkbenchStore({ db, rootDirectory }) {
             request = JSON.parse(task.input_snapshot_json || task.request_json);
         }
         catch { /* Preserve unreadable legacy metadata without inventing fields. */ }
+        const membership = groups.membership(task.id);
+        const groupRoot = membership?.root_ref ? db.prepare('SELECT directory FROM storage_roots WHERE id=?').get(membership.root_ref) : null;
         const rootRow = db.prepare('SELECT directory FROM storage_roots WHERE id=?').get(task.output_root_ref || outputDirectories.DEFAULT);
         const downloadAttempt = db.prepare("SELECT 1 FROM sqlite_master WHERE type='table' AND name='task_download_attempts'").get() ? db.prepare('SELECT *, (SELECT count(*) FROM task_download_attempts older WHERE older.task_id=task_download_attempts.task_id AND older.rowid<=task_download_attempts.rowid) AS attempt_number FROM task_download_attempts WHERE task_id=? ORDER BY rowid DESC LIMIT 1').get(task.id) : null;
         const recovery=recoveryResolver(task),inputs=taskAssets(task.id),outputs=taskAssets(task.id,'output');
@@ -361,41 +426,49 @@ function createWorkbenchStore({ db, rootDirectory }) {
         return { transportRoute:task.transport_route_json?JSON.parse(task.transport_route_json):request.transportRoute||null,revision,...recovery, ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
             downloadProgress: downloadAttempt ? liveDownloadProgress.get(downloadAttempt.id) || (downloadAttempt.progress_json ? JSON.parse(downloadAttempt.progress_json) : null) : null,
             downloadAttempt: downloadAttempt ? { transportRoute:downloadAttempt.transport_route_json?JSON.parse(downloadAttempt.transport_route_json):null,id:downloadAttempt.id,attemptNumber:downloadAttempt.attempt_number,queuedAt:downloadAttempt.queued_at,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
-            outputLocation: rootRow ? path.basename(rootRow.directory) : null,
+            savedAt: task.saved_at || null, taskCategory: task.display_category || queries.categoryFor(task.id),
+            groupRevision: membership?.revision || 1,
+            groupId: membership?.group_id || DEFAULT_GROUP, groupName: membership?.name || '未分组', submittedGroupId: request.groupId || DEFAULT_GROUP, submittedGroupName: request.groupName || '未分组',
+            outputLocation: groupRoot ? path.join(groupRoot.directory, 'assets', membership.directory_name, task.execution_media_kind === 'image' || request.mode?.startsWith('image.') ? '图片' : '视频') : rootRow?.directory || null,
             inputAssets: inputs, outputAssets: outputs };
     }
-    function listTasks({ limit = 50, offset = 0, kind = '', search = '', model = '', status = '', scope = 'workbench' } = {}) {
-        if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0)
-            throw fail('INVALID_PAGINATION');
-        if (!['','image','video'].includes(kind) || [search,model,status].some(value => typeof value !== 'string' || value.length > 512)) throw fail('INVALID_HISTORY_FILTER');
-        if (!['workbench', 'library'].includes(scope)) throw fail('INVALID_HISTORY_FILTER');
-        const visible = 'NOT EXISTS (SELECT 1 FROM workbench_hidden_tasks h WHERE h.task_id=tasks.id)' + (scope === 'workbench' ? ' AND NOT EXISTS (SELECT 1 FROM workbench_removed_tasks r WHERE r.task_id=tasks.id)' : '');
-        const where = [visible], args = [];
-        const value = field => `COALESCE(json_extract(CASE WHEN json_valid(input_snapshot_json) THEN input_snapshot_json ELSE '{}' END,'$.${field}'),json_extract(CASE WHEN json_valid(request_json) THEN request_json ELSE '{}' END,'$.${field}'),'')`;
-        if (kind) { where.push(kind === 'image' ? "(mode LIKE 'image.%' OR mode IN ('text-to-image','image-to-image'))" : "(mode LIKE 'video.%' OR mode='plugin')"); }
-        if (search) { where.push(`(instr(lower(${value('prompt')}),lower(?))>0 OR instr(lower(${value('model')}),lower(?))>0)`); args.push(search,search); }
-        if (model) { where.push(value('model')+'=?'); args.push(model); }
-        if (status) { where.push('status=?'); args.push(status); }
-        const clause = ' WHERE '+where.join(' AND ');
-        return { items: db.prepare('SELECT * FROM tasks'+clause+' ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(...args,limit,offset).map(record), total: db.prepare('SELECT count(*) AS n FROM tasks'+clause).get(...args).n, unfilteredTotal: db.prepare('SELECT count(*) AS n FROM tasks WHERE '+where[0]).get().n };
-    }
+    const groupMoves = require('./group-moves').createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskExecutionActive: id => groupActivityGuard(id) });
+    function freezeSubmission(snapshot) { groupMoves.recover({ groupId: snapshot.groupId || DEFAULT_GROUP }); return groups.freeze(snapshot); }
+    const queries = require('./workbench-query').createWorkbenchQueries({ db, record, group: id => groups.get(id), fail });
+    const listTasks = options => queries.listTasks(options);
     const importFiles = files => { if (!Array.isArray(files) || files.length > MAX_REFERENCE_ASSETS)
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
     const service = {
         setRecoveryResolver: resolver=>{recoveryResolver=resolver;},
         setLiveDownloadProgress: (id,value) => value ? liveDownloadProgress.set(id,value) : liveDownloadProgress.delete(id), importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
         outputDirectory: () => outputDirectories.current(), checkOutputDirectory: () => outputDirectories.checkCurrent(), selectOutputDirectory: directory => outputDirectories.select(directory),
-        freezeOutputDirectory: snapshot => outputDirectories.freeze(snapshot),
+        groups: () => {
+            const value=groups.list(), recovery=groupMoves.recoveryStatus();
+            return { ...value, recovery: recovery.unresolved, items:value.items.map(group=>({ ...group, ...queries.counts(group.groupId), recoveryRequired:recovery.unresolved.some(op=>op.groupIds.includes(group.groupId)) })) };
+        },
+        createGroup: value => { groupMoves.recover(); return groups.create(value); },
+        checkTaskGroupReady: task => groupMoves.recover({taskId:task.id,groupId:groups.membership(task.id)?.group_id}),
+        setGroupActivityGuard: guard => { groupActivityGuard=guard; }, recoverGroupOperations: () => groupMoves.recover(),
+        moveTaskToGroup: (id,value) => { const result=groupMoves.moveTask(id,value); return { ...result, task:record(db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id))) }; },
+        renameGroup: (id,value) => { const result=groupMoves.renameGroup(id,value); return { ...result, group:{ ...groups.view(groups.get(id)), ...queries.counts(id) } }; },
+        archiveGroup: (id,value) => { const result=groupMoves.archiveGroup(id,value); return { ...result, group:{ ...groups.view(groups.get(id)), ...queries.counts(id) } }; },
+        deleteGroup: id => groupMoves.deleteGroup(id), previewHistoryGroups: value => groupMoves.previewHistory(value), organizeHistoryGroups: value => groupMoves.organizeHistory(value),
+        freezeOutputDirectory: snapshot => freezeSubmission(snapshot),
+        checkTaskOutputDirectory: task => { const snapshot = JSON.parse(task.input_snapshot_json || '{}'); if (snapshot.groupDirectoryVersionId) freezeSubmission(snapshot); },
         downloadDirectory: rootRef => {
-            const directory = path.join(outputDirectories.directory(rootRef || outputDirectories.DEFAULT), '.nova-parts');
-            fs.mkdirSync(directory, { recursive: true });
-            if (fs.realpathSync.native(directory) !== directory) throw fail('ASSET_PATH_REJECTED');
+            const directory = groups.safeDirectory(outputDirectories.directory(rootRef || outputDirectories.DEFAULT), ['.nova-parts'], true);
+            bounded(path.join(directory, '00000000-0000-4000-8000-000000000000.part'));
             return directory;
         },
-        publishVerifiedFile: (file, metadata, rootRef) => {
+        publishVerifiedFile: (file, metadata, rootRef, output) => {
             const bytes = fs.readFileSync(file);
             if (digest(bytes) !== metadata.sha256) throw fail('ASSET_CORRUPT');
             if (!Number.isInteger(metadata.width) || !Number.isInteger(metadata.height) || metadata.width < 1 || metadata.height < 1) throw fail('MEDIA_INVALID');
+            if (output?.task) {
+                groupMoves.recover({taskId:output.task.id,groupId:groups.membership(output.task.id)?.group_id});
+                const ext = MIME_EXT[metadata.mimeType], location = groups.location(output.task, output.position, ext);
+                if (location) return publishGrouped(bytes, metadata, location);
+            }
             return importBuffer(bytes, { mimeType: metadata.mimeType, sourceKind: 'generated', rootRef, validation: metadata });
         },
         getDraft, putDraft, getSetting, putSetting, registerLegacyFile, linkLegacyAsset, legacyAsset, legacyImage, listTasks,
@@ -406,12 +479,12 @@ function createWorkbenchStore({ db, rootDirectory }) {
             return roots.every(directory => { let canonical;try {canonical=fs.realpathSync.native(directory);} catch(error) {if(!['ENOENT','ENOTDIR'].includes(error.code))throw error;canonical=path.resolve(directory);} const protectedRoot=canonical.toLowerCase(),relative=path.relative(protectedRoot,normalized);return relative==='..'||relative.startsWith('..'+path.sep)||path.isAbsolute(relative); });
         },
         getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; },
-        ...require('./workbench-library').createWorkbenchLibrary({ db, getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; }, readAsset, trustedPath, row, freeze: snapshot => outputDirectories.freeze(snapshot) }),
+        ...require('./workbench-library').createWorkbenchLibrary({ db, getTask: id => { const task = db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id)); return task ? record(task) : null; }, readAsset, trustedPath, row, freeze: snapshot => freezeSubmission(snapshot) }),
         events: id => db.prepare('SELECT id,type,payload_json,created_at FROM task_events WHERE task_id=? ORDER BY id').all(uuid(id)).map(item => ({ id: item.id, type: item.type, payload: JSON.parse(item.payload_json), createdAt: item.created_at })),
         resolveAssetPath: id => { const asset = row(id); if (!asset)
             throw fail('ASSET_NOT_FOUND', '找不到素材。', 404); const file = trustedPath(asset); if (!file)
             throw fail('ASSET_MISSING', '素材文件缺失。', 404); return file; },
-        countReferences: id => db.prepare('SELECT (SELECT count(*) FROM task_assets WHERE asset_id=?) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) AS n').get(uuid(id), id).n,
+        countReferences: id => db.prepare('SELECT (SELECT count(*) FROM task_assets WHERE asset_id=?) + (SELECT count(*) FROM draft_assets WHERE asset_id=?) + (SELECT count(*) FROM group_draft_assets WHERE asset_id=?) AS n').get(uuid(id), id, id).n,
         deleteTaskHistory: id => db.transaction(() => { uuid(id); db.prepare('DELETE FROM task_items WHERE task_id=?').run(id); db.prepare('DELETE FROM tasks WHERE id=?').run(id); })(),
     };
     return Object.fromEntries(Object.entries(service).map(([name, method]) => [name, (...args) => {

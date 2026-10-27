@@ -2930,7 +2930,7 @@ function ackTask(res, taskId) {
   sendJson(res, 200, { ok: true });
 }
 
-const handleStorage = createStorageHttp({getStore:()=>workbenchStore,getConnections:()=>connectionService,onSettingChanged:key=>{if(key==='taskExecution')taskService?.settingsChanged();},readRawBody,sendJson});
+const handleStorage = createStorageHttp({getStore:()=>workbenchStore,getConnections:()=>connectionService,onSettingChanged:key=>{if(key==='taskExecution')taskService?.settingsChanged();},onTaskChanged:id=>broadcastTask(id),onGroupChanged:id=>{for(const task of db.prepare('SELECT task_id FROM task_group_memberships WHERE group_id=?').all(id))broadcastTask(task.task_id);},readRawBody,sendJson});
 const handleConnections = createConnectionHttp({getService:()=>connectionService,readJsonBody,sendJson});
 async function handleApi(req, res, pathname, searchParams) {
   try {
@@ -3801,6 +3801,8 @@ async function initializeServer() {
   if (desktopSession.isDesktopMode()) {
     taskService=createTaskService({db,store:workbenchStore,connections:connectionService,resolveAdapter:resolveDesktopTaskAdapter,
       downloadWorker:createDownloadWorker({store:workbenchStore,connections:connectionService}),onChange:id=>{broadcastTask(id);broadcastQueueStatus();}});
+    workbenchStore.setGroupActivityGuard(id=>taskService.hasTaskIO(id));
+    workbenchStore.recoverGroupOperations();
     taskService.recover();
   }
   lifecycleTimers.add(setInterval(cleanupExpiredTasks,CLEANUP_INTERVAL_MS).unref());

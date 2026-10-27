@@ -1,0 +1,38 @@
+✔ workspace accepts old values and 1..100 recent video counts, preserves merged navigation and survives reopening (203.3076ms)
+✔ workspace rejects non-integer, out-of-range and non-number counts without changing revision or navigation (41.6316ms)
+✔ desktop HTTP persists count20 across restart, enforces invalid/conflict boundary and serves 20 video records (2645.9227ms)
+✔ actual desktop HTTP persists ordered assets/drafts/history across changed port and clean restart; ACK/failure never removes shared input (3934.9636ms)
+✔ actual HTTP legacy images cannot forge asset identity; missing/corrupt authoritative references reject before upstream POST (440.2486ms)
+✔ actual Web mode retains legacy expiry/ACK policy and does not create desktop schema tables (210.6374ms)
+✔ schema versions apply once, backup is independently readable, unchanged restart makes no new backup (45.5348ms)
+✔ upgrade preserves existing custom-app rows/status/TTL and consistent backup includes committed WAL data (57.8812ms)
+✔ failed multi-step upgrade rolls all DDL/data/history back and leaves consistent pre-upgrade backup (45.2951ms)
+✔ unknown/corrupted migration history fails closed without creating a new backup (37.7606ms)
+✔ existing unknown database schema is not cleared or overwritten on upgrade failure (37.9412ms)
+✔ native file import copies exact JPEG/PNG bytes and survives moving the selected source (68.3243ms)
+✔ content-addressed assets reuse one identity and preserve original bytes and reference order (56.111ms)
+✔ unknown object-file collisions are preserved and failed publication creates no asset row (39.6498ms)
+✔ missing media retains metadata, task associations and draft references (42.7547ms)
+✔ tampered media is rejected by digest without deleting metadata or content (46.0137ms)
+✔ asset IDs cannot resolve traversal paths even when a database path is corrupted (40.4206ms)
+✔ symlinked managed file cannot disclose a file outside the managed root (45.69ms)
+✔ drafts are independent per mode, preserve Chinese/newlines and swap/remove only references (52.5141ms)
+✔ stale draft revisions and invalid asset lists roll back without partial writes (37.6899ms)
+✔ task snapshot and connection versions remain immutable when draft/current connection changes (37.4184ms)
+✔ failed/deleted task never deletes a shared input or another draft/task reference (45.3411ms)
+✔ settings and events are durable, ordered, revisioned, and reject credential/path fields (35.8341ms)
+✔ history pagination preserves more than fifty records and does not include raw request secrets/paths (57.0488ms)
+✔ desktop plugin media retention protects shared files during failure/TTL cleanup; Web policy remains explicit (42.2879ms)
+✔ backup failure prevents every schema/data update and preserves the blocked destination (21.0956ms)
+✔ unrelated existing SQLite file is rejected before schema or backup writes (25.954ms)
+✔ batch file selection is transactional for metadata and never removes either selected source (36.568ms)
+✔ current generated output route is backed by an asset ID and survives removing its compatibility file (43.1915ms)
+✔ import IPC accepts no renderer paths, rejects untrusted senders before dialog, and returns opaque assets (71.2019ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4946.4169

@@ -1,0 +1,281 @@
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (1212.2162ms)
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (1085.6262ms)
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (538.3514ms)
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (840.2181ms)
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (615.0408ms)
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (831.1755ms)
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (546.3772ms)
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (550.9073ms)
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (1086.3092ms)
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (972.5474ms)
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (983.9165ms)
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (592.9846ms)
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (617.1241ms)
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (1677.4113ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 0
+ℹ fail 14
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10730.6521
+
+✖ failing tests:
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 1 file request freezes original assets and completes through B2 verified local download (1212.2162ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:66:85)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:54:25
+✖ actual desktop B1 2 file request freezes original assets and completes through B2 verified local download (1085.6262ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:66:85)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:79:1
+✖ canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request (538.3514ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  202 !== 400
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:84:87)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 202,
+    expected: 400,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:95:1
+✖ script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape (840.2181ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+
+  + '/v1/models'
+  - '/v1/videos/task_b1_original'
+         ^
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:110:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '/v1/models',
+    expected: '/v1/videos/task_b1_original',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 disconnect becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (615.0408ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:114:48
+✖ actual B1 stalled-body becomes submission_unknown; attaching an ID before restart remains explicit same-ID GET recovery (831.1755ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:118:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 401 retains ID, original credential and conservative occupied slot (546.3772ms)
+  AssertionError [ERR_ASSERTION]: {"error":"当前连接鉴权被拒绝。","code":"AUTH_REJECTED"}
+
+  401 !== 202
+
+      at Object.create (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:48:107)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:45)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET 403 retains ID, original credential and conservative occupied slot (550.9073ms)
+  AssertionError [ERR_ASSERTION]: {"error":"当前连接鉴权被拒绝。","code":"AUTH_REJECTED"}
+
+  401 !== 202
+
+      at Object.create (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:48:107)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:45)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 401,
+    expected: 202,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET long Retry-After retains ID, original credential and conservative occupied slot (1086.3092ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:153)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:131:3
+✖ actual B1 GET unknown status retains ID, original credential and conservative occupied slot (972.5474ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:132:153)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:138:1
+✖ cleared original credential keeps an accepted B1 task paused and never rebinds another saved credential (983.9165ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:141:79)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID . remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (592.9846ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-b1-http.test.js:147:33
+✖ review actual HTTP accepted dot ID .. remains unknown/reserved; invalid attach does not GET, mutate ID, or rePOST (617.1241ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+  2 !== 0
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b1-http.test.js:151:45)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 2,
+    expected: 0,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at test\workbench-downloads-http.test.js:4:1
+✖ actual HTTP JSON body, mid-stream reset, auth failure and expiry stay download_failed; retry/refresh never POSTs again (1677.4113ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+    assert.ok(calls.every(item=>item.authorized))
+
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-downloads-http.test.js:34:161)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

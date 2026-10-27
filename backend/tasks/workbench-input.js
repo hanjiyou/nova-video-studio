@@ -14,14 +14,15 @@ const { MAX_VIDEO_REFERENCE_ASSETS } = require('../storage/application-limits');
 const COUNTS = { 'image.text': [0,0], 'image.reference': [1,1], 'video.text': [0,0], 'video.single_reference': [1,1], 'video.dual_reference': [2,2], 'video.multi_reference': [3,MAX_VIDEO_REFERENCE_ASSETS] };
 function invalid() { return fail('INPUT_INVALID', '模式、参数或有序素材引用无效。'); }
 function snapshotFor(body, videoVersion) {
-    const keys = ['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef'];
+    const keys = ['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId'];
     if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(key => !keys.includes(key))) throw invalid();
     if (!Object.hasOwn(COUNTS, body.mode) || typeof body.prompt !== 'string' || !body.prompt.trim() || body.prompt.length > 65536 ||
         !body.parameters || typeof body.parameters !== 'object' || Array.isArray(body.parameters) || !Array.isArray(body.inputAssets)) throw invalid();
-    for (const key of ['localRequestId','connectionVersionId','capabilityVersionId','outputDirectoryVersionId','outputRootRef']) {
+    for (const key of ['localRequestId','connectionVersionId','capabilityVersionId','outputDirectoryVersionId','outputRootRef','groupId','groupDirectoryVersionId']) {
         if ((['localRequestId','connectionVersionId','capabilityVersionId'].includes(key) || body[key] !== undefined) &&
             (typeof body[key] !== 'string' || !UUID.test(body[key]))) throw invalid();
     }
+    if (body.groupName !== undefined && (typeof body.groupName !== 'string' || body.groupName.length > 48)) throw invalid();
     if (body.mode === 'video.multi_reference' && videoVersion !== '1.1.0') throw invalid();
     const [min,max] = COUNTS[body.mode];
     if (body.inputAssets.length < min || body.inputAssets.length > max) throw invalid();
@@ -43,7 +44,10 @@ function snapshotFor(body, videoVersion) {
         capabilityVersionId:body.capabilityVersionId.toLowerCase(),mode:body.mode,model:body.model,prompt:body.prompt,
         parameters:{...body.parameters},inputAssets,adapterId:image?'opensosen-flare-image':'plugin:opensosen-video',adapterVersion:image?VERSION:videoVersion,
         ...(body.outputDirectoryVersionId?{outputDirectoryVersionId:body.outputDirectoryVersionId.toLowerCase()}:{}),
-        ...(body.outputRootRef?{outputRootRef:body.outputRootRef.toLowerCase()}:{} )};
+        ...(body.outputRootRef?{outputRootRef:body.outputRootRef.toLowerCase()}:{} ),
+        ...(body.groupId?{groupId:body.groupId.toLowerCase()}:{}),
+        ...(body.groupName!==undefined?{groupName:body.groupName}:{}),
+        ...(body.groupDirectoryVersionId?{groupDirectoryVersionId:body.groupDirectoryVersionId.toLowerCase()}:{} )};
 }
 function validateCapability(db, snapshot, auth) {
     const capability = db.prepare('SELECT * FROM model_capabilities WHERE id=?').get(snapshot.capabilityVersionId);

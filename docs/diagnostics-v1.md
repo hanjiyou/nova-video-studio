@@ -73,3 +73,7 @@ execution 包括 queueMs/queueClock、终态可知的 executionMs、时限/截�
 新任务生成/下载独立预算：图片 120/30 秒、视频 300/180 秒；设置页各时限 30–1800 整数秒。下载排队不计时，刷新、多文件、校验与保存共用一次尝试截止；重试读取新配置，不重新生成。卡片/详情显示真实进度，未知总量不显示百分比，只有验证保存关联成功才完成。网络改善后点击“重新下载”，复用已验证完整文件，未保存文件从头下载，不宣称 Range 续传。
 
 用户最终确认保持原来源存储规则，不新增恢复信息加密：安全持久源/内联资产/可原 ID 查询结果可跨重启恢复；无 ID 临时签名链接仅本次运行可用，重启或过期后无法恢复时明确提示，绝不重新生成。全部已验证检查点可恢复最终关联。task.revision 持久递增，HTTP/WS 与动作共享投影；requestId 重放回传 acceptedAttemptId 和当前状态。失败诊断保留实际字节、预算、原因和最近 10 次尝试；direct 不代表用户未启用代理。
+
+## 分组文件操作诊断（2026-10-27）
+
+新增groupOperations，按创建时间和ID倒序最多100条。仅导出operationId、kind、state、groupId、taskId、errorCode、startedAt、updatedAt，所有字段经过ID、枚举和时间白名单。类型限move/rename/organize/history；状态限preparing/committed/completed/failed/needs-recovery/history-running。未知错误不导出原始消息。不得导出操作计划、完整路径、组名、提示词、下载地址或凭据。内部文件迁移恢复日志不等于诊断导出内容，也不新增下载地址加密或字节续传能力。

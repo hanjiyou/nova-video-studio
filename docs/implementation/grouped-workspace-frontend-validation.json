@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-27",
+  "scope": "G01 group seam integration + G02-G04 frontend, offline/synthetic only",
+  "tests": {
+    "numTotalTests": 148,
+    "numPassedTests": 148,
+    "numFailedTests": 0,
+    "numPendingTests": 0
+  },
+  "testReport": "grouped-workspace-frontend-tests-final.json",
+  "typescript": {
+    "command": "node node_modules/typescript/bin/tsc --noEmit --incremental false --pretty false",
+    "cwd": "frontend",
+    "exitCode": 0
+  },
+  "browser": {
+    "checkCount": 14,
+    "status": "passed",
+    "media": {
+      "decoded": {
+        "width": 160,
+        "height": 96,
+        "duration": 2,
+        "controls": true,
+        "contain": "contain"
+      },
+      "play": true,
+      "seek": true,
+      "fullscreen": true,
+      "closeStopsAndReleases": true
+    },
+    "report": "grouped-workspace-frontend-visual/report.json"
+  },
+  "sourceSha256": {
+    "frontend/src/components/workbench/DownloadStatus.tsx": "511dd6dff497a7b34eca397c8d7a37939ef8c244122a8c6904d65b7046a70c8c",
+    "frontend/src/components/workbench/MediaTaskCard.tsx": "a2a621587dfd44ad60a05bc51e248fe806f550ff8c3765a201e264cbb04b8d7a",
+    "frontend/src/components/workbench/WorkbenchResults.tsx": "f2760c5264cce549c834d1d73dbfa817d5bd48fc07cdb19449ec613aa8c1ef12",
+    "frontend/src/components/workbench/WorkbenchLibrary.tsx": "9bd589583105e137196ed2afac9c6faa0f5c538a1144593997e3dcf127e64481",
+    "frontend/src/components/workbench/WorkbenchShell.tsx": "6df286dab5c2eded2d90256d5d2fd3f2aeb2e08be800091ce826b72cdd383439",
+    "frontend/src/components/workbench/WorkbenchGroups.tsx": "3fd2ea10d9ac7ba7d9c33a0fc3238ca566593c05961b369254f5178cc3b818b7",
+    "frontend/src/components/workbench/GroupMoveDialog.tsx": "9a55587bf102e4305afd39fbbd82119511596e77f85d7f86ba3311d1cfb6003e",
+    "frontend/src/components/workbench/GroupRecoveryBanner.tsx": "eae89d03fcbe7ea7f66585d04ca5643135b45864d3eea886fb488614b15c3b1e",
+    "frontend/src/components/workbench/HistoryOrganizer.tsx": "da55fd0f87d4ff6b16fcd3aebbb683acea9c79e9ab606ccf8f0ce8ad7de94a4d",
+    "frontend/src/components/workbench/WorkbenchAllTasks.tsx": "1b4ff279864456ac27aeeb65c6b8d0a5f6d08815bfe7aa8a3787aa48a3932547",
+    "frontend/src/components/workbench/DraftEditor.tsx": "80efe52441ea50521cd805adea5c39ad2ac63cc38827b110bda90833f480082f",
+    "frontend/src/hooks/useWorkbenchDrafts.ts": "caae8ab651ed3417f418eaf2afd0184527841d514756416b05b76d4439a16dfb",
+    "frontend/src/hooks/useWorkbenchTasks.ts": "a22d581c1676f5e50f8ec8769bc99c6da26e887d523f00e5b44d12d2e30e488e",
+    "frontend/src/hooks/useWorkbenchGroups.ts": "6c110c3afc4f044db39bba4f27748c324bda470e441ba609082e4087f50023c7",
+    "frontend/src/lib/workbench-client.ts": "425e4154e32ef8d035d96fca37aa5674224f38fb107c169a79fa48b12b808862",
+    "frontend/src/lib/workbench-task-client.ts": "8b7d128566541d54f08688bd86a9b2670954883e426521aef8b4854d5e327a9d",
+    "frontend/src/lib/workbench-group-client.ts": "cd2f276f94546a24e732374f39bb060413d2421a2b257f335a5049335acb90be",
+    "frontend/src/app/globals.css": "1370f061c2467d0cdc5880c9b6687ff4ee50bc819711ffcdbafef92945b69275",
+    "frontend/src/components/workbench/__tests__/group-operations.test.tsx": "5bce38d39eb8cb758927bd6202e70df285e837289a7e15c848cf4fc11a900314",
+    "frontend/src/components/workbench/__tests__/grouped-workspace.test.tsx": "1657968e6ac253d9aad5cd314f72bbe66119f127341f8d7283416ffe7de48160",
+    "frontend/src/components/workbench/__tests__/download-status.test.tsx": "5f8591760fec125831734d5ec9dd57efe1f563034b9294699e5b095bf077966c",
+    "frontend/src/components/workbench/__tests__/library-preview.test.tsx": "1bce48e8d042ec13e279d17924426db7056353be6b404c81220099f4be277e3c",
+    "frontend/src/components/workbench/__tests__/workbench-b3.test.tsx": "0ce31fc9a8d994946029fc3651ab1de09af6d34a334ab9af2e0fd0eef9e4ebda",
+    "frontend/scripts/verify-grouped-workspace.cjs": "3b8f6017e183dbf3c39c74b5803bc435f92ec398b35fc43f9d0034969f5f334b"
+  },
+  "limitations": [
+    "No application production build, installer, installed-state verification, real generation, real credentials or user database access.",
+    "Browser component harness uses synthetic JSON responses; real HTTP/filesystem grouped-media behavior is covered by separate backend/main evidence.",
+    "The earlier 148-test run retained one STACK_TRACE_ERROR failure; isolated 4/4 and final bounded-worker 148/148 passed, so no claim that failure cause was uniquely established."
+  ]
+}

@@ -1,0 +1,25 @@
+✖ B4 active, ambiguous, paused and unfinished download records cannot be removed (70.1586ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 335.0216
+
+✖ failing tests:
+
+test at test\workbench-b4.test.js:15:2
+✖ B4 active, ambiguous, paused and unfinished download records cannot be removed (70.1586ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (E:\Learn\AI\nova-image-studio\backend\test\workbench-b4.test.js:15:290)
+      at async Test.run (node:internal/test_runner/test:1125:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { code: 'TASK_ACTIVE' },
+    operator: 'throws',
+    diff: 'simple'
+  }

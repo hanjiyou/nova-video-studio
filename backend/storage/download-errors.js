@@ -25,6 +25,7 @@ const DETAILS = {
     ASSET_MISSING: ['storage', '本地文件缺失，作品记录已保留。'],
     ASSET_CORRUPT: ['storage', '本地文件与摘要不符，作品记录已保留。'],
     ASSET_FILE_CONFLICT: ['storage', '目标文件与受管摘要不一致，原文件已保留。'],
+    ASSET_PATH_REJECTED: ['storage', '受管目录包含链接、联接或无效路径，请恢复原目录。'],
     OUTPUT_DIRECTORY_INVALID: ['storage', '任务输出目录版本无效。'],
     SAVE_TARGET_CHANGED: ['storage', '另存目标在确认后已改变，请重新选择。'],
 };

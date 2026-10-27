@@ -1,0 +1,11 @@
+✔ G03 real HTTP move/rename/archive/delete/history/recovery routes preserve snapshots and return monotonic group revisions (807.9893ms)
+✔ G03 actual retry admission and publisher reject unresolved partial rename before attempts/network or recreating old directory (153.6738ms)
+✔ G03 cancelled logical task still rejects move while its actual IO promise remains pending (140.8892ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1297.6989

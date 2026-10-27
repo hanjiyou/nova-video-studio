@@ -314,6 +314,75 @@ CREATE TRIGGER download_transport_route_immutable BEFORE UPDATE OF transport_rou
 WHEN OLD.transport_route_json IS NOT NULL AND NEW.transport_route_json IS NOT OLD.transport_route_json
 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DOWNLOAD_ROUTE'); END;
 ` },
+    { version: 12, name: 'script-groups-and-readable-output-locations', sql: `
+CREATE TABLE workbench_groups(id TEXT PRIMARY KEY,name TEXT NOT NULL,name_key TEXT NOT NULL UNIQUE,is_default INTEGER NOT NULL CHECK(is_default IN (0,1)),created_at TEXT NOT NULL);
+INSERT INTO workbench_groups VALUES('00000000-0000-4000-8000-000000000002','未分组','未分组',1,strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+CREATE UNIQUE INDEX idx_single_default_group ON workbench_groups(is_default) WHERE is_default=1;
+CREATE TRIGGER system_group_no_update BEFORE UPDATE ON workbench_groups WHEN OLD.is_default=1 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DEFAULT_GROUP'); END;
+CREATE TRIGGER system_group_no_delete BEFORE DELETE ON workbench_groups WHEN OLD.is_default=1 BEGIN SELECT RAISE(ABORT,'IMMUTABLE_DEFAULT_GROUP'); END;
+CREATE TABLE group_directory_versions(id TEXT PRIMARY KEY,group_id TEXT NOT NULL REFERENCES workbench_groups(id),root_ref TEXT NOT NULL REFERENCES storage_roots(id),directory_name TEXT NOT NULL,created_at TEXT NOT NULL);
+CREATE TRIGGER group_directory_version_no_update BEFORE UPDATE ON group_directory_versions BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GROUP_DIRECTORY_VERSION'); END;
+CREATE TRIGGER group_directory_version_no_delete BEFORE DELETE ON group_directory_versions BEGIN SELECT RAISE(ABORT,'IMMUTABLE_GROUP_DIRECTORY_VERSION'); END;
+CREATE TABLE group_directory_current(group_id TEXT NOT NULL REFERENCES workbench_groups(id),root_ref TEXT NOT NULL REFERENCES storage_roots(id),version_id TEXT NOT NULL REFERENCES group_directory_versions(id),PRIMARY KEY(group_id,root_ref));
+CREATE TABLE task_group_memberships(task_id TEXT PRIMARY KEY REFERENCES tasks(id) ON DELETE CASCADE,group_id TEXT NOT NULL REFERENCES workbench_groups(id),directory_version_id TEXT REFERENCES group_directory_versions(id),revision INTEGER NOT NULL DEFAULT 1);
+INSERT INTO task_group_memberships(task_id,group_id) SELECT id,'00000000-0000-4000-8000-000000000002' FROM tasks;
+CREATE TRIGGER task_default_group AFTER INSERT ON tasks BEGIN INSERT INTO task_group_memberships(task_id,group_id) VALUES(NEW.id,'00000000-0000-4000-8000-000000000002'); END;
+CREATE TRIGGER task_group_revision AFTER UPDATE ON task_group_memberships BEGIN UPDATE tasks SET revision=revision+1 WHERE id=NEW.task_id; END;
+-- SQLite's table UNIQUE constraints cannot be dropped independently. Rebuild assets
+-- and all four referencing tables, preserving every row, index and availability trigger.
+CREATE TABLE assets_grouped (
+ id TEXT PRIMARY KEY,kind TEXT NOT NULL CHECK(kind IN ('image','video','audio')),storage_key TEXT NOT NULL,display_name TEXT NOT NULL,mime_type TEXT NOT NULL,
+ byte_length INTEGER NOT NULL CHECK(byte_length>0),sha256 TEXT NOT NULL CHECK(length(sha256)=64),width INTEGER,height INTEGER,duration_seconds REAL,source_kind TEXT NOT NULL,
+ validation_state TEXT NOT NULL DEFAULT 'unverified',availability TEXT NOT NULL DEFAULT 'available' CHECK(availability IN ('available','missing','corrupt')),created_at TEXT NOT NULL,
+ root_ref TEXT REFERENCES storage_roots(id),group_id TEXT REFERENCES workbench_groups(id),UNIQUE(root_ref,storage_key)
+);
+INSERT INTO assets_grouped SELECT *,NULL FROM assets;
+CREATE TABLE g12_task_assets AS SELECT * FROM task_assets;
+CREATE TABLE g12_draft_assets AS SELECT * FROM draft_assets;
+CREATE TABLE g12_legacy_links AS SELECT * FROM asset_legacy_links;
+CREATE TABLE g12_download_files AS SELECT * FROM task_download_files;
+DROP TABLE task_assets;
+DROP TABLE draft_assets;
+DROP TABLE asset_legacy_links;
+DROP TABLE task_download_files;
+DROP TABLE assets;
+ALTER TABLE assets_grouped RENAME TO assets;
+CREATE UNIQUE INDEX idx_assets_default_identity ON assets(sha256,mime_type,kind) WHERE root_ref IS NULL AND group_id IS NULL;
+CREATE UNIQUE INDEX idx_assets_root_identity ON assets(root_ref,sha256,mime_type,kind) WHERE root_ref IS NOT NULL AND group_id IS NULL;
+CREATE UNIQUE INDEX idx_assets_default_key ON assets(storage_key) WHERE root_ref IS NULL;
+CREATE TABLE task_assets(task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,asset_id TEXT NOT NULL REFERENCES assets(id),role TEXT NOT NULL CHECK(role IN ('input','output')),position INTEGER NOT NULL CHECK(position>=0),PRIMARY KEY(task_id,role,position));
+CREATE INDEX idx_task_assets_asset ON task_assets(asset_id);
+CREATE TABLE draft_assets(mode TEXT NOT NULL REFERENCES drafts(mode) ON DELETE CASCADE,asset_id TEXT NOT NULL REFERENCES assets(id),position INTEGER NOT NULL CHECK(position>=0),PRIMARY KEY(mode,position));
+CREATE INDEX idx_draft_assets_asset ON draft_assets(asset_id);
+CREATE TABLE asset_legacy_links(kind TEXT NOT NULL CHECK(kind IN ('image','plugin-media')),relative_key TEXT NOT NULL,asset_id TEXT NOT NULL REFERENCES assets(id),PRIMARY KEY(kind,relative_key));
+CREATE TABLE task_download_files(task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,source_key TEXT NOT NULL,asset_id TEXT NOT NULL REFERENCES assets(id),sha256 TEXT NOT NULL,byte_length INTEGER NOT NULL,position INTEGER NOT NULL,PRIMARY KEY(task_id,source_key));
+INSERT INTO task_assets SELECT * FROM g12_task_assets;
+INSERT INTO draft_assets SELECT * FROM g12_draft_assets;
+INSERT INTO asset_legacy_links SELECT * FROM g12_legacy_links;
+INSERT INTO task_download_files SELECT * FROM g12_download_files;
+DROP TABLE g12_task_assets;
+DROP TABLE g12_draft_assets;
+DROP TABLE g12_legacy_links;
+DROP TABLE g12_download_files;
+CREATE TRIGGER asset_availability_revision AFTER UPDATE OF availability ON assets WHEN NEW.availability IS NOT OLD.availability BEGIN UPDATE tasks SET revision=revision+1 WHERE id IN (SELECT task_id FROM task_assets WHERE asset_id=NEW.id); END;
+CREATE TABLE group_drafts(group_id TEXT NOT NULL REFERENCES workbench_groups(id),mode TEXT NOT NULL,prompt TEXT NOT NULL,model TEXT NOT NULL,parameters_json TEXT NOT NULL,revision INTEGER NOT NULL,updated_at TEXT NOT NULL,PRIMARY KEY(group_id,mode));
+CREATE TABLE group_draft_assets(group_id TEXT NOT NULL,mode TEXT NOT NULL,asset_id TEXT NOT NULL REFERENCES assets(id),position INTEGER NOT NULL CHECK(position>=0),PRIMARY KEY(group_id,mode,position),FOREIGN KEY(group_id,mode) REFERENCES group_drafts(group_id,mode) ON DELETE CASCADE);
+CREATE INDEX idx_group_draft_assets_asset ON group_draft_assets(asset_id);
+CREATE TABLE task_output_locations(task_id TEXT NOT NULL REFERENCES tasks(id) ON DELETE CASCADE,position INTEGER NOT NULL CHECK(position>=0),root_ref TEXT NOT NULL REFERENCES storage_roots(id),group_id TEXT NOT NULL REFERENCES workbench_groups(id),directory_version_id TEXT NOT NULL REFERENCES group_directory_versions(id),storage_key TEXT NOT NULL,PRIMARY KEY(task_id,position),UNIQUE(root_ref,storage_key));
+` },
+    { version: 13, name: 'saved-result-facts-and-group-file-operations', sql: `
+ALTER TABLE tasks ADD COLUMN saved_at TEXT;
+UPDATE tasks SET saved_at=COALESCE(completed_at,created_at) WHERE EXISTS(SELECT 1 FROM task_assets a WHERE a.task_id=tasks.id AND a.role='output') AND (
+ local_outcome='completed' OR EXISTS(SELECT 1 FROM task_downloads d WHERE d.task_id=tasks.id AND d.state='completed') OR EXISTS(SELECT 1 FROM task_download_attempts d WHERE d.task_id=tasks.id AND d.outcome='completed') OR (status='completed' AND NOT EXISTS(SELECT 1 FROM task_downloads d WHERE d.task_id=tasks.id)));
+CREATE TRIGGER task_saved_fact_immutable BEFORE UPDATE OF saved_at ON tasks WHEN OLD.saved_at IS NOT NULL AND NEW.saved_at IS NOT OLD.saved_at BEGIN SELECT RAISE(ABORT,'IMMUTABLE_SAVED_FACT'); END;
+CREATE TRIGGER task_download_saved_fact AFTER UPDATE OF state ON task_downloads WHEN NEW.state='completed' AND EXISTS(SELECT 1 FROM task_assets a WHERE a.task_id=NEW.task_id AND a.role='output') BEGIN UPDATE tasks SET saved_at=COALESCE(saved_at,NEW.updated_at) WHERE id=NEW.task_id; END;
+-- Historical files are sometimes registered after schema upgrade. A completed
+-- legacy row (no grouped submission snapshot) can register its original saved fact.
+CREATE TRIGGER legacy_output_saved_fact AFTER INSERT ON task_assets WHEN NEW.role='output' AND EXISTS(SELECT 1 FROM tasks t WHERE t.id=NEW.task_id AND t.status='completed' AND (t.input_snapshot_json IS NULL OR json_extract(CASE WHEN json_valid(t.input_snapshot_json) THEN t.input_snapshot_json ELSE '{}' END,'$.groupDirectoryVersionId') IS NULL) AND NOT EXISTS(SELECT 1 FROM task_downloads d WHERE d.task_id=t.id)) BEGIN UPDATE tasks SET saved_at=COALESCE(saved_at,completed_at,created_at) WHERE id=NEW.task_id; END;
+ALTER TABLE workbench_groups ADD COLUMN archived_at TEXT;
+ALTER TABLE workbench_groups ADD COLUMN deleted_at TEXT;
+CREATE TABLE group_file_operations(id TEXT PRIMARY KEY,request_id TEXT NOT NULL UNIQUE COLLATE NOCASE,kind TEXT NOT NULL,task_id TEXT,group_id TEXT NOT NULL,state TEXT NOT NULL,plan_json TEXT NOT NULL,result_json TEXT,error_code TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

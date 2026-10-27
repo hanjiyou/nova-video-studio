@@ -15,7 +15,7 @@ import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 
 function videoRatio(size: string) { const [width,height] = size.split('x').map(Number); if (!width || !height) return ''; let a = width, b = height; while (b) [a,b] = [b,a % b]; return `${width/a}:${height/a}`; }
 export interface SubmitBlocker { code: string; message: string; actionLabel?: string; onAction?: () => void }
-export function DraftEditor({ draft, connection, models, saving, error, onChange, onConfigure, onRetry, onReload, onSubmit, submitting = false, submitDisabled = false, submitBlockers, onChooseLibrary, onModels }: { draft: Draft; connection: ConnectionSummary | null; models: ConnectionModels | null; saving: boolean; error?: unknown; onChange: (patch: Partial<Draft>) => void; onConfigure: () => void; onRetry: () => void; onReload: () => void; onSubmit?: () => void; submitting?: boolean; submitDisabled?: boolean; submitBlockers?: SubmitBlocker[]; onChooseLibrary?: () => void; onModels?: (value:ConnectionModels)=>void }) {
+export function DraftEditor({ draft, connection, models, saving, error, onChange, onConfigure, onRetry, onReload, onSubmit, submitting = false, submitDisabled = false, submitBlockers, onChooseLibrary, onModels, onImportBusyChange }: { draft: Draft; connection: ConnectionSummary | null; models: ConnectionModels | null; saving: boolean; error?: unknown; onChange: (patch: Partial<Draft>) => void; onConfigure: () => void; onRetry: () => void; onReload: () => void; onSubmit?: () => void; submitting?: boolean; submitDisabled?: boolean; submitBlockers?: SubmitBlocker[]; onChooseLibrary?: () => void; onModels?: (value:ConnectionModels)=>void; onImportBusyChange?: (busy: boolean) => void }) {
   const [parameterNotice,setParameterNotice]=useState('');
   const [importing, setImporting] = useState(false), [importError, setImportError] = useState('');
   const input = useRef<HTMLInputElement | null>(null), durationInput = useRef<HTMLInputElement | null>(null);
@@ -33,7 +33,7 @@ export function DraftEditor({ draft, connection, models, saving, error, onChange
   const capabilityText = plan.videoConfiguration ? (visibility==='absent'&&!models?.models.find(item=>item.model===selectedModel)?.custom?'当前服务未列出，可能暂时不可用；参数已保留。':plan.rule?.submissionEnabled?'当前规格按配置提交，部分秒数与带图省略尺寸尚待真实验证。':'此型号的参数配置已准备，生成协议与规格仍待验证。') : plan.unverifiedImage ? '图片规格与参考图编辑尚未在当前中转实测。点击生成可能失败或计费。' : plan.unverifiedMulti ? '三张及以上有序参考尚未真实实测，供应商数量上限未知；点击生成会按当前顺序提交，可能失败或计费。' : !connection ? '连接后选择模型。预设名称仅供参考，尚未核对账户权限。' : visibility === 'absent' ? '该完整型号不在当前模型列表中，未自动换成其他型号。' : capability?.evidenceLevel === 'application_verified' && generationEvidenceVerified(capability) ? '当前服务、完整型号和此模式已通过本应用真实生成与本地媒体验证。' : capability?.evidenceLevel === 'historically_verified' ? '当前服务、完整型号和模式有历史协议证据；此版本尚无本应用实测登记。' : '当前模型与模式尚未验证；保留显示，暂不开放提交。';
   async function imports(files?: FileList | File[]) {
     if (importBusy.current) return;
-    importBusy.current = true;
+    importBusy.current = true; onImportBusyChange?.(true);
     setImporting(true); setImportError('');
     try {
       let assets: AssetSummary[];
@@ -52,7 +52,7 @@ export function DraftEditor({ draft, connection, models, saving, error, onChange
       if (assets.length + refs.current.length > count) { setImportError(`选图超过此草稿的 ${count} 张范围。原图已复制到受管素材目录，本次没有替换草稿引用。`); return; }
       onChange({ inputAssets: [...refs.current, ...assets] });
     } catch (e) { setImportError(localErrorMessage(e)); }
-    finally { importBusy.current = false; setImporting(false); if (input.current) input.current.value = ''; }
+    finally { importBusy.current = false; onImportBusyChange?.(false); setImporting(false); if (input.current) input.current.value = ''; }
   }
   function focus(element: HTMLElement | null) { element?.scrollIntoView?.({ behavior: 'smooth', block: 'center' }); element?.focus(); }
   function chooseReferences() {

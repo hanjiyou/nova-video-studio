@@ -106,7 +106,7 @@ function createDownloadWorker({ store, connections, fetchImpl=(...args)=>fetch(.
                     if(controller.signal.aborted)throw failure(timedOut?'DOWNLOAD_TIMEOUT':'DOWNLOAD_FAILED');
                     diagnostic('media_validated');
                     observedPhase='saving'; phase('saving');progress.phase('saving'); checkpoint();
-                    const assetId=store.publishVerifiedFile(file,metadata,task.output_root_ref).assetId; checkpoint();saveCheckpoint(source,index,assetId);assetIds.push(assetId); checkpoint(); diagnostic('file_saved');progress.saved();
+                    const assetId=store.publishVerifiedFile(file,metadata,task.output_root_ref,{task,position:index}).assetId; checkpoint();saveCheckpoint(source,index,assetId);assetIds.push(assetId); checkpoint(); diagnostic('file_saved');progress.saved();
                 } finally {try{fs.unlinkSync(file);}catch { /* A locked orphan part is never reused or bound as output. */ }}
             }
             return {assetIds};

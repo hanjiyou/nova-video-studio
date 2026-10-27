@@ -1,0 +1,54 @@
+{
+  "scope": "Actual WorkbenchLibraryPreview and workbench CSS; static SSR with synthetic image/video metadata; CSP blocks network; layout only, no real playback or user data",
+  "checks": [
+    {
+      "name": "image-wide",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\library-preview-visual\\image-wide.png",
+      "viewport": 1280,
+      "noHorizontalOverflow": true,
+      "dialogWithinViewport": true,
+      "mediaWithinDialog": true,
+      "mediaFit": "contain",
+      "actionsWithinViewport": true,
+      "nativeVideoControls": true
+    },
+    {
+      "name": "image-narrow",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\library-preview-visual\\image-narrow.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "dialogWithinViewport": true,
+      "mediaWithinDialog": true,
+      "mediaFit": "contain",
+      "actionsWithinViewport": true,
+      "nativeVideoControls": true
+    },
+    {
+      "name": "video-wide",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\library-preview-visual\\video-wide.png",
+      "viewport": 1280,
+      "noHorizontalOverflow": true,
+      "dialogWithinViewport": true,
+      "mediaWithinDialog": true,
+      "mediaFit": "contain",
+      "actionsWithinViewport": true,
+      "nativeVideoControls": true
+    },
+    {
+      "name": "video-narrow",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\library-preview-visual\\video-narrow.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "dialogWithinViewport": true,
+      "mediaWithinDialog": true,
+      "mediaFit": "contain",
+      "actionsWithinViewport": true,
+      "nativeVideoControls": true
+    }
+  ],
+  "status": "passed"
+}

@@ -1,0 +1,57 @@
+
+ RUN  v3.2.4 E:/Learn/AI/nova-image-studio/frontend
+
+ ✓ src/components/workbench/__tests__/workbench-b4.test.tsx (9 tests) 904ms
+   ✓ library pages all 61 records and preserves selection order across pages without generation  417ms
+ ❯ src/components/workbench/__tests__/library-preview.test.tsx (16 tests | 1 failed) 922ms
+   ✓ single click does nothing, double click previews only the first image, and details remain independent 208ms
+   × selection and record removal do not open a preview or task details and preserve the existing deletion body 76ms
+     → expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+   ✓ a page 2 old video uses native controls and closing preserves filters, page and ordered image selection  380ms
+   ✓ focused card supports "Enter" and Escape returns focus without opening details 32ms
+   ✓ focused card supports " " and Escape returns focus without opening details 31ms
+   ✓ close stops video and releases its source on close 36ms
+   ✓ escape stops video and releases its source on close 24ms
+   ✓ backdrop stops video and releases its source on close 33ms
+   ✓ 'no output' shows an explicit result state without a player or recovery request 9ms
+   ✓ 'generating' shows an explicit result state without a player or recovery request 7ms
+   ✓ 'download failed' shows an explicit result state without a player or recovery request 7ms
+   ✓ 'missing' shows an explicit result state without a player or recovery request 8ms
+   ✓ 'corrupt' shows an explicit result state without a player or recovery request 8ms
+   ✓ 'no local preview URL' shows an explicit result state without a player or recovery request 9ms
+   ✓ image load error stays explicit and leaves the original details entry available 45ms
+   ✓ video playback error replaces the player with Chinese guidance and releases the failed source 8ms
+ ✓ src/components/workbench/__tests__/multi-reference.test.tsx (4 tests) 1293ms
+   ✓ library keeps ordered selections across pages and supports moving or removing off-page images without generation  1072ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/components/workbench/__tests__/library-preview.test.tsx > selection and record removal do not open a preview or task details and preserve the existing deletion body
+AssertionError: expected [ { …(2) } ] to deeply equal [ { …(2) } ]
+
+- Expected
++ Received
+
+  [
+    {
+      "method": "DELETE",
+-     "url": "/api/nova/storage/tasks/独立操作",
++     "url": "/api/nova/storage/tasks/%E7%8B%AC%E7%AB%8B%E6%93%8D%E4%BD%9C",
+    },
+  ]
+
+ ❯ src/components/workbench/__tests__/library-preview.test.tsx:68:64
+     66|   expect(deletion?.[1]?.body).toBe(JSON.stringify({ deleteOutputs: fal…
+     67|   expect(props.onDetails).not.toHaveBeenCalled(); expect(props.onVideo…
+     68|   expect(requests.filter(request => request.method !== 'GET')).toEqual…
+       |                                                                ^
+     69| });
+     70|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 28 passed (29)
+   Start at  11:39:28
+   Duration  15.62s (transform 257ms, setup 4.83s, collect 4.12s, tests 3.12s, environment 27.93s, prepare 1.30s)

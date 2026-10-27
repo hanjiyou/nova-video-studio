@@ -1,0 +1,2 @@
+src/components/workbench/__tests__/library-preview.test.tsx(147,85): error TS2551: Property 'pause' does not exist on type 'HTMLElement'. Did you mean 'onpause'?
+src/components/workbench/__tests__/library-preview.test.tsx(147,173): error TS2339: Property 'load' does not exist on type 'HTMLElement'.

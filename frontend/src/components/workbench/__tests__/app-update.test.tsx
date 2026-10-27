@@ -47,3 +47,38 @@ it('check IPC transport rejection is absorbed and offers a fixed retry message',
 });
 
 it('identifies the unsigned GitHub test build in settings',()=>{render(<AppUpdate state={{...downloaded,testBuild:true,currentVersion:'3.6.0'}} onInstall={vi.fn(async()=>{})}/>);expect(screen.getByText('GitHub 更新测试版 · 未签名')).toBeInTheDocument();});
+
+
+it('shows an attempt until real differential progress and labels the updater byte denominator without savings claims',()=>{
+ const state:AppUpdateState={...downloaded,phase:'downloading',remoteMayContinue:false,downloadMode:'differential-attempt'};
+ const view=render(<AppUpdate state={state} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('正在尝试差量更新…')).toBeInTheDocument();expect(screen.getByText(/尚未确认差量下载/)).toBeInTheDocument();expect(document.body).not.toHaveTextContent('节省');
+ view.rerender(<AppUpdate state={{...state,downloadMode:'differential',progress:{transferred:250,total:1000,percent:25,bytesPerSecond:10}}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('正在下载差量更新 · 25%')).toBeInTheDocument();expect(screen.getByText('本阶段已传输 250 B / 1.0 KB')).toBeInTheDocument();expect(screen.getByText(/不含本地复用字节/)).toBeInTheDocument();expect(document.body).not.toHaveTextContent('节省');
+ view.rerender(<AppUpdate state={{...state,downloadMode:'full-fallback',fallbackReason:'checksum_failed'}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('已回退为完整包下载…')).toBeInTheDocument();expect(document.body).not.toHaveTextContent('25%');expect(document.body).not.toHaveTextContent('1.0 KB');expect(screen.getByText(/应用已自动改为下载完整安装包/)).toBeInTheDocument();
+ view.rerender(<AppUpdate state={{...state,downloadMode:'full-fallback',progress:{transferred:100,total:10000,percent:1}}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('本阶段已传输 100 B / 10.0 KB')).toBeInTheDocument();
+});
+it('explicitly explains full download when the installed baseline is unavailable, and tolerates legacy states',()=>{
+ const state:AppUpdateState={...downloaded,phase:'downloading',downloadMode:'full',baselineReason:'baseline_missing'};
+ const view=render(<AppUpdate state={state} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('正在下载完整安装包…')).toBeInTheDocument();expect(screen.getByText(/当前版本的差量基础包不可用/)).toBeInTheDocument();
+ view.rerender(<AppUpdate state={{...downloaded,phase:'downloading',progress:{percent:20,transferred:4}}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('正在下载更新 · 20%')).toBeInTheDocument();expect(screen.getByText('本阶段已传输 4 B')).toBeInTheDocument();expect(document.body).not.toHaveTextContent('差量更新');expect(document.body).not.toHaveTextContent('完整包缓存');
+});
+it('confirms full cache reuse only when the host reports it and keeps installation explicit',()=>{
+ const install=vi.fn(async()=>{}),view=render(<AppUpdate state={{...downloaded,downloadMode:'cached'}} onInstall={install}/>);
+ expect(screen.getByText(/已复用完整安装包缓存/)).toBeInTheDocument();expect(screen.getByRole('button',{name:'重启并安装'})).toBeEnabled();expect(install).not.toHaveBeenCalled();
+ view.rerender(<AppUpdate state={{...downloaded,downloadMode:'differential'}} onInstall={install}/>);
+ expect(screen.queryByText(/已复用完整安装包缓存/)).not.toBeInTheDocument();expect(screen.getByText(/更新已下载/)).toBeInTheDocument();expect(install).not.toHaveBeenCalled();
+});
+it('zero-change differential plans never render a false transfer percentage, NaN or Infinity',()=>{
+ render(<AppUpdate state={{...downloaded,phase:'downloading',downloadMode:'differential-attempt',progress:{transferred:0,total:0,percent:100}}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('正在尝试差量更新…')).toBeInTheDocument();expect(screen.getByText('本阶段已传输 0 B / 0 B')).toBeInTheDocument();expect(screen.getByRole('progressbar')).not.toHaveAttribute('value');expect(document.body).not.toHaveTextContent('100%');expect(document.body).not.toHaveTextContent('NaN');expect(document.body).not.toHaveTextContent('Infinity');
+});
+
+it('formats installer byte counts using the same decimal units as workbench downloads',()=>{
+ render(<AppUpdate state={{...downloaded,phase:'downloading',downloadMode:'full-fallback',progress:{transferred:133795485,total:133795485,percent:100}}} onInstall={vi.fn(async()=>{})}/>);
+ expect(screen.getByText('本阶段已传输 133.8 MB / 133.8 MB')).toBeInTheDocument();expect(document.body).not.toHaveTextContent('133,795,485');
+});

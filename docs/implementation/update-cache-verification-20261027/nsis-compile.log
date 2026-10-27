@@ -1,0 +1,812 @@
+MakeNSIS v3.04 - Copyright 1999-2018 Contributors
+See the file COPYING for license details.
+Credits can be found in the Users Manual.
+
+Processing config: C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\nsisconf.nsh
+Processing default plugins: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Plugins\x86-ansi\*.dll"
+ + AdvSplash::show
+ + Banner::destroy
+ + Banner::getWindow
+ + Banner::show
+ + BgImage::AddImage
+ + BgImage::AddText
+ + BgImage::Clear
+ + BgImage::Destroy
+ + BgImage::Redraw
+ + BgImage::SetBg
+ + BgImage::SetReturn
+ + BgImage::Sound
+ + Dialer::AttemptConnect
+ + Dialer::AutodialHangup
+ + Dialer::AutodialOnline
+ + Dialer::AutodialUnattended
+ + Dialer::GetConnectedState
+ + InstallOptions::dialog
+ + InstallOptions::initDialog
+ + InstallOptions::show
+ + LangDLL::LangDialog
+ + Math::Script
+ + NSISdl::download
+ + NSISdl::download_quiet
+ + Splash::show
+ + StartMenu::Init
+ + StartMenu::Select
+ + StartMenu::Show
+ + System::Alloc
+ + System::Call
+ + System::Copy
+ + System::Free
+ + System::Get
+ + System::Int64Op
+ + System::Store
+ + System::StrAlloc
+ + TypeLib::GetLibVersion
+ + TypeLib::Register
+ + TypeLib::UnRegister
+ + UserInfo::GetAccountType
+ + UserInfo::GetName
+ + UserInfo::GetOriginalAccountType
+ + VPatch::GetFileCRC32
+ + VPatch::GetFileMD5
+ + VPatch::vpatchfile
+ + nsDialogs::Create
+ + nsDialogs::CreateControl
+ + nsDialogs::CreateItem
+ + nsDialogs::CreateTimer
+ + nsDialogs::GetUserData
+ + nsDialogs::KillTimer
+ + nsDialogs::OnBack
+ + nsDialogs::OnChange
+ + nsDialogs::OnClick
+ + nsDialogs::OnNotify
+ + nsDialogs::SelectFileDialog
+ + nsDialogs::SelectFolderDialog
+ + nsDialogs::SetRTL
+ + nsDialogs::SetUserData
+ + nsDialogs::Show
+ + nsExec::Exec
+ + nsExec::ExecToLog
+ + nsExec::ExecToStack
+
+!define: "MUI_INSERT_NSISCONF"=""
+
+Changing directory to: "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\compiled-cache-only"
+
+Processing script file: "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\compiled-cache-only\cache-only.nsi" (UTF8)
+Unicode: true
+Processing default plugins: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Plugins\x86-unicode\*.dll"
+ + AdvSplash::show
+ + Banner::destroy
+ + Banner::getWindow
+ + Banner::show
+ + BgImage::AddImage
+ + BgImage::AddText
+ + BgImage::Clear
+ + BgImage::Destroy
+ + BgImage::Redraw
+ + BgImage::SetBg
+ + BgImage::SetReturn
+ + BgImage::Sound
+ + Dialer::AttemptConnect
+ + Dialer::AutodialHangup
+ + Dialer::AutodialOnline
+ + Dialer::AutodialUnattended
+ + Dialer::GetConnectedState
+ + InstallOptions::dialog
+ + InstallOptions::initDialog
+ + InstallOptions::make_unicode
+ + InstallOptions::show
+ + LangDLL::LangDialog
+ + Math::Script
+ + NSISdl::download
+ + NSISdl::download_quiet
+ + Splash::show
+ + StartMenu::Init
+ + StartMenu::Select
+ + StartMenu::Show
+ + System::Alloc
+ + System::Call
+ + System::Copy
+ + System::Free
+ + System::Get
+ + System::Int64Op
+ + System::Store
+ + System::StrAlloc
+ + TypeLib::GetLibVersion
+ + TypeLib::Register
+ + TypeLib::UnRegister
+ + UserInfo::GetAccountType
+ + UserInfo::GetName
+ + UserInfo::GetOriginalAccountType
+ + VPatch::GetFileCRC32
+ + VPatch::GetFileMD5
+ + VPatch::vpatchfile
+ + nsDialogs::Create
+ + nsDialogs::CreateControl
+ + nsDialogs::CreateItem
+ + nsDialogs::CreateTimer
+ + nsDialogs::GetUserData
+ + nsDialogs::KillTimer
+ + nsDialogs::OnBack
+ + nsDialogs::OnChange
+ + nsDialogs::OnClick
+ + nsDialogs::OnNotify
+ + nsDialogs::SelectFileDialog
+ + nsDialogs::SelectFolderDialog
+ + nsDialogs::SetRTL
+ + nsDialogs::SetUserData
+ + nsDialogs::Show
+ + nsExec::Exec
+ + nsExec::ExecToLog
+ + nsExec::ExecToStack
+
+SilentInstall: silent
+!include: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Include\LogicLib.nsh" (UTF8)
+!include: closed: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Include\LogicLib.nsh"
+!include: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Include\FileFunc.nsh" (UTF8)
+!include: closed: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-3.0.4.1\nsis-3.0.4.1-1mx3n\Include\FileFunc.nsh"
+!include: "E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\templates\nsis\include\StdUtils.nsh" (UTF8)
+!define: "___STDUTILS__NSH___"=""
+!define: "StdUtils.Time"="!insertmacro _StdU_Time"
+!define: "StdUtils.GetMinutes"="!insertmacro _StdU_GetMinutes"
+!define: "StdUtils.GetHours"="!insertmacro _StdU_GetHours"
+!define: "StdUtils.GetDays"="!insertmacro _StdU_GetDays"
+!define: "StdUtils.Rand"="!insertmacro _StdU_Rand"
+!define: "StdUtils.RandMax"="!insertmacro _StdU_RandMax"
+!define: "StdUtils.RandMinMax"="!insertmacro _StdU_RandMinMax"
+!define: "StdUtils.RandList"="!insertmacro _StdU_RandList"
+!define: "StdUtils.RandBytes"="!insertmacro _StdU_RandBytes"
+!define: "StdUtils.FormatStr"="!insertmacro _StdU_FormatStr"
+!define: "StdUtils.FormatStr2"="!insertmacro _StdU_FormatStr2"
+!define: "StdUtils.FormatStr3"="!insertmacro _StdU_FormatStr3"
+!define: "StdUtils.ScanStr"="!insertmacro _StdU_ScanStr"
+!define: "StdUtils.ScanStr2"="!insertmacro _StdU_ScanStr2"
+!define: "StdUtils.ScanStr3"="!insertmacro _StdU_ScanStr3"
+!define: "StdUtils.TrimStr"="!insertmacro _StdU_TrimStr"
+!define: "StdUtils.TrimStrLeft"="!insertmacro _StdU_TrimStrLeft"
+!define: "StdUtils.TrimStrRight"="!insertmacro _StdU_TrimStrRight"
+!define: "StdUtils.RevStr"="!insertmacro _StdU_RevStr"
+!define: "StdUtils.ValidFileName"="!insertmacro _StdU_ValidFileName"
+!define: "StdUtils.ValidPathSpec"="!insertmacro _StdU_ValidPathSpec"
+!define: "StdUtils.ValidDomainName"="!insertmacro _StdU_ValidDomain"
+!define: "StdUtils.StrToUtf8"="!insertmacro _StdU_StrToUtf8"
+!define: "StdUtils.StrFromUtf8"="!insertmacro _StdU_StrFromUtf8"
+!define: "StdUtils.SHFileMove"="!insertmacro _StdU_SHFileMove"
+!define: "StdUtils.SHFileCopy"="!insertmacro _StdU_SHFileCopy"
+!define: "StdUtils.AppendToFile"="!insertmacro _StdU_AppendToFile"
+!define: "StdUtils.ExecShellAsUser"="!insertmacro _StdU_ExecShlUser"
+!define: "StdUtils.InvokeShellVerb"="!insertmacro _StdU_InvkeShlVrb"
+!define: "StdUtils.ExecShellWaitEx"="!insertmacro _StdU_ExecShlWaitEx"
+!define: "StdUtils.WaitForProcEx"="!insertmacro _StdU_WaitForProcEx"
+!define: "StdUtils.GetParameter"="!insertmacro _StdU_GetParameter"
+!define: "StdUtils.TestParameter"="!insertmacro _StdU_TestParameter"
+!define: "StdUtils.ParameterCnt"="!insertmacro _StdU_ParameterCnt"
+!define: "StdUtils.ParameterStr"="!insertmacro _StdU_ParameterStr"
+!define: "StdUtils.GetAllParameters"="!insertmacro _StdU_GetAllParams"
+!define: "StdUtils.GetRealOSVersion"="!insertmacro _StdU_GetRealOSVer"
+!define: "StdUtils.GetRealOSBuildNo"="!insertmacro _StdU_GetRealOSBld"
+!define: "StdUtils.GetRealOSName"="!insertmacro _StdU_GetRealOSStr"
+!define: "StdUtils.GetOSEdition"="!insertmacro _StdU_GetOSEdition"
+!define: "StdUtils.GetOSReleaseId"="!insertmacro _StdU_GetOSRelIdNo"
+!define: "StdUtils.VerifyOSVersion"="!insertmacro _StdU_VrfyRealOSVer"
+!define: "StdUtils.VerifyOSBuildNo"="!insertmacro _StdU_VrfyRealOSBld"
+!define: "StdUtils.HashText"="!insertmacro _StdU_HashText"
+!define: "StdUtils.HashFile"="!insertmacro _StdU_HashFile"
+!define: "StdUtils.NormalizePath"="!insertmacro _StdU_NormalizePath"
+!define: "StdUtils.GetParentPath"="!insertmacro _StdU_GetParentPath"
+!define: "StdUtils.SplitPath"="!insertmacro _StdU_SplitPath"
+!define: "StdUtils.GetDrivePart"="!insertmacro _StdU_GetDrivePart"
+!define: "StdUtils.GetDirectoryPart"="!insertmacro _StdU_GetDirPart"
+!define: "StdUtils.GetFileNamePart"="!insertmacro _StdU_GetFNamePart"
+!define: "StdUtils.GetExtensionPart"="!insertmacro _StdU_GetExtnPart"
+!define: "StdUtils.TimerCreate"="!insertmacro _StdU_TimerCreate"
+!define: "StdUtils.TimerDestroy"="!insertmacro _StdU_TimerDestroy"
+!define: "StdUtils.ProtectStr"="!insertmacro _StdU_PrtctStr"
+!define: "StdUtils.UnprotectStr"="!insertmacro _StdU_UnprtctStr"
+!define: "StdUtils.GetLibVersion"="!insertmacro _StdU_GetLibVersion"
+!define: "StdUtils.SetVerbose"="!insertmacro _StdU_SetVerbose"
+!define: "StdUtils.Const.ShellVerb.PinToTaskbar"="0"
+!define: "StdUtils.Const.ShellVerb.UnpinFromTaskbar"="1"
+!define: "StdUtils.Const.ShellVerb.PinToStart"="2"
+!define: "StdUtils.Const.ShellVerb.UnpinFromStart"="3"
+!include: closed: "E:\Learn\AI\nova-image-studio\node_modules\app-builder-lib\templates\nsis\include\StdUtils.nsh"
+!AddPluginDir: "C:\Users\Administrator\AppData\Local\electron-builder\Cache\nsis-resources-3.4.1\nsis-resources-3.4.1-2jx2y\plugins\x86-unicode"
+ + EmbedHTML::GetIEVersion
+ + EmbedHTML::GetURL
+ + EmbedHTML::Load
+ + INetC::get
+ + INetC::head
+ + INetC::post
+ + INetC::put
+ + SpiderBanner::Destroy
+ + SpiderBanner::Show
+ + SpiderBanner::ShowPBOnly
+ + StdUtils::AppendToFile
+ + StdUtils::ExecShellAsUser
+ + StdUtils::ExecShellWaitEx
+ + StdUtils::FormatStr
+ + StdUtils::FormatStr2
+ + StdUtils::FormatStr3
+ + StdUtils::GetAllParameters
+ + StdUtils::GetDays
+ + StdUtils::GetDirectoryPart
+ + StdUtils::GetDrivePart
+ + StdUtils::GetExtensionPart
+ + StdUtils::GetFileNamePart
+ + StdUtils::GetHours
+ + StdUtils::GetLibVersion
+ + StdUtils::GetMinutes
+ + StdUtils::GetOsEdition
+ + StdUtils::GetOsReleaseId
+ + StdUtils::GetOsReleaseName
+ + StdUtils::GetParameter
+ + StdUtils::GetParentPath
+ + StdUtils::GetRealOsBuildNo
+ + StdUtils::GetRealOsName
+ + StdUtils::GetRealOsVersion
+ + StdUtils::HashFile
+ + StdUtils::HashText
+ + StdUtils::InvokeShellVerb
+ + StdUtils::NormalizePath
+ + StdUtils::ParameterCnt
+ + StdUtils::ParameterStr
+ + StdUtils::ProtectStr
+ + StdUtils::Rand
+ + StdUtils::RandBytes
+ + StdUtils::RandList
+ + StdUtils::RandMax
+ + StdUtils::RandMinMax
+ + StdUtils::RevStr
+ + StdUtils::SHFileCopy
+ + StdUtils::SHFileMove
+ + StdUtils::ScanStr
+ + StdUtils::ScanStr2
+ + StdUtils::ScanStr3
+ + StdUtils::SetVerboseMode
+ + StdUtils::SplitPath
+ + StdUtils::StrFromUtf8
+ + StdUtils::StrToUtf8
+ + StdUtils::TestParameter
+ + StdUtils::Time
+ + StdUtils::TimerCreate
+ + StdUtils::TimerDestroy
+ + StdUtils::TrimStr
+ + StdUtils::TrimStrLeft
+ + StdUtils::TrimStrRight
+ + StdUtils::UnprotectStr
+ + StdUtils::ValidDomainName
+ + StdUtils::ValidFileName
+ + StdUtils::ValidPathSpec
+ + StdUtils::VerifyRealOsBuildNo
+ + StdUtils::VerifyRealOsVersion
+ + StdUtils::WaitForProcEx
+ + UAC::_
+ + WinShell::SetLnkAUMI
+ + WinShell::UninstAppUserModelId
+ + WinShell::UninstShortcut
+ + nsProcess::_CloseProcess
+ + nsProcess::_FindProcess
+ + nsProcess::_KillProcess
+ + nsProcess::_Unload
+ + nsis7z::Extract
+ + nsis7z::ExtractWithCallback
+ + nsis7z::ExtractWithDetails
+ + nsisunz::Unzip
+ + nsisunz::UnzipToLog
+ + nsisunz::UnzipToStack
+ + nsisunz::extract_RunDLL
+!define: "PROJECT_DIR"="E:\Learn\AI\nova-image-studio"
+!define: "APP_ID"="com.novaimage.studio.synthetic"
+!define: "VERSION"="8.0.0"
+!define: "APP_INSTALLER_STORE_FILE"="nova-image-updater\installer.exe"
+!include: "E:\Learn\AI\nova-image-studio\desktop\installer\update-cache-installer.nsh" (UTF8)
+!include: "E:\Learn\AI\nova-image-studio\desktop\installer\data-retention.nsh" (UTF8)
+!include: closed: "E:\Learn\AI\nova-image-studio\desktop\installer\data-retention.nsh"
+!include: "E:\Learn\AI\nova-image-studio\desktop\installer\update-cache.nsh" (UTF8)
+Var: "novaCacheRoot"
+Var: "novaCacheHandle"
+Var: "novaCacheReady"
+!include: closed: "E:\Learn\AI\nova-image-studio\desktop\installer\update-cache.nsh"
+Function: ".onGUIEnd"
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+File: "System.dll"->"$PLUGINSDIR\System.dll" [compress] 6931/12288 bytes
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+FunctionEnd
+Function: ".onInstFailed"
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+FunctionEnd
+!include: closed: "E:\Learn\AI\nova-image-studio\desktop\installer\update-cache-installer.nsh"
+!insertmacro: customHeader
+!undef: "APP_INSTALLER_STORE_FILE"
+!define: "APP_INSTALLER_STORE_FILE"="com.novaimage.studio.synthetic-updater\installer.next.exe"
+!insertmacro: end of customHeader
+NOVA_COMPILED_STORE=com.novaimage.studio.synthetic-updater\installer.next.exe (E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\compiled-cache-only\cache-only.nsi:14)
+Var: "installMode"
+OutFile: "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\compiled-cache-only\cache-only.exe"
+Section: ""
+StrCpy $installMode "compile-only" () ()
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: customInit
+SetShellVarContext: current
+!insertmacro: novaPrepareInstallerCache
+StrCpy $novaCacheRoot "$LOCALAPPDATA\com.novaimage.studio.synthetic-updater" () ()
+StrCpy $novaCacheHandle "0" () ()
+StrCpy $novaCacheReady "0" () ()
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $1=$0&0x400
+IntOp: $0=$0&0x10
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _Or
+!insertmacro: end of _Or
+Abort: "Unsafe update cache directory."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer.next.exe") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer.exe") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer-state.json") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer-state.next.json") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\current.blockmap") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+CreateDirectory: "$novaCacheRoot"
+Plugin command: Call kernel32::CreateFileW(w "$novaCacheRoot", i 0, i 3, p 0, i 3, i 0x02200000, p 0) p.r0
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $novaCacheHandle "$0" () ()
+Delete: "$novaCacheRoot\installer.next.exe"
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $novaCacheReady "1" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaPrepareInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+SetShellVarContext: all
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of customInit
+!insertmacro: customInstall
+!insertmacro: novaPublishInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Delete: "$novaCacheRoot\installer-state.json"
+Delete: "$novaCacheRoot\current.blockmap"
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _If
+!insertmacro: end of _If
+ClearErrors
+Delete: "$novaCacheRoot\installer-state.json"
+Delete: "$novaCacheRoot\current.blockmap"
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _And
+!insertmacro: end of _And
+Plugin command: Call kernel32::CopyFileW(w "$EXEPATH", w "$novaCacheRoot\installer.next.exe", i 0) i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _StdU_HashFile
+Push: SHA2-512
+Push: $EXEPATH
+File: "StdUtils.dll"->"$PLUGINSDIR\StdUtils.dll" [compress] 45608/102400 bytes
+Plugin command: HashFile
+Pop: $1
+!insertmacro: end of _StdU_HashFile
+!insertmacro: _StdU_HashFile
+Push: SHA2-512
+Push: $novaCacheRoot\installer.next.exe
+Plugin command: HashFile
+Pop: $2
+!insertmacro: end of _StdU_HashFile
+StrLen $3 "$1"
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _And
+!insertmacro: end of _And
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $0 "1" () ()
+!insertmacro: _Else
+!insertmacro: end of _Else
+Plugin command: Call kernel32::MoveFileExW(w "$novaCacheRoot\installer.next.exe", w "$novaCacheRoot\installer.exe", i 9) i.r0
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _If
+!insertmacro: end of _If
+ClearErrors
+FileOpen: $novaCacheRoot\installer-state.next.json as w -> $4
+!insertmacro: _If
+!insertmacro: end of _If
+FileWrite: {"schemaVersion":1,"appId":"com.novaimage.studio.synthetic","version":"8.0.0","sha512":"$1"}->$4
+FileClose: $4
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::MoveFileExW(w "$novaCacheRoot\installer-state.next.json", w "$novaCacheRoot\installer-state.json", i 9) i.r0
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+Delete: "$novaCacheRoot\installer.next.exe"
+Delete: "$novaCacheRoot\installer-state.next.json"
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+ClearErrors
+!insertmacro: end of novaPublishInstallerCache
+!insertmacro: end of customInstall
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: novaPrepareInstallerCache
+StrCpy $novaCacheRoot "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\cache\com.novaimage.studio.synthetic-updater" () ()
+StrCpy $novaCacheHandle "0" () ()
+StrCpy $novaCacheReady "0" () ()
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $1=$0&0x400
+IntOp: $0=$0&0x10
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _Or
+!insertmacro: end of _Or
+Abort: "Unsafe update cache directory."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer.next.exe") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer.exe") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer-state.json") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\installer-state.next.json") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+!insertmacro: novaCheckCacheFile
+Plugin command: Call kernel32::GetFileAttributesW(w "$novaCacheRoot\current.blockmap") i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+IntOp: $0=$0&0x410
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+Abort: "Unsafe update cache file."
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCheckCacheFile
+CreateDirectory: "$novaCacheRoot"
+Plugin command: Call kernel32::CreateFileW(w "$novaCacheRoot", i 0, i 3, p 0, i 3, i 0x02200000, p 0) p.r0
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $novaCacheHandle "$0" () ()
+Delete: "$novaCacheRoot\installer.next.exe"
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $novaCacheReady "1" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaPrepareInstallerCache
+ClearErrors
+CopyFiles: (silent) "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\synthetic-old\Nova-Synthetic-8.0.0.exe" -> "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\cache\com.novaimage.studio.synthetic-updater\installer.next.exe", size=0KB
+!insertmacro: novaPublishInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Delete: "$novaCacheRoot\installer-state.json"
+Delete: "$novaCacheRoot\current.blockmap"
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _If
+!insertmacro: end of _If
+ClearErrors
+Delete: "$novaCacheRoot\installer-state.json"
+Delete: "$novaCacheRoot\current.blockmap"
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _And
+!insertmacro: end of _And
+Plugin command: Call kernel32::CopyFileW(w "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\synthetic-old\Nova-Synthetic-8.0.0.exe", w "$novaCacheRoot\installer.next.exe", i 0) i.r0
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _StdU_HashFile
+Push: SHA2-512
+Push: E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\synthetic-old\Nova-Synthetic-8.0.0.exe
+Plugin command: HashFile
+Pop: $1
+!insertmacro: end of _StdU_HashFile
+!insertmacro: _StdU_HashFile
+Push: SHA2-512
+Push: $novaCacheRoot\installer.next.exe
+Plugin command: HashFile
+Pop: $2
+!insertmacro: end of _StdU_HashFile
+StrLen $3 "$1"
+!insertmacro: _If
+!insertmacro: end of _If
+!insertmacro: _And
+!insertmacro: end of _And
+!insertmacro: _If
+!insertmacro: end of _If
+StrCpy $0 "1" () ()
+!insertmacro: _Else
+!insertmacro: end of _Else
+Plugin command: Call kernel32::MoveFileExW(w "$novaCacheRoot\installer.next.exe", w "$novaCacheRoot\installer.exe", i 9) i.r0
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _If
+!insertmacro: end of _If
+ClearErrors
+FileOpen: $novaCacheRoot\installer-state.next.json as w -> $4
+!insertmacro: _If
+!insertmacro: end of _If
+FileWrite: {"schemaVersion":1,"appId":"com.novaimage.studio.synthetic","version":"8.0.0","sha512":"$1"}->$4
+FileClose: $4
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::MoveFileExW(w "$novaCacheRoot\installer-state.next.json", w "$novaCacheRoot\installer-state.json", i 9) i.r0
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+Delete: "$novaCacheRoot\installer.next.exe"
+Delete: "$novaCacheRoot\installer-state.next.json"
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: novaCloseInstallerCache
+!insertmacro: _If
+!insertmacro: end of _If
+Plugin command: Call kernel32::CloseHandle(p $novaCacheHandle)
+StrCpy $novaCacheHandle "0" () ()
+!insertmacro: _EndIf
+!insertmacro: end of _EndIf
+!insertmacro: end of novaCloseInstallerCache
+ClearErrors
+!insertmacro: end of novaPublishInstallerCache
+SectionEnd
+
+Processed 1 file, writing output (x86-unicode):
+Adding plug-ins initializing function... Done!
+Processing pages... Done!
+Removing unused resources... Done!
+Generating language tables... Done!
+
+Output: "E:\Learn\AI\nova-image-studio\docs\implementation\update-cache-evidence-20261027\������· final\cached\compiled-cache-only\cache-only.exe"
+Install: 0 pages (0 bytes), 1 section (16408 bytes), 374 instructions (10472 bytes), 391 strings (5056 bytes), 1 language table (162 bytes).
+
+Using zlib compression.
+
+EXE header size:               37888 / 39424 bytes
+Install code:                   2219 / 32426 bytes
+Install data:                  52547 / 114696 bytes
+CRC (0xB0BC107F):                  4 / 4 bytes
+
+Total size:                    92658 / 186550 bytes (49.6%)

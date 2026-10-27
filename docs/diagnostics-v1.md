@@ -77,3 +77,11 @@ execution 包括 queueMs/queueClock、终态可知的 executionMs、时限/截�
 ## 分组文件操作诊断（2026-10-27）
 
 新增groupOperations，按创建时间和ID倒序最多100条。仅导出operationId、kind、state、groupId、taskId、errorCode、startedAt、updatedAt，所有字段经过ID、枚举和时间白名单。类型限move/rename/organize/history；状态限preparing/committed/completed/failed/needs-recovery/history-running。未知错误不导出原始消息。不得导出操作计划、完整路径、组名、提示词、下载地址或凭据。内部文件迁移恢复日志不等于诊断导出内容，也不新增下载地址加密或字节续传能力。
+
+## 安装包差量诊断设计（U02，2026-10-27）
+
+本节为当前开发规范，最终状态见[差量修复计划](安装包差量更新修复计划.md)。更新诊断新增下载模式preparing/differential-attempt/differential/full/full-fallback/cached/unknown；仅尝试或计算差量计划不表示实际传输了差量。可信真实差量进度排除本地复制；其total是差量传输量，不能替换成完整EXE大小。回退后阶段进度清零，不把先前字节重复累加成整包进度。零变化时保留有限数字，下载完成仍以校验后事件为准。
+
+回退原因仅固定枚举old_installer_missing/old_installer_unreadable/blockmap_failed/transfer_failed/checksum_failed/unknown；基础包预检另记有界baselineReason。不存原始下载地址、路径、认证头、堆栈或原始错误消息。无法根据锁定依赖的日志形状证实原因时保留unknown；networkMode仍不表示VPN实际接管情况。既有历史事件保留，新可选字段向后兼容。
+
+当前结论（2026-10-27）：U01–U03源码与定向离线范围主审通过；本节开发期设计已实施。尚未提交发布或进行电脑A/B完整安装验收，现有3.6.8不含修复。详见[主审记录](implementation/安装包差量更新主审记录.md)。

@@ -148,8 +148,9 @@ test('GitHub test service identifies the test build while preserving once-per-pr
 
 test('update journal orders saved preparation before installer request and never records raw updater logs',async()=>{
   const records=[],diagnostics={begin(){},record:(event,fields)=>records.push({event,...fields}),error:(event,error)=>records.push({event,errorCategory:require('../backend/tasks/diagnostic-error').classifyError(error)})};
-  const f=fixture({service:{diagnostics}});await f.downloaded();
-  f.updater.logger.error('Cannot download differentially, fallback to full download: PRIVATE https://private.invalid');
+  const f=fixture({service:{diagnostics}}), download=f.updater.downloadUpdate;
+  f.updater.downloadUpdate=async()=>{f.updater.logger.error('Cannot download differentially, fallback to full download: PRIVATE https://private.invalid');return download();};
+  await f.downloaded();
   f.updater.logger.info('Downloading update from PRIVATE');await f.service.install();
   const names=records.map(e=>e.event);for(const event of ['check_started','available','download_started','downloaded','differential_fallback','prepare_started','backend_prepared','flush_requested','flush_complete','backend_close_started','backend_closed','install_requested'])assert.ok(names.includes(event),event);
   assert.ok(names.indexOf('backend_closed')<names.indexOf('install_requested'));assert.ok(!JSON.stringify(records).includes('PRIVATE'));assert.equal(records.at(-1).interactive,true);

@@ -12,6 +12,17 @@ export function UpdateNotice({ state, onOpen }: { state: AppUpdateState | null; 
   if (!state?.notice) return null;
   return <div className="wb-notice wb-update-notice" role="status"><div><strong>有新版本 {state.notice}</strong><p>可在设置中下载，完成后由你选择重启安装。</p></div><button type="button" onClick={onOpen}>查看更新</button><button type="button" aria-label="关闭更新提示" onClick={() => void window.novaDesktop?.dismissUpdateNotice().catch(() => {})}>稍后</button></div>;
 }
+function downloadMessage(state: AppUpdateState) {
+  switch (state.downloadMode) {
+    case 'preparing': return '正在准备更新下载';
+    case 'differential-attempt': return '正在尝试差量更新';
+    case 'differential': return '正在下载差量更新';
+    case 'full-fallback': return '已回退为完整包下载';
+    case 'full': return '正在下载完整安装包';
+    default: return '正在下载更新';
+  }
+}
+function updateBytes(value?: number) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value >= 1000000 ? `${(value / 1000000).toFixed(1)} MB` : value >= 1000 ? `${(value / 1000).toFixed(1)} KB` : `${Math.round(value)} B` : null; }
 export function AppUpdate({ state, onInstall }: { state: AppUpdateState | null; onInstall: () => Promise<void> }) {
   const [pending, setPending] = useState(false);
   const [transportError, setTransportError] = useState('');
@@ -25,8 +36,14 @@ export function AppUpdate({ state, onInstall }: { state: AppUpdateState | null; 
       {state.update && <div><h3>新版本 {state.update.version}</h3>{state.update.releaseNotes && <p className="wb-update-notes">{state.update.releaseNotes}</p>}</div>}
       {state.phase === 'idle' && <p role="status" className="wb-help">当前未发现可用的新版本。</p>}
       {state.phase === 'checking' && <p role="status">正在检查更新…</p>}
-      {state.phase === 'downloading' && <div role="status"><p>正在下载更新{typeof state.progress?.percent === 'number' ? ` · ${Math.floor(state.progress.percent)}%` : '…'}</p><progress max={100} value={state.progress?.percent} /><p className="wb-help">应用会尽量复用已有下载；需要时会下载完整安装包。</p></div>}
-      {state.phase === 'downloaded' && <p role="status">更新已下载。重启前将确认草稿保存并安全关闭本机数据。</p>}
+      {state.phase === 'downloading' && <div role="status"><p>{downloadMessage(state)}{typeof state.progress?.percent === 'number' && state.progress?.total !== 0 && state.downloadMode !== 'differential-attempt' ? ` · ${Math.floor(state.progress.percent)}%` : '…'}</p><progress max={100} value={state.progress?.total !== 0 && state.downloadMode !== 'differential-attempt' ? state.progress?.percent : undefined} />
+        {updateBytes(state.progress?.transferred) && <p className="wb-help">本阶段已传输 {updateBytes(state.progress?.transferred)}{updateBytes(state.progress?.total) ? ` / ${updateBytes(state.progress?.total)}` : ''}</p>}
+        {state.downloadMode === 'differential-attempt' && <p className="wb-help">正在检查基础包与差量索引，尚未确认差量下载。</p>}
+        {state.downloadMode === 'differential' && <p className="wb-help">进度为当前差量传输，不含本地复用字节；完成后仍需校验完整安装包。</p>}
+        {state.downloadMode === 'full-fallback' && <p className="wb-help">差量更新未能完成，应用已自动改为下载完整安装包。</p>}
+        {state.downloadMode === 'full' && <p className="wb-help">当前版本的差量基础包不可用，应用将自动下载完整安装包。</p>}
+      </div>}
+      {state.phase === 'downloaded' && <p role="status">{state.downloadMode === 'cached' ? '已复用完整安装包缓存。' : '更新已下载。'}重启前将确认草稿保存并安全关闭本机数据。</p>}
       {(state.phase === 'downloaded' || state.phase === 'preparing') && <p className="wb-warning">重启会停止本机查询。远端任务可能继续生成或计费；原任务记录与占位会保留。</p>}
       {state.error && <p role="alert" className="wb-error">{state.error.message}</p>}
       {transportError && <p role="alert" className="wb-error">{transportError}</p>}

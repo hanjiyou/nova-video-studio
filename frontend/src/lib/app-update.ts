@@ -9,6 +9,9 @@ export interface AppUpdateState {
   notice: string | null;
   remoteMayContinue: boolean;
   update?: { version: string; releaseNotes: string };
+  downloadMode?: 'preparing' | 'differential-attempt' | 'differential' | 'full' | 'full-fallback' | 'cached' | 'unknown';
+  fallbackReason?: 'old_installer_missing' | 'old_installer_unreadable' | 'blockmap_failed' | 'transfer_failed' | 'checksum_failed' | 'unknown';
+  baselineReason?: 'cache_missing' | 'baseline_missing' | 'baseline_invalid' | 'identity_mismatch' | 'version_mismatch' | 'installer_missing' | 'installer_unreadable' | 'installer_corrupt' | 'cache_changed' | 'map_unusable' | 'cache_invalid' | 'unknown';
   progress?: { percent?: number; transferred?: number; total?: number; bytesPerSecond?: number };
   error?: { code: string; message: string };
 }

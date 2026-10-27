@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "updater": "6.8.11",
+  "electron": "43.4.0",
+  "oldVersion": "8.0.0",
+  "newVersion": "8.0.1",
+  "oldSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+  "newSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+  "cases": [
+    {
+      "name": "no-cache",
+      "seed": null,
+      "baseline": {
+        "trusted": false,
+        "reason": "baseline_missing"
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194304,
+      "allBodyBytes": 4194661,
+      "wireBytes": 4194919,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "cached",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 148649,
+      "allBodyBytes": 158168,
+      "wireBytes": 158898,
+      "range206Count": 1,
+      "full200Count": 0,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "corrupt-cache",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": false,
+        "reason": "installer_corrupt"
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194304,
+      "allBodyBytes": 4194661,
+      "wireBytes": 4194919,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "stale-index",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 148649,
+      "allBodyBytes": 157811,
+      "wireBytes": 158445,
+      "range206Count": 1,
+      "full200Count": 0,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "copy-failed",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": false,
+        "reason": "baseline_missing"
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194304,
+      "allBodyBytes": 4194661,
+      "wireBytes": 4194919,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "cross-channel",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-other-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": true
+      },
+      "baseline": {
+        "trusted": false,
+        "reason": "baseline_missing"
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194304,
+      "allBodyBytes": 4194661,
+      "wireBytes": 4194919,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": false,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "range-unavailable",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194321,
+      "allBodyBytes": 4203483,
+      "wireBytes": 4204173,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": true,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "bad-blockmap",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.0",
+        "sourceSha512": "tOTQE18tOYn7mIu/uSas5tuyk1OKRFLDTohEY0Q3cuQwnBhOU1SjYCT11u+ISbwShJOjvPY/uAYfUxLEX7L6bg==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 4194304,
+      "allBodyBytes": 4194680,
+      "wireBytes": 4195033,
+      "range206Count": 0,
+      "full200Count": 1,
+      "fallback": true,
+      "resultSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+      "installerLaunched": false
+    },
+    {
+      "name": "download-not-installed",
+      "seed": null,
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 191970,
+      "allBodyBytes": 201133,
+      "wireBytes": 201986,
+      "range206Count": 2,
+      "full200Count": 0,
+      "fallback": false,
+      "resultSha512": "QOsABld9hUIfwS4ySlT8wupzCFncufujgnpq8Vt5NQrtpfkfI8XRhqmnrxzlRaAzx/n8JtNLyonlbic2McFQpA==",
+      "installerLaunched": false
+    },
+    {
+      "name": "installed-next",
+      "seed": {
+        "operation": "compiled NSIS cache macros",
+        "compiledStore": "com.novaimage.studio.synthetic-updater\\installer.next.exe",
+        "sourceVersion": "8.0.1",
+        "sourceSha512": "xISKgiUATdpQspdy/R/GixZt70Gf5ZxCc21Ov1XWEKQj4tLOFBg2uQLTABcj53cJYjX1g2fwFzhYwVF1+loX1A==",
+        "otherChannel": false
+      },
+      "baseline": {
+        "trusted": true,
+        "reason": null
+      },
+      "success": true,
+      "expectedSuccess": true,
+      "errorCode": null,
+      "fullInstallerBytes": 4194304,
+      "installerBodyBytes": 43321,
+      "allBodyBytes": 52457,
+      "wireBytes": 53090,
+      "range206Count": 1,
+      "full200Count": 0,
+      "fallback": false,
+      "resultSha512": "QOsABld9hUIfwS4ySlT8wupzCFncufujgnpq8Vt5NQrtpfkfI8XRhqmnrxzlRaAzx/n8JtNLyonlbic2McFQpA==",
+      "installerLaunched": false
+    }
+  ],
+  "installation": "not-attempted",
+  "githubDistribution": "not-tested",
+  "productionPolicyBypassed": false,
+  "scope": "Synthetic installers seeded through real compiled NSIS cache-only macros, production baseline preparation and real Electron/NsisUpdater transfers. No application installation acceptance is claimed."
+}

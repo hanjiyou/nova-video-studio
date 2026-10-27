@@ -17,6 +17,7 @@ const { reportStartupFailure } = require('./startup.cjs');
 const { readRuntimePolicy } = require('./update-policy.cjs');
 const { createUpdateDiagnostics } = require('./update-diagnostics.cjs');
 const { createUpdateService } = require('./update-service.cjs');
+const { prepareInstallerCache } = require('./update-cache.cjs');
 const { attachInstallerLaunchProof } = require('./update-launcher.cjs');
 const { createUpdateQuitHandler } = require('./update-quit.cjs');
 let dataPolicy, primary = false, initializationFailure;
@@ -103,7 +104,13 @@ async function start() {
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready; updateDiagnostics?.record('backend_ready');
-  updates = createUpdateService({ diagnostics:updateDiagnostics, policy: readRuntimePolicy({ app, dataMode: dataPolicy.mode }), currentVersion: app.getVersion(),
+  const updatePolicy = readRuntimePolicy({ app, dataMode: dataPolicy.mode });
+  updates = createUpdateService({ diagnostics:updateDiagnostics, policy: updatePolicy, currentVersion: app.getVersion(),
+    async prepareDownload(updater) {
+      // Resolve the exact cache selected by the already validated updater configuration.
+      const helper = await updater.getOrCreateDownloadHelper();
+      return prepareInstallerCache({ cacheDirectory: helper.cacheDir, appId: updatePolicy.metadata.appId, version: app.getVersion() });
+    },
     createUpdater() { const updater = new (require('electron-updater').NsisUpdater)(); installerLaunch = attachInstallerLaunchProof(updater, undefined, updateDiagnostics); return updater; },
     send(channel, value) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send(channel, value); },
     prepareBackend: () => backend.prepareForUpdate(), releaseBackend: () => backend.releaseUpdate(), closeBackend: () => backend.shutdownForUpdate(), onClosedFailure: () => { void reportUpdateFailure(); },

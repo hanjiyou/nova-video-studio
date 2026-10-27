@@ -10,6 +10,7 @@ module.exports = async context => {
   const file = path.join(context.appOutDir, 'resources', 'app-update.yml');
   const config = yaml.load(fs.readFileSync(file, 'utf8'));
   for (const [key, value] of Object.entries(policy.feed)) if (config[key] !== value) throw new Error('Builder feed differs from fixed policy.');
+  if (policy.updaterCacheDirName !== policy.appId + '-updater') throw new Error('NSIS/runtime cache identity differs.');
   config.updaterCacheDirName = policy.updaterCacheDirName;
   fs.writeFileSync(file, yaml.dump(config));
   if (policy.profile === 'github-test') {

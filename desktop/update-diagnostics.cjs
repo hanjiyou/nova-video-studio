@@ -3,12 +3,18 @@ const fs=require('node:fs'),path=require('node:path'),{randomUUID}=require('node
 const {performance}=require('node:perf_hooks');
 const {classifyError,CATEGORIES}=require('../backend/tasks/diagnostic-error');
 const LIMIT=400,MAX_BYTES=512*1024;
-const EVENTS=new Set('session_started backend_ready window_loaded startup_failed window_failed check_started available no_update check_failed download_started download_progress downloaded download_failed prepare_started backend_prepared flush_requested flush_complete flush_failed backend_close_started backend_closed install_requested installer_spawn_requested installer_spawned installer_error installer_confirm_timeout installer_exit_observed parent_quit_requested install_failed prepare_failed target_version_started previous_install_unconfirmed differential_started differential_fallback differential_checksum_mismatch'.split(' '));
+const EVENTS=new Set('session_started backend_ready window_loaded startup_failed window_failed check_started available no_update check_failed download_started download_progress downloaded download_failed prepare_started backend_prepared flush_requested flush_complete flush_failed backend_close_started backend_closed install_requested installer_spawn_requested installer_spawned installer_error installer_confirm_timeout installer_exit_observed parent_quit_requested install_failed prepare_failed target_version_started previous_install_unconfirmed differential_started differential_downloading differential_fallback differential_checksum_mismatch differential_unavailable download_cache_reused'.split(' '));
+const DOWNLOAD_MODES=new Set(['preparing','differential-attempt','differential','full','full-fallback','cached','unknown']);
+const FALLBACK_REASONS=new Set(['old_installer_missing','old_installer_unreadable','blockmap_failed','transfer_failed','checksum_failed','unknown']);
+const BASELINE_REASONS=new Set(['cache_missing','baseline_missing','baseline_invalid','identity_mismatch','version_mismatch','installer_missing','installer_unreadable','installer_corrupt','cache_changed','map_unusable','cache_invalid','unknown']);
 const UUID=/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const version=v=>typeof v==='string'&&v.length<=32&&/^\d+\.\d+\.\d+$/.test(v)?v:undefined;
 function project(value={}) {
   if(!EVENTS.has(value.event))return null;
   const out={event:value.event};
+  if(DOWNLOAD_MODES.has(value.downloadMode))out.downloadMode=value.downloadMode;
+  if(FALLBACK_REASONS.has(value.fallbackReason))out.fallbackReason=value.fallbackReason;
+  if(BASELINE_REASONS.has(value.baselineReason))out.baselineReason=value.baselineReason;
   for(const key of ['sessionId','attemptId','previousAttemptId'])if(typeof value[key]==='string'&&UUID.test(value[key]))out[key]=value[key];
   for(const key of ['currentVersion','targetVersion'])if(version(value[key]))out[key]=value[key];
   if(typeof value.at==='string'&&Number.isFinite(Date.parse(value.at)))out.at=new Date(value.at).toISOString();
@@ -37,4 +43,4 @@ function createUpdateDiagnostics({directory,currentVersion,networkMode,io=fs,now
   if(previous&&!events.some(item=>item.previousAttemptId===previous.attemptId&&['target_version_started','previous_install_unconfirmed'].includes(item.event)))record(previous.targetVersion===currentVersion?'target_version_started':'previous_install_unconfirmed',{targetVersion:previous.targetVersion,previousAttemptId:previous.attemptId});
   return {record,begin(){attemptId=randomUUID();return attemptId;},error(event,error,fields={}){record(event,{...fields,code:error?.code,errorCategory:classifyError(error),httpStatus:error?.httpStatus||error?.statusCode});},snapshot(){return {format:'nova-update-diagnostics-v1',eventLimit:LIMIT,omitted,health:{readState,writeFailures,priorWriteFailures,persistenceHealthy:writeFailures===0&&readState!=='unreadable'},networkModeScope:'generation_fetch_policy_not_updater_transport_or_vpn_detection',observationBoundary:'parent_exit_ends_installer_observation_version_start_does_not_prove_automatic_install',events:events.map(project)};}};
 }
-module.exports={createUpdateDiagnostics,project,LIMIT};
+module.exports={createUpdateDiagnostics,project,LIMIT,BASELINE_REASONS};

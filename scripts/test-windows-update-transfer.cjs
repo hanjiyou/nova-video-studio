@@ -14,7 +14,11 @@ const { NsisUpdater } = require('electron-updater/out/NsisUpdater');
 const { ElectronHttpExecutor } = require('electron-updater/out/electronHttpExecutor');
 const { verifyDirectory, hashFile, compareVersions } = require('./lib/windows-update.cjs');
 
-const [oldDirectory, newDirectory, outputDirectory] = process.argv.slice(2).map(p => path.resolve(p));
+const synthetic = process.argv[2] === '--synthetic';
+const suppliedOutput = synthetic ? path.resolve(process.argv[3]) : null;
+const [oldDirectory, newDirectory, outputDirectory] = (synthetic ? [path.join(suppliedOutput, 'synthetic-old'), path.join(suppliedOutput, 'synthetic-new'), suppliedOutput] : process.argv.slice(2).map(p => path.resolve(p)));
+const { prepareInstallerCache } = require('../desktop/update-cache.cjs');
+const { compileCacheHarness } = require('./lib/windows-update-cache-harness.cjs');
 if (!outputDirectory || !oldDirectory || !newDirectory || fs.existsSync(outputDirectory)) throw new Error('Supply old/new build directories and a NEW evidence directory.');
 fs.mkdirSync(outputDirectory, { recursive: true });
 for (const name of ['electron-user-data', 'electron-session-data', 'electron-crash-dumps']) fs.mkdirSync(path.join(outputDirectory, name));
@@ -24,13 +28,24 @@ app.setPath('crashDumps', path.join(outputDirectory, 'electron-crash-dumps'));
 app.disableHardwareAcceleration();
 const watchdog = setTimeout(() => { console.error('Harness exceeded bounded runtime. No installer was launched.'); app.exit(1); }, 240000);
 
-async function scenario(name, old, target) {
-  const root = path.join(outputDirectory, name); fs.mkdirSync(root);
+async function scenario(name, old, target, options = {}) {
+  const root = options.sharedRoot || path.join(outputDirectory, name); fs.mkdirSync(root, { recursive: true });
   const requests = [], logs = [], events = [];
-  const oldInstaller = path.join(oldDirectory, old.plan.artifactName), installer = path.join(newDirectory, target.plan.artifactName);
+  const oldInstaller = path.join(options.oldDirectory || oldDirectory, old.plan.artifactName), installer = path.join(options.targetDirectory || newDirectory, target.plan.artifactName);
   const cacheName = target.plan.updaterCacheDirName, cache = path.join(root, 'cache', cacheName);
   fs.mkdirSync(cache, { recursive: true });
-  if (['cached', 'corrupt-cache', 'redirect', 'range-unavailable', 'bad-blockmap'].includes(name)) {
+  let seed = null;
+  if (synthetic && !options.reuseCache && name !== 'no-cache') {
+    const foreign = name === 'cross-channel';
+    const seedId = foreign ? 'com.novaimage.studio.synthetic-other' : old.plan.appId;
+    const seedCache = foreign ? path.join(root, 'cache', seedId + '-updater') : cache;
+    const helper = compileCacheHarness({ directory: path.join(root, 'compiled-cache-only'), appId: seedId, version: old.plan.version, cacheDirectory: seedCache, source: name === 'copy-failed' ? path.join(root, 'absent-source.exe') : oldInstaller });
+    helper.execute();
+    seed = { operation: 'compiled NSIS cache macros', compiledStore: helper.expectedStore, sourceVersion: old.plan.version, sourceSha512: old.summary.sha512, otherChannel: foreign };
+    if (name === 'stale-index') fs.copyFileSync(installer + '.blockmap', path.join(cache, 'current.blockmap'));
+    if (name === 'corrupt-cache') fs.writeFileSync(path.join(cache, 'installer.exe'), Buffer.alloc(old.summary.size, 0x5a));
+  }
+  if (!synthetic && ['cached', 'corrupt-cache', 'redirect', 'range-unavailable', 'bad-blockmap'].includes(name)) {
     fs.copyFileSync(oldInstaller, path.join(cache, 'installer.exe'));
     fs.copyFileSync(oldInstaller + '.blockmap', path.join(cache, 'current.blockmap'));
     if (name === 'corrupt-cache') {
@@ -54,7 +69,7 @@ async function scenario(name, old, target) {
       if (name === 'rate-limit') { res.setHeader('Retry-After', '60'); end(429, 'Isolated rate limit fixture'); return; }
       if (name === 'http-timeout') { end(408, 'Isolated server request timeout'); return; }
       if (name === 'malformed-manifest') { end(200, 'files: [invalid: yaml'); return; }
-      let manifest = fs.readFileSync(path.join(newDirectory, 'latest.yml'), 'utf8');
+      let manifest = fs.readFileSync(path.join(options.targetDirectory || newDirectory, 'latest.yml'), 'utf8');
       if (name === 'hash-mismatch') { const value = yaml.load(manifest); value.sha512 = value.files[0].sha512 = Buffer.alloc(64, 0x44).toString('base64'); manifest = yaml.dump(value); }
       end(200, manifest); return;
     }
@@ -94,13 +109,15 @@ async function scenario(name, old, target) {
   const config = path.join(root, 'app-update.yml');
   fs.writeFileSync(config, yaml.dump({ provider: 'generic', url, channel: 'latest', useMultipleRangeRequest: false, updaterCacheDirName: cacheName }));
   const adapter = { version: old.plan.version, name: 'Nova isolated updater transfer harness', isPackaged: true, appUpdateConfigPath: config, userDataPath: path.join(root, 'user-data'), baseCachePath: path.join(root, 'cache'), whenReady: () => app.whenReady(), onQuit: () => {}, quit: () => { throw new Error('Harness must never quit-and-install.'); } };
-  fs.mkdirSync(adapter.userDataPath);
+  fs.mkdirSync(adapter.userDataPath, { recursive: true });
   const updater = new NsisUpdater(undefined, adapter);
   updater.httpExecutor = new ElectronHttpExecutor();
   updater.autoDownload = false; updater.autoInstallOnAppQuit = false; updater.disableWebInstaller = true;
   // These are the real default diff/fallback paths, not _testOnlyOptions.
   updater.logger = Object.fromEntries(['info', 'warn', 'error', 'debug'].map(level => [level, message => logs.push({ level, message: String(message) })]));
   for (const event of ['checking-for-update', 'update-available', 'update-not-available', 'update-downloaded', 'error']) updater.on(event, value => events.push({ event, code: value?.code || null }));
+  const baseline = synthetic ? await prepareInstallerCache({ cacheDirectory: cache, appId: old.plan.appId, version: old.plan.version }) : null;
+  if (synthetic) updater.disableDifferentialDownload = baseline.trusted !== true;
   let success = false, resultHash = null, errorCode = null, downloaded = [];
   try {
     const checkA = updater.checkForUpdates(), checkB = updater.checkForUpdates();
@@ -130,23 +147,58 @@ async function scenario(name, old, target) {
   const expectedSuccess = !['offline', 'rate-limit', 'http-timeout', 'malformed-manifest', 'hash-mismatch', 'disconnect'].includes(name);
   assert.equal(success, expectedSuccess, `${name}: ${JSON.stringify(logs.filter(l => l.level === 'caught'))}`);
   if (['cached', 'redirect'].includes(name)) { assert.ok(ranges.length > 0); assert.equal(full.length, 0); assert.equal(fallback, false); }
-  if (['no-cache', 'corrupt-cache', 'range-unavailable', 'bad-blockmap'].includes(name)) { assert.equal(fallback, true); assert.equal(full.length, 1); }
+  if (!synthetic && ['no-cache', 'corrupt-cache', 'range-unavailable', 'bad-blockmap'].includes(name)) { assert.equal(fallback, true); assert.equal(full.length, 1); }
+  if (synthetic) {
+    if (baseline.trusted && ['range-unavailable', 'bad-blockmap'].includes(name)) { assert.equal(full.length, 1); assert.equal(fallback, true); }
+    else if (baseline.trusted) { assert.ok(ranges.length > 0); assert.equal(full.length, 0); assert.equal(fallback, false); }
+    else { assert.equal(full.length, 1); assert.equal(ranges.length, 0); assert.equal(fallback, false); }
+    if (['stale-index', 'download-not-installed'].includes(name)) assert.ok(requests.some(r => r.path === '/' + old.plan.artifactName + '.blockmap'), 'Fetch old map for still-installed app.version, never reuse premature target map.');
+  }
   if (!success) { assert.equal(events.some(e => e.event === 'update-downloaded'), false); assert.equal(updater.installerPath, null); }
   assert.ok(requests.filter(r => r.path === '/latest.yml').length <= (name === 'cached' ? 2 : 1), 'No automatic check retry, including concurrent check calls.');
-  const result = { name, success, expectedSuccess, errorCode, fullInstallerBytes: target.summary.size, installerBodyBytes: installerRequests.reduce((n, r) => n + r.bodyBytes, 0), allBodyBytes: requests.reduce((n, r) => n + r.bodyBytes, 0), wireBytes: requests.reduce((n, r) => n + (r.wireBytes || 0), 0), range206Count: ranges.length, full200Count: full.length, fallback, expectedSha512: target.summary.sha512, resultSha512: resultHash, requests, events, logs, installerLaunched: false };
-  fs.writeFileSync(path.join(root, 'evidence.json'), JSON.stringify(result, null, 2));
+  const result = { name, seed, baseline, success, expectedSuccess, errorCode, fullInstallerBytes: target.summary.size, installerBodyBytes: installerRequests.reduce((n, r) => n + r.bodyBytes, 0), allBodyBytes: requests.reduce((n, r) => n + r.bodyBytes, 0), wireBytes: requests.reduce((n, r) => n + (r.wireBytes || 0), 0), range206Count: ranges.length, full200Count: full.length, fallback, expectedSha512: target.summary.sha512, resultSha512: resultHash, requests, events, logs, installerLaunched: false };
+  fs.writeFileSync(path.join(root, synthetic ? name + '-evidence.json' : 'evidence.json'), JSON.stringify(result, null, 2));
   console.log(JSON.stringify({ name, success, installerBodyBytes: result.installerBodyBytes, range206Count: ranges.length, full200Count: full.length, fallback }));
   return result;
+}
+async function syntheticFixtures() {
+  const { randomBytes } = require('node:crypto');
+  const { buildBlockMap } = require('app-builder-lib/out/targets/blockmap/blockmap');
+  const appId = 'com.novaimage.studio.synthetic', bytes = randomBytes(4 * 1024 * 1024);
+  bytes.write('MZ');
+  async function build(directory, version, data) {
+    fs.mkdirSync(directory, { recursive: true });
+    const artifactName = 'Nova-Synthetic-' + version + '.exe', filename = path.join(directory, artifactName);
+    fs.writeFileSync(filename, data);
+    const updateInfo = await buildBlockMap(filename, 'gzip', filename + '.blockmap');
+    const sha512 = await hashFile(filename), size = data.length;
+    fs.writeFileSync(path.join(directory, 'latest.yml'), yaml.dump({ version, files: [{ url: artifactName, size, sha512 }], path: artifactName, sha512, releaseDate: new Date(0).toISOString() }));
+    return { plan: { profile: 'local-test', version, artifactName, appId, updaterCacheDirName: appId + '-updater' }, summary: { sha512, size }, updateInfo };
+  }
+  const old = await build(oldDirectory, '8.0.0', bytes);
+  const next = Buffer.from(bytes); randomBytes(16 * 1024).copy(next, 1024 * 1024);
+  const target = await build(newDirectory, '8.0.1', next);
+  const thirdBytes = Buffer.from(next); randomBytes(16 * 1024).copy(thirdBytes, 2 * 1024 * 1024);
+  const thirdDirectory = path.join(outputDirectory, 'synthetic-third');
+  const third = await build(thirdDirectory, '8.0.2', thirdBytes);
+  return { old, target, third, thirdDirectory };
 }
 async function main() {
   await app.whenReady();
   assert.equal(require('electron-updater/package.json').version, '6.8.11');
-  const old = await verifyDirectory(oldDirectory), target = await verifyDirectory(newDirectory);
+  const fixtures = synthetic ? await syntheticFixtures() : null;
+  const old = synthetic ? fixtures.old : await verifyDirectory(oldDirectory), target = synthetic ? fixtures.target : await verifyDirectory(newDirectory);
   assert.equal(old.plan.profile, 'local-test'); assert.equal(target.plan.profile, 'local-test');
   assert.equal(old.plan.appId, target.plan.appId); assert.ok(compareVersions(target.plan.version, old.plan.version) > 0);
   const results = [];
-  for (const name of ['no-cache', 'cached', 'corrupt-cache', 'redirect', 'range-unavailable', 'bad-blockmap', 'offline', 'rate-limit', 'http-timeout', 'malformed-manifest', 'hash-mismatch', 'disconnect']) results.push(await scenario(name, old, target));
-  const summary = { schemaVersion: 1, updater: '6.8.11', electron: process.versions.electron, oldVersion: old.plan.version, newVersion: target.plan.version, oldSha512: old.summary.sha512, newSha512: target.summary.sha512, cases: results.map(({ name, success, expectedSuccess, errorCode, fullInstallerBytes, installerBodyBytes, allBodyBytes, wireBytes, range206Count, full200Count, fallback, resultSha512, installerLaunched }) => ({ name, success, expectedSuccess, errorCode, fullInstallerBytes, installerBodyBytes, allBodyBytes, wireBytes, range206Count, full200Count, fallback, resultSha512, installerLaunched })), installation: 'not-attempted', githubDistribution: 'not-tested', productionPolicyBypassed: false, scope: 'Standalone downloader harness; no installed-application policy or installation acceptance is claimed.' };
+  if (synthetic) {
+    for (const name of ['no-cache', 'cached', 'corrupt-cache', 'stale-index', 'copy-failed', 'cross-channel', 'range-unavailable', 'bad-blockmap']) results.push(await scenario(name, old, target));
+    results.push(await scenario('download-not-installed', old, fixtures.third, { sharedRoot: path.join(outputDirectory, 'cached'), reuseCache: true, targetDirectory: fixtures.thirdDirectory }));
+    results.push(await scenario('installed-next', target, fixtures.third, { oldDirectory: newDirectory, targetDirectory: fixtures.thirdDirectory }));
+  } else {
+    for (const name of ['no-cache', 'cached', 'corrupt-cache', 'redirect', 'range-unavailable', 'bad-blockmap', 'offline', 'rate-limit', 'http-timeout', 'malformed-manifest', 'hash-mismatch', 'disconnect']) results.push(await scenario(name, old, target));
+  }
+  const summary = { schemaVersion: 1, updater: '6.8.11', electron: process.versions.electron, oldVersion: old.plan.version, newVersion: target.plan.version, oldSha512: old.summary.sha512, newSha512: target.summary.sha512, cases: results.map(({ name, seed, baseline, success, expectedSuccess, errorCode, fullInstallerBytes, installerBodyBytes, allBodyBytes, wireBytes, range206Count, full200Count, fallback, resultSha512, installerLaunched }) => ({ name, seed, baseline, success, expectedSuccess, errorCode, fullInstallerBytes, installerBodyBytes, allBodyBytes, wireBytes, range206Count, full200Count, fallback, resultSha512, installerLaunched })), installation: 'not-attempted', githubDistribution: 'not-tested', productionPolicyBypassed: false, scope: synthetic ? 'Synthetic installers seeded through real compiled NSIS cache-only macros, production baseline preparation and real Electron/NsisUpdater transfers. No application installation acceptance is claimed.' : 'Standalone downloader harness; no installed-application policy or installation acceptance is claimed.' };
   fs.writeFileSync(path.join(outputDirectory, 'summary.json'), JSON.stringify(summary, null, 2));
 }
 main().then(() => { clearTimeout(watchdog); app.exit(0); }).catch(error => { clearTimeout(watchdog); fs.writeFileSync(path.join(outputDirectory, 'failure.txt'), error.stack); console.error(error.stack); app.exit(1); });

@@ -121,6 +121,7 @@ function assertInstallerNoticeEncoding(filename) {
 }
 
 function builderConfiguration(plan, attempt, repository = REPOSITORY) {
+  invariant(plan.updaterCacheDirName === plan.appId + '-updater', 'NSIS/runtime cache identity differs.');
   const baseConfig = yaml.load(fs.readFileSync(path.join(repository, 'electron-builder.yml'), 'utf8'));
   // Explicit nsis.license bypasses electron-builder's localized-file BOM conversion.
   const notice = plan.profile === 'github-test' ? 'desktop/installer/GITHUB-TEST-NOTICE.txt' : baseConfig.nsis?.license;
@@ -146,7 +147,7 @@ function builderConfiguration(plan, attempt, repository = REPOSITORY) {
     },
     // Interactive NSIS ignores --force-run; the finish-page checkbox must be enabled.
     // Isolated local tests retain manual launch to preserve their custom data directory.
-    nsis: { runAfterFinish: plan.profile !== 'local-test', uninstallDisplayName: `${plan.productName} ${plan.version}`, ...(plan.profile === 'github-test' ? { createDesktopShortcut: true, createStartMenuShortcut: true, license: path.join(repository, 'desktop/installer/GITHUB-TEST-NOTICE.txt') } : {}) },
+    nsis: { include: path.join(repository, 'desktop/installer/update-cache-installer.nsh'), runAfterFinish: plan.profile !== 'local-test', uninstallDisplayName: `${plan.productName} ${plan.version}`, ...(plan.profile === 'github-test' ? { createDesktopShortcut: true, createStartMenuShortcut: true, license: path.join(repository, 'desktop/installer/GITHUB-TEST-NOTICE.txt') } : {}) },
   };
 }
 

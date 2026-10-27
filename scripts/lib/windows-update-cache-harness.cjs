@@ -25,13 +25,16 @@ function compileCacheHarness({ directory, appId, version, cacheDirectory, source
   const escaped = text => text.replace(/\$/g, '$$').replace(/"/g, '$\\"');
   const lines = [
     'Unicode true', 'RequestExecutionLevel user', 'SilentInstall silent',
-    '!include "LogicLib.nsh"', '!include "FileFunc.nsh"',
     '!include "' + repository + '/node_modules/app-builder-lib/templates/nsis/include/StdUtils.nsh"',
     '!addplugindir "' + plugins + '"',
     '!define PROJECT_DIR "' + repository + '"', '!define APP_ID "' + appId + '"', '!define VERSION "' + version + '"',
     '!define APP_INSTALLER_STORE_FILE "' + defines.APP_INSTALLER_STORE_FILE + '"',
     ...(uninstaller ? ['!define BUILD_UNINSTALLER'] : []),
+    // Fail if a helper include ever masks this first-include compilation regression.
+    '!ifdef LOGICLIB', '!error "LogicLib loaded before the custom installer include"', '!endif',
     '!include "' + repository + '/desktop/installer/update-cache-installer.nsh"',
+    // The pinned builder injects its custom include before installer.nsi headers.
+    '!include "LogicLib.nsh"', '!include "FileFunc.nsh"',
     '!insertmacro customHeader',
     '!echo "NOVA_COMPILED_STORE=${APP_INSTALLER_STORE_FILE}"',
     ...(!uninstaller ? ['Var installMode'] : []),

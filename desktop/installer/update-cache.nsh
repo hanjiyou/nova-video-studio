@@ -1,3 +1,5 @@
+# Callbacks can expand these macros before electron-builder loads its headers.
+!include "LogicLib.nsh"
 # Cache only; these macros never install an application or touch its data.
 !ifndef BUILD_UNINSTALLER
 Var novaCacheRoot

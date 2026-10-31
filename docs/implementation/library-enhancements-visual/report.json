@@ -1,0 +1,260 @@
+{
+  "scope": "Actual mounted WorkbenchShell/WorkbenchLibrary with synthetic loopback API and video; no real app, credentials, database, generation or filesystem moves. Browser muted autoplay uses default policy.",
+  "checks": [
+    {
+      "name": "hover-wide",
+      "status": "passed",
+      "width": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320
+      ]
+    },
+    {
+      "name": "date-wide",
+      "status": "passed",
+      "width": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320
+      ]
+    },
+    {
+      "name": "batch-drag-wide",
+      "status": "passed",
+      "width": 1440,
+      "documentWidth": 1440,
+      "cardWidths": [
+        320,
+        320,
+        320,
+        320
+      ]
+    },
+    {
+      "name": "batch-390",
+      "status": "passed",
+      "width": 390,
+      "documentWidth": 390,
+      "cardWidths": [
+        326,
+        326,
+        326,
+        326
+      ]
+    },
+    {
+      "name": "date-390",
+      "status": "passed",
+      "width": 390,
+      "documentWidth": 390,
+      "cardWidths": [
+        326,
+        326,
+        326,
+        326
+      ]
+    }
+  ],
+  "media": {
+    "first": {
+      "time": 0.196999,
+      "muted": true,
+      "loop": true,
+      "playing": true
+    },
+    "unique": true,
+    "leaveStops": true,
+    "blurReleases": true
+  },
+  "batch": {
+    "sourcesReleased": true,
+    "partial": {
+      "posts": [
+        {
+          "id": "video-one",
+          "groupId": "11111111-1111-4111-8111-111111111111",
+          "requestId": "445886b5-4944-4f55-8c9e-42ed060edfd9",
+          "expectedRevision": 1
+        },
+        {
+          "id": "video-two",
+          "groupId": "11111111-1111-4111-8111-111111111111",
+          "requestId": "9b8d24c8-0b63-43e3-9825-7038b8abb543",
+          "expectedRevision": 1
+        },
+        {
+          "id": "image-one",
+          "groupId": "11111111-1111-4111-8111-111111111111",
+          "requestId": "289ccb5d-0fbd-4db6-9fc3-0eaa44945b79",
+          "expectedRevision": 1
+        }
+      ],
+      "movesWhileAttached": 0,
+      "checked": [
+        "video-two"
+      ],
+      "result": "已处理 3 / 3 项：成功 2，失败 1，跳过 0城市夜景：合成视频二：文件被占用，请关闭占用程序后重试。"
+    },
+    "retry": {
+      "id": "video-two",
+      "groupId": "11111111-1111-4111-8111-111111111111",
+      "requestId": "ee33ca95-5a2b-455d-b6bb-7a37bdbee7b2",
+      "expectedRevision": 1
+    }
+  },
+  "date": {
+    "path": "/api/nova/storage/tasks",
+    "query": "?limit=24&offset=0&scope=library&createdFrom=2026-10-30T16%3A00%3A00.000Z&createdBefore=2026-10-31T16%3A00%3A00.000Z",
+    "method": "GET"
+  },
+  "nativeDrag": {
+    "status": "unsupported",
+    "evidence": "native-drag-control.json",
+    "scope": "Recorded Windows headless CDP pointer comparison; standard draggable DIV also yielded no native dragstart. DOM payload/drop and real video playback passed; native pointer drag remains unverified."
+  },
+  "requests": [
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/connections/current",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/settings/workspace",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/settings/onboarding",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/image.text",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.text",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.single_reference",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/drafts/video.dual_reference",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=6&kind=video&scope=workbench&groupId=00000000-0000-4000-8000-000000000002",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/submissions",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library&createdFrom=2026-10-30T16%3A00%3A00.000Z&createdBefore=2026-10-31T16%3A00%3A00.000Z",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks/video-one/group",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/api/nova/storage/tasks/video-two/group",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks/image-one/group",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=6&kind=video&scope=workbench&groupId=00000000-0000-4000-8000-000000000002",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks/video-two/group",
+      "query": "",
+      "method": "POST"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=6&kind=video&scope=workbench&groupId=00000000-0000-4000-8000-000000000002",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/groups",
+      "query": "",
+      "method": "GET"
+    },
+    {
+      "path": "/api/nova/storage/tasks",
+      "query": "?limit=24&offset=0&scope=library",
+      "method": "GET"
+    }
+  ],
+  "status": "passed"
+}

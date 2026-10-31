@@ -4,9 +4,12 @@ const fs = require('node:fs'), os = require('node:os'), path = require('node:pat
 const { randomUUID } = require('node:crypto'), Database = require('better-sqlite3');
 const { migrateDatabase } = require('../storage/migrations');
 const { createConnectionService } = require('../connections/service');
-const { IMAGE_MODEL, REFERENCE_GROUP, parseImagePricing, createImagePricing } = require('../connections/image-pricing');
+const { IMAGE_MODEL, PRICING_GROUPS, parseImagePricing: parseRawImagePricing, createImagePricing } = require('../connections/image-pricing');
 const { BASES } = require('../connections/route-policy');
 const { start } = require('./support/desktop-http-runtime.cjs');
+const REFERENCE_GROUP = PRICING_GROUPS[0];
+const parseImagePricing = (payload, options = {}) => parseRawImagePricing(payload, { group: REFERENCE_GROUP, ...options });
+function selectGroup(service, connection, pricingGroup = REFERENCE_GROUP) { const result = service.models(connection.connectionId), {revision,...value}=result.displaySettings; return service.updateModelDisplay(connection.connectionId,{connectionVersionId:result.connectionVersionId,expectedRouteRevision:result.routeRevision,expectedRevision:revision,...value,imageModels:[],videoModels:[],defaultImageModel:null,defaultVideoModel:null,pricingGroup}); }
 const fixture = (price = 1) => ({
     success: true,
     data: [{ model_name: IMAGE_MODEL, quota_type: 1, model_price: price, billing_mode: 'tiered_expr', billing_expr: 'tier("image", fixed(' + price + ')) * image_count', enable_groups: ['high', 'super', REFERENCE_GROUP], secret: 'not-projected' }],
@@ -19,21 +22,22 @@ const cleanup = directory => {
 async function setup(t, options = {}) {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nova-image-reference-')), db = new Database(path.join(directory, 'tasks.sqlite'));
     await migrateDatabase({ db, dbPath: db.name });
-    const { allowModelAuth = false, ...serviceOptions } = options;
+    const { allowModelAuth = false, selectPricingGroup = true, ...serviceOptions } = options;
     const vault = { store: () => 'synthetic-reference', state: () => 'ready', read: () => {
         if (!allowModelAuth) throw Error('Pricing must never read a key');
         return 'synthetic-only-key';
     } };
     const service = createConnectionService({ db, vault, fetchImpl: async () => Response.json(fixture()), ...serviceOptions });
     const connection = service.save({ baseUrl: BASES.com, apiKey: 'synthetic-only-key' });
+    if (selectPricingGroup) selectGroup(service, connection);
     t.after(() => { db.close(); cleanup(directory); });
     const switchRoute = route => { const old = service.summary(connection.connectionId); return service.save({ connectionId: old.connectionId, expectedVersionId: old.connectionVersionId, expectedRouteRevision: old.routeRevision, route }); };
     return { service, connection, db, switchRoute };
 }
 
-test('reference quote uses only the exact medium group and multiplies the changing base price', () => {
+test('reference quote uses only the explicitly selected exact current group and multiplies the changing base price', () => {
     const value = parseImagePricing(fixture());
-    assert.equal(value.group, '【生图分组】Image2原生-中质量');
+    assert.equal(value.group, '【生图分组】image2超分');
     assert.deepEqual(value.estimate, { perImage: 0.12 });
     assert.deepEqual(parseImagePricing(fixture(2)).estimate, { perImage: 0.24 });
     const fractional = fixture(0.1); fractional.group_ratio[REFERENCE_GROUP] = 0.05;
@@ -43,7 +47,7 @@ test('reference quote uses only the exact medium group and multiplies the changi
     assert.deepEqual(Object.keys(value).sort(), ['estimate', 'group', 'model', 'reason']);
     assert.equal(JSON.stringify(value).includes('not-projected'), false);
 });
-test('zero is valid; missing, ambiguous or invalid medium group never falls back to another group or a range', () => {
+test('zero is valid; missing, ambiguous or invalid selected group never falls back to another group or a range', () => {
     const zero = fixture(); zero.group_ratio[REFERENCE_GROUP] = 0;
     assert.deepEqual(parseImagePricing(zero).estimate, { perImage: 0 });
     assert.deepEqual(parseImagePricing(fixture(0)).estimate, { perImage: 0 });
@@ -157,6 +161,7 @@ test('unchanged saved validation refreshes pricing without adding awaits after p
     assert.equal(prices, 2); assert.deepEqual((await f.service.pricing(id)).estimate, { perImage: 0.24 });
     const fresh = await f.service.validateAndSave({ apiKey: 'synthetic-candidate', baseUrl: BASES.com, operationId: randomUUID() });
     assert.equal(prices, 2);
+    selectGroup(f.service, fresh.connection);
     assert.deepEqual((await f.service.pricing(fresh.connection.connectionId)).estimate, { perImage: 0.24 });
     assert.equal(prices, 3);
 });
@@ -189,6 +194,7 @@ test('changing the key/version isolates late callbacks and the next initializati
     const f = await setup(t, { fetchImpl: async () => new Promise(resolve => { releases.push(resolve); }) });
     const pending = f.service.pricing(f.connection.connectionId);
     const next = f.service.save({ connectionId: f.connection.connectionId, expectedVersionId: f.connection.connectionVersionId, apiKey: 'another-synthetic-key' });
+    selectGroup(f.service, next);
     const current = f.service.pricing(next.connectionId);
     assert.equal(releases.length, 2);
     releases[1](Response.json(fixture(2))); assert.deepEqual((await current).estimate, { perImage: 0.24 });
@@ -241,6 +247,9 @@ test('actual protected HTTP pricing GET is anonymous upstream and repeated local
     const connection = await runtime.saveConnection({ baseUrl: BASES.com, apiKey: 'synthetic-http-pricing-key' });
     const url = '/api/nova/connections/' + connection.connectionId + '/pricing';
     assert.equal((await fetch(runtime.origin + url)).status, 403);
+    const missing = await (await runtime.request(url)).json(); assert.equal(missing.reason, 'PRICING_GROUP_REQUIRED');
+    const catalog = await (await runtime.request('/api/nova/connections/' + connection.connectionId + '/models')).json(), {revision,...settings}=catalog.displaySettings;
+    const saved = await runtime.request('/api/nova/connections/' + connection.connectionId + '/model-display', {method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({connectionVersionId:connection.connectionVersionId,expectedRouteRevision:catalog.routeRevision,expectedRevision:revision,...settings,imageModels:[],videoModels:[],defaultImageModel:null,defaultVideoModel:null,pricingGroup:REFERENCE_GROUP})}); assert.equal(saved.status,200);
     const response = await runtime.request(url); assert.equal(response.status, 200);
     const value = await response.json(); assert.deepEqual(value.estimate, { perImage: 0.12 });
     for (let index = 0; index < 3; index++) assert.equal((await (await runtime.request(url)).json()).cached, true);

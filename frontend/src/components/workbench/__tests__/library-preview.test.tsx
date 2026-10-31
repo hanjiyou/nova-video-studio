@@ -113,7 +113,7 @@ it.each(['close', 'escape', 'backdrop'])('%s stops video and releases its source
   if (method === 'close') fireEvent.click(within(dialog).getByRole('button', { name: '关闭对话框' }));
   else if (method === 'escape') fireEvent.keyDown(player, { key: 'Escape' });
   else fireEvent.click(dialog.parentElement!);
-  expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(player.pause).toHaveBeenCalledOnce(); expect(player).not.toHaveAttribute('src'); expect(player.load).toHaveBeenCalledOnce();
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument(); expect(vi.mocked(player.pause).mock.contexts.filter(context => context === player)).toHaveLength(1); expect(player).not.toHaveAttribute('src'); expect(vi.mocked(player.load).mock.contexts.filter(context => context === player)).toHaveLength(1);
 });
 
 it.each([
@@ -145,7 +145,7 @@ it('video playback error replaces the player with Chinese guidance and releases 
   render(<WorkbenchLibraryPreview task={task('解码失败', video)} onClose={vi.fn()} />);
   const player = screen.getByLabelText('作品库视频预览') as HTMLVideoElement; fireEvent.error(player);
   expect(screen.getByRole('alert')).toHaveTextContent('视频无法播放'); expect(screen.getByRole('alert')).toHaveTextContent('浏览器不支持该编码');
-  expect(screen.queryByLabelText('作品库视频预览')).not.toBeInTheDocument(); expect(player.pause).toHaveBeenCalledOnce(); expect(player).not.toHaveAttribute('src'); expect(player.load).toHaveBeenCalledOnce();
+  expect(screen.queryByLabelText('作品库视频预览')).not.toBeInTheDocument(); expect(vi.mocked(player.pause).mock.contexts.filter(context => context === player)).toHaveLength(1); expect(player).not.toHaveAttribute('src'); expect(vi.mocked(player.load).mock.contexts.filter(context => context === player)).toHaveLength(1);
   expect(screen.getByRole('button', { name: '另存副本' })).toBeEnabled(); expect(fetcher).not.toHaveBeenCalled();
 });
 
@@ -154,7 +154,7 @@ it('StrictMode remount restores the local video source and real unmount still re
   const player = screen.getByLabelText('作品库视频预览') as HTMLVideoElement;
   expect(player).toHaveAttribute('src', video.previewUrl);
   expect(player).toHaveAttribute('controls');
-  expect(player.pause).toHaveBeenCalledOnce(); expect(player.load).toHaveBeenCalledOnce();
+  expect(vi.mocked(player.pause).mock.contexts.filter(context => context === player)).toHaveLength(1); expect(vi.mocked(player.load).mock.contexts.filter(context => context === player)).toHaveLength(1);
   view.unmount();
   expect(player).not.toHaveAttribute('src'); expect(player.pause).toHaveBeenCalledTimes(2); expect(player.load).toHaveBeenCalledTimes(2);
 });

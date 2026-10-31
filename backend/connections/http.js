@@ -15,12 +15,18 @@ function createConnectionHttp({ getService, readJsonBody, sendJson }) {
                 sendJson(res, 200, { connection: service.current() });
                 return true;
             }
-            const match = pathname.match(/^\/api\/nova\/connections\/([^/]+)(\/models|\/check|\/model-settings|\/pricing)?$/);
+            const match = pathname.match(/^\/api\/nova\/connections\/([^/]+)(\/models|\/check|\/model-settings|\/model-display|\/pricing)?$/);
             if (match?.[2] === '/pricing' && req.method === 'GET') {
-                sendJson(res, 200, await service.pricing(match[1]));
+                sendJson(res, 200, await service.pricing(match[1], { model: new URL(req.url, 'http://localhost').searchParams.get('model') ?? undefined }));
                 return true;
             }
-            if (match && !['/check','/model-settings','/pricing'].includes(match[2]) && req.method === 'GET') {
+            if (match?.[2] === '/model-display' && req.method === 'GET') {
+                sendJson(res,200,service.models(match[1]));return true;
+            }
+            if (match?.[2] === '/model-display' && req.method === 'PUT') {
+                sendJson(res,200,service.updateModelDisplay(match[1],await readJsonBody(req)));return true;
+            }
+            if (match && !['/check','/model-settings','/model-display','/pricing'].includes(match[2]) && req.method === 'GET') {
                 sendJson(res, 200, match[2] === '/models' ? service.models(match[1]) : { connection: service.summary(match[1]) });
                 return true;
             }

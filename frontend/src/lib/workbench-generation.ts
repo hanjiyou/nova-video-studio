@@ -1,5 +1,5 @@
-import {videoRule,configuredVideo,validVideoParameters,videoDefaults} from './workbench-model-catalog';
-import type { CapabilitySummary, ConnectionModels, ConnectionSummary } from './connection-client';
+import {videoRule,configuredVideo,validVideoParameters,videoDefaults,modelHidden,defaultModel} from './workbench-model-catalog';
+import { sameConnectionTransport, type CapabilitySummary, type ConnectionModels, type ConnectionSummary } from './connection-client';
 import type { Draft, HistoryTask } from './workbench-client';
 import type { WorkbenchTaskInput } from './workbench-task-client';
 import { MAX_VIDEO_REFERENCE_ASSETS, unverifiedMultiSubmissionAllowed } from './reference-policy';
@@ -13,8 +13,9 @@ export interface GenerationIssue {
   action?: 'configure' | 'model' | 'prompt' | 'add-references' | 'review-references' | 'duration' | 'parameters';
 }
 export function generationPlan(draft: Draft, connection: ConnectionSummary | null, models: ConnectionModels | null) {
+  if (models && connection && !sameConnectionTransport(connection,models)) models = null;
   const image = draft.mode === 'image.text';
-  const model = draft.model || (image ? connection?.defaultImageModel : connection?.defaultVideoModel) || (image ? 'gpt-image-2.5-flare' : 'grok-imagine-video-1.5-6s');
+  const model = draft.model || defaultModel(connection,models,image?'image':'video');
   const mode = (image && draft.inputAssets.length ? 'image.reference' : draft.mode === 'video.dual_reference' && draft.inputAssets.length > 2 ? 'video.multi_reference' : draft.mode) as WorkbenchTaskInput['mode'];
   const matching = models && models.connectionVersionId === connection?.connectionVersionId ? models.capabilities.filter(item => item.model === model && item.mode === mode && item.baseUrl === connection?.baseUrl && item.provider === connection?.provider && item.protocol === connection?.protocol) : [];
   // A newer unverified scope never replaces the proven default in generic capability ranking.
@@ -22,8 +23,9 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const wantsImageControls = image && (mode === 'image.reference' || Object.keys(draft.parameters).length > 0);
   const rule = !image ? videoRule(model,connection) : null;
   const videoConfiguration = rule ? matching.find(configuredVideo) : undefined;
-  const capability = videoConfiguration || (wantsImageControls ? imageControls : matching.filter(item => item.isCurrent !== false && (!image || Object.keys(item.parameters).length === 0)).sort((a,b) => Number(b.isCurrent === true) - Number(a.isCurrent === true))[0]);
-  const unverifiedImage = Boolean(wantsImageControls && imageControls);
+  const configuredImage = imageControls?.evidence.configuredProtocol ? imageControls : undefined;
+  const capability = videoConfiguration || configuredImage || (wantsImageControls ? imageControls : matching.filter(item => item.isCurrent !== false && (!image || Object.keys(item.parameters).length === 0)).sort((a,b) => Number(b.isCurrent === true) - Number(a.isCurrent === true))[0]);
+  const unverifiedImage = Boolean((wantsImageControls || configuredImage) && imageControls);
   const unverifiedMulti = mode === 'video.multi_reference' && unverifiedMultiSubmissionAllowed(capability, connection);
   const sizes = imageControls ? imageControls.parameters.sizes as string[] : [];
   const qualities = imageControls ? imageControls.parameters.qualities as string[] : [];
@@ -33,10 +35,12 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const add = (code: string, message: string, action?: GenerationIssue['action']) => issues.push({ code, message, ...(action ? { action } : {}) });
   const connectionReady = Boolean(connection?.hasCredential && connection.credentialState === 'ready');
   if (!connectionReady) add('connection', '请先配置可用的连接凭据。', 'configure');
+  if (modelHidden(models,image?'image':'video',model)) add('model-hidden', '当前模型已隐藏，请选择其他模型，提示词和参考图会保留。', 'model');
   if (connectionReady && models?.modelsFetchedAt && models.models.find(item => item.model === model)?.visibility !== 'visible' && !models.models.find(item => item.model === model)?.custom)
     add('model-unavailable', '该完整型号不在当前模型列表中，请明确选择型号或刷新列表。', 'model');
-  if (connectionReady && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled))
-    add('capability', '当前完整模型、模式与规格尚未取得成功协议证据，暂不开放提交。', 'model');
+  if (connectionReady && !model) add('model-required', '请在设置中显示可用型号，或选择一个生成模型。', 'configure');
+  if (connectionReady && model && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled))
+    add('capability', videoConfiguration && rule && !rule.submissionEnabled ? '此模型当前未开放生成。' : '此模型尚未接入生成，请选择已支持的模型。', 'model');
   if (!draft.prompt.trim()) add('prompt', '请填写提示词。', 'prompt');
   const count = draft.inputAssets.length;
   if (!image) {

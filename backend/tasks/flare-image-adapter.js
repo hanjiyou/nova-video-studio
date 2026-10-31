@@ -3,16 +3,16 @@ const routing = require('../connections/route-policy');
 const { modelRejected } = require('../connections/model-catalog');
 const { containsCredential } = require('../connections/redaction');
 const { buildRequestInit } = require('../plugin-runtime/request-body');
-const { POLICY, validParameters } = require('./image-policy');
+const { POLICY, ADAPTER_VERSION: VERSION, imageRule, validParameters } = require('./image-policy');
+// Legacy export identifies the original adapter fixture; requests always use the frozen model.
 const MODEL = POLICY.model;
-const BASE_URL = POLICY.baseUrl;
-const VERSION = '1.1.0';
 function failure(code, fields = {}) { return Object.assign(new Error(code), { code, ...fields }); }
 function validateSnapshot(snapshot, auth) {
-    if (snapshot.model !== MODEL || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets) ||
-        !validParameters(snapshot.parameters || {})) throw failure('INPUT_INVALID');
-    if (auth.baseUrl !== BASE_URL || auth.provider !== POLICY.provider || auth.protocol !== POLICY.protocol) throw failure('CAPABILITY_UNVERIFIED');
-    if (snapshot.adapterVersion === '1.0.0' && (snapshot.mode !== 'image.text' || snapshot.inputAssets.length || Object.keys(snapshot.parameters || {}).length)) throw failure('INPUT_INVALID');
+    const rule = imageRule(snapshot.model);
+    if (!rule || !rule.modes.includes(snapshot.mode) || typeof snapshot.prompt !== 'string' || !snapshot.prompt.trim() || !Array.isArray(snapshot.inputAssets) ||
+        !validParameters(snapshot.parameters || {}, snapshot.model, snapshot.mode)) throw failure('INPUT_INVALID');
+    if (!imageRule(snapshot.model, auth)) throw failure('CAPABILITY_UNVERIFIED');
+    if (snapshot.adapterVersion === '1.0.0' && (snapshot.model !== MODEL || snapshot.mode !== 'image.text' || snapshot.inputAssets.length || Object.keys(snapshot.parameters || {}).length)) throw failure('INPUT_INVALID');
 }
 /** The host alone resolves a single original PNG/JPEG; FormData owns its boundary. */
 function buildReferenceSubmit(snapshot, auth, getAsset) {
@@ -21,7 +21,7 @@ function buildReferenceSubmit(snapshot, auth, getAsset) {
     const input = snapshot.inputAssets[0], asset = getAsset?.(input.assetId);
     if (input.position !== 0 || input.role !== 'reference' || asset?.kind !== 'image' || !['image/png','image/jpeg'].includes(asset.mimeType)) throw failure('INPUT_INVALID');
     return { method: 'POST', url: auth.baseUrl + '/images/edits', encoding: 'multipart',
-        parts: [{ kind: 'field', name: 'model', value: MODEL }, { kind: 'field', name: 'prompt', value: snapshot.prompt },
+        parts: [{ kind: 'field', name: 'model', value: snapshot.model }, { kind: 'field', name: 'prompt', value: snapshot.prompt },
             { kind: 'field', name: 'n', value: '1' }, ...['size','quality'].filter(name => snapshot.parameters?.[name] !== undefined).map(name => ({ kind: 'field', name, value: snapshot.parameters[name] })),
             { kind: 'file', name: 'image', assetId: input.assetId, fileName: 'reference.' + (asset.mimeType === 'image/png' ? 'png' : 'jpg'), mimeType: asset.mimeType }],
         auth: { connectionVersionId: auth.connectionVersionId } };
@@ -32,7 +32,7 @@ function buildSubmit(snapshot, auth, getAsset) {
     if (snapshot.mode !== 'image.text' || snapshot.inputAssets.length) throw failure('INPUT_INVALID');
     // With automatic controls this stays byte-for-byte the proven minimum JSON shape.
     return { method: 'POST', url: auth.baseUrl + '/images/generations', encoding: 'json',
-        json: { model: MODEL, prompt: snapshot.prompt, n: 1, ...snapshot.parameters }, auth: { connectionVersionId: auth.connectionVersionId } };
+        json: { model: snapshot.model, prompt: snapshot.prompt, n: 1, ...snapshot.parameters }, auth: { connectionVersionId: auth.connectionVersionId } };
 }
 function parseSubmit(payload, auth) {
     if (containsCredential(JSON.stringify(payload), auth.apiKey)) throw failure('RESPONSE_CREDENTIAL_REDACTED', { credentialRedacted: true });

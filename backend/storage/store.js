@@ -50,6 +50,7 @@ function safeJson(value, maxBytes = 65536) {
 }
 function createWorkbenchStore({ db, rootDirectory }) {
     const liveDownloadProgress = new Map();
+    const previewReader = require('./preview-reader').createPreviewReader({ fail });
     const root = path.resolve(rootDirectory);
     const assetRoot = path.join(root, 'assets');
     fs.mkdirSync(assetRoot, { recursive: true });
@@ -205,6 +206,34 @@ function createWorkbenchStore({ db, rootDirectory }) {
         }
         if(asset.availability!=='available'){db.prepare("UPDATE assets SET availability='available' WHERE id=?").run(id);asset.availability='available';}
         return { bytes, asset: summary(asset) };
+    }
+    async function openPreviewAsset(id) {
+        const asset = row(id);
+        if (!asset) throw fail('ASSET_NOT_FOUND', '找不到素材。', 404);
+        function mapped(cause) {
+            if (cause.code === 'ASSET_CORRUPT') db.prepare("UPDATE assets SET availability='corrupt' WHERE id=?").run(id);
+            if (['ENOENT','ENOTDIR','ASSET_MISSING'].includes(cause.code)) {
+                db.prepare("UPDATE assets SET availability='missing' WHERE id=?").run(id);
+                return fail('ASSET_MISSING', '素材文件缺失，记录已保留。', 404);
+            }
+            if (cause.statusCode) return cause;
+            if (['ENOSPC','EDQUOT','EBUSY','EPERM','ETXTBSY','EACCES','ENAMETOOLONG'].includes(cause.code)) return fileFailure(cause);
+            return fail('STORAGE_OPERATION_FAILED', '媒体读取失败，已有文件和记录保留。', 500);
+        }
+        let opened;
+        try {
+            const file = trustedPath(asset);
+            if (!file) throw fail('ASSET_MISSING');
+            if (!Number.isSafeInteger(asset.byte_length) || asset.byte_length < 1 || asset.byte_length > MAX_ASSET_BYTES) throw fail('ASSET_SIZE_INVALID');
+            opened = await previewReader.open(file, asset);
+            if (asset.availability !== 'available') { db.prepare("UPDATE assets SET availability='available' WHERE id=?").run(id); asset.availability='available'; }
+            return { asset: summary(asset), byteLength: opened.byteLength,
+                read: async (...args) => { try { return await opened.read(...args); } catch (cause) { throw mapped(cause); } },
+                close: () => opened.close() };
+        } catch (cause) {
+            if (opened) await opened.close().catch(() => {});
+            throw mapped(cause);
+        }
     }
     function references(items) {
         if (!Array.isArray(items) || items.length > MAX_REFERENCE_ASSETS)
@@ -440,7 +469,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         throw fail('INVALID_IMPORT_SELECTION'); return db.transaction(() => files.map(file => importFile(file)))(); };
     const service = {
         setRecoveryResolver: resolver=>{recoveryResolver=resolver;},
-        setLiveDownloadProgress: (id,value) => value ? liveDownloadProgress.set(id,value) : liveDownloadProgress.delete(id), importBuffer, importFile, importFiles, readAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
+        setLiveDownloadProgress: (id,value) => value ? liveDownloadProgress.set(id,value) : liveDownloadProgress.delete(id), importBuffer, importFile, importFiles, readAsset, openPreviewAsset, getAsset: id => summary(row(id)), bindTaskAssets, taskAssets, appendTaskEvent, setTaskSnapshot,
         outputDirectory: () => outputDirectories.current(), checkOutputDirectory: () => outputDirectories.checkCurrent(), selectOutputDirectory: directory => outputDirectories.select(directory),
         groups: () => {
             const value=groups.list(), recovery=groupMoves.recoveryStatus();

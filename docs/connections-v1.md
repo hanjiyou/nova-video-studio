@@ -1,5 +1,21 @@
 # 连接、凭据与能力接口 v1
 
+## 2026-10-28 模型显示、默认及现行价格分组
+
+本节替代下方“仅 flare / 固定中质量组”的当前行为；历史实施记录保留。清单分类、协议接入、上游可见性、用户显示选择分别返回。上游清单出现一个型号不授予协议能力，勾选也不绕过协议能力校验。
+
+- `GET /api/nova/connections/:id/models` 和新增 `GET /api/nova/connections/:id/model-display` 返回 `displaySettings:{revision,imageModels,videoModels,defaultImageModel,defaultVideoModel,pricingGroup}`；`imageModels/videoModels` 是完整型号数组，默认可为 null。每个 models 条目增加 `submissionEnabled:boolean`，由实际图片/视频协议配置按连接来源计算。顶层 `pricingGroups` 返回精确允许的两个价格组。
+- `PUT /api/nova/connections/:id/model-display` 原子接收完整 `{connectionVersionId,expectedRouteRevision,expectedRevision,imageModels,videoModels,defaultImageModel,defaultVideoModel,pricingGroup}`。custom 源的 expectedRouteRevision 为 null。旧连接版本、旧线路、旧显示 revision 分别返回 409 `CONNECTION_VERSION_CONFLICT`、`CONNECTION_ROUTE_CONFLICT`、`MODEL_DISPLAY_CONFLICT`，不部分保存。成功返回完整 models 同形响应。
+- 选择必须来自已知清单且分类匹配，不接受重复型号。非空显示列表须有位于其中的默认型号，该默认还须当前上游 visible、协议 submissionEnabled；不合法返回 `MODEL_DISPLAY_INVALID`。允许显示未接入型号，但不能将其作为默认。全部隐藏时列表为空、默认为 null。pricingGroup 允许 null，独立于生成能力。
+- 使用既有 app_settings，首次读取按协议配置持久化 revision=0 的初始选择：内置已配置图片 flare/sunburst、视频当前可提交型号；Preview 仍关闭。后续清单刷新、移除和恢复都不改变勾选与默认，新发现或后来配置接入的型号不自动勾选。旧价格组迁移为 null，不替用户选择新组。配置按稳定连接及原凭据身份隔离；同身份仅改旧默认、名称或切线路保留，换 Key、来源或连接隔离。
+- displaySettings.default* 是新界面的权威默认；summary.default* 保留旧连接版本的兼容事实。旧 completeSetup 接受各类默认 null（显式不设置该类，同时清空该类显示列表），以支持仅图片或尚无已接入协议的自定义连接；旧不可空 preferences 字段保留兼容值，新界面读取 displaySettings。非空默认在同一事务验证并同步；revision=0 时有效新默认可同时加入显示，已保存显示策略若冲突则明确 409。既有缺席默认可保留为历史，但不能作为一次新保存的有效默认。
+- 只在新工作台任务首次创建、排重及清单检查后调用显示校验；隐藏返回 409 `MODEL_HIDDEN`。历史排重、已入队执行、轮询、下载和恢复不按当前显示重新拦截。新草稿 GET 仅在未保存的空草稿内采用当前显示默认，且型号必须当前 visible 和已接入；既有草稿原样返回。
+- `GET /api/nova/connections/:id/pricing?model=完整型号` 默认 flare，兼容图片型号按所选精确组 `【生图分组】image2超分` 或 `【生图分组】Image2-满参` 的公开基础价×倍率返回单一 perImage。缺选择为 `PRICING_GROUP_REQUIRED`；缺型号、组、非法数字或未知计费规则明确不可用，不回退旧中质量或其他组。合法 0 保留，不执行表达式。
+- 价格仍只匿名读取所选内置源 `/api/pricing`，不读 Key、不带本地授权、不跟重定向。首次初始化和实际模型刷新获取一个有界内存快照；选择分组或请求另一个兼容图片型号只重算，不额外外呼。返回 displayRevision，并按连接版本、线路 revision 和显示 revision 丢弃迟到报价。价格不可用不改变模型检查或生成能力。
+
+实施与离线证据见[模型显示后端实施](implementation/模型显示后端实施.md)。
+
+
 ## 2026-10-26 中质量公开参考价（已实现，源码与定向验证主审通过）
 
 GET /api/nova/connections/:id/pricing 保持受保护的本地只读入口。上游只允许精确内置OpenSosen所选cn/com源的 /api/pricing，匿名GET、不读Key、不转发本地授权头、不跟随重定向。保留响应大小及超时上限。

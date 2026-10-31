@@ -1,0 +1,74 @@
+{
+  "reviewedAt": "2026-10-31",
+  "scope": "Source and scoped tests/browser evidence; native pointer drag and installed acceptance remain unverified",
+  "files": [
+    {
+      "path": "backend/storage/http.js",
+      "sha256": "39c272747520d0b2a67982b1e2aa9f2991c1dc2db9376f14490f7f8b18ebfcca"
+    },
+    {
+      "path": "backend/storage/store.js",
+      "sha256": "462650a7ec0fccfce65121e65d488e7f0514d0c1ba95af2285b6e760ca21ade8"
+    },
+    {
+      "path": "backend/storage/workbench-query.js",
+      "sha256": "13aa8f96225d954ac4d4e706a98ad0276d9638c35887794239a64351f378c011"
+    },
+    {
+      "path": "backend/storage/preview-reader.js",
+      "sha256": "79cfacf9b664f68231dfab1db877d24ac807ecf0ac22cb0c9eb9175406d26379"
+    },
+    {
+      "path": "backend/test/library-enhancements.test.js",
+      "sha256": "a6d33d22dfa38afa9215ed804f04cc52d4260ce677ec74a84abc58575059eee9"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchLibrary.tsx",
+      "sha256": "2fee4bc7c368655d3a459d711ddac786d37779596718fa82ebc7f84b357171d7"
+    },
+    {
+      "path": "frontend/src/components/workbench/MediaTaskCard.tsx",
+      "sha256": "c0ce76ec447f027f572e3de2bd89ccc1b2e8d4cfacb9142369ca24f4c9fb28fd"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchResults.tsx",
+      "sha256": "f55f7401fd5eb969ac365b6536b08a24bbb4d0ee43b27aa9865ddf78db7f3b7d"
+    },
+    {
+      "path": "frontend/src/components/workbench/LibraryDateFilter.tsx",
+      "sha256": "3819467fcba61dc9b76fc6442b8ddba366d47fca638a904259b38916bcfbfb43"
+    },
+    {
+      "path": "frontend/src/components/workbench/LibraryVideoPreview.tsx",
+      "sha256": "ed721f2655d7c365b44c8e89b51d389657770c6e493dae9d542304aba75def26"
+    },
+    {
+      "path": "frontend/src/lib/workbench-client.ts",
+      "sha256": "62196b13b438c12a2d806d95f73213591f04496c78c94ba92dde97af75c39ddc"
+    },
+    {
+      "path": "frontend/src/lib/library-date-filter.ts",
+      "sha256": "76c9aac680ef0788ff15a1017329c583c7e3e21654d4c0f93764bb5b51e15656"
+    },
+    {
+      "path": "frontend/src/lib/library-group-batch.ts",
+      "sha256": "857b8cd487fca7a19b057c1fc389e3f83aa8faf7c8c914ba06b99405890eedd3"
+    },
+    {
+      "path": "frontend/src/app/globals.css",
+      "sha256": "7466b20691293557e0c8f2a4227bbabeb1bb8ed81ac28f315ae297106274250c"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/library-preview.test.tsx",
+      "sha256": "a05427784540dbb5271cf7ee1ad13fcea388ee89aed271495a543697b7b19e87"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/library-enhancements.test.tsx",
+      "sha256": "1e37b156b8b468738e2a791fd6a5a535688523ac2209a2121c74daeb177f9284"
+    },
+    {
+      "path": "frontend/scripts/verify-library-enhancements.cjs",
+      "sha256": "fdc210329a701478f8ea3b830a35b803b0f276a94276432333195668edba34b1"
+    }
+  ]
+}

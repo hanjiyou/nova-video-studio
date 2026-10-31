@@ -1,16 +1,18 @@
 'use strict';
 const { BASES } = require('./route-policy');
 const IMAGE_MODEL = 'gpt-image-2.5-flare';
-const REFERENCE_GROUP = '【生图分组】Image2原生-中质量';
-const unavailable = reason => ({ model: IMAGE_MODEL, group: REFERENCE_GROUP, estimate: null, reason });
+const PRICING_GROUPS = Object.freeze(['【生图分组】image2超分', '【生图分组】Image2-满参']);
+const unavailable = (reason, model = IMAGE_MODEL, group = null) => ({ model, group, estimate: null, reason });
 const finiteNonnegative = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 const object = value => value && typeof value === 'object' && !Array.isArray(value);
 
 /** Public pricing data is never executable. Only the confirmed fixed-per-image shape is supported. */
-function parseImagePricing(payload) {
+function parseImagePricing(payload, { model = IMAGE_MODEL, group = null } = {}) {
+    const unavailable = reason => ({ model, group, estimate: null, reason });
+    if (!PRICING_GROUPS.includes(group)) return unavailable('PRICING_GROUP_REQUIRED');
     if (!object(payload) || payload.success === false || !Array.isArray(payload.data) || payload.data.length > 5000)
         return unavailable('PRICING_INVALID');
-    const matches = payload.data.filter(item => object(item) && item.model_name === IMAGE_MODEL);
+    const matches = payload.data.filter(item => object(item) && item.model_name === model);
     if (matches.length !== 1) return unavailable(matches.length ? 'PRICING_INVALID' : 'MODEL_NOT_PRICED');
     const entry = matches[0], price = entry.model_price;
     if (entry.quota_type !== 1 || !finiteNonnegative(price)) return unavailable('BILLING_UNSUPPORTED');
@@ -25,11 +27,11 @@ function parseImagePricing(payload) {
     if (!Array.isArray(groups) || !groups.length || groups.length > 1000 ||
         groups.some(group => typeof group !== 'string' || !group || group.length > 200) ||
         new Set(groups).size !== groups.length || !object(payload.group_ratio)) return unavailable('GROUP_PRICING_INVALID');
-    if (!groups.includes(REFERENCE_GROUP) || !Object.hasOwn(payload.group_ratio, REFERENCE_GROUP) ||
-        !finiteNonnegative(payload.group_ratio[REFERENCE_GROUP])) return unavailable('GROUP_PRICING_INVALID');
-    const ratio = payload.group_ratio[REFERENCE_GROUP], amount = price * ratio;
+    if (!groups.includes(group) || !Object.hasOwn(payload.group_ratio, group) ||
+        !finiteNonnegative(payload.group_ratio[group])) return unavailable('GROUP_PRICING_INVALID');
+    const ratio = payload.group_ratio[group], amount = price * ratio;
     if (!finiteNonnegative(amount) || (price > 0 && ratio > 0 && amount === 0)) return unavailable('GROUP_PRICING_INVALID');
-    return { model: IMAGE_MODEL, group: REFERENCE_GROUP, estimate: { perImage: amount }, reason: null };
+    return { model, group, estimate: { perImage: amount }, reason: null };
 }
 
 /** Public, credential-free snapshots. A scope initializes once; model refresh explicitly replaces it. */
@@ -69,32 +71,33 @@ function createImagePricing({ fetchImpl, timeoutMs = 8000, maxBytes = 1024 * 102
                     chunks.push(Buffer.from(value));
                 }
             } finally { reader.releaseLock(); }
-            try { return parseImagePricing(JSON.parse(Buffer.concat(chunks).toString('utf8'))); }
+            try { return { payload: JSON.parse(Buffer.concat(chunks).toString('utf8')) }; }
             catch { return unavailable('PRICING_INVALID'); }
         };
         try { return await Promise.race([read(), timeout]); }
         catch { return unavailable('PRICING_UNAVAILABLE'); }
         finally { clearTimeout(timer); controller.abort(); }
     }
-    return async (route, { scope = route, force = false } = {}) => {
-        if (!Object.hasOwn(BASES, route)) return { ...unavailable('PRICING_UNSUPPORTED'), cached: false };
+    return async (route, { scope = route, force = false, model = IMAGE_MODEL, group = null } = {}) => {
+        const project = value => !PRICING_GROUPS.includes(group) ? unavailable('PRICING_GROUP_REQUIRED', model, group) : Object.hasOwn(value, 'payload') ? parseImagePricing(value.payload, { model, group }) : unavailable(value.reason, model, group);
+        if (!Object.hasOwn(BASES, route)) return { ...unavailable('PRICING_UNSUPPORTED', model, group), cached: false };
         const key = route + ':' + scope;
         let slot = slots.get(key);
         if (!slot) {
             // Keep memory bounded without evicting work that is still being merged.
             if (slots.size >= 64) {
                 const oldest = [...slots].find(([, value]) => !value.pending);
-                if (!oldest) return { ...unavailable('PRICING_UNAVAILABLE'), cached: false };
+                if (!oldest) return { ...unavailable('PRICING_UNAVAILABLE', model, group), cached: false };
                 slots.delete(oldest[0]);
             }
             slot = {}; slots.set(key, slot);
         }
-        if (slot.pending) return { ...await slot.pending, cached: false };
-        if (slot.value && !force) return { ...slot.value, cached: true };
+        if (slot.pending) return { ...project(await slot.pending), cached: false };
+        if (slot.value && !force) return { ...project(slot.value), cached: true };
         slot.value = null;
         slot.pending = load(route).then(value => { slot.value = value; return value; });
-        try { return { ...await slot.pending, cached: false }; }
+        try { return { ...project(await slot.pending), cached: false }; }
         finally { slot.pending = null; }
     };
 }
-module.exports = { IMAGE_MODEL, REFERENCE_GROUP, parseImagePricing, createImagePricing };
+module.exports = { IMAGE_MODEL, PRICING_GROUPS, parseImagePricing, createImagePricing };

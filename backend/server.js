@@ -1182,7 +1182,7 @@ function createDesktopImageTask(body, req) {
   const parameters=Object.fromEntries(['outputSize','customSize','aspectRatio','temperature','gptImageQuality','gptImageStyle','gptImageBackground','parallelCount'].filter(key=>body[key]!==undefined).map(key=>[key,body[key]]));
   const snapshot=desktopSnapshot(body,{mode:body.mode==='image-to-image'?'image.reference':'image.text',model:body.model,prompt:body.prompt,parameters,inputAssets,adapterId:'legacy-image',adapterVersion:'3.4.0'});
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
-  if (body.model==='gpt-image-2.5-flare') throw createHttpError(400,'WORKBENCH_INPUT_REQUIRED','flare任务需要独立工作台适配与能力版本。');
+  if (require('./tasks/image-policy').imageRule(body.model)) throw createHttpError(400,'WORKBENCH_INPUT_REQUIRED','已接入图片型号需要独立工作台适配与能力版本。');
   for (const input of inputAssets) workbenchStore.readAsset(input.assetId);
   const auth=connectionService.getAuth(body.connectionVersionId), checked={...body,...auth};validateCreatePayload(checked);
   if (body.parallelCount!==1 || (body.mode==='image-to-image' && inputAssets.length===0) || (body.mode==='text-to-image' && inputAssets.length)) throw createHttpError(400,'INPUT_INVALID','桌面首版每个任务只支持一个生成占位，参考图必须与模式一致。');
@@ -1215,9 +1215,12 @@ async function createWorkbenchTask(body, req) {
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
   const catalog=await connectionService.ensureModels(snapshot.connectionVersionId);
   const concurrentDuplicate=taskService.findDuplicate(snapshot);if(concurrentDuplicate)return concurrentDuplicate;
+  // Only a new intent is subject to current display preferences; existing IDs returned above remain replayable.
+  connectionService.assertModelDisplay(snapshot.connectionVersionId,snapshot.model,snapshot.mode.startsWith('image.')?'image':'video');
   const listed=catalog.models.find(item=>item.model===snapshot.model);
   if(catalog.modelsFetchedAt&&(!listed||listed.visibility==='absent')&&!listed?.custom)throw createHttpError(400,'MODEL_UNAVAILABLE','当前服务未列出此型号，请刷新或选择其他型号。');
   const auth=connectionService.getAuth(snapshot.connectionVersionId);
+  if (snapshot.mode.startsWith('image.') && !require('./tasks/image-policy').allowsNewSubmission(snapshot,auth)) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前图片型号或模式尚未开放提交。');
   workbenchInput.validateInputs(snapshot,auth,workbenchStore);
   workbenchInput.validateCapability(db,snapshot,auth);
   if (snapshot.mode.startsWith('video.') && !plugin) throw createHttpError(400,'ADAPTER_UNAVAILABLE','视频适配器不可用。');

@@ -15,6 +15,11 @@ async function rig(t,behavior={}){
         const chunks=[];for await(const chunk of req)chunks.push(chunk);
         const record={method:req.method,path:req.url,authorization:req.headers.authorization,contentType:req.headers['content-type'],rawBody:Buffer.concat(chunks)};
         calls.push(record);
+        if(req.method==='GET'&&req.url==='/v1/models'){
+            const imageModels=Object.keys(require('../tasks/image-policy').POLICY.models),videoModels=Object.keys(require('../connections/model-rules.json').models);
+            res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({data:[...imageModels,...videoModels].map(id=>({id,supported_endpoint_types:[imageModels.includes(id)?'image-generation':'video-generation']}))}));return;
+        }
+        if(req.method==='GET'&&req.url==='/api/pricing'){res.writeHead(200,{'content-type':'application/json'});res.end(JSON.stringify({success:true,data:[]}));return;}
         if(req.method==='GET'&&req.url.endsWith('/content')){const bytes=fs.readFileSync(path.join(__dirname,'fixtures/b2/valid-video.mp4'));res.writeHead(200,{'content-type':'video/mp4','content-length':bytes.length});res.end(bytes);return;}
         if(req.method==='POST'){
             record.dispatch=inspect(db=>db.prepare("SELECT dispatch_started_at,input_snapshot_json FROM tasks WHERE status='submitting'").get());
@@ -49,7 +54,7 @@ async function rig(t,behavior={}){
     const task=async id=>(await runtime.request('/api/nova/tasks/'+id)).json();
     return{directory,calls,connection,models,refs,input,create,post,task,inspect,behavior,get runtime(){return runtime;},
         async restart(){await runtime.crash();inspect(db=>db.prepare("UPDATE tasks SET next_poll_at='2000-01-01T00:00:00Z' WHERE status IN ('remote_queued','generating')").run());runtime=await start(directory,{opensosenOrigin,...(behavior.timeout?{pluginRequestTimeoutMs:behavior.timeout}:{})});},
-        posts:()=>calls.filter(item=>item.method==='POST'),gets:()=>calls.filter(item=>item.method==='GET')};
+        posts:()=>calls.filter(item=>item.method==='POST'&&item.path==='/v1/videos'),gets:()=>calls.filter(item=>item.method==='GET'&&item.path.startsWith('/v1/videos/'))};
 }
 for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes original assets and completes through B2 verified local download',async t=>{
     const f=await rig(t),input=f.input({mode:count===1?'video.single_reference':'video.dual_reference'});
@@ -67,7 +72,8 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
     assert.equal(f.posts().length,1);assert.equal(f.gets().length,2);assert.equal(f.gets()[0].path,'/v1/videos/task_b1_original');assert.equal(f.gets()[1].path,'/v1/videos/task_b1_original/content');assert.ok(f.gets().every(call=>call.authorization==='Bearer '+KEY));
     const dto=await f.task(id);assert.ok(dto.completedAt);assert.equal(dto.outputAssets[0].validationState,'verified');assert.equal(JSON.stringify(dto).includes('opensosen.com'),false);
     const stored=f.inspect(db=>({task:db.prepare('SELECT result_sources_json FROM tasks WHERE id=?').get(id),download:db.prepare('SELECT state FROM task_downloads WHERE task_id=?').get(id)}));
-    assert.equal(stored.download.state,'completed');assert.deepEqual(JSON.parse(stored.task.result_sources_json),[{kind:'url',url:'https://newapi.opensosen.com/v1/videos/task_b1_original/content',authScope:'connection',mediaKind:'video'}]);
+    assert.equal(stored.download.state,'completed');assert.deepEqual(JSON.parse(stored.task.result_sources_json).map(({kind,url,authScope,mediaKind})=>({kind,url,authScope,mediaKind})),[{kind:'url',url:'https://newapi.opensosen.com/v1/videos/task_b1_original/content',authScope:'connection',mediaKind:'video'}]);
+    for(const source of JSON.parse(stored.task.result_sources_json)){assert.match(source.sourceKey,/^[0-9a-f]{64}$/);assert.match(source.outputSetId,/^[0-9a-f-]{36}$/);}
     assert.equal(stored.task.result_sources_json.includes('signature'),false);
     const asset=dto.outputAssets[0],bytes=fs.readFileSync(path.join(__dirname,'fixtures/b2/valid-video.mp4'));
     for(const [range,start,end]of[['bytes=0-99',0,99],['bytes=100-',100,bytes.length-1],['bytes=-128',bytes.length-128,bytes.length-1]]){const result=await f.runtime.request(asset.previewUrl,{headers:{Range:range}});assert.equal(result.status,206);assert.equal(result.headers.get('content-range'),'bytes '+start+'-'+end+'/'+bytes.length);assert.deepEqual(Buffer.from(await result.arrayBuffer()),bytes.subarray(start,end+1));}
@@ -76,13 +82,13 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
     await f.restart();assert.equal((await f.task(id)).status,'completed');assert.equal(f.posts().length,1);assert.equal(f.gets().length,2);assert.deepEqual(Buffer.from(await(await f.runtime.request(asset.previewUrl)).arrayBuffer()),bytes);
     t.diagnostic(JSON.stringify({mode:input.mode,files:count,postCount:f.posts().length,getCount:f.gets().length,localState:'completed',download:'verified and readable offline',range:'206/416/HEAD exact bytes'}));
 });
-test('canonical admission keeps all unverified modes explicit, rejects count/asset/version/legacy bypasses before any paid request',async t=>{
+test('canonical admission rejects legacy ungranted scopes, unknown models, malformed inputs and legacy endpoint bypasses before any generation',async t=>{
     const f=await rig(t);
     for(const extra of [
-        {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare',inputAssets:f.refs.slice(0,1),capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.reference'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
-        {mode:'video.text',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL&&item.evidenceLevel==='unverified').capabilityVersionId},{mode:'video.text',model:'grok-imagine-video-6s',parameters:{seconds:6}},{model:'grok-imagine-video-6s'},
-    ]){const response=await f.post('/api/nova/workbench/tasks',f.input(extra));assert.equal(response.status,400);assert.equal((await response.json()).code,'CAPABILITY_UNVERIFIED');}
-    for(const extra of [{inputAssets:f.refs.slice(0,1)},{inputAssets:[{...f.refs[1],position:1},f.refs[0]]},{parameters:{seconds:6,size:'720x1280'}},{apiKey:KEY},
+        {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.model==='gpt-image-2.5-flare'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare',inputAssets:f.refs.slice(0,1),capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.reference'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
+        {mode:'video.text',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{mode:'video.text',model:'grok-imagine-video-6s',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{model:'grok-imagine-video-6s',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.dual_reference'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
+    ]){const response=await f.post('/api/nova/workbench/tasks',f.input(extra)),hidden=extra.model==='grok-imagine-video-6s';assert.equal(response.status,hidden?409:400);assert.equal((await response.json()).code,hidden?'MODEL_HIDDEN':'CAPABILITY_UNVERIFIED');}
+    for(const extra of [{model:'gpt-image-unregistered',mode:'image.text',parameters:{},capabilityVersionId:randomUUID()},{inputAssets:f.refs.slice(0,1)},{inputAssets:[{...f.refs[1],position:1},f.refs[0]]},{parameters:{seconds:6,size:'720x1280'}},{apiKey:KEY},
         {inputAssets:[{...f.refs[0],filePath:'private.png'},f.refs[1]]},{capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL).capabilityVersionId}]){
         const response=await f.post('/api/nova/workbench/tasks',f.input(extra));assert.equal(response.status,400);
     }
@@ -90,7 +96,7 @@ test('canonical admission keeps all unverified modes explicit, rejects count/ass
         const response=await f.post(route,body);assert.equal(response.status,400);assert.equal((await response.json()).code,'WORKBENCH_INPUT_REQUIRED');
     }
     assert.equal((await fetch(f.runtime.origin+'/api/nova/workbench/tasks',{method:'POST'})).status,403);
-    assert.equal(f.calls.length,0);assert.equal(f.inspect(db=>db.prepare('SELECT count(*) n FROM tasks').get().n),0);
+    assert.equal(f.calls.filter(call=>call.path.startsWith('/v1/videos')||call.path.startsWith('/v1/images/')).length,0);assert.equal(f.inspect(db=>db.prepare('SELECT count(*) n FROM tasks').get().n),0);
 });
 test('script accepted ID persists before encoded credential contamination; query resumes only explicit original GET and URLs do not escape',async t=>{
     const percent=value=>[...Buffer.from(value)].map(byte=>'%'+byte.toString(16)).join('');

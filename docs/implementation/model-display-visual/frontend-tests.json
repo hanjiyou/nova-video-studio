@@ -1,0 +1,63 @@
+{
+  "scope": "Offline focused frontend regressions; synthetic fixtures; no live generation or user credentials",
+  "total": 136,
+  "passed": 136,
+  "failed": 0,
+  "files": [
+    {
+      "path": "frontend/src/components/workbench/__tests__/capability-upgrade.test.tsx",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/connection-routes.test.tsx",
+      "tests": 14,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/draft-guidance.test.tsx",
+      "tests": 21,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/image-controls.test.tsx",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/image-pricing.test.tsx",
+      "tests": 11,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/model-catalog.test.tsx",
+      "tests": 7,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/model-display.test.tsx",
+      "tests": 22,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/model-refresh.test.tsx",
+      "tests": 6,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/recent-video-limit.test.tsx",
+      "tests": 12,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-b3.test.tsx",
+      "tests": 11,
+      "status": "passed"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-lifecycle.test.tsx",
+      "tests": 20,
+      "status": "passed"
+    }
+  ]
+}

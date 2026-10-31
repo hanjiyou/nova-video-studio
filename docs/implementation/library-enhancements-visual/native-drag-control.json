@@ -1,0 +1,20 @@
+{
+  "status": "unsupported",
+  "recordedAt": "2026-10-31T09:48:29.270342+00:00",
+  "scope": "Current Windows Chrome headless CDP native pointer drag comparison only; this is not a claim that the application cannot be dragged.",
+  "control": {
+    "element": "plain DIV appended directly to body",
+    "draggable": true,
+    "start": {
+      "x": 560,
+      "y": 260
+    },
+    "end": {
+      "x": 338.5,
+      "y": 463.1171875
+    },
+    "handlers": "Only dragstart writes text/plain; no app handlers or preventDefault."
+  },
+  "observation": "Native drag interception missing: {\"events\":[{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"DIV\",\"buttons\":0,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousedown\",\"trusted\":true,\"target\":\"DIV\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"DIV\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"DIV\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"P\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"NAV\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false},{\"type\":\"mousemove\",\"trusted\":true,\"target\":\"BUTTON\",\"buttons\":1,\"button\":0,\"defaultPrevented\":false}],\"scrollY\":0,\"focused\":true,\"hitStart\":\"<video draggable=\\\"true\\\" playsinline=\\\"\\\" loop=\\\"\\\" preload=\\\"metadata\\\" aria-label=\\\"本机视频作品缩略预览\\\"></video>\",\"hitEnd\":\"<button type=\\\"button\\\"><span>海边短片</span><small>0</small></button>\",\"draggable\":true,\"selected\":2} points {\"start\":{\"x\":560,\"y\":260},\"end\":{\"x\":338.5,\"y\":463.1171875}}",
+  "limitation": "Trusted mouse down/move with buttons=1 reached both the work card and standard control, but neither emitted native dragstart or Input.dragIntercepted. Native drag/drop and OS drag image appearance remain unverified. Application DragEvent payload/drop path is verified separately."
+}

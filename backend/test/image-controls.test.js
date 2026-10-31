@@ -16,11 +16,13 @@ function cleanup(directory) {
     fs.rmSync(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 40 });
 }
 async function until(fn) { const end = Date.now() + 15000; while (Date.now() < end) { const value = await fn(); if (value) return value; await new Promise(r => setTimeout(r, 20)); } throw Error('Synthetic image timeout'); }
-const scope = (caps, mode) => caps.find(c => c.mode === mode && c.evidenceVersion === policy.POLICY.evidenceVersion);
+const scope = (caps, mode, targetModel = model) => caps.find(c => c.model === targetModel && c.mode === mode && c.evidenceVersion === policy.POLICY.evidenceVersion);
 async function rig(t, respond) {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nova-image-controls-')), calls = [];
     const upstream = http.createServer(async (req, res) => {
         const chunks = []; for await (const chunk of req) chunks.push(chunk);
+        if (req.method === 'GET' && req.url === '/v1/models') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ data: Object.keys(policy.POLICY.models).map(id => ({ id, supported_endpoint_types: ['image-generation', 'image-editor'] })) })); }
+        if (req.method === 'GET' && req.url === '/api/pricing') { res.writeHead(200, { 'content-type': 'application/json' }); return res.end(JSON.stringify({ success: true, data: [] })); }
         calls.push({ method: req.method, path: req.url, type: req.headers['content-type'], authorization: req.headers.authorization, bytes: Buffer.concat(chunks) });
         if (respond) return respond(req, res, calls);
         res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify({ data: [{ b64_json: fixture('reference-a.png').toString('base64') }] }));
@@ -36,10 +38,10 @@ async function rig(t, respond) {
         const response = await runtime.request('/api/nova/assets/import', { method: 'POST', headers: { 'content-type': name.endsWith('.png') ? 'image/png' : 'image/jpeg' }, body: fixture(name) });
         assert.equal(response.status, 201); assets.push((await response.json()).asset);
     }
-    const input = (mode = 'image.reference', parameters = {}, index = 0) => ({ localRequestId: randomUUID(), connectionVersionId: connection.connectionVersionId,
-        capabilityVersionId: (mode === 'image.text' && !Object.keys(parameters).length ? models.capabilities.find(c => c.mode === mode && c.isCurrent) : scope(models.capabilities, mode)).capabilityVersionId,
-        mode, model, prompt, parameters, inputAssets: mode === 'image.text' ? [] : [{ assetId: assets[index].assetId, position: 0, role: 'reference' }] });
-    return { directory, calls, models, assets, input, get runtime() { return runtime; },
+    const input = (mode = 'image.reference', parameters = {}, index = 0, targetModel = model) => ({ localRequestId: randomUUID(), connectionVersionId: connection.connectionVersionId,
+        capabilityVersionId: (mode === 'image.text' && !Object.keys(parameters).length ? models.capabilities.find(c => c.model === targetModel && c.mode === mode && c.isCurrent) : scope(models.capabilities, mode, targetModel)).capabilityVersionId,
+        mode, model: targetModel, prompt, parameters, inputAssets: mode === 'image.text' ? [] : [{ assetId: assets[index].assetId, position: 0, role: 'reference' }] });
+    return { directory, calls, models, assets, connection, input, get runtime() { return runtime; },
         post: (route, body = {}) => runtime.request(route, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }),
         task: id => runtime.request('/api/nova/tasks/' + id).then(r => r.json()),
         async restart() { await runtime.stop(); runtime = await start(directory, options); },
@@ -62,7 +64,7 @@ test('precise image scopes are immutable unverified options; minimum stays curre
         assert.throws(() => db.prepare('DELETE FROM model_capabilities WHERE id=?').run(cap.capabilityVersionId), /IMMUTABLE/);
         for (const change of [{ provider: 'openai-compatible' }, { baseUrl: 'https://other.invalid/v1' }, { protocol: 'other' }]) assert.throws(() => boundary.validateCapability(db, snapshot, { ...auth, ...change }), { code: 'CAPABILITY_UNVERIFIED' });
         assert.throws(() => boundary.validateCapability(db, { ...snapshot, adapterVersion: '1.0.0' }, auth), { code: 'CAPABILITY_UNVERIFIED' });
-        if (mode === 'image.text') assert.throws(() => boundary.validateCapability(db, { ...snapshot, parameters: {} }, auth), { code: 'CAPABILITY_UNVERIFIED' });
+        if (mode === 'image.text') assert.equal(boundary.validateCapability(db, { ...snapshot, parameters: {} }, auth).id, cap.capabilityVersionId);
         for (const parameters of [{ size: 'auto' }, { quality: 'auto' }, { size: '1448x1086' }, { quality: 'ultra' }, { quality: 1 }, { n: 2 }, { style: 'natural' }, { aspectRatio: '16:9' }, { size: '1024x1024', endpoint: '/edits' }]) assert.throws(() => boundary.snapshotFor({ ...body, parameters }, '1.1.0'), { code: 'INPUT_INVALID' });
         assert.throws(() => boundary.snapshotFor({ ...body, baseUrl: base }, '1.1.0'), { code: 'INPUT_INVALID' });
         if (mode === 'image.reference') for (const refs of [[], [body.inputAssets[0], { ...body.inputAssets[0], position: 1 }], [{ ...body.inputAssets[0], position: 1 }], [{ ...body.inputAssets[0], filePath: 'private.png' }]]) assert.throws(() => boundary.snapshotFor({ ...body, inputAssets: refs }, '1.1.0'), { code: 'INPUT_INVALID' });
@@ -169,4 +171,67 @@ test('1.0 minimum image recovery preserves saved snapshots; same old local ID re
     await f.restart(); assert.equal((await (await f.post('/api/nova/workbench/tasks', body)).json()).taskId, id); assert.equal(f.calls.length, 1);
     const after = new Database(path.join(f.directory, 'tasks.sqlite'), { readonly: true }); const row = after.prepare('SELECT input_snapshot_json,adapter_version FROM tasks WHERE id=?').get(id);
     assert.equal(row.input_snapshot_json, saved); assert.equal(row.adapter_version, '1.0.0'); after.close();
+});
+
+test('sunburst automatic text and single original JPEG edits use its own model and save inline/URL results without resubmission', async t => {
+    let result = 'inline';
+    const f = await rig(t, (req, res) => {
+        if (req.method === 'GET') { res.writeHead(200, { 'content-type': 'image/png' }); return res.end(fixture('reference-a.png')); }
+        res.writeHead(200, { 'content-type': 'application/json' });
+        res.end(JSON.stringify({ data: [result === 'inline' ? { b64_json: fixture('reference-a.png').toString('base64') } : { url: base + '/synthetic-sunburst.png' }] }));
+    });
+    const targetModel = 'gpt-image-2.5-sunburst';
+    for (const mode of ['image.text', 'image.reference']) {
+        result = mode === 'image.text' ? 'inline' : 'url';
+        const body = f.input(mode, {}, 1, targetModel), response = await f.post('/api/nova/workbench/tasks', body);
+        assert.equal(response.status, 202); const id = (await response.json()).taskId;
+        const completed = await until(async () => { const task = await f.task(id); return task.status === 'completed' && task; });
+        assert.equal(completed.outputAssets[0].validationState, 'verified');
+        assert.equal((await (await f.post('/api/nova/workbench/tasks', body)).json()).taskId, id);
+    }
+    const posts = f.calls.filter(c => c.method === 'POST');
+    assert.equal(posts.length, 2); assert.deepEqual(JSON.parse(posts[0].bytes), { model: targetModel, prompt, n: 1 });
+    assert.equal(posts[1].path, '/v1/images/edits');
+    const form = await new Response(posts[1].bytes, { headers: { 'content-type': posts[1].type } }).formData();
+    assert.equal(form.get('model'), targetModel); assert.equal(form.getAll('image').length, 1);
+    assert.equal(form.get('image').type, 'image/jpeg'); assert.deepEqual(Buffer.from(await form.get('image').arrayBuffer()), fixture('reference-single.jpg'));
+    const downloads = f.calls.filter(c => c.method === 'GET'); assert.equal(downloads.length, 1); assert.equal(downloads[0].authorization, undefined);
+    assert.ok(posts.every(call => call.authorization === 'Bearer ' + key));
+});
+
+test('hiding sunburst rejects a new ID while same-ID replay and an existing queued task still recover after restart', async t => {
+    const f = await rig(t), targetModel = 'gpt-image-2.5-sunburst', body = f.input('image.text', {}, 0, targetModel);
+    const response = await f.post('/api/nova/workbench/tasks', body); assert.equal(response.status, 202); const id = (await response.json()).taskId;
+    await until(async () => (await f.task(id)).status === 'completed');
+    const current = await (await f.runtime.request('/api/nova/connections/' + f.connection.connectionId + '/models')).json();
+    const { revision, ...settings } = current.displaySettings;
+    const hidden = await f.runtime.request('/api/nova/connections/' + f.connection.connectionId + '/model-display', {
+        method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...settings, imageModels: [model], defaultImageModel: model, videoModels: [], defaultVideoModel: null,
+            connectionVersionId: f.connection.connectionVersionId, expectedRevision: revision, expectedRouteRevision: current.routeRevision }) });
+    assert.equal(hidden.status, 200, await hidden.text());
+    const fresh = await f.post('/api/nova/workbench/tasks', { ...body, localRequestId: randomUUID() });
+    assert.equal(fresh.status, 409); assert.equal((await fresh.json()).code, 'MODEL_HIDDEN');
+    assert.equal((await (await f.post('/api/nova/workbench/tasks', body)).json()).taskId, id); assert.equal(f.calls.length, 1);
+    // Recreate only a synthetic saved queue row. It represents a task accepted before the display change.
+    await f.stop();
+    const db = new Database(path.join(f.directory, 'tasks.sqlite')), store = createWorkbenchStore({ db, rootDirectory: path.join(f.directory, 'storage') });
+    const queuedInput = { ...body, localRequestId: randomUUID() }, snapshot = { ...boundary.snapshotFor(queuedInput, '1.1.0'),
+        outputDirectoryVersionId: '00000000-0000-4000-8000-000000000001', outputRootRef: '00000000-0000-4000-8000-000000000001' }, queued = randomUUID();
+    db.prepare('INSERT INTO tasks(id,status,mode,request_json,created_at,requires_continue) VALUES(?,?,?,?,?,1)').run(queued, 'local_queued', 'image.text', JSON.stringify({ mode: 'image.text', model: targetModel, fields: { prompt } }), new Date().toISOString());
+    store.setTaskSnapshot(queued, snapshot); const original = db.prepare('SELECT input_snapshot_json FROM tasks WHERE id=?').get(queued).input_snapshot_json; db.close();
+    await f.start(); assert.equal((await f.task(queued)).requiresContinue, true); assert.equal(f.calls.length, 1);
+    assert.equal((await (await f.post('/api/nova/workbench/tasks', queuedInput)).json()).taskId, queued);
+    assert.equal((await f.post('/api/nova/tasks/' + queued + '/continue-queued')).status, 200);
+    await until(async () => (await f.task(queued)).status === 'completed');
+    assert.equal(f.calls.length, 2); assert.equal(JSON.parse(f.calls[1].bytes).model, targetModel);
+    const after = new Database(path.join(f.directory, 'tasks.sqlite'), { readonly: true });
+    assert.equal(after.prepare('SELECT input_snapshot_json FROM tasks WHERE id=?').get(queued).input_snapshot_json, original); after.close();
+});
+
+test('sunburst authentication rejection keeps safe classification and sends exactly one original-model generation POST', async t => {
+    const f = await rig(t, (_req, res) => { res.writeHead(401, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: { message: 'synthetic auth rejection' } })); });
+    const body = f.input('image.text', {}, 0, 'gpt-image-2.5-sunburst'), response = await f.post('/api/nova/workbench/tasks', body);
+    assert.equal(response.status, 202); const id = (await response.json()).taskId;
+    const task = await until(async () => { const value = await f.task(id); return value.status === 'failed' && value; });
+    assert.equal(task.taskError.code, 'AUTH_REJECTED'); assert.equal(f.calls.length, 1); assert.equal(JSON.parse(f.calls[0].bytes).model, body.model);
 });

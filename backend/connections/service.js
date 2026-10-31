@@ -1,7 +1,8 @@
 'use strict';
 const catalog = require('./model-catalog');
 const routing = require('./route-policy');
-const { IMAGE_MODEL, REFERENCE_GROUP, createImagePricing } = require('./image-pricing');
+const { IMAGE_MODEL, PRICING_GROUPS, createImagePricing } = require('./image-pricing');
+const imagePolicy = require('../tasks/image-policy');
 const credentialInModel=(name,key)=>Boolean(key&&(containsCredential(name,key)||name.includes(Buffer.from(key).toString('base64'))||name.includes(Buffer.from(key).toString('base64url'))));
 const { createHash, randomUUID } = require('node:crypto');
 const { UUID } = require('../storage/store');
@@ -65,12 +66,14 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             hasCredential: credentialState !== 'missing', credentialState, validationState: check?.validation_state || 'unverified', lastCheckedAt: check?.last_checked_at || null, lastSuccessAt: check?.last_success_at || null, modelsFetchedAt: check?.models_fetched_at || null, errorCode: check?.error_code || null,
             defaultImageModel: version.default_image_model, defaultVideoModel: version.default_video_model, isDefault: currentId() === connectionId };
     }
-    async function pricing(connectionId, { force = false } = {}) {
-        const connection = active(connectionId), versionId = connection.current_version_id;
-        const selected = getTransportRoute(versionId);
-        const value = selected ? await loadImagePricing(selected.route, { scope: versionId + ':' + routeKey(selected), force }) : { model: IMAGE_MODEL, group: REFERENCE_GROUP, estimate: null, reason: 'PRICING_UNSUPPORTED', cached: false };
-        const stale = active(connectionId).current_version_id !== versionId || !sameRoute(selected, getTransportRoute(versionId));
-        return { connectionVersionId: versionId, route: selected?.route || null, routeRevision: selected?.revision || null, ...value, stale, ...(stale ? { estimate: null } : {}) };
+    async function pricing(connectionId, { force = false, model: requestedModel = IMAGE_MODEL } = {}) {
+        const connection = active(connectionId), versionId = connection.current_version_id, version = getVersion(versionId);
+        const name = model(requestedModel), display = displaySettings(version), selected = getTransportRoute(versionId);
+        const scope = { provider: version.provider, baseUrl: version.base_url, protocol: version.protocol };
+        const supported = selected && imagePolicy.imageRule(name, scope);
+        const value = supported ? await loadImagePricing(selected.route, { scope: versionId + ':' + routeKey(selected), force, model: name, group: display.pricingGroup }) : { model: name, group: display.pricingGroup, estimate: null, reason: 'PRICING_UNSUPPORTED', cached: false };
+        const stale = active(connectionId).current_version_id !== versionId || !sameRoute(selected, getTransportRoute(versionId)) || displaySettings(version).revision !== display.revision;
+        return { connectionVersionId: versionId, route: selected?.route || null, routeRevision: selected?.revision || null, displayRevision: display.revision, ...value, stale, ...(stale ? { estimate: null } : {}) };
     }
     function prepare(input) {
         exact(input, ['connectionId', 'expectedVersionId', 'displayName', 'baseUrl', 'provider', 'apiKey', 'defaultImageModel', 'defaultVideoModel', 'route', 'expectedRouteRevision']);
@@ -159,6 +162,63 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
     }
     function preferences(version) { const row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)); return row?JSON.parse(row.value_json):{}; }
     function writeSetting(key,value) { db.prepare('INSERT INTO app_settings VALUES(?,?,1,?) ON CONFLICT(key) DO UPDATE SET value_json=excluded.value_json,revision=app_settings.revision+1,updated_at=excluded.updated_at').run(key,JSON.stringify(value),new Date(clock()).toISOString()); }
+    function submissionEnabled(version, name, kind) {
+        const scope = { provider: version.provider, baseUrl: version.base_url, protocol: version.protocol };
+        return (kind === 'image' ? imagePolicy.imageRule(name, scope) : catalog.videoRule(name, scope))?.submissionEnabled === true;
+    }
+    function configuredModels(version, kind) {
+        const candidates = kind === 'image' ? Object.keys(imagePolicy.POLICY.models) : Object.keys(catalog.RULES.models);
+        return candidates.filter(name => submissionEnabled(version, name, kind));
+    }
+    function displaySettings(version) {
+        const key = settingsKey(version) + ':display';
+        let row = db.prepare('SELECT value_json,revision FROM app_settings WHERE key=?').get(key);
+        if (!row) {
+            const imageModels = configuredModels(version, 'image'), videoModels = configuredModels(version, 'video');
+            const value = { imageModels, videoModels, defaultImageModel: imageModels.includes(version.default_image_model) ? version.default_image_model : imageModels[0] || null,
+                defaultVideoModel: videoModels.includes(version.default_video_model) ? version.default_video_model : videoModels[0] || null, pricingGroup: null };
+            // Persist the initial choices once: later protocol additions and catalog refreshes stay unchecked.
+            db.prepare('INSERT OR IGNORE INTO app_settings VALUES(?,?,0,?)').run(key, JSON.stringify(value), new Date(clock()).toISOString());
+            row = db.prepare('SELECT value_json,revision FROM app_settings WHERE key=?').get(key);
+        }
+        let value = JSON.parse(row.value_json);
+        if (value.pricingGroup !== null && !PRICING_GROUPS.includes(value.pricingGroup)) {
+            writeSetting(key, { ...value, pricingGroup: null });
+            row = db.prepare('SELECT value_json,revision FROM app_settings WHERE key=?').get(key);
+            value = JSON.parse(row.value_json);
+        }
+        return { revision: row.revision, imageModels: value.imageModels, videoModels: value.videoModels, defaultImageModel: value.defaultImageModel,
+            defaultVideoModel: value.defaultVideoModel, pricingGroup: PRICING_GROUPS.includes(value.pricingGroup) ? value.pricingGroup : null };
+    }
+    function updateModelDisplay(connectionId, input) {
+        exact(input, ['connectionVersionId','expectedRouteRevision','expectedRevision','imageModels','videoModels','defaultImageModel','defaultVideoModel','pricingGroup']);
+        return db.transaction(() => {
+            const connection = active(connectionId), version = getVersion(connection.current_version_id);
+            if (input.connectionVersionId !== version.id) throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新读取。',409);
+            if (!Object.hasOwn(input,'expectedRouteRevision') || input.expectedRouteRevision !== (getTransportRoute(version.id)?.revision ?? null)) throw publicError('CONNECTION_ROUTE_CONFLICT','访问线路已更新，请重新读取。',409);
+            const previous = displaySettings(version);
+            if (!Number.isSafeInteger(input.expectedRevision) || input.expectedRevision !== previous.revision) throw publicError('MODEL_DISPLAY_CONFLICT','模型显示设置已更新，请重新读取后保存。',409);
+            const available = models(connectionId).models;
+            for (const kind of ['image','video']) {
+                const names = input[kind + 'Models'], defaultName = input[kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel'];
+                if (!Array.isArray(names) || names.length > 5000 || new Set(names).size !== names.length || names.some(name => typeof name !== 'string' || !catalog.ID.test(name) || !available.some(item => item.model === name && item.categories.includes(kind)))) throw publicError('MODEL_DISPLAY_INVALID','请选择当前清单中分类正确的完整型号。');
+                if (defaultName !== null && (typeof defaultName !== 'string' || !names.includes(defaultName)) || names.length > 0 && defaultName === null) throw publicError('MODEL_DISPLAY_INVALID','默认模型必须在已显示型号中；全部隐藏时默认模型须为空。');
+                if (defaultName !== null && !available.some(item => item.model === defaultName && item.categories.includes(kind) && item.visibility === 'visible' && submissionEnabled(version, defaultName, kind))) throw publicError('MODEL_DISPLAY_INVALID','默认模型须为上游当前可见且已接入的型号。');
+            }
+            if (input.pricingGroup !== null && !PRICING_GROUPS.includes(input.pricingGroup)) throw publicError('MODEL_DISPLAY_INVALID','请选择现行图片价格分组。');
+            const value = { imageModels: input.imageModels, videoModels: input.videoModels, defaultImageModel: input.defaultImageModel, defaultVideoModel: input.defaultVideoModel, pricingGroup: input.pricingGroup };
+            writeSetting(settingsKey(version) + ':display', value);
+            diagnostic('settings','saved',{operation:'model_display'});
+            return models(connectionId);
+        }).immediate();
+    }
+    function assertModelDisplay(versionId, name, kind) {
+        const version = getVersion(versionId);
+        if (active(version.connection_id).current_version_id !== versionId) throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新提交。',409);
+        if (!['image','video'].includes(kind)) throw publicError('MODEL_DISPLAY_INVALID','媒体类型无效。');
+        if (!displaySettings(version)[kind + 'Models'].includes(name)) throw publicError('MODEL_HIDDEN','该模型已隐藏，请在设置中显示后再提交。',409);
+        return true;
+    }
     function diagnostic(reason,result,extra={}) {
         try {const key='model-catalog-diagnostics',row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(key),events=row?JSON.parse(row.value_json):[];
         events.push({at:new Date(clock()).toISOString(),reason,result,...extra}); writeSetting(key,events.slice(-100));}catch{/* Diagnostics must not affect connection or task control. */}
@@ -184,9 +244,14 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         const saved=preferences(version),history=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)+':known');
         const known=history?JSON.parse(history.value_json):[];
         const capabilities=listCapabilities(db,version.provider,version.base_url);
-        const ids = [...new Set([...PRESET_MODELS,version.default_image_model,version.default_video_model,...Object.keys(saved),...known,...(visible || []).map(item=>item.model)])];
-        return { ...route, transportEvidence:getTransportRoute(version.id)?.route==='cn'?'generation_unverified':'see_capability_evidence', connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, refreshError:check?.error_code || null, modelSettings:saved,
-            models: ids.map(modelId => {const item=visible?.find(item=>item.model===modelId),override=saved[modelId];return {model:modelId,endpointTypes:item?.endpointTypes || [],...catalog.classify(modelId,item?.endpointTypes,override?.categories),custom:override?.custom===true,visibility:visible?(item?'visible':'absent'):'unknown'};}), capabilities };
+        const display = displaySettings(version);
+        const ids = [...new Set([...PRESET_MODELS,version.default_image_model,version.default_video_model,...Object.keys(saved),...known,...display.imageModels,...display.videoModels,...(visible || []).map(item=>item.model)])];
+        return { ...route, transportEvidence:getTransportRoute(version.id)?.route==='cn'?'generation_unverified':'see_capability_evidence', connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, refreshError:check?.error_code || null, modelSettings:saved, displaySettings:display, pricingGroups:[...PRICING_GROUPS],
+            models: ids.map(modelId => {
+                const item=visible?.find(item=>item.model===modelId), override=saved[modelId], classification=catalog.classify(modelId,item?.endpointTypes,override?.categories);
+                return {model:modelId,endpointTypes:item?.endpointTypes || [],...classification,custom:override?.custom===true,
+                    submissionEnabled:classification.categories.some(kind=>submissionEnabled(version,modelId,kind)),submissionEnabledByKind:Object.fromEntries(['image','video'].map(kind=>[kind,classification.categories.includes(kind)&&submissionEnabled(version,modelId,kind)])),visibility:visible?(item?'visible':'absent'):'unknown'};
+            }), capabilities };
     }
     async function ensureModels(versionId) {
         const selected=getTransportRoute(versionId);
@@ -367,17 +432,31 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         if (!store) throw publicError('CONNECTION_SERVICE_NOT_READY','本机设置服务未就绪。');
         const {expectedOnboardingRevision,...fields}=input;
         const old=active(fields.connectionId);if(old.current_version_id!==fields.expectedVersionId)throw publicError('CONNECTION_VERSION_CONFLICT','连接已更新，请重新读取。',409);
-        const previous=summary(fields.connectionId);prepare(fields);store.checkOutputDirectory();invalidateCandidate();
+        const legacyFields = { ...fields };
+        for (const field of ['defaultImageModel','defaultVideoModel']) if (legacyFields[field] === null) delete legacyFields[field];
+        const previous=summary(fields.connectionId);prepare(legacyFields);store.checkOutputDirectory();invalidateCandidate();
         return db.transaction(()=>{
-            const unchanged=fields.defaultImageModel===previous.defaultImageModel&&fields.defaultVideoModel===previous.defaultVideoModel;
-            const connection=unchanged?previous:persist(fields);
+            const previousVersion = getVersion(previous.connectionVersionId), display = displaySettings(previousVersion), available = models(fields.connectionId).models;
+            const value = { ...display }; delete value.revision; const priorDisplay = JSON.stringify(value);
+            for (const kind of ['image','video']) {
+                const field = kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel', name = fields[field];
+                if (name === undefined) continue;
+                if (display.revision > 0 && name !== display[field]) throw publicError('MODEL_DISPLAY_CONFLICT','模型显示默认已更新，请重新读取后完成设置。',409);
+                if (name === null) { value[field] = null; value[kind + 'Models'] = []; continue; }
+                if (!available.some(item => item.model === name && item.categories.includes(kind) && item.visibility === 'visible' && submissionEnabled(previousVersion, name, kind))) throw publicError('MODEL_DISPLAY_INVALID','默认模型须为上游当前可见且已接入的型号。');
+                value[field] = name;
+                if (!value[kind + 'Models'].includes(name)) value[kind + 'Models'] = [...value[kind + 'Models'], name];
+            }
+            const unchanged=(legacyFields.defaultImageModel === undefined || legacyFields.defaultImageModel===previous.defaultImageModel)&&(legacyFields.defaultVideoModel === undefined || legacyFields.defaultVideoModel===previous.defaultVideoModel);
+            const connection=unchanged?previous:persist(legacyFields), version=getVersion(connection.connectionVersionId);
             // Only defaults changed: origin and credential are identical, so a prior read-only
             // check still describes this exact service. Tasks continue to reference old versions.
             if(!unchanged)db.prepare('INSERT INTO connection_checks SELECT ?,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code FROM connection_checks WHERE connection_version_id=?').run(connection.connectionVersionId,previous.connectionVersionId);
+            if (JSON.stringify(value) !== priorDisplay) writeSetting(settingsKey(version) + ':display', value);
             const onboarding=expectedOnboardingRevision===undefined?undefined:store.putSetting('onboarding',{value:{dismissed:true,step:'completed'},expectedRevision:expectedOnboardingRevision});
-            return {connection:summary(connection.connectionId),...(onboarding?{onboarding}:{})};
+            return {connection:summary(connection.connectionId),displaySettings:displaySettings(version),...(onboarding?{onboarding}:{})};
         })();
     }
-    return { save, clear, select, validateAndSave, cancelCandidate, completeSetup, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, pricing, updateModelSettings, ensureModels, modelRejected, check: checkConnection, getAuth, getTransportRoute };
+    return { save, clear, select, validateAndSave, cancelCandidate, completeSetup, summary, list: () => db.prepare('SELECT id FROM connections ORDER BY created_at,id').all().map(row => summary(row.id)), current: () => currentId() ? summary(currentId()) : null, models, pricing, updateModelSettings, updateModelDisplay, assertModelDisplay, ensureModels, modelRejected, check: checkConnection, getAuth, getTransportRoute };
 }
 module.exports = { createConnectionService, publicError };

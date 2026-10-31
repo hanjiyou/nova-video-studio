@@ -51,7 +51,7 @@ it('old workspace defaults to6, saves10 and20, preserves navigation, restores on
   await waitFor(() => expect(screen.getAllByRole('button', { name: /^预览任务：视频/ })).toHaveLength(6));
   expect(screen.getByText(/当前显示：处理中 3 项 · 等待处理 3 项/)).toBeInTheDocument();
   for (const count of [10, 20]) {
-    fireEvent.click(screen.getByRole('button', { name: '设置' }));
+    fireEvent.click(screen.getByRole('button', { name: '设置' })); fireEvent.click(screen.getByRole('tab', { name: '通用' }));
     const panel = screen.getByRole('region', { name: '工作台显示' });
     expect(within(panel).getByLabelText('最近视频任务数量')).toHaveValue(count === 10 ? 6 : 10);
     fireEvent.change(within(panel).getByLabelText('最近视频任务数量'), { target: { value: String(count) } });
@@ -77,7 +77,7 @@ it('old workspace defaults to6, saves10 and20, preserves navigation, restores on
 it('display save and navigation serialize against one workspace revision and retain each other fields', async () => {
   const fixture = shellFixture(); render(<WorkbenchShell />);
   await screen.findByRole('button', { name: '预览任务：视频0' });
-  const first = fixture.deferFirstWrite(); fireEvent.click(screen.getByRole('button', { name: '设置' }));
+  const first = fixture.deferFirstWrite(); fireEvent.click(screen.getByRole('button', { name: '设置' })); fireEvent.click(screen.getByRole('tab', { name: '通用' }));
   await waitFor(() => expect(fixture.calls.filter(call => call.method === 'PUT')).toHaveLength(1));
   fireEvent.change(screen.getByLabelText('最近视频任务数量'), { target: { value: '20' } });
   fireEvent.click(screen.getByRole('button', { name: '保存显示设置' }));

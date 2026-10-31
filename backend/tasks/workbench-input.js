@@ -1,7 +1,7 @@
 'use strict';
 const { UUID, fail } = require('../storage/store');
 const { containsCredential } = require('../connections/redaction');
-const { MODEL, VERSION } = require('./flare-image-adapter');
+const { ADAPTER_VERSION: VERSION } = require('./image-policy');
 const { controlledImageValidation } = require('./controlled-image-validation');
 const { controlledVideoTextValidation } = require('./controlled-video-text-validation');
 const { generationEvidenceVerified } = require('../connections/capabilities');
@@ -32,9 +32,9 @@ function snapshotFor(body, videoVersion) {
         return {assetId:item.assetId.toLowerCase(),position,role:'reference'};
     });
     const image = body.mode.startsWith('image.');
-    if (image ? body.model !== MODEL : !MODELS.includes(body.model)) throw invalid();
+    if (image ? !imagePolicy.imageRule(body.model)?.modes.includes(body.mode) : !MODELS.includes(body.model)) throw invalid();
     if (image) {
-        if (!imagePolicy.validParameters(body.parameters)) throw invalid();
+        if (!imagePolicy.validParameters(body.parameters, body.model, body.mode)) throw invalid();
     } else if (validParameters(videoRule(body.model,{provider:'opensosen',baseUrl:videoPolicy.RULES.baseUrl}),body.parameters)) {
         // The immutable capability version below distinguishes configured rules from legacy evidence.
     } else if (body.mode === 'video.text') {

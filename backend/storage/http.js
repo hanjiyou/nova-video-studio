@@ -21,6 +21,16 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
             throw fail('INVALID_STORAGE_JSON');
         }
     };
+    function readDraft(store, mode, groupId) {
+        const draft = store.getDraft(mode, groupId);
+        if (draft.revision !== 0 || draft.updatedAt || draft.model) return draft;
+        const connections = getConnections?.(), connection = connections?.current();
+        if (!connection) return draft;
+        const catalog = connections.models(connection.connectionId), kind = mode.startsWith('image.') ? 'image' : 'video';
+        const field = kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel', name = catalog.displaySettings[field];
+        return name && catalog.displaySettings[kind + 'Models'].includes(name) && catalog.models.some(item => item.model === name && item.categories.includes(kind) && item.visibility === 'visible' && item.submissionEnabled)
+            ? { ...draft, model: name } : draft;
+    }
     return async function handleStorage(req, res, pathname, searchParams) {
         if (!pathname.startsWith('/api/nova/storage/') && !pathname.startsWith('/api/nova/assets/'))
             return false;
@@ -46,14 +56,18 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
                     sendJson(res, 200, { asset: result });
                     return true;
                 }
-                const { bytes, asset: metadata } = store.readAsset(asset[1]);
-                const etag='"sha256-'+metadata.sha256+'"',headers={ 'Content-Type': metadata.mimeType, 'Content-Length': bytes.length, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff','Accept-Ranges':'bytes',ETag:etag };
-                const selected=req.method==='HEAD'||req.headers['if-range']&&req.headers['if-range']!==etag?null:rangeFor(req.headers.range,bytes.length);
-                if(selected===false){res.writeHead(416,{...headers,'Content-Length':0,'Content-Range':'bytes */'+bytes.length});res.end();return true;}
-                if(selected){headers['Content-Length']=selected.end-selected.start+1;headers['Content-Range']='bytes '+selected.start+'-'+selected.end+'/'+bytes.length;}
-                res.writeHead(selected?206:200,headers);
-                res.end(req.method === 'HEAD' ? undefined : selected?bytes.subarray(selected.start,selected.end+1):bytes);
-                return true;
+                const preview = await store.openPreviewAsset(asset[1]);
+                try {
+                    if (res.destroyed) return true;
+                    const metadata = preview.asset, length = preview.byteLength;
+                    const etag='"sha256-'+metadata.sha256+'"',headers={ 'Content-Type': metadata.mimeType, 'Content-Length': length, 'Cache-Control': 'private, no-store', 'X-Content-Type-Options': 'nosniff','Accept-Ranges':'bytes',ETag:etag };
+                    const selected=req.method==='HEAD'||req.headers['if-range']&&req.headers['if-range']!==etag?null:rangeFor(req.headers.range,length);
+                    if(selected===false){res.writeHead(416,{...headers,'Content-Length':0,'Content-Range':'bytes */'+length});res.end();return true;}
+                    if(selected){headers['Content-Length']=selected.end-selected.start+1;headers['Content-Range']='bytes '+selected.start+'-'+selected.end+'/'+length;}
+                    const bytes = req.method === 'HEAD' ? undefined : await preview.read(selected ? selected.start : 0, selected ? selected.end : length-1);
+                    if (!res.destroyed) { res.writeHead(selected?206:200,headers); res.end(bytes); }
+                    return true;
+                } finally { await preview.close(); }
             }
             if (pathname === '/api/nova/storage/groups') {
                 if (req.method === 'GET') sendJson(res, 200, store.groups());
@@ -84,12 +98,12 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
             const groupDraft = pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)\/drafts\/([^/]+)$/);
             if (groupDraft && ['GET','PUT'].includes(req.method)) {
                 const groupId = decodeURIComponent(groupDraft[1]), mode = decodeURIComponent(groupDraft[2]);
-                sendJson(res, 200, { draft: req.method === 'GET' ? store.getDraft(mode, groupId) : store.putDraft(mode, await jsonBody(req), groupId) });
+                sendJson(res, 200, { draft: req.method === 'GET' ? readDraft(store, mode, groupId) : store.putDraft(mode, await jsonBody(req), groupId) });
                 return true;
             }
             const draft = pathname.match(/^\/api\/nova\/storage\/drafts\/([^/]+)$/);
             if (draft && req.method === 'GET') {
-                sendJson(res, 200, { draft: store.getDraft(decodeURIComponent(draft[1])) });
+                sendJson(res, 200, { draft: readDraft(store, decodeURIComponent(draft[1])) });
                 return true;
             }
             if (draft && req.method === 'PUT') {
@@ -107,7 +121,7 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
                 return true;
             }
             if (pathname === '/api/nova/storage/tasks' && req.method === 'GET') {
-                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0), scope: searchParams.get('scope') || 'workbench', ...Object.fromEntries(['kind','search','model','status','groupId','category'].map(key => [key, searchParams.get(key) || ''])) }));
+                sendJson(res, 200, store.listTasks({ limit: Number(searchParams.get('limit') || 50), offset: Number(searchParams.get('offset') || 0), scope: searchParams.get('scope') || 'workbench', ...Object.fromEntries(['kind','search','model','status','groupId','category','createdFrom','createdBefore'].map(key => [key, searchParams.get(key) || ''])) }));
                 return true;
             }
             if (pathname === '/api/nova/storage/submissions') {
@@ -145,6 +159,7 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
             return true;
         }
         catch (error) {
+            if (res.destroyed) return true;
             sendJson(res, error.statusCode || 500, { code: error.statusCode ? error.code : 'STORAGE_OPERATION_FAILED', error: error.statusCode ? error.message : '存储操作失败，已有记录和文件保留。' });
             return true;
         }

@@ -41,12 +41,22 @@ export interface ConnectionResult { ok: boolean; connection?: ConnectionSummary;
 export interface CapabilitySummary {
   capabilityVersionId: string; provider: string; baseUrl: string; model: string; mode: string; protocol: string;
   parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean;
-  evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string; submissionPolicy?: string; supplierMaximumReferences?: number | null };
+  evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string; submissionPolicy?: string; supplierMaximumReferences?: number | null; configuredProtocol?: string; submissionEnabled?: boolean };
+}
+export interface ModelDisplaySettings {
+  revision: number;
+  imageModels: string[];
+  videoModels: string[];
+  defaultImageModel: string | null;
+  defaultVideoModel: string | null;
+  pricingGroup: string | null;
 }
 export interface ConnectionModels extends ConnectionRouteFields {
+  displaySettings?: ModelDisplaySettings;
+  pricingGroups?: string[];
   transportEvidence?: 'generation_unverified' | 'see_capability_evidence';
   connectionVersionId: string; modelsFetchedAt: string | null;
-  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean}>;
+  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean; submissionEnabled?: boolean; submissionEnabledByKind?: {image:boolean;video:boolean}}>;
   refreshError?: string | null;
   modelSettings?: Record<string,{categories?: string[];custom?: boolean;defaultSeconds?: number}>;
   capabilities: CapabilitySummary[];
@@ -120,8 +130,16 @@ export const saveModelSettings = (connection: ConnectionSummary, fields: {model:
 /** Public fixed-per-image numbers; no currency or account-group inference. */
 export interface ConnectionPricing {
   connectionVersionId: string; route: TransportRoute | null; routeRevision: number | null;
-  model: string; group: string; stale: boolean; cached: boolean; reason: string | null;
+  model: string; group: string | null; displayRevision?: number; stale: boolean; cached: boolean; reason: string | null;
   estimate: { perImage: number } | null;
 }
-export const getConnectionPricing = (connectionId: string, signal?: AbortSignal) =>
-  read<ConnectionPricing>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/pricing', { signal });
+export const getConnectionPricing = (connectionId: string, signal?: AbortSignal, model?: string) =>
+  read<ConnectionPricing>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/pricing' + (model ? '?model=' + encodeURIComponent(model) : ''), { signal });
+export const getModelDisplay = (connectionId: string) => read<ConnectionModels>('/api/nova/connections/' + encodeURIComponent(connectionId) + '/model-display');
+export const saveModelDisplay = (connection: ConnectionSummary, value: ModelDisplaySettings) => read<ConnectionModels>('/api/nova/connections/' + encodeURIComponent(connection.connectionId) + '/model-display', {
+  method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+    connectionVersionId: connection.connectionVersionId, expectedRouteRevision: connection.routeRevision ?? null,
+    expectedRevision: value.revision, imageModels: value.imageModels, videoModels: value.videoModels,
+    defaultImageModel: value.defaultImageModel, defaultVideoModel: value.defaultVideoModel, pricingGroup: value.pricingGroup,
+  }),
+});

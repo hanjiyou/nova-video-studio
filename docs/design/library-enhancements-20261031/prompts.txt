@@ -1,0 +1,37 @@
+Nova Studio 作品库增强设计图
+日期：2026-10-31
+生成方式：内置 image_gen，基于现有组件截图；仅设计预览，不是安装态验收。
+最终文件：01-hover-and-date.png；02-batch-drag.png。
+第一张展示自定义日期范围，默认仍为全部日期。视频画面、数量、时间均为示例。
+第二张以修正版为准；保持第一张页面结构及卡片尺度。
+
+--- 01-hover-and-date.png 最终提示词 ---
+Use case: ui-mockup.
+Create ONE high-fidelity desktop UI design image for Nova Studio / 影像工作台, using the attached local screenshot as a strict layout and style reference, not a redesign. Image 1 is the reference only. Render a single continuous application window, landscape approximately 1440 x 1080. This is a concept mockup with sample content.
+
+PRESERVE the existing dark charcoal and muted purple visual language, Chinese UI, 200px far-left application navigation, top title “作品库”, rounded dark “本机作品库” panel, inner left project-group sidebar, existing card structure and bottom “任务详情” action. Preserve sidebar labels “图片生成”, “视频生成”, “作品库”, “设置”. Do not invent a bottom explainer area, split-screen, enlarged preview window, annotations, detached panels, promotional text or extra pages. The entire image must be one actual plausible library page.
+
+SHOW NEW FEATURE STATE: hover preview plus compact date filter.
+In the inner group sidebar show “全部作品” selected, “未分组 8”, “海边短片 12”, “城市夜景 6”, and “新建 / 管理分组”.
+Within the main panel put a compact toolbar: search input placeholder “搜索提示词或模型”; type dropdown “全部类型”; date button with calendar icon and “10/25 — 10/31”; right-aligned quiet outline button “多选”. Keep all controls aligned, small and consistent with the existing UI.
+The date button's compact attached popover is open immediately below the date control, contained within the library UI. It contains three concise choices “全部日期”, “今天”, “自定义范围”, with custom selected; date inputs “2026-10-25” and “2026-10-31” separated by “至”, footer small “取消” and purple “应用”. This popover is anchored to its control, is not a separate diagram. Avoid giant calendar grids and avoid covering the actively playing video.
+Cards remain a TWO-column grid of approximately 320px cards, with 16:9 covers. Use four attractive but clearly sample cinematic media covers: sunlit waves near a coast, a seaside dusk still, a misty forest path, and neon city street. The first top-left card is a VIDEO with a small mouse pointer hovering on its cover: show the coastal wave motion as a single plausible video frame. In this same card's cover, a subtle bottom scrim has a muted speaker icon, “静音预览”, and “00:03 / 00:06”, with a thin purple playback progress line. The first card has a subtle purple hover border, no giant central play icon while playing. Other video card has normal small play icon and duration; image cards have small “图片” badges.
+Under covers use readable concise sample text such as “海边短片：镜头沿海岸缓缓推进”, model “grok-imagine-video-1.5-6s”, date “10/31 14:32”; image model “gpt-image-2.5-sunburst”. Bottom actions “任务详情”, image cards “选择图片”, small ellipsis menu. Retain existing image-reference strip as a restrained single compact row “选择图片可带入生成草稿” with disabled reference action on right. No batch-selection checkboxes in this normal browsing state.
+Use realistic Chinese typography with clean hierarchy and legible controls, consistent 8/12/16px spacing, restrained 1px borders, 9px corners. Match the reference geometry closely; use realistic cover images only as sample content. Show a pagination row naturally at the panel bottom. No Bilibili branding. No implementation details, diagnostic warnings, synthetic fixture strings or website chrome.
+
+--- 02-batch-drag.png 最终提示词 ---
+Use case: ui-mockup / precise UI screenshot edit.
+EDIT THE PROVIDED SCREENSHOT, preserving its layout, pixel geometry, card sizes, photography, app header, connection banner, sidebars, fonts, background and margins. The provided screenshot is the actual edit target. Keep the same approximately 1448 x 1086 output framing. Change ONLY the interaction state from hover/date to batch selection and drag. This must look like two screenshots of precisely the same app with the same viewport.
+
+INVARIANTS: keep the top left “影像工作台 / NOVA STUDIO” branding and four app navigation items exactly in their current positions. Keep the top title “作品库”, the small top-right status chip, the purple connection banner and “配置连接” button EXACTLY as shown. Keep the “本机作品库” panel starting at its existing vertical position around y=190. Keep the inner group sidebar around x=256..440. Keep the two card columns at x≈463..810 and x≈828..1173, keeping the substantial blank dark space to their right. Do not stretch cards to fill the panel width. Do not move the library panel upward or remove the connection banner. Keep the existing four covers and card texts, image buttons, metadata and pagination.
+
+APPLY THESE LIMITED CHANGES:
+1. Close and remove the date popover; change date control text from “10/25 — 10/31” to “全部日期”. Keep all toolbar positions unchanged.
+2. Change the existing small “多选” button at the right end of the FILTER toolbar to “退出多选”. This must remain inside the library toolbar, not move to the app title area.
+3. Replace only the existing compact image-reference strip at y≈322..385 with a similarly sized batch action bar. Text “已选 3 项”, quiet buttons “全选当前页”, “清空”, and violet action “移动到分组”. Remove the reference thumbnails and reference-draft button from this temporary batch toolbar.
+4. Add square checkboxes inside the upper-left corner of the four cover images, and shift their tiny image/video badges slightly right to make room. Coastal VIDEO, dusk IMAGE, forest IMAGE are checked violet; city VIDEO is unchecked. Exactly three selected cards with subtle violet outlines around the entire cards. Preserve their original dimensions.
+5. Stop the coastal video preview: remove the “静音预览” text, time-progress bar, and active playback status; replace with the ordinary small centered play icon and a tiny “00:06” duration badge. No playback in drag state.
+6. Keep “全部作品” as current active group. Keep exact sidebar rows and counts: “未分组 8”, “海边短片 12”, “城市夜景 6”, then “新建 / 管理分组” WITHOUT any count next to the management action. Draw a violet dashed drop border around ONLY the “海边短片” row with compact secondary line “移入 3 项”. Mouse pointer is on that drop target. Beside cursor show one small semi-transparent native drag stack of three covers with a purple number badge “3”, caption “3 项作品”. This small ephemeral drag representation may overlap empty space to the right of group sidebar but must not obscure sidebar labels or filter toolbar. Do not change group counts yet.
+7. Correct bottom pagination to “第 1 / 3 页 · 26 条”, keeping its existing position.
+
+Final result is one single full app screenshot, no annotations, no diagrams, no explanation panels, no new areas below. Retain the original muted charcoal-purple aesthetic and Chinese text. The purpose is to show multi-select batch drag without redesigning anything else.

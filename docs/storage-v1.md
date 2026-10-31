@@ -1,5 +1,13 @@
 # 持久存储与资产接口 v1
 
+## 2026-10-31 创建日期与本地媒体预览（源码与所列验证审核通过）
+
+GET /api/nova/storage/tasks 增加可选createdFrom/createdBefore绝对UTC ISO边界，开始包含、结束不含，非法日期/顺序由后端拒绝。以tasks.created_at查询，兼容合法历史时间格式；items/total的筛选条件一致并先于LIMIT/OFFSET；unfilteredTotal及分组总计数原定义不变，不改写创建或保存事实，不修改既有迁移。
+
+批量管理逐项复用POST /api/nova/storage/tasks/:id/group，保持requestId和expectedRevision、每项全部输出原子迁移及恢复保护；不新建全批事务，不把已完成项因其他失败而回滚，不迁移导入源文件。
+
+悬浮预览只读受管本地previewUrl。媒体读取优化需保留每次路径/文件身份验证、完整性依据及HEAD/Range/If-Range行为；采用有界验证缓存/读取，不能无限缓存视频或长持文件句柄。外部损坏/替换/缺失或受管位置变化须失效，原生成输入/迁移readAsset语义保持。具体实现与验证记录见[主会话审核](implementation/作品库增强主会话审核.md)。
+
 ## 2026-10-27 视频最近任务显示设置（已实现，待主审）
 
 workspace窄结构增加可选 recentVideoTaskLimit，仅接受数值型1–100整数；旧记录缺字段由界面默认6，不改写历史数据。复用app_settings及expectedRevision，无schema迁移；保存替换语义保持，Shell与导航共用串行队列、合并最新workspace，保留导航及宽度字段。此字段仅影响视频最近列表读取/展示和统计，不影响图片最近6条、作品库分页或taskExecution执行配置。非法值400、过期revision409，失败不写入；SQLite重新打开及loopback HTTP重启验证见[实施记录](implementation/视频最近任务数量设置实施记录.md)。

@@ -71,9 +71,18 @@ function seedCapabilities(db, provider, baseUrl) {
             JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:rule.submissionEnabled?'user-configured-video-parameters':'prepared-awaiting-validation',supplierMaximumReferences:null}),new Date().toISOString());
     }
     seedMultiReferenceCapability(db, provider, baseUrl);
-    if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) for (const mode of ['image.text','image.reference']) {
-        insert.run(randomUUID(), provider, baseUrl, imagePolicy.POLICY.model, mode, imagePolicy.POLICY.protocol, JSON.stringify(imagePolicy.parametersFor(mode)),
-            'unverified', imagePolicy.POLICY.evidenceVersion, JSON.stringify(imagePolicy.EVIDENCE), new Date().toISOString());
+    if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) {
+        // Preserve the old immutable flare scopes, including saved task UUIDs and evidence bytes.
+        for (const mode of imagePolicy.MODES) insert.run(randomUUID(), provider, baseUrl, imagePolicy.POLICY.model, mode, imagePolicy.POLICY.protocol,
+            JSON.stringify(imagePolicy.parametersFor(mode, imagePolicy.POLICY.model, true)), 'unverified', imagePolicy.POLICY.legacyEvidenceVersion,
+            JSON.stringify(imagePolicy.LEGACY_EVIDENCE), new Date().toISOString());
+        for (const model of Object.keys(imagePolicy.POLICY.models)) {
+            const rule = imagePolicy.imageRule(model, { provider, baseUrl });
+            if (!rule || !rule.submissionEnabled) continue;
+            for (const mode of rule.modes) insert.run(randomUUID(), provider, baseUrl, model, mode, imagePolicy.POLICY.protocol,
+                JSON.stringify(imagePolicy.parametersFor(mode, model)), 'unverified', imagePolicy.POLICY.evidenceVersion,
+                JSON.stringify({ ...imagePolicy.EVIDENCE, configuredProtocol: rule.profile }), new Date().toISOString());
+        }
     }
     if (provider === 'opensosen' && baseUrl === OPENSOSEN_URL) {
         const capability = TEXT_VIDEO_CAPABILITY;
@@ -94,7 +103,7 @@ function seedMultiReferenceCapability(db, provider, baseUrl) {
 }
 function listCapabilities(db, provider, baseUrl) {
     const rows = db.prepare('SELECT * FROM model_capabilities WHERE provider=? AND base_url=?').all(provider, baseUrl);
-    rows.sort((a, b) => a.model.localeCompare(b.model) || a.mode.localeCompare(b.mode) || evidenceRank(b.evidence_level) - evidenceRank(a.evidence_level) || b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id));
+    rows.sort((a, b) => a.model.localeCompare(b.model) || a.mode.localeCompare(b.mode) || evidenceRank(b.evidence_level) - evidenceRank(a.evidence_level) || Number(b.evidence_version === imagePolicy.POLICY.evidenceVersion) - Number(a.evidence_version === imagePolicy.POLICY.evidenceVersion) || b.created_at.localeCompare(a.created_at) || b.id.localeCompare(a.id));
     const current = new Set();
     return rows.map(row => {
         const key = JSON.stringify([row.model, row.mode, row.protocol]), isCurrent = !current.has(key); current.add(key);

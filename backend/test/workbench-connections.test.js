@@ -134,7 +134,8 @@ test('read-only check uses only GET /models, no text-model requirement; caches v
     assert.equal(calls[0].init.method, 'GET');
     assert.equal(calls[0].init.redirect, 'manual');
     assert.equal(calls[0].init.headers.Authorization, 'Bearer ' + fixtureKey);
-    assert.ok(checked.models.every(model => model.visibility === 'visible'));
+    assert.ok(PRESET_MODELS.every(id => checked.models.find(model => model.model === id)?.visibility === 'visible'));
+    assert.equal(checked.models.find(model => model.model === 'gpt-image-2.5-sunburst').visibility, 'absent', 'configured image choices do not invent upstream availability');
     assert.equal(checked.capabilities.filter(cap => cap.evidenceLevel === 'historically_verified').length, 2);
     assert.ok(checked.capabilities.filter(cap => cap.evidenceVersion === 'opensosen-evidence-v1' && (cap.mode.endsWith('.text') || cap.model === PRESET_MODELS[0])).every(cap => cap.evidenceLevel === 'unverified'));
     const cached = await f.service.check(connection.connectionId, { connectionVersionId: connection.connectionVersionId });

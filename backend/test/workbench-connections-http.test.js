@@ -47,10 +47,12 @@ async function upstream() {
 const payload = connectionVersionId => ({ localRequestId:randomUUID(), connectionVersionId, mode: 'text-to-image', model: 'gpt-image-2', prompt: '中文\n"完整台词"', parallelCount: 1, outputSize: 'auto', aspectRatio: 'auto', images: [] });
 const post = (runtime, route, body) => runtime.request(route, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
 const task = async (runtime, id) => (await runtime.request('/api/nova/tasks/' + id)).json();
+async function serialQueue(runtime) { assert.equal((await runtime.request('/api/nova/storage/settings/taskExecution',{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({value:{imageConcurrency:1,videoConcurrency:1,imageTimeoutSeconds:120,videoTimeoutSeconds:300},expectedRevision:0})})).status,200); }
 function cleanup(directory) { assert.ok(path.resolve(directory).startsWith(path.resolve(os.tmpdir()) + path.sep)); fs.rmSync(directory, { recursive: true, force: true, maxRetries: 5, retryDelay: 50 }); }
 test('actual HTTP model GET/cache and queued tasks use immutable version A after current connection changes to B; HTTP/WS/history contain no keys', async (t) => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nova-connections-http-')), a = await upstream(), b = await upstream();
     let runtime = await start(directory), socket;
+    await serialQueue(runtime);
     const keyA = 'synthetic-http-key-A', keyB = 'synthetic-http-key-B';
     t.after(async () => { a.release(); b.release(); socket?.close(); await runtime.stop(); await a.close(); await b.close(); cleanup(directory); });
     const first = await runtime.saveConnection({ displayName: '共享图像视频连接', baseUrl: a.baseUrl, apiKey: keyA });
@@ -62,7 +64,7 @@ test('actual HTTP model GET/cache and queued tasks use immutable version A after
     assert.equal((await post(runtime, '/api/nova/proxy/models', { connectionVersionId: first.connectionVersionId })).status, 400);
     const checked = await (await post(runtime, '/api/nova/connections/' + first.connectionId + '/check', { connectionVersionId: first.connectionVersionId })).json();
     assert.equal(checked.connection.validationState, 'verified');
-    assert.ok(checked.models.every(model => model.visibility === 'visible'));
+    assert.ok(PRESET_MODELS.every(id => checked.models.find(model => model.model === id)?.visibility === 'visible'));
     assert.ok(checked.capabilities.every(cap => cap.evidenceLevel === 'unverified'));
     await post(runtime, '/api/nova/connections/' + first.connectionId + '/check', { connectionVersionId: first.connectionVersionId });
     assert.equal(a.calls.length, 1);
@@ -119,6 +121,7 @@ test('actual HTTP model GET/cache and queued tasks use immutable version A after
 test('actual queued task loses credential access after clear, pauses without a POST and retains its immutable snapshot/shared input', async (t) => {
     const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'nova-connections-clear-')), a = await upstream(), runtime = await start(directory);
     t.after(async () => { a.release(); await runtime.stop(); await a.close(); cleanup(directory); });
+    await serialQueue(runtime);
     const connection = await runtime.saveConnection({ baseUrl: a.baseUrl, apiKey: 'synthetic-clear-key' });
     const image = fs.readFileSync(path.join(__dirname, 'fixtures/workbench-v1/reference-a.png'));
     const imported = await runtime.request('/api/nova/assets/import', { method: 'POST', headers: { 'content-type': 'image/png' }, body: image });

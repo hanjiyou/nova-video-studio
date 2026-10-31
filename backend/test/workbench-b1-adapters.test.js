@@ -20,7 +20,9 @@ const task = () => { const ctx=context();return {upstream_task_id:'task/A?B#C',i
 function mock(t, response) { const previous=global.fetch,calls=[];global.fetch=async(url,init)=>{calls.push({url,init});return typeof response==='function'?response(url,init):response;};t.after(()=>{global.fetch=previous;});return calls; }
 
 test('new package registers both exact models, with only fixed application controls and ordered references',()=>{
-    assert.deepEqual(plugin.manifest.models.map(item=>item.id),driver.MODELS);
+    assert.deepEqual(plugin.manifest.models.map(item=>item.id),['grok-imagine-video-6s','grok-imagine-video-1.5-6s']);
+    // The driver also recognizes configured preparation-only models; this is not a manifest availability grant.
+    for(const model of [...plugin.manifest.models.map(item=>item.id),...Object.keys(require('../connections/model-rules.json').models)])assert.ok(driver.MODELS.includes(model));
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='seconds').options.map(item=>item.value),[6]);
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='aspectRatio').options.map(item=>item.value),['16:9']);
     assert.equal(plugin.manifest.media.images.maxCount,7);

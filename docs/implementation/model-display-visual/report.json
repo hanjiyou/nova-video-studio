@@ -1,0 +1,84 @@
+{
+  "scope": "Actual WorkbenchSettings, ModelDisplaySettings, DraftEditor and global workbench CSS; static SSR with synthetic props; CSP blocks all network; no user data, credentials or generation",
+  "checks": [
+    {
+      "name": "settings-wide",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\model-display-visual\\settings-wide.png",
+      "viewport": 1536,
+      "noHorizontalOverflow": true,
+      "cards": [
+        {
+          "left": 257,
+          "top": 383.375,
+          "right": 861,
+          "bottom": 788.34375
+        },
+        {
+          "left": 877,
+          "top": 383.375,
+          "right": 1481,
+          "bottom": 788.34375
+        }
+      ],
+      "checkboxTargets": true,
+      "duplicateHiddenWarning": false,
+      "hiddenGuidance": false,
+      "hiddenPlaceholder": false,
+      "generateDisabled": false
+    },
+    {
+      "name": "settings-narrow",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\model-display-visual\\settings-narrow.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "cards": [
+        {
+          "left": 14,
+          "top": 628.09375,
+          "right": 376,
+          "bottom": 1072.4375
+        },
+        {
+          "left": 14,
+          "top": 1088.4375,
+          "right": 376,
+          "bottom": 1500.59375
+        }
+      ],
+      "checkboxTargets": true,
+      "duplicateHiddenWarning": false,
+      "hiddenGuidance": false,
+      "hiddenPlaceholder": false,
+      "generateDisabled": false
+    },
+    {
+      "name": "hidden-wide",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\model-display-visual\\hidden-wide.png",
+      "viewport": 1280,
+      "noHorizontalOverflow": true,
+      "cards": [],
+      "checkboxTargets": true,
+      "duplicateHiddenWarning": false,
+      "hiddenGuidance": true,
+      "hiddenPlaceholder": true,
+      "generateDisabled": true
+    },
+    {
+      "name": "hidden-narrow",
+      "status": "passed",
+      "screenshot": "E:\\Learn\\AI\\nova-image-studio\\docs\\implementation\\model-display-visual\\hidden-narrow.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "cards": [],
+      "checkboxTargets": true,
+      "duplicateHiddenWarning": false,
+      "hiddenGuidance": true,
+      "hiddenPlaceholder": true,
+      "generateDisabled": true
+    }
+  ],
+  "status": "passed"
+}

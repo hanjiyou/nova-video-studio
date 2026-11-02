@@ -3,17 +3,21 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash } = require('node:crypto');
-const { verifyDirectory, hashFile, readPolicy, REPOSITORY } = require('./lib/windows-update.cjs');
+const { verifyDirectory, readPolicy, REPOSITORY } = require('./lib/windows-update.cjs');
 const REPO = 'hanjiyou/nova-video-studio';
 const API = `https://api.github.com/repos/${REPO}`;
 const GATES = path.join(REPOSITORY, 'config/windows-update-release-gates.json');
 class ReleaseError extends Error { safeReleaseError = true; }
 const { configuration, createNetwork, NetworkError } = require('./lib/release-network.cjs');
 function need(value, message) { if (!value) throw new ReleaseError(message); }
+function verificationMode(value = 'auto') {
+  need(['auto', 'full-download'].includes(value), 'Use --verification auto|full-download.');
+  return value;
+}
 function args(argv) {
   const out = { phase: 'prepare', execute: false };
   const seen = new Set();
-  const fields = new Map([['--proxy', 'proxy'], ['--transfer-timeout', 'transferTimeout'], ['--idle-timeout', 'idleTimeout'], ['--directory', 'directory'], ['--phase', 'phase'], ['--notes-file', 'notesFile'], ['--commit', 'commit'], ['--release-id', 'releaseId'], ['--confirm-tag', 'confirmTag']]);
+  const fields = new Map([['--verification', 'verification'], ['--proxy', 'proxy'], ['--transfer-timeout', 'transferTimeout'], ['--idle-timeout', 'idleTimeout'], ['--directory', 'directory'], ['--phase', 'phase'], ['--notes-file', 'notesFile'], ['--commit', 'commit'], ['--release-id', 'releaseId'], ['--confirm-tag', 'confirmTag']]);
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--direct' && !out.direct) { out.direct = true; continue; }
     if (argv[i] === '--resume' && !out.resume) { out.resume = true; continue; }
@@ -28,6 +32,7 @@ function args(argv) {
   need(!out.commit || /^[a-f0-9]{40}$/.test(out.commit), 'Commit must be a full Git SHA.');
   need(!out.execute || out.phase !== 'prepare', 'Prepare is always a local dry-run.');
   configuration(out);
+  verificationMode(out.verification);
   return out;
 }
 function blockers(plan, gates = JSON.parse(fs.readFileSync(GATES, 'utf8')), policy = readPolicy()) {
@@ -48,14 +53,17 @@ function blockers(plan, gates = JSON.parse(fs.readFileSync(GATES, 'utf8')), poli
   return result;
 }
 async function localPreparation(options, deps = {}) {
+  const mode = verificationMode(options.verification);
   const directory = path.resolve(options.directory);
   const { plan, summary } = await (deps.verifyDirectory || verifyDirectory)(directory);
   const assets = [];
   for (const name of [plan.artifactName, plan.artifactName + '.blockmap', plan.manifestName || 'latest.yml']) {
     const file = path.join(directory, name);
-    assets.push({ name, size: fs.statSync(file).size, sha512: await hashFile(file) });
+    const sha256 = createHash('sha256'), sha512 = createHash('sha512');
+    for await (const chunk of fs.createReadStream(file)) { sha256.update(chunk); sha512.update(chunk); }
+    assets.push({ name, size: fs.statSync(file).size, sha256: sha256.digest('hex'), sha512: sha512.digest('base64') });
   }
-  return { plan, report: { schemaVersion: 1, repository: REPO, version: plan.version, tag: plan.tag, source: plan.source || null, phase: options.phase, dryRun: !options.execute, assets, signature: summary.signature, blockers: blockers(plan, deps.gates, deps.policy), retention: 'Keep all supported old exe/blockmap/release assets; never overwrite a tag, version or asset. Repair with a higher version.' } };
+  return { plan, report: { schemaVersion: 1, repository: REPO, version: plan.version, tag: plan.tag, source: plan.source || null, phase: options.phase, dryRun: !options.execute, verificationMode: mode, assets, signature: summary.signature, blockers: blockers(plan, deps.gates, deps.policy), retention: 'Keep all supported old exe/blockmap/release assets; never overwrite a tag, version or asset. Repair with a higher version.' } };
 }
 function github(token, fetchImpl = fetch, network) {
   const headers = { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'Nova-Windows-Release' };
@@ -105,12 +113,29 @@ async function remoteHash(assetId, token, network) {
   });
 }
 async function checkedHash(asset, expected, report, id, hashAsset, cache) {
+  const hasDigest = asset.digest !== undefined && asset.digest !== null && asset.digest !== '';
+  if (hasDigest) {
+    need(typeof asset.digest === 'string' && /^sha256:[a-f0-9]{64}$/.test(asset.digest), 'Invalid or unsupported GitHub asset digest; draft retained.');
+    need(asset.digest === 'sha256:' + expected.sha256, 'GitHub server SHA-256 differs from the locally validated/signed artifacts; draft retained.');
+  }
   // Missing immutable metadata disables reuse. Cache lives only in this delivery invocation.
-  const key = asset.id && asset.updated_at && asset.digest ? JSON.stringify([REPO, String(id), report.source.commit, report.tag, asset.id, asset.name, asset.size, asset.state, asset.updated_at, asset.digest, expected.sha512]) : null;
-  if (key && cache?.has(key)) return cache.get(key);
-  const actual = await hashAsset(asset.id);
-  need(actual.size === expected.size && actual.sha512 === expected.sha512, 'Remote asset bytes differ from the locally validated/signed artifacts.');
-  if (key) cache?.set(key, actual);
+  const key = asset.id && asset.updated_at && hasDigest ? JSON.stringify([REPO, String(id), report.source.commit, report.tag, report.verificationMode, asset.id, asset.name, asset.size, asset.state, asset.updated_at, asset.digest, expected.sha256, expected.sha512]) : null;
+  const reused = Boolean(key && cache?.has(key));
+  let actual = reused ? cache.get(key) : null;
+  if (!actual) {
+    if (report.verificationMode === 'auto' && hasDigest) {
+      // The server-provided SHA-256 is compared directly; no remote SHA-512 is invented.
+      actual = { size: asset.size, sha256: asset.digest.slice(7), method: 'github-server-sha256' };
+    } else {
+      const downloaded = await hashAsset(asset.id);
+      need(downloaded.size === expected.size && downloaded.sha512 === expected.sha512, 'Remote asset bytes differ from the locally validated/signed artifacts.');
+      actual = { size: downloaded.size, sha512: downloaded.sha512, method: 'full-download-sha512', reason: report.verificationMode === 'full-download' ? 'explicit-full-download' : 'server-digest-missing' };
+    }
+    if (key) cache?.set(key, actual);
+  }
+  const receipt = { name: asset.name, assetId: String(asset.id), ...actual, reused };
+  report.remoteVerification = [...(report.remoteVerification || []).filter(item => item.name !== asset.name), receipt];
+  console.log(`[verify] ${asset.name}: ${actual.method}${actual.reason ? ' (' + actual.reason + ')' : ''}${reused ? ' (reused)' : ''}`);
   return actual;
 }
 async function draftIdentity(request, id, report, allowPublished = false) {
@@ -132,8 +157,7 @@ async function verifyRemote(request, id, report, hashAsset, allowPublished = fal
   for (const expected of report.assets) {
     const matches = assets.filter(a => a.name === expected.name);
     need(matches.length === 1 && matches[0].state === 'uploaded' && matches[0].size === expected.size, 'Draft asset name/state/size differs.');
-    const actual = await checkedHash(matches[0], expected, report, id, hashAsset, cache);
-    need(actual.size === expected.size && actual.sha512 === expected.sha512, 'Remote asset bytes differ from the locally validated/signed artifacts.');
+    await checkedHash(matches[0], expected, report, id, hashAsset, cache);
   }
   return release;
 }
@@ -199,8 +223,7 @@ async function run(options, deps = {}) {
         need(existing.state === 'uploaded', 'Unknown asset state; stop for manual review.');
         const expected = report.assets.find(a => a.name === existing.name);
         need(existing.size === expected.size, 'Existing draft asset differs; stop and review, never overwrite it.');
-        const actual = await checkedHash(existing, expected, report, id, hashAsset, cache);
-        need(existing.state === 'uploaded' && existing.size === expected.size && actual.size === expected.size && actual.sha512 === expected.sha512, 'Existing draft asset differs; stop and review, never overwrite it.');
+        await checkedHash(existing, expected, report, id, hashAsset, cache);
       }
       for (const asset of report.assets.filter(a => !assets.some(e => e.name === a.name))) {
         await request(`https://uploads.github.com/repos/${REPO}/releases/${id}/assets?name=${encodeURIComponent(asset.name)}`, { method: 'POST', binary: true, body: fs.readFileSync(path.join(options.directory, asset.name)) });
@@ -215,4 +238,4 @@ async function run(options, deps = {}) {
   } finally { await network?.close(); }
 }
 if (require.main === module) Promise.resolve().then(() => run(args(process.argv.slice(2)))).then(r => console.log(JSON.stringify(r, null, 2))).catch(error => { console.error('[FAILED] ' + (error instanceof ReleaseError || error instanceof NetworkError ? error.message : 'Local artifact/config verification failed; run update:verify:win separately. Raw remote errors are never printed.')); process.exitCode = 1; });
-module.exports = { remoteHash, github, args, blockers, localPreparation, run, draftIdentity, verifyRemote, ReleaseError };
+module.exports = { verificationMode, remoteHash, github, args, blockers, localPreparation, run, draftIdentity, verifyRemote, ReleaseError };

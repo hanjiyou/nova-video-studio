@@ -65,6 +65,15 @@ test('delivery accepts explicit release network configuration and rejects confli
  assert.throws(()=>options(['run','--transfer-timeout','0']),/timeouts/);
 });
 
+test('delivery accepts optional full-download verification and rejects invalid modes before execution', async () => {
+  assert.equal(options(['run', '--verification', 'full-download']).verification, 'full-download');
+  assert.equal(options(['run', '--verification', 'auto']).verification, 'auto');
+  assert.throws(() => options(['run', '--verification', 'skip']), /verification/);
+  await assert.rejects(run('inert', { verification: 'skip' }), /verification/);
+  const { localBuild } = require('./deliver.cjs');
+  await assert.rejects(localBuild('inert', { version: '3.6.11-local.3', verification: 'auto' }), /不接收/);
+});
+
 test('local package action previews without Git, build, directories or remote access', async t => {
  const {localBuild}=require('./deliver.cjs');
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'nova-local-plan-'));

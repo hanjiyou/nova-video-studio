@@ -1,0 +1,35 @@
+{
+  "readOnly": true,
+  "releaseId": "431338593",
+  "version": "3.6.11",
+  "sourceCommit": "8fb3d436dbda35bbca600603ad19133763a8c8ff",
+  "metadataRequests": 5,
+  "assetDownloads": 0,
+  "verificationMode": "auto",
+  "remoteVerification": [
+    {
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe",
+      "assetId": "701402029",
+      "size": 557652254,
+      "sha256": "19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+      "method": "github-server-sha256",
+      "reused": false
+    },
+    {
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe.blockmap",
+      "assetId": "701426568",
+      "size": 566268,
+      "sha256": "bb3079b74e3d231a3a6cae3fb98bbfbb5225b7744100c37b0576727f4647731c",
+      "method": "github-server-sha256",
+      "reused": false
+    },
+    {
+      "name": "nova-test.yml",
+      "assetId": "701426682",
+      "size": 374,
+      "sha256": "3f2052f1217972b41b37fab4a7e660f120bcc9242d2cc88fcf5b220291197f14",
+      "method": "github-server-sha256",
+      "reused": false
+    }
+  ]
+}

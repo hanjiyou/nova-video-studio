@@ -73,15 +73,16 @@ function options(argv) {
   for (let i = 1; i < argv.length; i++) {
     if (argv[i] === '--direct') { need(!out.direct, '重复参数'); out.direct = true; continue; }
     if (argv[i] === '--execute') { need(!out.execute, '重复参数'); out.execute = true; continue; }
-    const key = ({ '--proxy': 'proxy', '--transfer-timeout': 'transferTimeout', '--idle-timeout': 'idleTimeout', '--review': 'review', '--files': 'files', '--reviewer': 'reviewer', '--evidence': 'evidence', '--mode': 'mode', '--profile': 'profile', '--version': 'version', '--message': 'message', '--notes-file': 'notesFile' })[argv[i]];
+    const key = ({ '--verification': 'verification', '--proxy': 'proxy', '--transfer-timeout': 'transferTimeout', '--idle-timeout': 'idleTimeout', '--review': 'review', '--files': 'files', '--reviewer': 'reviewer', '--evidence': 'evidence', '--mode': 'mode', '--profile': 'profile', '--version': 'version', '--message': 'message', '--notes-file': 'notesFile' })[argv[i]];
     need(key && argv[i + 1] && !argv[i + 1].startsWith('--'), '未知或缺少参数：' + argv[i]); out[key] = argv[++i];
   }
   if (out.action !== 'local') require('./lib/release-network.cjs').configuration(out);
+  require('./release-windows-update.cjs').verificationMode(out.verification);
   return out;
 }
 async function localBuild(root, opts, deps = {}) {
   need(opts.version, '请指定本地预览版本，例如 --version 3.6.11-local.2。');
-  need(!opts.review && !opts.files && !opts.message && !opts.notesFile && !opts.proxy && !opts.direct && !opts.transferTimeout && !opts.idleTimeout && (!opts.mode || opts.mode === 'push') && (!opts.profile || opts.profile === 'github-test'), '仅本地打包不接收审核、提交、发布或网络参数。');
+  need(!opts.review && !opts.files && !opts.message && !opts.notesFile && !opts.proxy && !opts.direct && !opts.transferTimeout && !opts.idleTimeout && !opts.verification && (!opts.mode || opts.mode === 'push') && (!opts.profile || opts.profile === 'github-test'), '仅本地打包不接收审核、提交、发布或网络参数。');
   const { localPreviewPlan } = require('./build-openchatcut-preview.cjs');
   const plan = localPreviewPlan(opts.version, root);
   const occupied = fs.existsSync(plan.output);
@@ -103,6 +104,7 @@ function remoteTip(root, ref) {
 }
 async function run(root, opts, deps = {}) {
   const networkConfig = require('./lib/release-network.cjs').configuration(opts);
+  const verification = require('./release-windows-update.cjs').verificationMode(opts.verification);
   const tipFor = deps.remoteTip || remoteTip;
   need(opts.review, '请指定 --review 审核记录。');
   const bytes = fs.readFileSync(path.resolve(opts.review)); const review = JSON.parse(bytes);
@@ -123,7 +125,7 @@ async function run(root, opts, deps = {}) {
   }
   if (opts.mode === 'publish') need(notes?.trim(), '发布需要 --notes-file。');
   if (!state.commit && !state.tree) validateReview(root, review);
-  const preview = { releaseNetwork: networkConfig, branch: review.branch, mode: opts.mode, profile, version: version || null, reviewedBy: review.reviewer, evidence: review.evidence, files: review.files.map(f => f.name), completed: state.done, commit: state.commit || null, output: state.output || null };
+  const preview = { releaseNetwork: networkConfig, verificationMode: verification, branch: review.branch, mode: opts.mode, profile, version: version || null, reviewedBy: review.reviewer, evidence: review.evidence, files: review.files.map(f => f.name), completed: state.done, commit: state.commit || null, output: state.output || null };
   console.log(JSON.stringify(preview, null, 2));
   if (!opts.execute) { console.log('仅预览，没有执行提交、联网、打包或发布。'); return preview; }
   fs.mkdirSync(path.dirname(stateFile), { recursive: true });
@@ -199,11 +201,11 @@ async function run(root, opts, deps = {}) {
         need(!/push:|action-gh-release|contents: write/.test(workflow), '当前提交仍包含旧标签自动发布流程，请审核并提交工作流修正。');
         const release = require(path.join(state.checkout, 'scripts/release-windows-update.cjs'));
         const notesFile = path.join(deliveryDirectory(root), review.id + '.notes.txt'); fs.writeFileSync(notesFile, notes);
-        const common = { directory: state.output, commit: state.commit, confirmTag: 'v' + version, execute: true, resume: true, notesFile, proxy: opts.proxy, direct: opts.direct, transferTimeout: opts.transferTimeout, idleTimeout: opts.idleTimeout };
+        const common = { directory: state.output, commit: state.commit, confirmTag: 'v' + version, execute: true, resume: true, notesFile, verification, proxy: opts.proxy, direct: opts.direct, transferTimeout: opts.transferTimeout, idleTimeout: opts.idleTimeout };
         const deps = { verificationCache: new Map(), onDraft: id => { state.releaseId = String(id); save(state); } };
         const uploaded = await release.run({ ...common, phase: 'draft', ...(state.releaseId ? { releaseId: state.releaseId } : {}) }, deps);
         const result = uploaded.published ? uploaded : await release.run({ ...common, phase: 'publish', releaseId: String(uploaded.releaseId) }, deps);
-        return { releaseId: String(result.releaseId), releaseUrl: 'https://github.com/hanjiyou/nova-video-studio/releases/tag/v' + version, published: result.published };
+        return { releaseId: String(result.releaseId), releaseUrl: 'https://github.com/hanjiyou/nova-video-studio/releases/tag/v' + version, published: result.published, verificationMode: result.verificationMode, remoteVerification: result.remoteVerification };
       }
     };
     await sequence(state, opts.mode, operations, save);

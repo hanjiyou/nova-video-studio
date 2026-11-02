@@ -15,7 +15,7 @@ function fixture(t) {
   const plan = makePlan({ profile: 'release', version: '3.5.4' }, policy); plan.source = { commit: SHA, clean: true };
   const assets = [plan.artifactName, plan.artifactName + '.blockmap', 'latest.yml'].map((name, i) => {
     const bytes = Buffer.from(`INERT TEST ONLY ${i}`); fs.writeFileSync(path.join(directory, name), bytes);
-    return { id: i + 1, name, size: bytes.length, sha512: createHash('sha512').update(bytes).digest('base64'), state: 'uploaded' };
+    return { id: i + 1, name, size: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex'), sha512: createHash('sha512').update(bytes).digest('base64'), state: 'uploaded' };
   });
   const gates = { schemaVersion: 1, repository: 'hanjiyou/nova-video-studio' };
   for (const key of ['sourceAndLicenseDelivery', 'ffmpegCorrespondingSource', 't15RemainingModes', 'm5ReleaseAcceptance', 'isolatedInstalledUpdate']) gates[key] = { status: 'complete', evidence: 'INERT API TEST ONLY' };
@@ -41,6 +41,9 @@ function fixture(t) {
   const deps = { policy, gates, verifyDirectory: async () => ({ plan, summary: { signature: { mode: 'authenticode', results: [] } } }), remote: { token: 'INERT API TEST ONLY', request, hashAsset: async id => { const a = assets.find(a => a.id === id); return { size: a.size, sha512: a.sha512 }; } } };
   const options = { directory, phase: 'verify', execute: true, releaseId: '42', commit: SHA, confirmTag: plan.tag };
   return { directory, policy, plan, assets, state, calls, deps, options };
+}
+function serverDigests(f) {
+  for (const asset of f.assets) { asset.digest = 'sha256:' + asset.sha256; asset.updated_at = '2026-11-02T00:00:00Z'; }
 }
 test('formal record requires source commit and builder binds it outside runtime metadata', t => {
   const f = fixture(t), record = { profile: 'release', version: f.plan.version, testFeedUrl: null, metadata: f.plan.metadata, source: f.plan.source };
@@ -78,7 +81,7 @@ test('upload resumes a partial draft, checks existing bytes first and only adds 
 });
 test('existing wrong draft bytes block all uploads and are never cached or replaced', async t => {
   const f = fixture(t); f.state.assets = [f.assets[0]];
-  Object.assign(f.assets[0], { updated_at: '2026-10-25T00:00:00Z', digest: 'sha256:fixture1' });
+  serverDigests(f); f.options.verification = 'full-download';
   f.deps.verificationCache = new Map(); let hashes = 0;
   f.deps.remote.hashAsset = async () => { hashes++; return { size: f.assets[0].size, sha512: 'wrong' }; };
   await assert.rejects(release.run({ ...f.options, phase: 'upload' }, f.deps), /Remote asset bytes differ/);
@@ -168,7 +171,7 @@ test('incomplete upload is diagnosed before hashing or mutating anything', async
  assert.equal(f.calls.some(c=>c.method!=='GET'),false);
 });
 test('one delivery reuses numeric draft ID verification for string publish ID only with unchanged live metadata', async t => {
- const f=fixture(t); for (const a of f.assets) { a.updated_at='2026-10-25T00:00:00Z'; a.digest='sha256:fixture'+a.id; }
+ const f=fixture(t); serverDigests(f); f.options.verification='full-download';
  f.state.assets=[];const notes=path.join(f.directory,'notes.txt');fs.writeFileSync(notes,'INERT release notes');
  f.deps.verificationCache=new Map(); let hashes=0;
  const original=f.deps.remote.hashAsset; f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
@@ -182,14 +185,14 @@ test('one delivery reuses numeric draft ID verification for string publish ID on
  assert.equal(f.calls.filter(c=>c.method==='PATCH').length,1);
  f.assets[0].updated_at='2026-10-25T01:00:00Z';
  await release.run(f.options,f.deps); assert.equal(hashes,4);
- f.assets[0].digest='sha256:changed';
+ f.assets[0].digest=null;
  await release.run(f.options,f.deps); assert.equal(hashes,5);
  f.state.assets[0]={...f.assets[0],state:'starter'};
  await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/name\/state\/size/);
  assert.equal(f.calls.filter(c=>c.method==='PATCH').length,1);
 });
 test('cache does not bypass source identity or carry across separate invocations', async t=>{
- const f=fixture(t); for(const a of f.assets){a.updated_at='now';a.digest='fixture'+a.id;}
+ const f=fixture(t); serverDigests(f); f.options.verification='full-download';
  let hashes=0;const original=f.deps.remote.hashAsset;f.deps.remote.hashAsset=async id=>{hashes++;return original(id);};
  await release.run(f.options,f.deps);await release.run(f.options,f.deps);assert.equal(hashes,6);
  f.deps.verificationCache=new Map();await release.run(f.options,f.deps);assert.equal(hashes,9);f.state.target=OTHER;
@@ -197,4 +200,121 @@ test('cache does not bypass source identity or carry across separate invocations
  f.state.target=SHA;f.state.tag={object:{type:'commit',sha:OTHER}};
  await assert.rejects(release.run({...f.options,phase:'publish'},f.deps),/Existing tag/);
  assert.equal(hashes,9);assert.equal(f.state.published,false);assert.equal(f.calls.some(c=>c.method==='PATCH'),false);
+});
+
+test('default publication compares all server SHA-256 digests without downloading any asset', async t => {
+  const f = fixture(t); serverDigests(f);
+  f.deps.remote.hashAsset = async () => { throw Error('No full download expected'); };
+  const result = await release.run({ ...f.options, phase: 'publish' }, f.deps);
+  assert.equal(result.verificationMode, 'auto'); assert.equal(result.published, true);
+  assert.equal(result.remoteVerification.length, 3);
+  for (const receipt of result.remoteVerification) {
+    assert.equal(receipt.method, 'github-server-sha256');
+    assert.equal(receipt.sha256, f.assets.find(asset => String(asset.id) === receipt.assetId).sha256);
+    assert.equal(receipt.sha512, undefined, 'Do not claim to have downloaded remote SHA-512');
+  }
+  assert.equal(f.calls.filter(call => call.method === 'PATCH').length, 1);
+});
+
+test('mismatching server digest blocks upload and publication without a download fallback', async t => {
+  for (const phase of ['upload', 'publish']) {
+    const f = fixture(t); serverDigests(f); f.state.assets = phase === 'upload' ? [f.assets[0]] : [...f.assets];
+    f.assets[0].digest = 'sha256:' + 'f'.repeat(64);
+    f.deps.remote.hashAsset = async () => { throw Error('Must not hide digest mismatch with fallback'); };
+    await assert.rejects(release.run({ ...f.options, phase }, f.deps), /server SHA-256 differs/);
+    assert.equal(f.calls.some(call => call.method !== 'GET'), false); assert.equal(f.state.published, false);
+  }
+});
+
+test('only assets missing a digest fall back to full size and SHA-512 verification', async t => {
+  const f = fixture(t); serverDigests(f); delete f.assets[1].digest;
+  const downloaded = [], original = f.deps.remote.hashAsset;
+  f.deps.remote.hashAsset = async id => { downloaded.push(id); return original(id); };
+  const result = await release.run(f.options, f.deps);
+  assert.deepEqual(downloaded, [2]);
+  assert.deepEqual(result.remoteVerification.map(item => item.method), ['github-server-sha256', 'full-download-sha512', 'github-server-sha256']);
+  assert.equal(result.remoteVerification[1].reason, 'server-digest-missing');
+  assert.equal(result.published, false);
+});
+
+test('null, absent and empty digests all require complete download verification', async t => {
+  const f = fixture(t); f.assets[0].digest = null; f.assets[1].digest = ''; delete f.assets[2].digest;
+  const original = f.deps.remote.hashAsset; let downloads = 0;
+  f.deps.remote.hashAsset = async id => { downloads++; return original(id); };
+  const result = await release.run(f.options, f.deps);
+  assert.equal(downloads, 3); assert.ok(result.remoteVerification.every(item => item.method === 'full-download-sha512'));
+  f.deps.remote.hashAsset = async () => ({ size: 0, sha512: 'wrong' });
+  await assert.rejects(release.run({ ...f.options, phase: 'publish' }, f.deps), /Remote asset bytes differ/);
+  assert.equal(f.state.published, false);
+});
+
+test('malformed or unsupported digest metadata is rejected rather than downgraded', async t => {
+  for (const digest of ['sha256:short', 'sha256:' + 'g'.repeat(64), 'sha512:' + 'a'.repeat(64), 42, {}, ' sha256:' + 'a'.repeat(64)]) {
+    const f = fixture(t); serverDigests(f); f.assets[0].digest = digest;
+    f.deps.remote.hashAsset = async () => { throw Error('No fallback for invalid digest'); };
+    await assert.rejects(release.run({ ...f.options, phase: 'publish' }, f.deps), /Invalid or unsupported/);
+    assert.equal(f.calls.some(call => call.method !== 'GET'), false);
+  }
+});
+
+test('explicit full-download verifies actual bytes even when all server digests match', async t => {
+  const f = fixture(t); serverDigests(f);
+  let downloads = 0; const original = f.deps.remote.hashAsset;
+  f.deps.remote.hashAsset = async id => { downloads++; return original(id); };
+  const result = await release.run({ ...f.options, verification: 'full-download' }, f.deps);
+  assert.equal(downloads, 3); assert.ok(result.remoteVerification.every(item => item.reason === 'explicit-full-download'));
+  f.deps.remote.hashAsset = async id => ({ size: f.assets.find(asset => asset.id === id).size, sha512: 'wrong' });
+  await assert.rejects(release.run({ ...f.options, phase: 'publish', verification: 'full-download' }, f.deps), /Remote asset bytes differ/);
+  assert.equal(f.state.published, false);
+});
+
+test('server verification cache cannot satisfy full-download or mask a changed digest', async t => {
+  const f = fixture(t); serverDigests(f); f.deps.verificationCache = new Map();
+  let downloads = 0; const original = f.deps.remote.hashAsset;
+  f.deps.remote.hashAsset = async id => { downloads++; return original(id); };
+  await release.run(f.options, f.deps); assert.equal(downloads, 0);
+  await release.run({ ...f.options, verification: 'full-download' }, f.deps); assert.equal(downloads, 3);
+  const cached = await release.run(f.options, f.deps); assert.ok(cached.remoteVerification.every(item => item.reused));
+  f.assets[0].digest = 'sha256:' + 'f'.repeat(64);
+  await assert.rejects(release.run({ ...f.options, phase: 'publish' }, f.deps), /server SHA-256 differs/);
+  assert.equal(downloads, 3); assert.equal(f.state.published, false);
+});
+
+test('resume of an already published release uses current server metadata without another write or download', async t => {
+  const f = fixture(t); serverDigests(f); const original = f.deps.remote.request;
+  f.deps.remote.request = async (url, opts) => { const result = await original(url, opts); return url.endsWith('/releases/42') && !opts?.method ? { ...result, draft: false } : result; };
+  f.deps.remote.hashAsset = async () => { throw Error('No download needed'); };
+  const result = await release.run({ ...f.options, phase: 'publish', resume: true }, f.deps);
+  assert.equal(result.published, true); assert.equal(result.remoteVerification.length, 3);
+  assert.equal(f.calls.some(call => call.method !== 'GET'), false);
+});
+
+test('server digests never bypass asset name, count, state, size or clean-source gates', async t => {
+  const changes = [
+    f => { f.assets[0].size++; },
+    f => { f.assets[0].name = 'unexpected.exe'; },
+    f => { f.assets[0].state = 'starter'; },
+    f => { f.state.assets = [f.assets[0], f.assets[0], f.assets[2]]; },
+    f => { f.state.target = OTHER; },
+    f => { f.plan.source.clean = false; }
+  ];
+  for (const change of changes) {
+    const f = fixture(t); serverDigests(f); change(f);
+    f.deps.remote.hashAsset = async () => { throw Error('Unexpected download'); };
+    await assert.rejects(release.run({ ...f.options, phase: 'publish' }, f.deps), /name\/state\/size|target commit|clean source/);
+    assert.equal(f.calls.some(call => call.method !== 'GET'), false);
+  }
+});
+
+test('verification options reject invalid or repeated modes and dry runs remain offline', async t => {
+  assert.equal(release.verificationMode(), 'auto');
+  assert.equal(release.args(['--directory', 'inert', '--verification', 'full-download']).verification, 'full-download');
+  assert.throws(() => release.args(['--directory', 'inert', '--verification', 'skip']), /verification/);
+  assert.throws(() => release.args(['--directory', 'inert', '--verification', 'auto', '--verification', 'full-download']), /repeated/);
+  const f = fixture(t);
+  const report = await release.run({ ...f.options, execute: false }, f.deps);
+  assert.equal(report.verificationMode, 'auto'); assert.match(report.assets[0].sha256, /^[a-f0-9]{64}$/);
+  assert.equal(f.calls.length, 0);
+  await assert.rejects(release.run({ ...f.options, verification: 'skip' }, f.deps), /verification/);
+  assert.equal(f.calls.length, 0);
 });

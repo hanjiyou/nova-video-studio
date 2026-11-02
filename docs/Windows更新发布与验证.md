@@ -3,7 +3,7 @@
 > 2026-11-02发布后状态：GitHub Test 3.6.11已提交、推送、独立构建并公开发布，包含剪辑基础入口、参考图粘贴和保存提示优化。素材/工程/成片进一步融合继续暂缓，未验证能力与正式签名/安装升级门槛保持；旧local.1/local.2不变。以下“仅源码/未打包/3.6.10基线”均为发布前阶段记录，当前以[3.6.11交付记录](implementation/3.6.11-交付记录.md)为准。
 
 
-本次3.6.11按用户明确选择，使用三份资产的GitHub服务器SHA-256与本地SHA-256、大小及源码/标签检查完成发布，不再整包回读。下方脚本默认的完整回读行为未改，实际结果见本次交付记录。
+2026-11-02后续脚本更新：正式发布脚本已改为默认核对GitHub服务器SHA-256与本地SHA-256、大小和原有源码/标签；摘要齐全且匹配时不再下载安装器。摘要缺失才回退完整下载/SHA512，畸形或不一致立即停止。可加`--verification full-download`显式要求完整下载。菜单第3项默认采用新策略，本次只交付脚本与文档，应用包不变；详见[实施记录](implementation/发布校验改为服务器摘要优先.md)。3.6.11当时通过受控续跑完成发布的历史事实保持。
 > 2026-11-02 当前状态：已发布记录基线为[GitHub Test 3.6.10](implementation/3.6.10-交付记录.md)，仍为未签名测试渠道；OpenChatCut本地预览local.2已生成（local.1留档），不具有正式发布或自动更新资格。11月2日粘贴/保存提示改动未重新打包。进一步融合暂缓，正式签名、完整安装与更新验收条件保持。下面按日期保留的旧版“待打包/最新”只描述当时状态，统一进度见[总任务清单](Nova-Studio落地任务清单.md)。
 
 > 2026-10-26 历史交付：D01–D10 下载体验及安装完成页已提交、推送、打包并公开发布为 GitHub Test 3.6.6，三项远端资产完整字节校验通过。见[3.6.6交付记录](implementation/3.6.6-交付记录.md)。下方未提交、待打包或3.6.5描述为此前阶段记录；真实安装验收仍待完成。
@@ -34,7 +34,7 @@ npm run update:verify:win -- release-updates/local-test/3.5.4
 npm run update:release:win -- --directory release-updates/local-test/3.5.4
 ```
 
-默认 phase=prepare，所有 phase 省略 `--execute` 都仅作本地 dry-run，不读取 Token、不访问远端、不写本地包。输出固定仓库/version/tag、三资产大小/SHA512、签名与缺项。当前 local-test 是明确未签名测试，不能作为正式资产上传。全局 runtimeReady=false、正式发布者 pending，许可/源码、FFmpeg 完整对应源码、T15 其他模式、M5 与隔离安装验收均未完成；不能通过此脚本绕过。
+默认 phase=prepare，所有 phase 省略 `--execute` 都仅作本地 dry-run，不读取 Token、不访问远端、不写本地包。输出固定仓库/version/tag、三资产大小/SHA256/SHA512、校验模式、签名与缺项。当前 local-test 是明确未签名测试，不能作为正式资产上传。全局 runtimeReady=false、正式发布者 pending，许可/源码、FFmpeg 完整对应源码、T15 其他模式、M5 与隔离安装验收均未完成；不能通过此脚本绕过。
 
 签名/发布者决策冻结并审查后才可采用 release profile。正式构建要求干净的已提交工作区，构建前/前端构建后 source commit 相同，包内 package.novaBuild 与 update-plan/summary 的 `{commit,clean:true}` 一致，exe/app 均 Authenticode Valid 且发布者匹配。工具、固定身份/feed/最低版本/缓存、完整 exe/blockmap/latest.yml/PE 版本均需复验。local-test 工作区可保留未提交，不拿测试构建记录冒充已提交正式源码。
 
@@ -51,19 +51,19 @@ npm run update:release:win -- --directory release-updates/release/<新版本>
 # 2. 明确授权后创建稳定 draft 并上传；--commit 必须等于签名包内 source
 npm run update:release:win -- --directory release-updates/release/<新版本> --phase draft --commit <40位审核提交SHA> --notes-file <审核说明文件> --confirm-tag v<新版本> --execute
 
-# 3. 如果上传中断，保留 draft ID；补齐缺件，既有资产先按完整字节核对，不覆盖
+# 3. 如果上传中断，保留 draft ID；补齐缺件，既有资产先核对摘要/大小，不覆盖
 npm run update:release:win -- --directory release-updates/release/<新版本> --phase upload --release-id <draftID> --commit <相同SHA> --confirm-tag v<新版本> --execute
 
-# 4. 单独重新下载远端三资产核验，仍保持 draft
+# 4. 单独核验远端三资产（默认服务器摘要，缺失才下载），仍保持 draft
 npm run update:release:win -- --directory release-updates/release/<新版本> --phase verify --release-id <draftID> --commit <相同SHA> --execute
 
 # 5. 主审确认上述具体 draft 和资产、且明确授权公开后才发布
 npm run update:release:win -- --directory release-updates/release/<新版本> --phase publish --release-id <draftID> --commit <相同SHA> --confirm-tag v<新版本> --execute
 ```
 
-创建前核对固定仓库为 public，并检查所有历史 draft/release 与 tag。相同 tag/version 已存在即拒绝新建，不能拿新包替换同号。draft 的 target_commitish 必须等于包内 source SHA；已有 tag（含 annotated tag）必须解引用到相同 SHA。upload 只接受稳定 draft，先检查所有已有资产名/状态/大小/完整远端 SHA512，再仅上传缺件；异常/重复/坏资产时停止并保留 draft，交审后选择更高版本，脚本没有删除或覆盖操作。
+创建前核对固定仓库为 public，并检查所有历史 draft/release 与 tag。相同 tag/version 已存在即拒绝新建，不能拿新包替换同号。draft 的 target_commitish 必须等于包内 source SHA；已有 tag（含 annotated tag）必须解引用到相同 SHA。upload 只接受稳定 draft，先检查所有已有资产名/状态/大小及服务器SHA-256（摘要缺失时完整下载核对SHA512），再仅上传缺件；异常/重复/坏资产时停止并保留 draft，交审后选择更高版本，脚本没有删除或覆盖操作。
 
-verify/publish 都重新核对本地完整性/签名/门槛、draft身份/source/tag 和三件远端资产完整字节。由此远端 exe 与本地刚验证的签名 exe 必须完全相同。下载 GitHub 资产重定向时不向重定向主机转发发布 Token，且只接受 HTTPS GitHub 资产域。半套资产始终留在 draft，publish 不接受缺失/多余/重复资产。发布失败保留已有状态，先读取并人工核对，不盲目重跑。
+verify/publish 都重新核对本地完整性/签名/门槛、draft身份/source/tag及三件远端资产。默认以GitHub服务器SHA-256对比本地完整SHA-256并核对大小，摘要齐全一致时不下载文件；摘要缺失才完整下载核对大小和SHA512，畸形或不一致直接失败。可加`--verification full-download`强制完整回读，不支持跳过验证。结果中的`remoteVerification`记录逐件实际校验方法，不将服务器摘要校验标成完整下载通过。下载 GitHub 资产重定向时不向重定向主机转发发布 Token，且只接受 HTTPS GitHub 资产域。半套资产始终留在 draft，publish 不接受缺失/多余/重复资产。发布失败保留已有状态，先读取并人工核对，不盲目重跑。
 
 ## 保留与故障恢复
 

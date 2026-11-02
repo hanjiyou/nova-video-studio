@@ -1,4 +1,4 @@
-Windows定制版当前状态（2026-11-02）：本仓库已发布记录基线为未签名GitHub Test **3.6.10**；OpenChatCut已完成可运行的基础接入并有独立 **3.6.11-local.2** 本地预览包，与Nova进一步融合当前暂缓。参考图粘贴和草稿保存提示优化仍仅在源码，不在既有安装包内。详见[当前进度总表](docs/Nova-Studio落地任务清单.md)、[剪辑预览说明](docs/本地剪辑预览包使用说明.md)和[验收范围](docs/acceptance/workbench-61.md)。下方保留上游3.4.0功能说明，不代表本Windows分支已开放或验收全部功能。
+Windows定制版当前状态（2026-11-02发布后）：未签名GitHub Test **3.6.11**已发布，包含OpenChatCut基础入口、参考图粘贴及草稿保存提示优化；进一步融合仍暂缓，完整原版功能与安装升级未整体验收。独立local.1/local.2预览包保留。详见[交付记录](docs/implementation/3.6.11-交付记录.md)和[当前进度](docs/Nova-Studio落地任务清单.md)。下方保留上游3.4.0说明，不代表本分支全部功能已开放或验收。
 
 # Nova Studio
 

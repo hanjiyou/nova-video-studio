@@ -1,0 +1,47 @@
+{
+  "reviewId": "eb3e7400-d860-43df-b165-7e1527c13765",
+  "sourceCommit": "8fb3d436dbda35bbca600603ad19133763a8c8ff",
+  "releaseId": "431338593",
+  "version": "3.6.11",
+  "userAuthorizedMethod": "GitHub server SHA-256 + size + version/source checks; no full installer re-download",
+  "fullRemoteReadbackCompleted": false,
+  "assets": [
+    {
+      "id": 701402029,
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe",
+      "size": 557652254,
+      "state": "uploaded",
+      "updatedAt": "2026-11-02T10:50:30Z",
+      "serverDigest": "sha256:19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+      "localSha256": "19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+      "verificationMethod": "github-server-sha256-and-size",
+      "fullRemoteReadbackCompleted": false
+    },
+    {
+      "id": 701426568,
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe.blockmap",
+      "size": 566268,
+      "state": "uploaded",
+      "updatedAt": "2026-11-02T10:50:31Z",
+      "serverDigest": "sha256:bb3079b74e3d231a3a6cae3fb98bbfbb5225b7744100c37b0576727f4647731c",
+      "localSha256": "bb3079b74e3d231a3a6cae3fb98bbfbb5225b7744100c37b0576727f4647731c",
+      "verificationMethod": "github-server-sha256-and-size",
+      "fullRemoteReadbackCompleted": false
+    },
+    {
+      "id": 701426682,
+      "name": "nova-test.yml",
+      "size": 374,
+      "state": "uploaded",
+      "updatedAt": "2026-11-02T10:50:33Z",
+      "serverDigest": "sha256:3f2052f1217972b41b37fab4a7e660f120bcc9242d2cc88fcf5b220291197f14",
+      "localSha256": "3f2052f1217972b41b37fab4a7e660f120bcc9242d2cc88fcf5b220291197f14",
+      "verificationMethod": "github-server-sha256-and-size",
+      "fullRemoteReadbackCompleted": false
+    }
+  ],
+  "verifiedAt": "2026-11-02T11:15:46.364Z",
+  "published": true,
+  "publishedAt": "2026-11-02T11:15:48Z",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.11"
+}

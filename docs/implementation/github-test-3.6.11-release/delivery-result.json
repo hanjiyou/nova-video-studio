@@ -1,0 +1,15 @@
+{
+  "version": "3.6.11",
+  "commit": "8fb3d436dbda35bbca600603ad19133763a8c8ff",
+  "releaseId": "431338593",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.11",
+  "published": true,
+  "reviewId": "eb3e7400-d860-43df-b165-7e1527c13765",
+  "archive": "release-updates/github-test/3.6.11",
+  "archiveScope": "distribution assets and verification receipts; full build retained separately",
+  "installerBytes": 557652254,
+  "installerSha256": "19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+  "remoteVerificationMethod": "github-server-sha256-and-size",
+  "fullRemoteReadbackCompleted": false,
+  "userSelectedServerDigestVerification": true
+}

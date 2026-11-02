@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "profile": "github-test",
+  "version": "3.6.11",
+  "windowsVersion": "3.6.11.0",
+  "appId": "com.novaimage.studio.github-test",
+  "productName": "Nova Studio GitHub Test",
+  "tag": "v3.6.11",
+  "installer": "Nova-Studio-3.6.11-github-test-x64.exe",
+  "size": 557652254,
+  "sha512": "GkLF8/VKyrwFv72SHJoWGxsCRmrMwLbDJI1rg1D1Zj8TNOm0ckS2ckKHteP+uLHVMfbKBIUgep01CAyDw4kTRQ==",
+  "blockmap": {
+    "name": "Nova-Studio-3.6.11-github-test-x64.exe.blockmap",
+    "sha512": "6EjKnfkwpxi4591a0EhciLdJZGWJCyWhB0l9LqOrFLI1+RsKx8ak2ApFxqvGV3gIogYiWb4zj8ZtsiwzyolRZQ==",
+    "chunks": 26433,
+    "size": 557652254
+  },
+  "manifest": {
+    "name": "nova-test.yml",
+    "sha512": "RNUzk1DU4N2AqsiKJZkWvnlhMNb9jcGaAgu/O/kSi9pK1mnqCBWDnHEWG2lLCy/Y0nILv6aEbLRjm4e3Q2gHxQ=="
+  },
+  "feed": {
+    "provider": "github",
+    "owner": "hanjiyou",
+    "repo": "nova-video-studio",
+    "private": false,
+    "channel": "nova-test",
+    "releaseType": "release"
+  },
+  "signature": {
+    "mode": "unsigned-github-test",
+    "results": [
+      {
+        "status": "NotSigned",
+        "subject": "",
+        "fileVersion": "3.6.11.0",
+        "productVersion": "3.6.11"
+      },
+      {
+        "status": "NotSigned",
+        "subject": "",
+        "fileVersion": "3.6.11.0",
+        "productVersion": "3.6.11.0"
+      }
+    ]
+  },
+  "runtimeReady": true,
+  "source": {
+    "commit": "8fb3d436dbda35bbca600603ad19133763a8c8ff",
+    "clean": true
+  },
+  "publication": "not-published"
+}

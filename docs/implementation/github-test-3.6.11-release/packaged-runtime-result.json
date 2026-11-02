@@ -1,0 +1,66 @@
+{
+  "scope": "actual packaged executable, app.asar, isolated temporary profile and real original editor View",
+  "gpuDisabled": true,
+  "installed": false,
+  "paidServiceCalled": false,
+  "artifact": {
+    "bytes": 557652254,
+    "sha256": "19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+    "blockmap": {
+      "chunks": 26433,
+      "size": 557652254
+    }
+  },
+  "checks": [
+    "installer hash, sidecar, length and complete blockmap verified",
+    "actual packaged application and Nova preload ready under isolated profile",
+    "packaged Nova IPC starts shipped editor service without Git, Node or development sources",
+    "original six tabs, Agent, library, preview and timeline mounted without Nova authority",
+    "Nova and editor share the audited FFmpeg; the redundant copy is absent and the distinct Remotion binary is retained",
+    "original audio extraction API encodes synthetic audio using the shared binary with developer PATH removed",
+    "packaged application closes its original editor context"
+  ],
+  "identity": {
+    "packaged": true,
+    "name": "Nova Studio GitHub Test",
+    "archive": true,
+    "title": "Nova Studio - AI 视频/图像生成器",
+    "bridge": true
+  },
+  "nativeDom": {
+    "shell": true,
+    "agent": true,
+    "library": true,
+    "preview": true,
+    "timeline": true,
+    "tabs": [
+      "我的素材",
+      "序列",
+      "资源库",
+      "文字稿",
+      "字幕",
+      "技能"
+    ],
+    "novaBridge": "undefined",
+    "partialNativeBridge": "undefined"
+  },
+  "sharedFfmpeg": {
+    "sha256": "04e1307997530f9cf2fe35cba2ca7e8875ca91da02f89d6c7243df819c94ad00",
+    "bytes": 82797568,
+    "duplicateAbsent": true,
+    "generalPurposeCopies": 1
+  },
+  "remotionFfmpeg": {
+    "retained": true,
+    "sha256": "5d1aa3706022b2f1814993c7108ca689a0a2e6fe9af91ec15dbf0bc05d6d39e4",
+    "bytes": 325120
+  },
+  "syntheticAudio": {
+    "ok": true,
+    "bytes": 9225,
+    "cached": false,
+    "format": "ogg"
+  },
+  "exitCode": 0,
+  "ok": true
+}

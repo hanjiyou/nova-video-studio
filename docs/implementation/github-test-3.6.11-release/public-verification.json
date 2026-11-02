@@ -1,0 +1,37 @@
+{
+  "published": true,
+  "releaseId": "431338593",
+  "tag": "v3.6.11",
+  "sourceCommit": "8fb3d436dbda35bbca600603ad19133763a8c8ff",
+  "publishedAt": "2026-11-02T11:15:48Z",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.11",
+  "assets": [
+    {
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe",
+      "bytes": 557652254,
+      "sha256": "19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+      "githubDigest": "sha256:19d7904217660c9de4522ee860ca1ee41226950808a8f8c00fc32010c5f93cb5",
+      "state": "uploaded"
+    },
+    {
+      "name": "Nova-Studio-3.6.11-github-test-x64.exe.blockmap",
+      "bytes": 566268,
+      "sha256": "bb3079b74e3d231a3a6cae3fb98bbfbb5225b7744100c37b0576727f4647731c",
+      "githubDigest": "sha256:bb3079b74e3d231a3a6cae3fb98bbfbb5225b7744100c37b0576727f4647731c",
+      "state": "uploaded"
+    },
+    {
+      "name": "nova-test.yml",
+      "bytes": 374,
+      "sha256": "3f2052f1217972b41b37fab4a7e660f120bcc9242d2cc88fcf5b220291197f14",
+      "githubDigest": "sha256:3f2052f1217972b41b37fab4a7e660f120bcc9242d2cc88fcf5b220291197f14",
+      "state": "uploaded"
+    }
+  ],
+  "latestFeedVersion": "3.6.11",
+  "publicFeedBytesMatch": true,
+  "remoteVerificationMethod": "github-server-sha256-and-size, plus source/tag/version checks; explicitly selected by the user",
+  "fullRemoteByteVerificationCompleted": false,
+  "largeAssetDownloadedAgain": false,
+  "credentialsPrinted": false
+}

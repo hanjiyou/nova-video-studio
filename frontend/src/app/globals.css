@@ -1066,3 +1066,11 @@ body:has(.nova-workbench) { overflow-x:clip; }
 
 .wb-library-date>button { max-width:100%; }
 .wb-library-date>button span { min-width:0; overflow:hidden; text-overflow:ellipsis; }
+
+/* Original OpenChatCut is rendered by the host-owned native View in this region. */
+.wb-main.wb-main-editor { padding:0; height:100vh; min-width:0; display:flex; flex-direction:column; overflow:hidden; }
+.wb-main-editor > .wb-notice, .wb-main-editor > .wb-update-notice { flex-shrink:0; margin:8px; }
+.wb-editor-workspace { position:relative; flex:1; min-height:300px; min-width:0; overflow:hidden; background:#101010; }
+.wb-editor-status { min-height:300px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:32px; text-align:center; }
+.wb-editor-status h2 { margin:0; font-size:22px; }
+.wb-editor-status p { max-width:480px; margin:0; color:var(--wb-muted); line-height:1.7; }

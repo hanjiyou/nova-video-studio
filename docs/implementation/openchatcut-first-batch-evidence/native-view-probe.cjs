@@ -1,0 +1,101 @@
+'use strict';
+const fs = require('node:fs');
+const path = require('node:path');
+const assert = require('node:assert/strict');
+const electron = require('electron');
+const { app, BrowserWindow } = electron;
+const repo = path.resolve(__dirname, '../../..');
+const runRoot = fs.mkdtempSync(path.join(require('node:os').tmpdir(), 'occ-view-'));
+fs.mkdirSync(runRoot, { recursive: true });
+app.setPath('userData', path.join(runRoot, 'electron-userdata'));
+app.commandLine.appendSwitch('disable-gpu');
+app.commandLine.appendSwitch('disable-renderer-backgrounding');
+const { createEditorHost } = require(path.join(repo, 'desktop/openchatcut/host.cjs'));
+let host, window, stage = 'startup';
+const report = { scope: 'real Electron WebContentsView + original OpenChatCut production build', cloudCalls: false, gpuDisabled: true, checks: [] };
+const resultFile = path.join(runRoot, 'result.json');
+report.console = [];
+app.on('web-contents-created', (_event, contents) => { contents.on('console-message', (...args) => { const message = typeof args[0]?.message === 'string' ? args[0].message : args[2]; if (typeof message === 'string' && report.console.length < 16) report.console.push(message.slice(0, 350)); }); });
+function check(name) { report.checks.push(name); }
+function save() { fs.writeFileSync(resultFile, JSON.stringify(report, null, 2)); }
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+const deadline = setTimeout(() => { report.ok = false; report.failedStage = stage; report.code = 'PROBE_TIMEOUT'; save(); app.exit(1); }, 90000);
+app.whenReady().then(async () => {
+  window = new BrowserWindow({ width: 1440, height: 1000, show: false, webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true } });
+  await window.loadURL('data:text/html,<html><body>Nova editor host verification</body></html>');
+  host = createEditorHost({ electron, getWindow: () => window, dataDirectory: path.join(runRoot, 'openchatcut'), repositoryRoot: repo, startTimeoutMs: 45000, sendState: state => { report.lastPhase = state.phase; } });
+  stage = 'native-service-open';
+  host.viewport({ visible: true, x: 202, y: 0, width: 1238, height: 960 });
+  const opened = await host.open();
+  report.openCode = opened.code;
+  assert.equal(opened.ok, true);
+  assert.equal(opened.state.phase, 'ready');
+  check('original service started through real Electron Node runtime');
+  let view = window.contentView.children.find(item => item.webContents);
+  assert.ok(view);
+  const firstProjectUrl = view.webContents.getURL();
+  assert.match(firstProjectUrl, /\/#\/editor\/[a-f0-9-]{36}$/i);
+  check('direct original editor route, not project gallery');
+  stage = 'native-react-dom';
+  const waitUntil = Date.now() + 45000;
+  let dom;
+  while (Date.now() < waitUntil) {
+    dom = await view.webContents.executeJavaScript('({shell:!!document.querySelector(".cc-editor-shell"),library:!!document.querySelector(".cc-library-panel"),agent:!!document.querySelector(".cc-chat-panel"),timeline:!!document.querySelector(".cc-timeline"),preview:!!document.querySelector(".cc-preview-stage"),tabs:[...document.querySelectorAll(".cc-main-tab")].map(x=>x.textContent),novaBridge:typeof window.novaDesktop,partialNativeBridge:typeof window.openChatCutDesktop})');
+    if (dom.shell && dom.library && dom.agent && dom.timeline && dom.preview) break;
+    await sleep(300);
+  }
+  report.dom = dom;
+  report.page = await view.webContents.executeJavaScript('({title:document.title,text:document.body.innerText.slice(0,1200),scripts:[...document.scripts].map(s=>new URL(s.src||location.href).pathname)})');
+  assert.ok(dom.shell && dom.library && dom.agent && dom.timeline && dom.preview);
+  assert.equal(dom.tabs.length, 6);
+  assert.equal(dom.novaBridge, 'undefined');
+  assert.equal(dom.partialNativeBridge, 'undefined');
+  check('original Agent/media/preview/timeline React DOM and six native tabs loaded');
+  check('no Nova preload or incomplete OpenChatCut desktop bridge in editor');
+  stage = 'view-lifecycle';
+  host.hide();
+  assert.equal(view.getVisible(), false);
+  await host.open();
+  host.viewport({ visible: true, x: 202, y: 0, width: 1238, height: 960 });
+  assert.equal(view.getVisible(), true);
+  assert.equal(view.webContents.getURL(), firstProjectUrl);
+  window.webContents.setZoomFactor(1.25);
+  host.viewport({ visible: true, x: 202, y: 0, width: 1238, height: 960 });
+  const zoomBounds = view.getBounds();
+  report.zoomBounds = zoomBounds;
+  assert.ok(zoomBounds.x >= 253);
+  assert.ok(zoomBounds.x + zoomBounds.width <= window.getContentBounds().width);
+  check('hide/reopen preserves editor, viewport respects Nova sidebar at 125% zoom');
+  stage = 'original-project-restart';
+  await sleep(1000);
+  assert.equal(await host.requestClose(), true);
+  assert.equal(host.state().state.phase, 'idle');
+  const reopened = await host.open();
+  assert.equal(reopened.ok, true);
+  view = window.contentView.children.find(item => item.webContents);
+  assert.equal(view.webContents.getURL(), firstProjectUrl);
+  check('service shutdown/reopen restores same isolated native project');
+  report.ok = true;
+  stage = 'cleanup';
+  await host.dispose();
+  host = null;
+  window.destroy();
+  save();
+  clearTimeout(deadline);
+  process.stdout.write(JSON.stringify({ ok: true, checks: report.checks.length, resultFile }) + '\n');
+  app.exit(0);
+}).catch(async error => {
+  report.ok = false;
+  report.failedStage = stage;
+  report.code = /^[A-Z][A-Z0-9_]{1,80}$/.test(String(error.code || '')) ? error.code : 'PROBE_ASSERTION_FAILED';
+  report.assertion = error.operator;
+  report.errorName = error.name;
+  report.message = String(error.message).slice(0, 250);
+  report.stackLocation = String(error.stack).split("\n").slice(1, 4);
+  save();
+  try { await host?.dispose(); } catch {}
+  try { window?.destroy(); } catch {}
+  clearTimeout(deadline);
+  process.stdout.write(JSON.stringify({ ok: false, stage, code: report.code, resultFile }) + '\n');
+  app.exit(1);
+});

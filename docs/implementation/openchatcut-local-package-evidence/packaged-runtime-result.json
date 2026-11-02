@@ -1,0 +1,47 @@
+{
+  "scope": "actual packaged executable, app.asar, isolated temporary profile and real original editor View",
+  "gpuDisabled": true,
+  "installed": false,
+  "paidServiceCalled": false,
+  "artifact": {
+    "bytes": 579343802,
+    "sha256": "c9f8a0a0f00057673117bfbc55870e2103085f5d0f5b6fd1e065dc3939f226f5",
+    "blockmap": {
+      "chunks": 27450,
+      "size": 579343802
+    }
+  },
+  "checks": [
+    "installer hash, sidecar, length and complete blockmap verified",
+    "actual packaged application and Nova preload ready under isolated profile",
+    "packaged Nova IPC starts shipped editor service without Git, Node or development sources",
+    "original six tabs, Agent, library, preview and timeline mounted without Nova authority",
+    "packaged application closes its original editor context"
+  ],
+  "identity": {
+    "packaged": true,
+    "name": "Nova Studio Editor Preview",
+    "archive": true,
+    "title": "Nova Studio - AI 视频/图像生成器",
+    "bridge": true
+  },
+  "nativeDom": {
+    "shell": true,
+    "agent": true,
+    "library": true,
+    "preview": true,
+    "timeline": true,
+    "tabs": [
+      "我的素材",
+      "序列",
+      "资源库",
+      "文字稿",
+      "字幕",
+      "技能"
+    ],
+    "novaBridge": "undefined",
+    "partialNativeBridge": "undefined"
+  },
+  "exitCode": 0,
+  "ok": true
+}

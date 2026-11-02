@@ -3,6 +3,11 @@ export {};
 declare global {
   interface Window {
     novaDesktop?: {
+      getEditorState?: () => Promise<import('@/lib/openchatcut-client').EditorResult>;
+      openEditor?: () => Promise<import('@/lib/openchatcut-client').EditorResult>;
+      setEditorViewport?: (viewport: import('@/lib/openchatcut-client').EditorViewport) => Promise<{ok: boolean; code?: string}>;
+      hideEditor?: () => Promise<{ok: boolean; code?: string}>;
+      onEditorState?: (listener: (state: import('@/lib/openchatcut-client').EditorState) => void) => () => void;
       versions: Readonly<Record<string, string>>;
       features: Readonly<{ agent: boolean; browserAutomation: boolean; serviceWorker: false }>;
       saveConnection: (input: SaveConnectionInput) => Promise<ConnectionResult>;

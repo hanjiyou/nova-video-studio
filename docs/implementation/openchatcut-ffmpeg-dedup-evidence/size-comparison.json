@@ -1,0 +1,17 @@
+{
+  "beforeInstallerBytes": 579343802,
+  "afterInstallerBytes": 557641548,
+  "savedInstallerBytes": 21702254,
+  "beforeMiB": 552.5,
+  "afterMiB": 531.8,
+  "savedMiB": 20.7,
+  "removedUnpackedFfmpegBytes": 82797568,
+  "removedUnpackedMiB": 79,
+  "onlyRemovedEditorFile": "node_modules/ffmpeg-static/ffmpeg.exe",
+  "otherEditorFileNamesAndSizesUnchangedExceptManifest": true,
+  "productionPackages": 564,
+  "remainingGeneralPurposeFfmpegCopies": 1,
+  "totalFfmpegExeFilesBefore": 3,
+  "totalFfmpegExeFilesAfter": 2,
+  "distinctRemotionFfmpegRetained": true
+}

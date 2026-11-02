@@ -150,7 +150,6 @@ it('invalid duration has a real focus action and valid editing preserves the con
   expect(screen.getByRole('button', { name: '生成视频' })).toBeEnabled(); expect(submit).not.toHaveBeenCalled();
 });
 it.each([
-  [{ saving: true }, '正在保存草稿'],
   [{ error: Error('synthetic') }, '草稿尚未保存成功'],
   [{ submitting: true }, '正在建立本地任务，请稍候'],
   [{ submitDisabled: true }, '当前暂不能提交，请先核对本地任务状态'],

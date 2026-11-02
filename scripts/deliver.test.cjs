@@ -64,3 +64,31 @@ test('delivery accepts explicit release network configuration and rejects confli
  assert.throws(()=>options(['run','--proxy','http://localhost','--direct']),/Choose/);
  assert.throws(()=>options(['run','--transfer-timeout','0']),/timeouts/);
 });
+
+test('local package action previews without Git, build, directories or remote access', async t => {
+ const {localBuild}=require('./deliver.cjs');
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'nova-local-plan-'));
+ t.after(()=>fs.rmSync(root,{recursive:true,force:true}));
+ const plan=await localBuild(root,options(['local','--version','3.6.11-local.2']),{command(){throw Error('execution forbidden');}});
+ assert.equal(plan.publication,'never');assert.equal(plan.windowsVersion,'3.6.11.2');assert.deepEqual(fs.readdirSync(root),[]);
+});
+
+test('local package argument parsing is independent of release proxy settings', () => {
+ const previous=process.env.NOVA_RELEASE_PROXY;
+ try { process.env.NOVA_RELEASE_PROXY='invalid-release-proxy';assert.equal(options(['local','--version','3.6.11-local.2']).action,'local'); }
+ finally { if(previous===undefined)delete process.env.NOVA_RELEASE_PROXY;else process.env.NOVA_RELEASE_PROXY=previous; }
+});
+
+test('local package execution uses only local builder and packaged probe, preserves index, refuses overwrite and publication flags', async t => {
+ const {localBuild}=require('./deliver.cjs');const root=fixture(t);
+ fs.writeFileSync(path.join(root,'staged.txt'),'keep');git(root,['add','staged.txt']);
+ const head=git(root,['rev-parse','HEAD']),index=git(root,['diff','--cached','--name-only']);const calls=[];
+ const deps={command(cwd,exe,args){assert.equal(cwd,root);assert.equal(exe,process.execPath);calls.push(args)}};
+ const plan=await localBuild(root,options(['local','--version','3.6.11-local.2','--execute']),deps);
+ assert.deepEqual(calls,[[path.join(root,'scripts/build-openchatcut-preview.cjs'),'--version','3.6.11-local.2'],[path.join(root,'scripts/verify-openchatcut-preview.cjs'),plan.output]]);
+ assert.equal(git(root,['rev-parse','HEAD']),head);assert.equal(git(root,['diff','--cached','--name-only']),index);
+ fs.mkdirSync(plan.output,{recursive:true});await assert.rejects(localBuild(root,{version:plan.version,execute:true},deps),/已存在/);assert.equal(calls.length,2);
+ await assert.rejects(localBuild(root,{version:plan.version,notesFile:'release.txt'},deps),/不接收/);
+ await assert.rejects(localBuild(root,{version:plan.version,mode:'publish'},deps),/不接收/);
+ await assert.rejects(localBuild(root,{version:'3.6.11'},deps),/本地预览版本/);
+});

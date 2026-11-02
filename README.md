@@ -1,4 +1,4 @@
-Local customization status (2026-10-24): **local offline test build; real generation is not yet verified**. See the [Chinese user guide](docs/本地离线测试版使用说明.md) and [T16 evidence report](docs/implementation/T16-本地离线安装交付准备.md). T15 is paused; this installer is not for public distribution.
+Current Windows fork status (2026-11-02): the recorded published baseline is unsigned GitHub Test **3.6.10**. OpenChatCut has a runnable base integration in a separate **3.6.11-local.2** preview; deeper Nova integration is deferred. Reference-image paste and quieter draft-save feedback are source-only changes, absent from existing packages. See the [current progress ledger](docs/Nova-Studio落地任务清单.md), [editor preview guide](docs/本地剪辑预览包使用说明.md), and [acceptance scope](docs/acceptance/workbench-61.md). The remaining README describes the upstream 3.4.0 feature set, not the current Windows fork release or complete acceptance.
 
 # Nova Studio
 
@@ -30,7 +30,7 @@ Nova Studio is an AI video/image generation workbench for individuals and small 
 - Text models support Google (`generateContent`) and OpenAI (Responses protocol)
 - **Video generation is fully plugin-based**: the host ships no upstream video protocol at all — capability comes from plugin packs
 
-> Current version: **v3.4.0**
+> Upstream reference version: **v3.4.0**. Windows fork progress and package versions are tracked in the ledger linked above.
 
 ## 📚 Documentation
 

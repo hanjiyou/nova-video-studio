@@ -1,0 +1,29 @@
+{
+  "status": "design-preview-not-implemented",
+  "direction": "优先还原 OpenChatCut 原版，仅做必要的 Nova 接入。",
+  "upstreamCommit": "7fa4b7903e7ebecf832a36249f0c0c755200cc17",
+  "supersedes": "../openchatcut-integration-20261031-v1",
+  "preserve": [
+    "原版石墨黑与橙色主题",
+    "左侧 Agent、中间资源、右侧预览与其下方属性、下方时间线",
+    "我的素材、序列、资源库、文字稿、字幕、技能",
+    "资源库原版子页签",
+    "原版导出弹窗与输出类型"
+  ],
+  "integration": [
+    "Nova 左侧视频剪辑入口",
+    "Nova 作品库素材交接",
+    "工程与剧本关联",
+    "导出成片回到 Nova 作品库"
+  ],
+  "excluded": [
+    "自定义九页签导航",
+    "重做文字、调色或智能工具独立面板",
+    "将工程管理卡片作为剪辑主界面"
+  ],
+  "images": [
+    "01-native-editor.png",
+    "02-native-resource-library.png",
+    "03-native-export-return.png"
+  ]
+}

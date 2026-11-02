@@ -12,7 +12,9 @@ function git(root, args, env = {}) {
   return execFileSync('git', ['-c', 'safe.directory=' + root.replace(/\\/g, '/'), ...args], { cwd: root, encoding: 'utf8', windowsHide: true, env: { ...process.env, ...env, GIT_LITERAL_PATHSPECS: '1' }, stdio: ['ignore', 'pipe', 'pipe'] }).trimEnd();
 }
 function command(root, executable, args) {
-  const result = spawnSync(executable, args, { cwd: root, stdio: 'inherit', windowsHide: true, shell: false });
+  const env = { ...process.env };
+  for (const name of ['NOVA_RELEASE_TOKEN', 'GH_TOKEN', 'GITHUB_TOKEN']) delete env[name];
+  const result = spawnSync(executable, args, { cwd: root, env, stdio: 'inherit', windowsHide: true, shell: false });
   need(!result.error && result.status === 0, '步骤执行失败，已保留进度。');
 }
 function prepareElectron(root, execute = command) {
@@ -34,6 +36,7 @@ function localPath(root, name) {
 function fingerprint(root, name) {
   const file = localPath(root, name);
   if (!fs.existsSync(file)) return null;
+  if (fs.statSync(file).isDirectory()) return require('./openchatcut-delivery.cjs').fingerprintSubmodule(root, name);
   need(fs.statSync(file).isFile(), '必须逐个列出文件：' + name);
   return digest(fs.readFileSync(file));
 }
@@ -66,15 +69,30 @@ async function sequence(state, mode, operations, save) {
 }
 function options(argv) {
   const out = { action: argv[0] || 'menu', mode: 'push', profile: 'github-test' };
-  need(['menu', 'review', 'run', 'status'].includes(out.action), '用法：deliver [menu|review|run|status]');
+  need(['menu', 'review', 'run', 'status', 'local'].includes(out.action), '用法：deliver [menu|review|run|status|local]');
   for (let i = 1; i < argv.length; i++) {
     if (argv[i] === '--direct') { need(!out.direct, '重复参数'); out.direct = true; continue; }
     if (argv[i] === '--execute') { need(!out.execute, '重复参数'); out.execute = true; continue; }
     const key = ({ '--proxy': 'proxy', '--transfer-timeout': 'transferTimeout', '--idle-timeout': 'idleTimeout', '--review': 'review', '--files': 'files', '--reviewer': 'reviewer', '--evidence': 'evidence', '--mode': 'mode', '--profile': 'profile', '--version': 'version', '--message': 'message', '--notes-file': 'notesFile' })[argv[i]];
     need(key && argv[i + 1] && !argv[i + 1].startsWith('--'), '未知或缺少参数：' + argv[i]); out[key] = argv[++i];
   }
-  require('./lib/release-network.cjs').configuration(out);
+  if (out.action !== 'local') require('./lib/release-network.cjs').configuration(out);
   return out;
+}
+async function localBuild(root, opts, deps = {}) {
+  need(opts.version, '请指定本地预览版本，例如 --version 3.6.11-local.2。');
+  need(!opts.review && !opts.files && !opts.message && !opts.notesFile && !opts.proxy && !opts.direct && !opts.transferTimeout && !opts.idleTimeout && (!opts.mode || opts.mode === 'push') && (!opts.profile || opts.profile === 'github-test'), '仅本地打包不接收审核、提交、发布或网络参数。');
+  const { localPreviewPlan } = require('./build-openchatcut-preview.cjs');
+  const plan = localPreviewPlan(opts.version, root);
+  const occupied = fs.existsSync(plan.output);
+  console.log(JSON.stringify({ ...plan, outputExists: occupied, execution: opts.execute === true }, null, 2));
+  if (!opts.execute) return plan;
+  need(!occupied, '该本地版本目录已存在，请选择新的 -local.N 版本；不会覆盖旧包。');
+  const execute = deps.command || command;
+  execute(root, process.execPath, [path.join(root, 'scripts/build-openchatcut-preview.cjs'), '--version', plan.version]);
+  execute(root, process.execPath, [path.join(root, 'scripts/verify-openchatcut-preview.cjs'), plan.output]);
+  console.log('本地预览包与启动验证完成：' + path.join(plan.output, plan.installer));
+  return plan;
 }
 function deliveryDirectory(root) { return path.join(git(root, ['rev-parse', '--absolute-git-dir']), 'nova-delivery'); }
 function remoteTip(root, ref) {
@@ -165,12 +183,14 @@ async function run(root, opts, deps = {}) {
         if (!fs.existsSync(output)) {
           for (const directory of ['', 'frontend', 'backend']) command(path.join(state.checkout, directory), process.execPath, [npmCli, 'ci', '--no-audit', '--no-fund']);
           prepareElectron(state.checkout);
+          if (fs.existsSync(path.join(state.checkout, 'config/openchatcut-runtime.json'))) require('./openchatcut-delivery.cjs').prepareSource(state.checkout, git, command, npmCli);
           command(state.checkout, process.execPath, ['scripts/build-windows-update.cjs', '--profile', profile, '--version', version, '--require-clean-source']);
         }
         return { output };
       },
       verify: async () => {
         command(state.checkout, process.execPath, ['scripts/verify-windows-update.cjs', state.output]);
+        if (fs.existsSync(path.join(state.checkout, 'config/openchatcut-runtime.json'))) command(state.checkout, process.execPath, ['scripts/verify-openchatcut-preview.cjs', state.output]);
         const record = JSON.parse(fs.readFileSync(path.join(state.output, 'update-plan.json'), 'utf8'));
         need(record.source?.commit === state.commit && record.source.clean === true && record.profile === profile && record.version === version, '安装包与本轮提交或版本不一致。');
       },
@@ -200,8 +220,13 @@ async function run(root, opts, deps = {}) {
 async function menu(root) {
   const rl = require('node:readline/promises').createInterface({ input: process.stdin, output: process.stdout });
   try {
-    console.log('Nova 统一交付\n1. 仅提交推送\n2. 提交推送并打包\n3. 完整发布\n4. 记录已完成的审核');
+    console.log('Nova 统一交付\n1. 仅提交推送\n2. 提交推送并打包\n3. 完整发布\n4. 记录已完成的审核\n5. 仅本地打包（剪辑预览，不提交/推送/发布）');
     const choice = (await rl.question('请选择：')).trim();
+    if (choice === '5') {
+      const version = (await rl.question('本地预览版本（例如 3.6.11-local.2）：')).trim();
+      await localBuild(root, { version, execute: true });
+      return;
+    }
     if (choice === '4') {
       const files = JSON.parse(fs.readFileSync((await rl.question('文件清单 JSON 路径：')).trim(), 'utf8'));
       const reviewer = await rl.question('审核人：'), evidence = await rl.question('已通过的检查及记录位置：');
@@ -220,6 +245,7 @@ async function menu(root) {
 }
 async function main(root, opts) {
   if (opts.action === 'menu') return menu(root);
+  if (opts.action === 'local') return localBuild(root, opts);
   if (opts.action === 'review') {
     need(opts.files, '请指定 --files JSON文件清单。');
     const review = recordReview(root, JSON.parse(fs.readFileSync(opts.files, 'utf8')), opts.reviewer, opts.evidence);
@@ -229,4 +255,4 @@ async function main(root, opts) {
   return run(root, opts);
 }
 if (require.main === module) main(REPO, options(process.argv.slice(2))).catch(error => { console.error(error.status !== undefined ? 'Git操作失败，请检查分支、身份与认证。' : error.message); console.error('交付未完成。请查看上方步骤输出及 deliver status；进度和构建目录已保留。不会自动回滚或重复生成版本。'); process.exitCode = 1; });
-module.exports = { prepareElectron, recordReview, validateReview, fingerprint, localPath, stages, sequence, options, git, run, main };
+module.exports = { prepareElectron, recordReview, validateReview, fingerprint, localPath, stages, sequence, options, git, run, main, localBuild };

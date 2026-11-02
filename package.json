@@ -28,7 +28,12 @@
     "test:update:build": "node --test scripts/windows-update.test.cjs",
     "test:update:release": "node --test scripts/windows-release.test.cjs scripts/release-network.test.cjs",
     "deliver": "node scripts/deliver.cjs",
-    "test:delivery": "node --test scripts/deliver.test.cjs"
+    "test:delivery": "node --test scripts/deliver.test.cjs",
+    "editor:check": "node scripts/openchatcut-runtime.cjs",
+    "editor:build": "node scripts/build-openchatcut.cjs",
+    "test:editor:runtime": "node --test scripts/openchatcut-runtime.test.cjs",
+    "editor:smoke": "node scripts/openchatcut-smoke.cjs",
+    "editor:pack:local": "node scripts/build-openchatcut-preview.cjs"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

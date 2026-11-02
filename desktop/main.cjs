@@ -1,5 +1,8 @@
 'use strict';
-const { app, BrowserWindow, Menu, dialog, shell, ipcMain, session, safeStorage, net: electronNet } = require('electron');
+const electron = require('electron');
+const { app, BrowserWindow, Menu, dialog, shell, ipcMain, session, safeStorage, net: electronNet } = electron;
+const { createEditorHost } = require('./openchatcut/host.cjs');
+const { createEditorCloseGuard } = require('./openchatcut/lifecycle.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const { randomBytes } = require('node:crypto');
@@ -38,6 +41,8 @@ let allowQuit = false;
 let exitCode = 0;
 let updateDiagnostics;
 let updates, installerLaunch, updateFailureVisible = false;
+let editor;
+const editorCloseGuard = createEditorCloseGuard({ getEditor: () => editor, getWindow: () => mainWindow, dialog });
 
 async function reportUpdateFailure() {
   if (updateFailureVisible) return;
@@ -57,12 +62,13 @@ function prepareBackendEnv(port) {
   process.env.NOVA_CDP_DIR = path.join(dataPolicy.directory, 'cdp-products');
   process.env.NOVA_PLUGIN_MEDIA_DIR = path.join(dataPolicy.directory, 'plugin-media');
   process.env.NOVA_STORAGE_DIR = path.join(dataPolicy.directory, 'storage');
-  // The first-release desktop product exposes four workspaces only.
+  // OpenChatCut has its own isolated Agent; the legacy Nova Agent/CDP stay disabled.
   process.env.NOVA_CDP_ENABLED = 'false';
   process.env.NOVA_CDP_LAUNCH_ENABLED = 'false';
   process.env.NOVA_AGENT_ENABLED = 'false';
 }
 async function cleanup() {
+  await editor?.dispose();
   revokeDesktopSession();
   network?.abortPending();
   await backend?.shutdown({ drain: false, timeoutMs: 2000 });
@@ -82,7 +88,10 @@ function createWindow(origin, features) {
     if (choice === 0) event.preventDefault();
   });
   mainWindow.on('closed', () => { mainWindow = null; });
-  mainWindow.on('close', event => { if (updates?.preparing && !allowQuit) event.preventDefault(); });
+  mainWindow.on('close', event => {
+    if (updates?.preparing && !allowQuit) { event.preventDefault(); return; }
+    if (!allowQuit) editorCloseGuard.interceptWindowClose(event);
+  });
   mainWindow.webContents.once('did-finish-load',()=>updateDiagnostics?.record('window_loaded'));
   mainWindow.webContents.on('did-fail-load',(_event,_code,_description,_url,isMainFrame)=>{if(isMainFrame)updateDiagnostics?.record('window_failed');});
   void mainWindow.loadURL(origin + '/').catch(error=>updateDiagnostics?.error('window_failed',error));
@@ -100,7 +109,12 @@ async function start() {
   // Keep IndexedDB/localStorage intact. Desktop has no reason to grant session authority to PWA workers.
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
-  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, getUpdateService: () => updates, getUpdateGate: () => backend?.updateGate, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features, updateDiagnostics: updateDiagnostics?.snapshot() }) });
+  editor = createEditorHost({ electron, getWindow: () => mainWindow,
+    dataDirectory: path.join(dataPolicy.directory, 'openchatcut'), repositoryRoot: path.resolve(__dirname, '..'),
+    resourcesPath: process.resourcesPath, packaged: app.isPackaged,
+    sendState(state) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send('nova:editor-state-changed', state); },
+  });
+  ipc = registerDesktopIpc({ ipcMain, dialog, shell, getWindow: () => mainWindow, policy, getAssetService: () => backend?.storage, getConnectionService: () => backend?.connections, getUpdateService: () => updates, getUpdateGate: () => backend?.updateGate, getEditorHost: () => editor, runtimeInfo: () => ({ version: app.getVersion(), storageMode: dataPolicy.mode, features, updateDiagnostics: updateDiagnostics?.snapshot() }) });
   configureConnectionHost(db => createCredentialVault({ db, safeStorage }));
   backend = require('../backend/server');
   await backend.ready; updateDiagnostics?.record('backend_ready');
@@ -113,7 +127,7 @@ async function start() {
     },
     createUpdater() { const updater = new (require('electron-updater').NsisUpdater)(); installerLaunch = attachInstallerLaunchProof(updater, undefined, updateDiagnostics); return updater; },
     send(channel, value) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send(channel, value); },
-    prepareBackend: () => backend.prepareForUpdate(), releaseBackend: () => backend.releaseUpdate(), closeBackend: () => backend.shutdownForUpdate(), onClosedFailure: () => { void reportUpdateFailure(); },
+    prepareBackend: () => { editor?.prepareForUpdate(); return backend.prepareForUpdate(); }, releaseBackend: () => backend.releaseUpdate(), closeBackend: async () => { await editor?.dispose(); return backend.shutdownForUpdate(); }, onClosedFailure: () => { void reportUpdateFailure(); },
   });
   const response = await fetch(origin + '/api/nova/config', { headers: { [SESSION_HEADER]: token }, signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error('Desktop backend authorization failed');
@@ -129,7 +143,7 @@ if (initializationFailure) {
 } else if (!primary) app.exit(0);
 else {
   const updateQuit = createUpdateQuitHandler({ getUpdates: () => updates, getLaunchProof: () => installerLaunch,
-    closeHost() { stopping = true; revokeDesktopSession(); network?.abortPending(); ipc?.dispose(); detachSession?.(); network?.dispose(); },
+    closeHost() { stopping = true; void editor?.dispose(); revokeDesktopSession(); network?.abortPending(); ipc?.dispose(); detachSession?.(); network?.dispose(); },
     quit() { updateDiagnostics?.record('parent_quit_requested'); allowQuit = true; app.quit(); }, onFailure() { void reportUpdateFailure(); },
   });
   // Desktop DevTools remains an explicit loopback-only test/debug switch.
@@ -147,8 +161,12 @@ else {
     event.preventDefault();
     if (stopping) return;
     stopping = true;
-    updates?.dispose();
-    void cleanup().catch(() => { exitCode = 1; console.error('Desktop resource cleanup failed'); }).finally(() => { allowQuit = true; app.exit(exitCode); });
+    void (async () => {
+      if (!await editorCloseGuard.requestClose()) { stopping = false; return; }
+      updates?.dispose();
+      try { await cleanup(); } catch { exitCode = 1; console.error('Desktop resource cleanup failed'); }
+      allowQuit = true; app.exit(exitCode);
+    })().catch(() => { stopping = false; });
   });
   app.whenReady().then(() => { if(initializationFailure) throw initializationFailure; return start(); }).catch(error => { updateDiagnostics?.error('startup_failed',error); exitCode = 1; reportStartupFailure({dialog,error}); app.quit(); });
 }

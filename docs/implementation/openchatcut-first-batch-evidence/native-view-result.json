@@ -1,0 +1,49 @@
+{
+  "date": "2026-11-01",
+  "engineCommit": "7fa4b7903e7ebecf832a36249f0c0c755200cc17",
+  "scope": "隐藏Electron窗口、真实WebContentsView、原版生产构建、独立临时资料",
+  "passed": true,
+  "checks": [
+    "original service started through real Electron Node runtime",
+    "direct original editor route, not project gallery",
+    "original Agent/media/preview/timeline React DOM and six native tabs loaded",
+    "no Nova preload or incomplete OpenChatCut desktop bridge in editor",
+    "hide/reopen preserves editor, viewport respects Nova sidebar at 125% zoom",
+    "service shutdown/reopen restores same isolated native project"
+  ],
+  "nativeDom": {
+    "shell": true,
+    "library": true,
+    "agent": true,
+    "timeline": true,
+    "preview": true,
+    "tabs": [
+      "我的素材",
+      "序列",
+      "资源库",
+      "文字稿",
+      "字幕",
+      "技能"
+    ],
+    "novaBridge": "undefined",
+    "partialNativeBridge": "undefined"
+  },
+  "zoomBounds": {
+    "x": 253,
+    "y": 0,
+    "width": 1173,
+    "height": 937
+  },
+  "nativeProbeGpuDisabled": true,
+  "novaInstalledUiValidated": false,
+  "paidServiceCalled": false,
+  "realMediaImportOrRenderValidated": false,
+  "limitations": [
+    "本探针不是完整Nova安装态交互验收",
+    "未验收真实素材导入、媒体渲染、本地模型或付费服务",
+    "原版CSP相关开发警告仍需后续分发审视"
+  ],
+  "archivedRunnerVerified": true,
+  "electronExit": 0,
+  "stableOriginAfterReopenVerified": true
+}

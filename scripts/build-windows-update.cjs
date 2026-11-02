@@ -54,7 +54,9 @@ async function runBuild(options, dependencies = {}) {
     const log = path.join(attempt, 'build.log');
     fs.writeFileSync(log, 'Source: current workspace, including uncommitted changes. Build only; publish never.\n', { flag: 'wx' });
     const config = path.join(attempt, 'builder-config.json');
-    fs.writeFileSync(config, JSON.stringify(builderConfiguration(plan, attempt), null, 2), { flag: 'wx' });
+    const editorIncluded = plan.profile !== 'local-test';
+    const builder = editorIncluded ? require('./openchatcut-delivery.cjs').preparePackage(REPOSITORY, attempt, builderConfiguration(plan, attempt)) : builderConfiguration(plan, attempt);
+    fs.writeFileSync(config, JSON.stringify(builder, null, 2), { flag: 'wx' });
     fs.writeFileSync(path.join(attempt, 'update-plan.json'), JSON.stringify({ profile: plan.profile, version: plan.version, testFeedUrl: options.testFeedUrl || null, metadata: plan.metadata, ...(plan.source ? { source: plan.source } : {}) }, null, 2), { flag: 'wx' });
     const execute = dependencies.execute || ((args, label) => new Promise((resolve, reject) => {
       fs.appendFileSync(log, `\n--- ${label} ---\n`);
@@ -66,6 +68,7 @@ async function runBuild(options, dependencies = {}) {
     await execute([localTools.npm, 'run', 'build'], 'Frontend production build');
     if (plan.source && JSON.stringify(releaseSource()) !== JSON.stringify(plan.source)) throw new Error('Release source changed during build.');
     await execute([localTools.builder, '--config', config, '--win', 'nsis', '--x64', '--publish', 'never'], 'Windows NSIS update build');
+    if (editorIncluded) require('./openchatcut-delivery.cjs').verifyPackaged(REPOSITORY, attempt);
     const summary = await (dependencies.verifyArtifacts || verifyArtifacts)(attempt, plan);
     fs.writeFileSync(path.join(attempt, 'update-summary.json'), JSON.stringify(summary, null, 2) + '\n', { flag: 'wx' });
     assertNewOutput(plan);

@@ -381,8 +381,8 @@ function createWorkbenchStore({ db, rootDirectory }) {
             if (value.value.activeMode !== undefined && !MODES.has(value.value.activeMode))
                 throw fail('INVALID_SETTING_VALUE');
         }
-        if (key === 'workspace' && value.value.activePage !== undefined && !['image','video','library','settings'].includes(value.value.activePage)) throw fail('INVALID_SETTING_VALUE');
-        if (key === 'workspace' && value.value.returnPage !== undefined && !['image','video','library'].includes(value.value.returnPage)) throw fail('INVALID_SETTING_VALUE');
+        if (key === 'workspace' && value.value.activePage !== undefined && !['image','video','editor','library','settings'].includes(value.value.activePage)) throw fail('INVALID_SETTING_VALUE');
+        if (key === 'workspace' && value.value.returnPage !== undefined && !['image','video','editor','library'].includes(value.value.returnPage)) throw fail('INVALID_SETTING_VALUE');
         if (key === 'onboarding') {
             exactKeys(value.value, ['dismissed', 'step']);
             if (value.value.dismissed !== undefined && typeof value.value.dismissed !== 'boolean')

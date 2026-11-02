@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "bytes": 579343802,
+  "sha256": "c9f8a0a0f00057673117bfbc55870e2103085f5d0f5b6fd1e065dc3939f226f5",
+  "blockmap": {
+    "chunks": 27450,
+    "size": 579343802
+  },
+  "pe": [
+    {
+      "status": "NotSigned",
+      "fileVersion": "3.6.11.1",
+      "productVersion": "3.6.11-local.1"
+    },
+    {
+      "status": "NotSigned",
+      "fileVersion": "3.6.11.1",
+      "productVersion": "3.6.11.0"
+    }
+  ]
+}

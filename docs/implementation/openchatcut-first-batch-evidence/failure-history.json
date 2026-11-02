@@ -1,0 +1,32 @@
+[
+  {
+    "stage": "startup",
+    "observation": "受限进程环境中测试空白页加载ERR_FAILED",
+    "resolution": "正常权限下的隔离隐藏Electron探针可启动",
+    "productClaim": false
+  },
+  {
+    "stage": "native-react-dom",
+    "observation": "长visualizations/session资料路径下IndexedDB backing store初始化失败，原版停在加载中",
+    "resolution": "短os.tmpdir隔离根通过；保留长路径/权限边界为后续安装态验证项",
+    "productClaim": false
+  },
+  {
+    "stage": "original-project-restart",
+    "observation": "真实WebContents.close后View.webContents变undefined，引起destroyView异常",
+    "resolution": "保留独立contents引用并幂等回收，新增清空webContents的回归，真实重开通过",
+    "productClaim": true
+  },
+  {
+    "stage": "original-project-restart",
+    "observation": "探针最初比较整个URL，动态端口不同但工程ID相同导致断言失败",
+    "resolution": "服务复用原版listenWithAffinity；正常重启来源稳定，端口冲突迁移并记忆，原断言复跑通过",
+    "productClaim": false
+  },
+  {
+    "stage": "service-smoke",
+    "observation": "子代理首轮断言配置文件完全不存在，原版合法初始化非机密配置导致失败",
+    "resolution": "改为拒绝密钥POST前后配置指纹不变并复跑通过",
+    "productClaim": false
+  }
+]

@@ -1,0 +1,21 @@
+{
+  "version": "3.6.11-local.1",
+  "appId": "com.novaimage.studio.editor-preview",
+  "productName": "Nova Studio Editor Preview",
+  "name": "nova-studio-editor-preview",
+  "installer": "Nova-Studio-Editor-Preview-3.6.11-local.1-x64.exe",
+  "bytes": 579343802,
+  "sha256": "c9f8a0a0f00057673117bfbc55870e2103085f5d0f5b6fd1e065dc3939f226f5",
+  "publication": "never",
+  "source": "current workspace, uncommitted",
+  "runtimeReceipt": {
+    "schemaVersion": 1,
+    "profile": "local-preview",
+    "engineCommit": "7fa4b7903e7ebecf832a36249f0c0c755200cc17",
+    "receiptSha256": "18696a7da36008771412f336f05b8ddfea74d393a6fdbb0e79f0ff27b9ea8e54",
+    "packageSha256": "9694c4d99b6796814c8b149ac5e4ac0af7de2854c64bdd4bf1ebbc3a5eadf7be",
+    "productionPackages": 564,
+    "nativeModelSync": false
+  },
+  "realMediaRenderValidated": false
+}

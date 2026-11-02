@@ -1,0 +1,13 @@
+'use strict';
+const path = require('node:path');
+const { spawn } = require('node:child_process');
+const repo = path.resolve(__dirname, '../../..');
+const binary = path.join(repo, 'node_modules/electron/dist/electron.exe');
+const env = { ...process.env };
+delete env.ELECTRON_RUN_AS_NODE;
+const child = spawn(binary, [path.join(__dirname, 'native-view-probe.cjs')], { env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+child.stdout.on('data', data => process.stdout.write(data));
+let stderrBytes = 0;
+child.stderr.on('data', data => { stderrBytes += data.length; });
+child.on('error', () => { process.stderr.write('PROBE_LAUNCH_FAILED\n'); process.exitCode = 1; });
+child.on('exit', code => { process.stdout.write(JSON.stringify({ electronExit: code, stderrBytes }) + '\n'); process.exitCode = code === 0 ? 0 : 1; });

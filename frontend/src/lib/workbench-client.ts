@@ -3,14 +3,14 @@ import { MAX_REFERENCE_ASSETS } from './reference-policy';
 import type { AssetSummary, WorkbenchTaskResponse, WorkbenchTaskInput } from './workbench-task-client';
 export const DRAFT_MODES = ['image.text', 'video.text', 'video.single_reference', 'video.dual_reference'] as const;
 export type DraftMode = typeof DRAFT_MODES[number];
-export type WorkbenchPage = 'image' | 'video' | 'library' | 'settings';
-export const WORKBENCH_PAGES: WorkbenchPage[] = ['image', 'video', 'library', 'settings'];
-export const PRODUCT_FEATURES = Object.freeze({ image: true, video: true, library: true, settings: true, agent: false, canvas: false, gif: false, promptGallery: false, browserAutomation: false, pluginManagement: false });
+export type WorkbenchPage = 'image' | 'video' | 'editor' | 'library' | 'settings';
+export const WORKBENCH_PAGES: WorkbenchPage[] = ['image', 'video', 'editor', 'library', 'settings'];
+export const PRODUCT_FEATURES = Object.freeze({ image: true, video: true, editor: true, library: true, settings: true, agent: false, canvas: false, gif: false, promptGallery: false, browserAutomation: false, pluginManagement: false });
 export interface Draft {
   groupId?: string; mode: DraftMode; prompt: string; model: string; parameters: Record<string, string | number | boolean>;
   inputAssets: AssetSummary[]; revision: number; updatedAt: string | null;
 }
-export interface WorkspacePreferences { activeGroupId?: string; activeMode?: DraftMode; activePage?: WorkbenchPage; returnPage?: 'image' | 'video' | 'library'; wideMode?: boolean; recentVideoTaskLimit?: number }
+export interface WorkspacePreferences { activeGroupId?: string; activeMode?: DraftMode; activePage?: WorkbenchPage; returnPage?: 'image' | 'video' | 'editor' | 'library'; wideMode?: boolean; recentVideoTaskLimit?: number }
 export const DEFAULT_RECENT_VIDEO_TASK_LIMIT = 6;
 export function getRecentVideoTaskLimit(value: unknown): number { return typeof value === 'number' && Number.isInteger(value) && value >= 1 && value <= 100 ? value : DEFAULT_RECENT_VIDEO_TASK_LIMIT; }
 export interface OnboardingPreferences { dismissed?: boolean; step?: 'connection' | 'defaults' | 'completed' }

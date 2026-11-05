@@ -1,5 +1,7 @@
 # 脱敏诊断导出 v1
 
+> 2026-11-05交付状态：本页相关作品命名/搜索、视频模型规则、剪辑启动日志和超时设置已随GitHub Test 3.6.12发布；具体适用范围、验证和待验边界见[交付记录](implementation/3.6.12-交付记录.md)。下方“未提交/未发布”等按原日期保留为阶段事实；Seedance及进一步剪辑融合状态保持。
+
 ## 2026-11-02 当前源码：剪辑启动本地日志
 
 OpenChatCut新增独立`editor-diagnostics.json`，放在Nova应用数据目录，与现有任务和更新日志分开；GitHub Test默认位置为`%APPDATA%\Nova Studio GitHub Test\editor-diagnostics.json`。本批未加入“导出脱敏诊断”JSON，复现后可单独读取此文件；仅本地记录，不上传。已安装3.6.11尚不含此修改。

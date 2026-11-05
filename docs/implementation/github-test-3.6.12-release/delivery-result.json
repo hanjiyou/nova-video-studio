@@ -1,0 +1,41 @@
+{
+  "version": "3.6.12",
+  "commit": "748964d46010b06dc62bcd65b7a3fa7f1dfa4739",
+  "releaseId": "435010826",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.12",
+  "published": true,
+  "reviewId": "442f3f3a-81fd-44d2-938b-9c841ef3b5d1",
+  "archive": "release-updates/github-test/3.6.12",
+  "installerBytes": 557667231,
+  "installerSha256": "851ff2812b23653013d3c7e9416c1fe9815f5e2094148ebc496327633a74b600",
+  "verificationMode": "auto",
+  "remoteVerification": [
+    {
+      "name": "Nova-Studio-3.6.12-github-test-x64.exe",
+      "assetId": "712868663",
+      "size": 557667231,
+      "sha256": "851ff2812b23653013d3c7e9416c1fe9815f5e2094148ebc496327633a74b600",
+      "method": "github-server-sha256",
+      "reused": true
+    },
+    {
+      "name": "Nova-Studio-3.6.12-github-test-x64.exe.blockmap",
+      "assetId": "712876691",
+      "size": 566189,
+      "sha256": "7f9d7ed0a8283e6d01c14bbeac7bfeb5d10c13ecc3506f007dc0de35f234e372",
+      "method": "github-server-sha256",
+      "reused": true
+    },
+    {
+      "name": "nova-test.yml",
+      "assetId": "712876740",
+      "size": 374,
+      "sha256": "f5925aa3fe3226651a652a7e2f69a3662109438e2de46215b3f87c191778f558",
+      "method": "github-server-sha256",
+      "reused": true
+    }
+  ],
+  "publicManifestExactMatch": true,
+  "remoteInstallerDownloaded": false,
+  "installed": false
+}

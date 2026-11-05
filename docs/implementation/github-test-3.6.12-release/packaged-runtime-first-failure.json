@@ -1,0 +1,19 @@
+{
+  "scope": "actual packaged executable, app.asar, isolated temporary profile and real original editor View",
+  "gpuDisabled": true,
+  "installed": false,
+  "paidServiceCalled": false,
+  "artifact": {
+    "bytes": 557667231,
+    "sha256": "851ff2812b23653013d3c7e9416c1fe9815f5e2094148ebc496327633a74b600",
+    "blockmap": {
+      "chunks": 26431,
+      "size": 557667231
+    }
+  },
+  "checks": [
+    "installer hash, sidecar, length and complete blockmap verified"
+  ],
+  "ok": false,
+  "failure": "Promise was collected"
+}

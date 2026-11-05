@@ -138,7 +138,7 @@ test('v4 to v5 keeps referenced asset IDs, foreign keys, immutable old SQL and u
         db.prepare('INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,source_kind,created_at) VALUES(?,?,?,?,?,?,?,?,?)').run(asset,'image','aa/'+'a'.repeat(64)+'.png','old','image/png',20,'a'.repeat(64),'generated','2026-01-01');
         db.prepare('INSERT INTO task_assets VALUES(?,?,?,?)').run(task,asset,'output',0);const old=db.prepare('SELECT version,checksum FROM schema_migrations').all();const result=await migrateDatabase({db,dbPath:file});
         assert.deepEqual(result.applied,MIGRATIONS.slice(4).map(item=>item.version));assert.deepEqual(db.prepare('SELECT version,checksum FROM schema_migrations WHERE version<5').all(),old);assert.equal(db.prepare('SELECT asset_id FROM task_assets').get().asset_id,asset);assert.deepEqual(db.pragma('foreign_key_check'),[]);assert.equal(db.pragma('quick_check',{simple:true}),'ok');
-        assert.throws(()=>db.prepare('INSERT INTO assets SELECT ?,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id FROM assets WHERE id=?').run(randomUUID(),asset),/UNIQUE/);
+        assert.throws(()=>db.prepare('INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id) SELECT ?,kind,?,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id FROM assets WHERE id=?').run(randomUUID(),'bb/'+'b'.repeat(64)+'.png',asset),/UNIQUE/);
     }finally{db.close();}
 });
 

@@ -10,7 +10,7 @@ function createWorkbenchLibrary({ db, getTask, readAsset, trustedPath, row, free
         const snapshot = freeze(boundary.snapshotFor(input, require('../plugins/opensosen-video/manifest.json').version));
         boundary.validateInputs(snapshot, auth, store);
         boundary.validateCapability(db, snapshot, auth);
-        const frozen = Object.fromEntries(['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId'].filter(key => snapshot[key] !== undefined).map(key => [key,snapshot[key]]));
+        const frozen = Object.fromEntries(['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','workName','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId'].filter(key => snapshot[key] !== undefined).map(key => [key,snapshot[key]]));
         const prior = db.prepare('SELECT input_json FROM workbench_submission_intents WHERE local_request_id=?').get(input.localRequestId);
         if (prior && canonical(JSON.parse(prior.input_json)) !== canonical(frozen)) throw fail('LOCAL_REQUEST_CONFLICT', '该本地提交意图已存在，不能更改。', 409);
         db.prepare('INSERT OR IGNORE INTO workbench_submission_intents(local_request_id,input_json,created_at) VALUES(?,?,?)').run(input.localRequestId, canonical(frozen), new Date().toISOString());

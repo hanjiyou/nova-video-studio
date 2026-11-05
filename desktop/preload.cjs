@@ -28,6 +28,6 @@ contextBridge.exposeInMainWorld('novaDesktop', {
   onUpdateFlush: listener => { const handler = (_event, request) => listener(request); ipcRenderer.on('nova:update-flush', handler); return () => ipcRenderer.removeListener('nova:update-flush', handler); },
   chooseOutputDirectory: () => ipcRenderer.invoke('nova:choose-output-directory'),
   getOutputDirectory: () => ipcRenderer.invoke('nova:output-directory'),
-  saveAssetCopy: assetId => ipcRenderer.invoke('nova:save-asset-copy', assetId),
+  saveAssetCopy: (assetId, taskId) => taskId === undefined ? ipcRenderer.invoke('nova:save-asset-copy', assetId) : ipcRenderer.invoke('nova:save-asset-copy', assetId, taskId),
   revealAsset: assetId => ipcRenderer.invoke('nova:reveal-asset', assetId),
 });

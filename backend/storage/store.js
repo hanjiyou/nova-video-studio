@@ -1,4 +1,6 @@
 'use strict';
+const { validEditorSettings, normalizeEditorSettings } = require('./editor-settings');
+const { normalizeWorkName } = require('./work-names');
 const fs = require('node:fs');
 const path = require('node:path');
 const { createHash, randomUUID } = require('node:crypto');
@@ -75,7 +77,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
                 const rootDirectory = outputDirectories.directory(asset.root_ref);
                 if (!groups.safeDirectory(rootDirectory, ['assets'])) return null;
             }
-            return groups.safeFile(managedRoot, asset.storage_key, Boolean(asset.group_id));
+            return groups.safeFile(managedRoot, asset.storage_key, Boolean(asset.group_id), Boolean(asset.named_legacy));
         } catch (error) {
             if (error.code === 'DIRECTORY_NOT_WRITABLE') return null;
             throw error; // Unsafe links remain explicit errors, never a missing-file bypass.
@@ -110,7 +112,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         if (!fs.realpathSync.native(directory).startsWith(objectRoot + path.sep))
             throw fail('ASSET_PATH_REJECTED');
         const destination = path.join(objectRoot, storageKey);
-        const existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND group_id IS NULL AND sha256=? AND mime_type=? AND kind=?').get(rootRef, sha, mime, kind);
+        const existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND group_id IS NULL AND named_legacy=0 AND sha256=? AND mime_type=? AND kind=?').get(rootRef, sha, mime, kind);
         if (fs.existsSync(destination)) {
             if (fs.lstatSync(destination).isSymbolicLink() || digest(fs.readFileSync(destination)) !== sha)
                 throw fail('ASSET_FILE_CONFLICT', '受管理文件与记录不一致，原文件已保留。', 409);
@@ -155,8 +157,8 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function publishGrouped(bytes, metadata, location) {
         const objectRoot = objectsFor(location.root_ref), destination = bounded(path.join(objectRoot, location.storage_key));
-        const directory = groups.safeDirectory(outputDirectories.directory(location.root_ref), ['assets', ...location.storage_key.split(/[\\/]/).slice(0, -1)], true);
-        let existing = db.prepare('SELECT * FROM assets WHERE root_ref=? AND storage_key=?').get(location.root_ref, location.storage_key);
+        const directory = groups.safeDirectory(outputDirectories.directory(location.root_ref || outputDirectories.DEFAULT), ['assets', ...location.storage_key.split(/[\\/]/).slice(0, -1)], true);
+        let existing = db.prepare('SELECT * FROM assets WHERE root_ref IS ? AND storage_key=?').get(location.root_ref, location.storage_key);
         if (existing && existing.sha256 !== metadata.sha256) throw fail('ASSET_FILE_CONFLICT', '恢复结果与原输出摘要不一致。', 409);
         if (fs.existsSync(destination)) {
             if (!existing || fs.lstatSync(destination).isSymbolicLink() || digest(fs.readFileSync(destination)) !== metadata.sha256) throw fail('ASSET_FILE_CONFLICT', '目标文件已改变，已有文件保留。', 409);
@@ -276,12 +278,13 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function setTaskSnapshot(taskId, snapshot) {
         uuid(taskId);
-        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef', 'transportRoute', 'groupId', 'groupName', 'groupDirectoryVersionId']);
+        exactKeys(snapshot, ['contractVersion', 'localRequestId', 'connectionVersionId', 'capabilityVersionId', 'mode', 'model', 'prompt', 'parameters', 'inputAssets', 'adapterId', 'adapterVersion', 'outputDirectoryVersionId', 'outputRootRef', 'transportRoute', 'groupId', 'groupName', 'groupDirectoryVersionId', 'workName']);
         if (snapshot.contractVersion !== 1 || ![...MODES, 'legacy.plugin'].includes(snapshot.mode) || typeof snapshot.prompt !== 'string' || snapshot.prompt.length > 65536 || typeof snapshot.model !== 'string' || !snapshot.model || snapshot.model.length > 256)
             throw fail('INVALID_TASK_SNAPSHOT');
         for (const field of ['adapterId', 'adapterVersion'])
             if (snapshot[field] !== undefined && (typeof snapshot[field] !== 'string' || snapshot[field].length > 128))
                 throw fail('INVALID_TASK_SNAPSHOT');
+        if (snapshot.workName !== undefined) snapshot = { ...snapshot, workName: normalizeWorkName(snapshot.workName) };
         const input = references(snapshot.inputAssets || []);
         for (const field of ['localRequestId', 'connectionVersionId', 'capabilityVersionId', 'outputDirectoryVersionId', 'outputRootRef', 'groupId', 'groupDirectoryVersionId'])
             if (snapshot[field] != null)
@@ -313,9 +316,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
             throw fail('INVALID_DRAFT_MODE');
         const draft = db.prepare('SELECT * FROM drafts WHERE mode=?').get(mode);
         if (!draft)
-            return { mode, groupId: DEFAULT_GROUP, prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
+            return { mode, groupId: DEFAULT_GROUP, workName: '', prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
         const assets = db.prepare('SELECT a.*,da.position FROM draft_assets da JOIN assets a ON a.id=da.asset_id WHERE da.mode=? ORDER BY da.position').all(mode);
-        return { mode, groupId: DEFAULT_GROUP, prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
+        return { mode, groupId: DEFAULT_GROUP, workName: draft.work_name || '', prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
             inputAssets: assets.map(asset => ({ ...summary(asset), position: asset.position, role: 'reference' })) };
     }
     function putDraft(mode, value, groupId = DEFAULT_GROUP) {
@@ -323,17 +326,18 @@ function createWorkbenchStore({ db, rootDirectory }) {
         if (group.id !== DEFAULT_GROUP) return putGroupDraft(mode, value, group.id);
         if (!MODES.has(mode))
             throw fail('INVALID_DRAFT_MODE');
-        exactKeys(value, ['prompt', 'model', 'parameters', 'inputAssets', 'expectedRevision']);
+        exactKeys(value, ['workName', 'prompt', 'model', 'parameters', 'inputAssets', 'expectedRevision']);
         if (typeof value.prompt !== 'string' || value.prompt.length > 65536 || typeof value.model !== 'string' || value.model.length > 256)
             throw fail('INVALID_DRAFT');
+        const workName = value.workName === undefined ? undefined : normalizeWorkName(value.workName);
         const parameters = safeJson(value.parameters || {});
         const input = references(value.inputAssets || []);
         db.transaction(() => {
-            const previous = db.prepare('SELECT revision FROM drafts WHERE mode=?').get(mode);
+            const previous = db.prepare('SELECT revision,work_name FROM drafts WHERE mode=?').get(mode);
             if (value.expectedRevision !== undefined && value.expectedRevision !== (previous?.revision || 0))
                 throw fail('DRAFT_REVISION_CONFLICT', '草稿已更新，请先读取最新版本。', 409);
-            db.prepare(`INSERT INTO drafts VALUES(?,?,?,?,?,?) ON CONFLICT(mode) DO UPDATE SET prompt=excluded.prompt,model=excluded.model,parameters_json=excluded.parameters_json,revision=excluded.revision,updated_at=excluded.updated_at`)
-                .run(mode, value.prompt, value.model, parameters, (previous?.revision || 0) + 1, new Date().toISOString());
+            db.prepare(`INSERT INTO drafts(mode,prompt,model,parameters_json,revision,updated_at,work_name) VALUES(?,?,?,?,?,?,?) ON CONFLICT(mode) DO UPDATE SET prompt=excluded.prompt,model=excluded.model,parameters_json=excluded.parameters_json,revision=excluded.revision,updated_at=excluded.updated_at,work_name=excluded.work_name`)
+                .run(mode, value.prompt, value.model, parameters, (previous?.revision || 0) + 1, new Date().toISOString(), workName ?? previous?.work_name ?? '');
             db.prepare('DELETE FROM draft_assets WHERE mode=?').run(mode);
             const insert = db.prepare('INSERT INTO draft_assets VALUES(?,?,?)');
             for (const item of input)
@@ -344,20 +348,21 @@ function createWorkbenchStore({ db, rootDirectory }) {
     function getGroupDraft(mode, groupId) {
         if (!MODES.has(mode)) throw fail('INVALID_DRAFT_MODE');
         const draft = db.prepare('SELECT * FROM group_drafts WHERE group_id=? AND mode=?').get(groupId, mode);
-        if (!draft) return { mode, groupId, prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
+        if (!draft) return { mode, groupId, workName: '', prompt: '', model: '', parameters: {}, inputAssets: [], revision: 0, updatedAt: null };
         const assets = db.prepare('SELECT a.*,da.position FROM group_draft_assets da JOIN assets a ON a.id=da.asset_id WHERE da.group_id=? AND da.mode=? ORDER BY da.position').all(groupId, mode);
-        return { mode, groupId, prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
+        return { mode, groupId, workName: draft.work_name || '', prompt: draft.prompt, model: draft.model, parameters: JSON.parse(draft.parameters_json), revision: draft.revision, updatedAt: draft.updated_at,
             inputAssets: assets.map(asset => ({ ...summary(asset), position: asset.position, role: 'reference' })) };
     }
     function putGroupDraft(mode, value, groupId) {
         if (!MODES.has(mode)) throw fail('INVALID_DRAFT_MODE');
-        exactKeys(value, ['prompt','model','parameters','inputAssets','expectedRevision']);
+        exactKeys(value, ['workName','prompt','model','parameters','inputAssets','expectedRevision']);
         if (typeof value.prompt !== 'string' || value.prompt.length > 65536 || typeof value.model !== 'string' || value.model.length > 256) throw fail('INVALID_DRAFT');
+        const workName = value.workName === undefined ? undefined : normalizeWorkName(value.workName);
         const parameters = safeJson(value.parameters || {}), input = references(value.inputAssets || []);
         db.transaction(() => {
-            const previous = db.prepare('SELECT revision FROM group_drafts WHERE group_id=? AND mode=?').get(groupId, mode);
+            const previous = db.prepare('SELECT revision,work_name FROM group_drafts WHERE group_id=? AND mode=?').get(groupId, mode);
             if (value.expectedRevision !== undefined && value.expectedRevision !== (previous?.revision || 0)) throw fail('DRAFT_REVISION_CONFLICT', '草稿已更新，请先读取最新版本。', 409);
-            db.prepare('INSERT INTO group_drafts VALUES(?,?,?,?,?,?,?) ON CONFLICT(group_id,mode) DO UPDATE SET prompt=excluded.prompt,model=excluded.model,parameters_json=excluded.parameters_json,revision=excluded.revision,updated_at=excluded.updated_at').run(groupId, mode, value.prompt, value.model, parameters, (previous?.revision || 0) + 1, new Date().toISOString());
+            db.prepare('INSERT INTO group_drafts(group_id,mode,prompt,model,parameters_json,revision,updated_at,work_name) VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(group_id,mode) DO UPDATE SET prompt=excluded.prompt,model=excluded.model,parameters_json=excluded.parameters_json,revision=excluded.revision,updated_at=excluded.updated_at,work_name=excluded.work_name').run(groupId, mode, value.prompt, value.model, parameters, (previous?.revision || 0) + 1, new Date().toISOString(), workName ?? previous?.work_name ?? '');
             db.prepare('DELETE FROM group_draft_assets WHERE group_id=? AND mode=?').run(groupId, mode);
             const insert = db.prepare('INSERT INTO group_draft_assets VALUES(?,?,?,?)');
             for (const item of input) insert.run(groupId, mode, item.assetId, item.position);
@@ -366,8 +371,9 @@ function createWorkbenchStore({ db, rootDirectory }) {
     }
     function putSetting(key, value) {
         exactKeys(value, ['value', 'expectedRevision']);
-        if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
+        if (!['theme', 'workspace', 'onboarding', 'taskExecution', 'editor'].includes(key))
             throw fail('INVALID_SETTING_KEY');
+        if (key === 'editor' && !validEditorSettings(value.value)) throw fail('INVALID_SETTING_VALUE');
         if (key === 'taskExecution') value = { ...value, value: normalizeExecutionSettings(value.value, getSetting(key).value) };
         if (key === 'theme' && !['system', 'light', 'dark'].includes(value.value))
             throw fail('INVALID_SETTING_VALUE');
@@ -400,11 +406,12 @@ function createWorkbenchStore({ db, rootDirectory }) {
         return getSetting(key);
     }
     function getSetting(key) {
-        if (!['theme', 'workspace', 'onboarding', 'taskExecution'].includes(key))
+        if (!['theme', 'workspace', 'onboarding', 'taskExecution', 'editor'].includes(key))
             throw fail('INVALID_SETTING_KEY');
         const item = db.prepare('SELECT * FROM app_settings WHERE key=?').get(key);
         const result = item ? { key, value: JSON.parse(item.value_json), revision: item.revision, updatedAt: item.updated_at } : { key, value: key === 'taskExecution' ? { ...DEFAULT_EXECUTION_SETTINGS } : null, revision: 0, updatedAt: null };
         if (key === 'taskExecution') result.value = normalizeExecutionSettings(result.value);
+        if (key === 'editor') result.value = normalizeEditorSettings(result.value);
         return result;
     }
     function linkLegacyAsset(kind, relativeKey, assetId) {
@@ -455,6 +462,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         return { transportRoute:task.transport_route_json?JSON.parse(task.transport_route_json):request.transportRoute||null,revision,...recovery, ...taskFields(task, request, downloadAttempt), removedFromWorkbench: Boolean(db.prepare('SELECT 1 FROM workbench_removed_tasks WHERE task_id=?').get(task.id)), prompt: typeof request.prompt === 'string' ? request.prompt : '', model: typeof request.model === 'string' ? request.model : '', parameters: request.parameters || {}, capabilityVersionId: task.capability_version_id,
             downloadProgress: downloadAttempt ? liveDownloadProgress.get(downloadAttempt.id) || (downloadAttempt.progress_json ? JSON.parse(downloadAttempt.progress_json) : null) : null,
             downloadAttempt: downloadAttempt ? { transportRoute:downloadAttempt.transport_route_json?JSON.parse(downloadAttempt.transport_route_json):null,id:downloadAttempt.id,attemptNumber:downloadAttempt.attempt_number,queuedAt:downloadAttempt.queued_at,active:downloadAttempt.outcome===null,startedAt:downloadAttempt.started_at,deadlineAt:downloadAttempt.deadline_at,timeoutSeconds:downloadAttempt.timeout_seconds,outcome:downloadAttempt.outcome,finishedAt:downloadAttempt.finished_at } : null,
+            workName: task.work_name ?? (typeof request.workName === 'string' ? request.workName : ''), submittedWorkName: typeof request.workName === 'string' ? request.workName : '', nameRevision: task.work_name_revision || 0,
             savedAt: task.saved_at || null, taskCategory: task.display_category || queries.categoryFor(task.id),
             groupRevision: membership?.revision || 1,
             groupId: membership?.group_id || DEFAULT_GROUP, groupName: membership?.name || '未分组', submittedGroupId: request.groupId || DEFAULT_GROUP, submittedGroupName: request.groupName || '未分组',
@@ -479,6 +487,7 @@ function createWorkbenchStore({ db, rootDirectory }) {
         checkTaskGroupReady: task => groupMoves.recover({taskId:task.id,groupId:groups.membership(task.id)?.group_id}),
         setGroupActivityGuard: guard => { groupActivityGuard=guard; }, recoverGroupOperations: () => groupMoves.recover(),
         moveTaskToGroup: (id,value) => { const result=groupMoves.moveTask(id,value); return { ...result, task:record(db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id))) }; },
+        renameTaskWork: (id,value) => { const result=groupMoves.renameTaskWork(id,value); return { ...result, task:record(db.prepare('SELECT * FROM tasks WHERE id=?').get(uuid(id))) }; },
         renameGroup: (id,value) => { const result=groupMoves.renameGroup(id,value); return { ...result, group:{ ...groups.view(groups.get(id)), ...queries.counts(id) } }; },
         archiveGroup: (id,value) => { const result=groupMoves.archiveGroup(id,value); return { ...result, group:{ ...groups.view(groups.get(id)), ...queries.counts(id) } }; },
         deleteGroup: id => groupMoves.deleteGroup(id), previewHistoryGroups: value => groupMoves.previewHistory(value), organizeHistoryGroups: value => groupMoves.organizeHistory(value),

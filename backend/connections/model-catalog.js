@@ -1,5 +1,6 @@
 'use strict';
-const RULES = require('./model-rules.json');
+const video = require('./video-rules');
+const { RULES, videoRule, validSize, validParameters } = video;
 const ID = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$/;
 const TYPES = new Set(['image-generation','image-editor','video-generation','video','chat-completions','responses','openai','anthropic','gemini']);
 function entries(value) {
@@ -20,12 +21,10 @@ function classify(model, endpointTypes = [], override) {
     if (endpointTypes.some(t => ['video-generation','video'].includes(t))) categories.push('video');
     if (categories.length) return { categories, classificationSource:'endpoint' };
     if (/^(gpt-image-|grok-imagine-image(?:-|$)|gemini-[a-z0-9.-]*image(?:-|$)|(?:doubao-)?seedream(?:-|$)|qwen-image(?:-|$))/i.test(model)) return { categories:['image'], classificationSource:'name' };
-    if (/^(grok-imagine-video(?:-|$)|sora(?:-|$)|veo(?:-|$))/i.test(model)) return { categories:['video'], classificationSource:'name' };
+    if (Object.hasOwn(RULES.models,model)) return { categories:['video'], classificationSource:'configuration' };
+    if ((RULES.classification?.videoPatterns || []).some(pattern=>new RegExp(pattern,'i').test(model))) return { categories:['video'], classificationSource:'name' };
     return { categories:[], classificationSource:'unknown' };
 }
-function videoRule(model, scope) { return scope?.provider === RULES.provider && (scope.baseUrl || scope.base_url) === RULES.baseUrl ? RULES.models[model] || null : null; }
-function validSize(size) { if (typeof size !== 'string' || !/^[1-9][0-9]*x[1-9][0-9]*$/.test(size)) return false; return size.split('x').every(n => Number.isSafeInteger(Number(n)) && Number(n) > 0); }
-function validParameters(rule, p) { return Boolean(rule && p && Number.isInteger(p.seconds) && p.seconds >= rule.minSeconds && p.seconds <= rule.maxSeconds && Object.keys(p).every(k => (rule.sendSize ? ['seconds','size'] : ['seconds']).includes(k)) && (rule.sendSize ? validSize(p.size) : !Object.hasOwn(p,'size'))); }
 function modelRejected(payload, status) {
     if (![400,404,410,422].includes(status)) return false;
     const code = payload?.error?.code || payload?.error?.type || payload?.code;

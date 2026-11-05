@@ -1,0 +1,175 @@
+{
+  "date": "2026-11-05",
+  "scope": "Naming source review only; includes whole-file fingerprints for touched files with preserved earlier changes. Not a release approval or complete delivery dependency manifest.",
+  "status": "source-scope-reviewed",
+  "mainChecks": {
+    "backendNaming": 30,
+    "frontendNaming": 15,
+    "typecheck": "passed",
+    "visualScenarios": 6
+  },
+  "knownBaseline": {
+    "file": "backend/test/workbench-lifecycle-display.test.js",
+    "passed": 4,
+    "failed": 6,
+    "originalQuerySameFailures": true
+  },
+  "files": [
+    {
+      "path": "backend/server.js",
+      "sha256": "afa6eba4c0a478ed32246145d898f401ee706a91774d95a8a6bf1d41f7c2572c"
+    },
+    {
+      "path": "backend/storage/migrations.js",
+      "sha256": "5c84ab3b032117ddba89474c0ee7cdf07763757d70ecab736362f80699029b8b"
+    },
+    {
+      "path": "backend/storage/store.js",
+      "sha256": "cce2688653ef9f0bf13bf280e0599f9dde398f998bd9b04fd6d298605bcb0fe0"
+    },
+    {
+      "path": "backend/storage/workbench-query.js",
+      "sha256": "fb4b93a9e698c6fab10516000468d43378d48229e40e31cbb04a5726f85a35fc"
+    },
+    {
+      "path": "backend/storage/workbench-library.js",
+      "sha256": "8bcd21e348979edfd451b9e53519294ff9170b734976e8a0192e1753724069b8"
+    },
+    {
+      "path": "backend/storage/http.js",
+      "sha256": "43018500c1691006dd144a96abf1df47af697ccd34f9b5c56f58b32280dec14a"
+    },
+    {
+      "path": "backend/storage/groups.js",
+      "sha256": "049f98f5fd1839cbec03817366db4cd5b712bde6b120d1ff760d867af30e9005"
+    },
+    {
+      "path": "backend/storage/group-moves.js",
+      "sha256": "8488ad95cbae530bb072cf43b43909a2f015ef862895afd0dd02fc2bcd573b04"
+    },
+    {
+      "path": "backend/storage/work-names.js",
+      "sha256": "7bd2825cfc56a3add88dd713bea4d47f2478fe9d52b4d8b044c9e85f3f874a79"
+    },
+    {
+      "path": "backend/tasks/workbench-input.js",
+      "sha256": "eaec78f51fd88d06499a96d0378e496cb377b133535e32ab34aad964228641d1"
+    },
+    {
+      "path": "desktop/asset-actions.cjs",
+      "sha256": "d3a7879ae61720f9970009b091a84e16ad3cedaff8d121e9e5c13ff7fb3eac89"
+    },
+    {
+      "path": "desktop/ipc.cjs",
+      "sha256": "218b92a74d0d70027a1b09a3372129535cc6f287cf32a0684d889cad7c0baed2"
+    },
+    {
+      "path": "desktop/preload.cjs",
+      "sha256": "33ae8b535d88aef36ec107b81c33c852f2de4f8adc86c539c50b94cfd96b9ad9"
+    },
+    {
+      "path": "backend/test/work-naming-contract.test.js",
+      "sha256": "36bfe1e2460e9bc516c5599f3f92f3e83d9b67979cb3866938bdba0a3d2789f1"
+    },
+    {
+      "path": "backend/test/work-names-files.test.js",
+      "sha256": "12ffd00b9df19f285c6e9c732fe32c9f1c169cbc7d363a460784f8831ad31f0f"
+    },
+    {
+      "path": "backend/test/work-naming-ipc.test.js",
+      "sha256": "0cf33dc4aa1ca8b5c098fc7cc2b8d59e7495362547ba93c210513976d6bbb89b"
+    },
+    {
+      "path": "backend/test/workbench-downloads.test.js",
+      "sha256": "79d18c5dcddb77b802e9872314e1328ddfc07a173656b2f8288938ede18ee216"
+    },
+    {
+      "path": "backend/test/workbench-group-moves.test.js",
+      "sha256": "5a412e5766a1d290251f85790621db3261813d29d96136d5bb6d47389b8a56e3"
+    },
+    {
+      "path": "frontend/src/app/globals.css",
+      "sha256": "6e1d8a6f0d997bc40319d74e48de2ac8d4dffe92aa524bdd921b02f3a656df21"
+    },
+    {
+      "path": "frontend/src/components/workbench/DraftEditor.tsx",
+      "sha256": "bda00ca1a0fc69504ab0abe19ff37886ffb066b9fc44c43b00dbd470e78fea4e"
+    },
+    {
+      "path": "frontend/src/components/workbench/MediaTaskCard.tsx",
+      "sha256": "65dc7e42680fd4f69b9e558ff1a88cba26cae748c7d67bd0c1e42c3192003275"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchAllTasks.tsx",
+      "sha256": "6b927f3fe6bdb5417340f10225ab3d15f9d0c4f07337d444a2f49f57cab0d380"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchLibrary.tsx",
+      "sha256": "6c6e84dcb071e5e95347f617ef436d1568497bc36ab44e441cd065eaf6bdd224"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchLibraryPreview.tsx",
+      "sha256": "2d55e959fe3e2d6e7e1b5200a19d14c1e5f34f7bed72bcd55ad28f2684f392d1"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkbenchResults.tsx",
+      "sha256": "e3c030188f914afd977d6f4d373ac482361013bde7b042d49cd733f515f7fc9c"
+    },
+    {
+      "path": "frontend/src/components/workbench/WorkRenameDialog.tsx",
+      "sha256": "3900f3b28262bf389730b76643bb85097e86c9796955e5f868c70ca7108b2bee"
+    },
+    {
+      "path": "frontend/src/hooks/useWorkbenchDrafts.ts",
+      "sha256": "de12a8259fa0c8ac52786da684f3f8a5f2b3b681802bec96a6a15d1b7740d9ab"
+    },
+    {
+      "path": "frontend/src/hooks/useWorkbenchTasks.ts",
+      "sha256": "6891770959f64ce60dd2c55a5d70aa9e1f760ebc9b8bcffeefd3fa624d288df5"
+    },
+    {
+      "path": "frontend/src/lib/workbench-client.ts",
+      "sha256": "583b0481348a1a38e5a815622321341591c6a92133b5da3d3e03e3cd04fabe77"
+    },
+    {
+      "path": "frontend/src/lib/workbench-generation.ts",
+      "sha256": "adbeb4b4fc98cc9f680dc5728a36cd2d38f69a5c674a0178a4fa76b5d890c325"
+    },
+    {
+      "path": "frontend/src/lib/workbench-group-client.ts",
+      "sha256": "08ed6004b151b8c80120657654109756ff835581ef88e23b5fc0fbb114495459"
+    },
+    {
+      "path": "frontend/src/lib/workbench-task-client.ts",
+      "sha256": "2f46ba3befabd0aad348320455ff3915b4ee9a83c1e68c909dfe13b60adb6107"
+    },
+    {
+      "path": "frontend/src/lib/workbench-names.ts",
+      "sha256": "b3938309a2c0f7e8e5fadf140b1ec9db96755a9c4fc6cc3a2f75d36881e99e48"
+    },
+    {
+      "path": "frontend/src/types/nova-desktop.d.ts",
+      "sha256": "cb089643b7427510679b82611cee275118d9959e96f87333c16a86df24af01e1"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/work-names.test.tsx",
+      "sha256": "02999ae248cb7b21ce5092b4a4e0950d704e1470072a57a50ce37f7d9c2df936"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/grouped-workspace.test.tsx",
+      "sha256": "b49d3dcfa5da8aab768746604a8f24959c079153d36ba3d54984cd50f251440b"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/library-enhancements.test.tsx",
+      "sha256": "7c710680b3a4bd7bd2dd000ae4c5e8032c389d0c21a24a478c7606af7f4ab370"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/library-preview.test.tsx",
+      "sha256": "ed89a4af890ff28163d235fd07bca7d684edbb1680f17aa4ed0a40d1d6a48e5b"
+    },
+    {
+      "path": "frontend/src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "sha256": "d7643568b179cd1b00a55947cd0d59a2cfd3d1c7a50dbcf6ca45cc9398740d9b"
+    }
+  ]
+}

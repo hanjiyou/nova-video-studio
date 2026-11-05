@@ -1074,3 +1074,22 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-editor-status { min-height:300px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:32px; text-align:center; }
 .wb-editor-status h2 { margin:0; font-size:22px; }
 .wb-editor-status p { max-width:480px; margin:0; color:var(--wb-muted); line-height:1.7; }
+
+/* Optional work names share the existing workbench form and card layout. */
+.wb-work-name { min-width:0; }
+.wb-work-name-hint { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; margin-top:6px; }
+.wb-work-name-hint p { margin:0; }
+.wb-work-name-hint>span { color:#a69eb5; font-size:11px; white-space:nowrap; }
+.wb-card-description { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden; margin:0 0 8px; color:#aca4b8; font-size:11px; line-height:1.6; }
+.wb-preview-work-title { margin:0 0 16px; overflow-wrap:anywhere; font-size:15px; }
+.wb-dialog:has(>.wb-work-rename) { width:min(650px,100%); }
+.wb-work-rename { min-width:0; }
+.wb-work-rename-summary { display:flex; gap:14px; align-items:center; padding:14px; margin:10px 0 24px; border:1px solid #484052; border-radius:8px; }
+.wb-work-rename-summary>div { min-width:0; overflow-wrap:anywhere; }
+.wb-work-rename-summary img { width:82px; height:62px; flex-shrink:0; object-fit:cover; border-radius:6px; }
+.wb-work-rename form>.wb-help { margin:20px 0; }
+.wb-work-rename .wb-actions { justify-content:flex-end; margin-top:24px; padding-top:18px; border-top:1px solid #494052; }
+@media(max-width:500px) { .wb-work-rename-summary { padding:10px; gap:10px; } .wb-work-rename-summary img { width:60px; height:50px; } }
+
+.wb-work-name-label { display:flex; align-items:center; gap:8px; }
+.wb-work-name-label small { font-weight:400; }

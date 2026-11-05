@@ -39,6 +39,7 @@ export interface DownloadProgressDto {
   elapsedMs: number; lastByteAt: string | null; startedAt: string | null; deadlineAt: string | null; timeoutSeconds: number; stalled: boolean;
 }
 export interface DurableTaskFields {
+  workName?: string; submittedWorkName?: string; nameRevision?: number;
   /** Missing/null means this historical request did not record its route. */
   transportRoute?: TransportRouteSnapshot | null;
   revision?: number; acceptedAttemptId?: string; canRetryDownload?: boolean; recoveryKind?: string; recoveryReason?: string | null;
@@ -105,6 +106,7 @@ export async function actOnWorkbenchTask(taskId: string, action: WorkbenchTaskAc
 
 /** Canonical B1 input. The caller persists this intent before sending; failed POSTs are never retried here. */
 export interface WorkbenchTaskInput {
+  workName?: string;
   groupId?: string; groupName?: string; groupDirectoryVersionId?: string;
   localRequestId: string;
   connectionVersionId: string;

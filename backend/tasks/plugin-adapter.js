@@ -103,7 +103,7 @@ function createPluginAdapter(plugin, { readAsset, getAsset, validateCapability, 
             return { upstreamTaskId: accepted.upstreamTaskId, ...(accepted.immediate?.assets?.length ? { resultSources: sources(accepted.immediate.assets, context) } : {}) };
         },
         async poll(task, _snapshot, auth) {
-            const context = { ...contextFor(plugin, task, auth, getAsset), signal: auth.signal, checkpoint: auth.checkpoint, phase: auth.phase, diagnostic: auth.diagnostic, remainingMs: auth.remainingMs }, payload = await send(context, true);
+            const context = submitContext(task, auth, { signal: auth.signal, checkpoint: auth.checkpoint, phase: auth.phase, diagnostic: auth.diagnostic, remainingMs: auth.remainingMs }), payload = await send(context, true);
             if (plugin.driver?.parseTaskResult) {
                 const parsed = await plugin.driver.parseTaskResult(payload, context); auth.checkpoint?.(); credentialFree(parsed, auth.apiKey);
                 return { remoteState: ({ processing: 'generating', queued: 'queued', completed: 'completed', failed: 'failed', cancelled: 'cancelled' })[parsed?.state] || 'unknown', rawStatus: parsed?.rawStatus || parsed?.state, progress: parsed?.progress, resultSources: sources(parsed?.assets, context) };

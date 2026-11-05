@@ -24,7 +24,11 @@ function createWorkbenchQueries({ db, record, group, fail }) {
         const baseClause=' WHERE '+base.join(' AND '), baseArgs=[...args], where=[...base];
         const value = field => `COALESCE(json_extract(CASE WHEN json_valid(input_snapshot_json) THEN input_snapshot_json ELSE '{}' END,'$.${field}'),json_extract(CASE WHEN json_valid(request_json) THEN request_json ELSE '{}' END,'$.${field}'),'')`;
         if (kind) where.push(kind==='image' ? "(mode LIKE 'image.%' OR mode IN ('text-to-image','image-to-image'))" : "(mode LIKE 'video.%' OR mode IN ('plugin','legacy.plugin'))");
-        if (search) { where.push(`(instr(lower(${value('prompt')}),lower(?))>0 OR instr(lower(${value('model')}),lower(?))>0)`); args.push(search,search); }
+        const name = `COALESCE(tasks.work_name,${value('workName')})`;
+        for (const word of search.trim().split(/\s+/u).filter(Boolean)) {
+            where.push(`(instr(lower(${name}),lower(?))>0 OR instr(lower(${value('prompt')}),lower(?))>0 OR instr(lower(${value('model')}),lower(?))>0)`);
+            args.push(word,word,word);
+        }
         if (model) { where.push(value('model')+'=?'); args.push(model); }
         if (status) { where.push('status=?'); args.push(status); }
         if (selected) { where.push('('+category+')=?'); args.push(selected); }

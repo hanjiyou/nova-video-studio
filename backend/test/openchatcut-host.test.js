@@ -37,7 +37,7 @@ test('viewport rejects unknown fields and nonfinite values and converts CSS to D
   assert.deepEqual(viewportBounds(rectangle,{width:100,height:20}),{x:100,y:20,width:0,height:0});
 });
 
-function viewFixture({ ready = true, readinessTimeoutMs = 10000, clearContentsOnClose = false } = {}) {
+function viewFixture({ ready = true, readinessTimeoutMs = 10000, clearContentsOnClose = false,onDiagnostic,loadPage } = {}) {
   const callbacks = {};
   const session = { webRequest: {
     onBeforeRequest(_filter,callback){ callbacks.beforeRequest = callback; },
@@ -46,7 +46,7 @@ function viewFixture({ ready = true, readinessTimeoutMs = 10000, clearContentsOn
   class Contents extends EventEmitter {
     destroyed=false; veto=false; closeOptions=[];
     setWindowOpenHandler(handler){ this.openHandler=handler; }
-    async loadURL(url){ this.url=url; }
+    async loadURL(url){ this.url=url;await loadPage?.(); }
     async executeJavaScript(script){ this.readyScript=script;return ready; }
     isDestroyed(){ return this.destroyed; }
     close(options){ this.closeOptions.push(options); if(options?.waitForBeforeUnload && this.veto) { const event={ preventDefault(){ throw new Error('must not override save veto'); } }; this.emit('will-prevent-unload',event); return; } this.destroyed=true; if(clearContentsOnClose)this.ownerView.webContents=undefined;this.emit('destroyed'); }
@@ -63,7 +63,7 @@ function viewFixture({ ready = true, readinessTimeoutMs = 10000, clearContentsOn
   window.contentView={addChildView(view){window.attached=view;},removeChildView(){window.attached=null;}};
   let partition;
   const electron={WebContentsView:View,session:{fromPartition(value){partition=value;return session;}}};
-  const manager=createEditorView({electron,getWindow:()=>window,dataDirectory:'synthetic-profile',readinessTimeoutMs,readinessPollMs:1});
+  const manager=createEditorView({electron,getWindow:()=>window,dataDirectory:'synthetic-profile',readinessTimeoutMs,readinessPollMs:1,onDiagnostic});
   return {manager,window,views,callbacks,partition:()=>partition};
 }
 
@@ -108,7 +108,7 @@ test('native close may clear view.webContents: retaining original contents makes
   assert.doesNotThrow(()=>{f.manager.hide();f.manager.resize();f.manager.reset();f.manager.dispose();});
 });
 
-function hostFixture({ ready=true, inspect, invalidOrigin, loading, timeout=100, closeAllowed=true, environment }={}) {
+function hostFixture({ ready=true, inspect, invalidOrigin, loading, timeout=100, closeAllowed=true, environment,diagnostics,getSettings }={}) {
   const processes=[], options=[], states=[];
   let hooks;
   const view={active:false,loaded:[],visible:false,present:false,
@@ -117,11 +117,12 @@ function hostFixture({ ready=true, inspect, invalidOrigin, loading, timeout=100,
     setViewport(value){this.rectangle=value;},reset(){this.present=false;this.visible=false;},dispose(){this.reset();},hasView(){return this.present;},requestClose:async()=>closeAllowed,
   };
   class Child extends EventEmitter {
+    stderr=new EventEmitter();
     exitCode=null;connected=true;stopCount=0;
     send(message,callback){this.stopCount++;assert.equal(message.type,'openchatcut:stop');queueMicrotask(()=>{this.exitCode=0;this.emit('exit',0);});callback?.(null);}
     kill(){this.exitCode=1;this.emit('exit',1);}
   }
-  const host=createEditorHost({electron:{},getWindow:()=>({}),dataDirectory:'synthetic-profile',startTimeoutMs:timeout,stopTimeoutMs:20,
+  const host=createEditorHost({electron:{},getWindow:()=>({}),dataDirectory:'synthetic-profile',startTimeoutMs:timeout,stopTimeoutMs:20,diagnostics,getSettings,
     inspectRuntime:inspect||(()=>({available:true,engineCommit:ENGINE_COMMIT,servicePath:path.resolve('fake-service.mjs'),workingDirectory:path.resolve('.')})),
     createEnvironment:environment||(()=>({SAFE_ONLY:'1'})),createView:value=>{hooks=value;return view;},sendState:value=>states.push(value),
     forkService(_entry,_args,value){options.push(value);const child=new Child();processes.push(child);if(ready)queueMicrotask(()=>child.emit('message',{type:'openchatcut:ready',origin:invalidOrigin||origin,editorPath:route,engineCommit:ENGINE_COMMIT}));return child;},
@@ -221,4 +222,62 @@ test('host forwards preflight-validated shared FFmpeg only to its service enviro
   const f=hostFixture({inspect:()=>({available:true,engineCommit:ENGINE_COMMIT,servicePath:path.resolve('fake-service.mjs'),workingDirectory:path.resolve('.'),ffmpegPath:shared}),environment:options=>{received=options;return {SAFE_ONLY:'1'};}});
   assert.equal((await f.host.open()).ok,true);assert.equal(received.ffmpegPath,shared);
   assert.equal(JSON.stringify(f.host.state()).includes(shared),false);await f.host.dispose();
+});
+
+test('startup diagnostics distinguish service import timeout from page/shell timeout without copying process output',async()=>{
+  const events=[];let attemptId=0;const diagnostics={begin(){const id=++attemptId;return(event,fields)=>events.push({id,event,...fields});}};
+  const waiting=hostFixture({ready:false,timeout:40,diagnostics});const pending=waiting.host.open();await tick();
+  waiting.processes[0].emit('message',{type:'openchatcut:phase',phase:'imports',elapsedMs:4,token:'PRIVATE'});
+  waiting.processes[0].emit('message',{type:'openchatcut:phase',phase:'PRIVATE',elapsedMs:5});
+  waiting.processes[0].stderr.emit('data',Buffer.from('Error [ERR_MODULE_NOT_FOUND]: PRIVATE /private/path'));
+  assert.equal((await pending).code,'EDITOR_START_TIMEOUT');await waiting.host.dispose();
+  const service=events.find(item=>item.event==='startup_timeout');assert.equal(service.stage,'service-start');assert.equal(service.servicePhase,'imports');
+  assert.equal(events.find(item=>item.event==='service_stderr').systemCode,'ERR_MODULE_NOT_FOUND');assert.equal(JSON.stringify(events).includes('PRIVATE'),false);
+  let release;const loading=new Promise(resolve=>{release=resolve;});const view=hostFixture({loading,timeout:40,diagnostics});const opening=view.host.open();await tick();view.hooks().onDiagnostic('shell_wait_started',{deadlineMs:10000});
+  assert.equal((await opening).code,'EDITOR_START_TIMEOUT');release();await tick();await view.host.dispose();
+  assert.equal(events.filter(item=>item.event==='startup_timeout').at(-1).stage,'shell-ready');
+  assert.notEqual(events.filter(item=>item.event==='startup_timeout')[0].id,events.filter(item=>item.event==='startup_timeout')[1].id);
+});
+
+test('view diagnostics capture lifecycle and categorical renderer errors while preserving isolation',async()=>{
+  const events=[],f=viewFixture({onDiagnostic:(event,fields)=>events.push({event,...fields})});await f.manager.load(origin,route);
+  const contents=f.views[0].webContents;contents.emit('dom-ready');contents.emit('console-message',{},3,'UnknownError: Internal error. PRIVATE PROMPT',20,'http://PRIVATE');
+  contents.emit('did-fail-load',{},-105,'PRIVATE','http://PRIVATE',true);
+  assert.ok(events.some(item=>item.event==='page_load_started'));assert.ok(events.some(item=>item.event==='shell_ready'));
+  assert.deepEqual(events.find(item=>item.event==='console_error'),{event:'console_error',category:'browser-error',errorName:'UnknownError',lineNumber:20});
+  assert.equal(JSON.stringify(events).includes('PRIVATE'),false);assert.equal(events.find(item=>item.event==='page_load_failed').netErrorCode,-105);
+  f.manager.reset();const count=events.length;contents.emit('console-message',{},3,'TypeError: PRIVATE',1);assert.equal(events.length,count);f.manager.dispose();
+});
+
+test('diagnostic sink failure never turns a successful editor open into a startup failure',async()=>{
+  const f=hostFixture({diagnostics:{begin(){throw Error('cannot write log');}}});assert.equal((await f.host.open()).ok,true);await f.host.dispose();
+});
+
+test('a reset view cannot append late page completion to the next startup attempt',async()=>{
+  const events=[];let finishPage;
+  const f=viewFixture({loadPage:()=>new Promise(resolve=>{finishPage=resolve;}),onDiagnostic:(event,fields)=>events.push({event,...fields})});
+  const loading=f.manager.load(origin,route),rejected=assert.rejects(loading,/EDITOR_STOPPED/);
+  f.manager.reset();const count=events.length;finishPage();await rejected;
+  assert.equal(events.length,count);assert.equal(events.some(item=>item.event==='page_loaded'),false);f.manager.dispose();
+});
+
+test('startup snapshots persisted timeout per launch; changing settings never resets an active launch',async()=>{
+  const events=[];let settings={startupTimeoutSeconds:90},reads=0;
+  const f=hostFixture({ready:false,timeout:null,getSettings:()=>{reads++;return settings;},
+    diagnostics:{begin(){return(event,fields)=>events.push({event,...fields});}}});
+  const first=f.host.open();await tick();settings={startupTimeoutSeconds:300};const coalesced=f.host.open();
+  assert.equal(reads,1);assert.equal(events.find(item=>item.event==='open_requested').deadlineMs,90000);
+  f.processes[0].emit('message',{type:'openchatcut:ready',origin,editorPath:route,engineCommit:ENGINE_COMMIT});await Promise.all([first,coalesced]);
+  await f.host.open();assert.equal(reads,1,'Reusing an opened editor is not a new launch');
+  await f.host.requestClose();const next=f.host.open();await tick();assert.equal(reads,2);
+  assert.equal(events.filter(item=>item.event==='open_requested').at(-1).deadlineMs,300000);
+  await f.host.dispose();await next;
+});
+
+test('missing or invalid persisted startup settings safely use the 90-second default',async()=>{
+  for(const value of [null,{startupTimeoutSeconds:0}]){
+    const events=[],f=hostFixture({timeout:null,getSettings:()=>value,
+      diagnostics:{begin(){return(event,fields)=>events.push({event,...fields});}}});
+    await f.host.open();assert.equal(events.find(item=>item.event==='open_requested').deadlineMs,90000);await f.host.dispose();
+  }
 });

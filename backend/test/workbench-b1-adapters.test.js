@@ -22,7 +22,8 @@ function mock(t, response) { const previous=global.fetch,calls=[];global.fetch=a
 test('new package registers both exact models, with only fixed application controls and ordered references',()=>{
     assert.deepEqual(plugin.manifest.models.map(item=>item.id),['grok-imagine-video-6s','grok-imagine-video-1.5-6s']);
     // The driver also recognizes configured preparation-only models; this is not a manifest availability grant.
-    for(const model of [...plugin.manifest.models.map(item=>item.id),...Object.keys(require('../connections/model-rules.json').models)])assert.ok(driver.MODELS.includes(model));
+    for(const model of [...plugin.manifest.models.map(item=>item.id),...Object.keys(require('../connections/video-rules').videoRules())])assert.ok(driver.MODELS.includes(model));
+    assert.equal(driver.MODELS.includes('doubao-seedance-2.0-mini'),false,'Unconfirmed protocol is not a driver availability grant');
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='seconds').options.map(item=>item.value),[6]);
     assert.deepEqual(plugin.uiSchema.fields.find(item=>item.key==='aspectRatio').options.map(item=>item.value),['16:9']);
     assert.equal(plugin.manifest.media.images.maxCount,7);

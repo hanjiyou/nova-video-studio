@@ -1,5 +1,13 @@
 # 脱敏诊断导出 v1
 
+## 2026-11-02 当前源码：剪辑启动本地日志
+
+OpenChatCut新增独立`editor-diagnostics.json`，放在Nova应用数据目录，与现有任务和更新日志分开；GitHub Test默认位置为`%APPDATA%\Nova Studio GitHub Test\editor-diagnostics.json`。本批未加入“导出脱敏诊断”JSON，复现后可单独读取此文件；仅本地记录，不上传。已安装3.6.11尚不含此修改。
+
+格式`nova-editor-diagnostics-v1`，最多240事件，启动读取最多192KiB；每个进程sessionId、每次新打开attemptId均为随机UUID。记录总耗时/阶段耗时、预检、进程启动、服务初始化、页面加载、原版编辑界面就绪、超时、关闭及退出。服务子阶段固定entry/profile/imports/plugins/projects/listen/ready。当前整体启动预算读取本地设置，默认90秒、可设30–300整数秒，按次冻结；页面后编辑界面等待内部30秒，仍受总预算限制。open_requested/startup_timeout的deadlineMs为本次实际总预算，shell_wait_started/shell_timeout为界面预算。前批固定30秒/10秒为历史实现。迟到进程事件绑定原attempt，重置页面后迟到加载事件丢弃。
+
+字段仅固定事件/阶段、版本、时间、耗时、已知错误名/系统码、数字网络码/退出码、信号、错误类别与stderr字节数。stderr最多16KiB仅暂存内存供分类，原文不落盘；每次打开最多8个控制台错误。无原始错误消息/堆栈、URL、路径、工程名、提示词、Key或媒体。原子替换和目标类型检查保护日志；写入失败不改变剪辑结果。日志提供阶段证据，不能保证单次复现判定所有外部根因。详见[实施记录](implementation/OpenChatCut启动诊断补充.md)。
+
 ## 统一线路诊断补充（2026-10-26）
 
 任务生成和下载尝试分别输出 `transportRoute:{route:'cn'|'com',revision:number}|null`；历史缺记录保留null，不由当前设置推断。请求点白名单增加 operation=models/submit/poll/download、route=cn/com、正整数routeRevision及精确targetHost=`newapi.opensosen.cn`/`newapi.opensosen.com`。这两个白名单host是下文“省略连接地址”的窄例外，不接受任意域名或完整URL。

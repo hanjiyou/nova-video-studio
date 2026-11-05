@@ -1,9 +1,10 @@
-import {videoRule,configuredVideo,validVideoParameters,videoDefaults,modelHidden,defaultModel} from './workbench-model-catalog';
+import {videoRule,configuredVideo,validVideoParameters,validVideoReferences,videoDefaults,modelHidden,defaultModel} from './workbench-model-catalog';
 import { sameConnectionTransport, type CapabilitySummary, type ConnectionModels, type ConnectionSummary } from './connection-client';
 import type { Draft, HistoryTask } from './workbench-client';
 import type { WorkbenchTaskInput } from './workbench-task-client';
 import { MAX_VIDEO_REFERENCE_ASSETS, unverifiedMultiSubmissionAllowed } from './reference-policy';
 import { unverifiedImageCapability } from './image-policy';
+import { workNameError } from './workbench-names';
 export const generationEvidenceVerified = (capability?: CapabilitySummary) => capability?.evidenceLevel === 'historically_verified' || capability?.evidenceLevel === 'application_verified' && capability.evidence.applicationVerified === true && Array.isArray(capability.evidence.sourceIds) && capability.evidence.sourceIds.length > 0;
 export const TASK_LABELS: Record<string, string> = { local_queued: '等待处理', submitting: '提交中', submission_unknown: '提交结果待核对', remote_queued: '远端排队', generating: '生成中', polling_paused: '查询已暂停', remote_completed: '等待下载', downloading: '下载中', download_failed: '下载失败', completed: '已保存到本机', failed: '失败', local_cancelled: '已取消本地等待', remote_cancelled: '远端已取消', timed_out: '超时失败' };
 export const terminalTask = (status: string) => ['completed', 'failed', 'download_failed', 'local_cancelled', 'remote_cancelled', 'timed_out'].includes(status);
@@ -21,7 +22,7 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   // A newer unverified scope never replaces the proven default in generic capability ranking.
   const imageControls = image ? matching.find(item => unverifiedImageCapability(item,connection)) : undefined;
   const wantsImageControls = image && (mode === 'image.reference' || Object.keys(draft.parameters).length > 0);
-  const rule = !image ? videoRule(model,connection) : null;
+  const rule = !image ? videoRule(model,connection,models) : null;
   const videoConfiguration = rule ? matching.find(configuredVideo) : undefined;
   const configuredImage = imageControls?.evidence.configuredProtocol ? imageControls : undefined;
   const capability = videoConfiguration || configuredImage || (wantsImageControls ? imageControls : matching.filter(item => item.isCurrent !== false && (!image || Object.keys(item.parameters).length === 0)).sort((a,b) => Number(b.isCurrent === true) - Number(a.isCurrent === true))[0]);
@@ -29,7 +30,7 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const unverifiedMulti = mode === 'video.multi_reference' && unverifiedMultiSubmissionAllowed(capability, connection);
   const sizes = imageControls ? imageControls.parameters.sizes as string[] : [];
   const qualities = imageControls ? imageControls.parameters.qualities as string[] : [];
-  const parameters: Record<string, unknown> = image ? { ...draft.parameters } : Object.keys(draft.parameters).length ? { ...draft.parameters } : rule && videoConfiguration ? videoDefaults(model,rule,models) : { seconds: capability?.parameters.seconds ?? 6, ...(typeof capability?.parameters.size === 'string' ? { size: capability.parameters.size } : draft.mode === 'video.text' ? {} : { size: '1280x720' }) };
+  const parameters: Record<string, unknown> = image ? { ...draft.parameters } : Object.keys(draft.parameters).length ? { ...draft.parameters } : rule && videoConfiguration ? videoDefaults(model,rule,models) : {...(typeof capability?.parameters.seconds==='number'?{seconds:capability.parameters.seconds}:{}),...(typeof capability?.parameters.size==='string'?{size:capability.parameters.size}:{})};
   const expectedCount = draft.mode === 'video.text' ? 0 : draft.mode === 'video.dual_reference' ? 2 : 1;
   const issues: GenerationIssue[] = [];
   const add = (code: string, message: string, action?: GenerationIssue['action']) => issues.push({ code, message, ...(action ? { action } : {}) });
@@ -41,6 +42,13 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   if (connectionReady && !model) add('model-required', '请在设置中显示可用型号，或选择一个生成模型。', 'configure');
   if (connectionReady && model && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled))
     add('capability', videoConfiguration && rule && !rule.submissionEnabled ? '此模型当前未开放生成。' : '此模型尚未接入生成，请选择已支持的模型。', 'model');
+  if (!image && connectionReady && model && models?.videoRules && !rule) add('video-configuration','此型号尚未配置可用的视频协议，请先完成型号接入。','model');
+  if (!image && rule && (!rule.modes.includes(mode) || !validVideoReferences(rule,mode,draft.inputAssets))) {
+    if(!rule.modes.includes(mode))add('video-mode','此型号不支持当前视频模式，请选择已配置支持的模式。','model');
+    else if(draft.inputAssets.length>rule.referenceLimits[mode].max)add('video-reference-limit',`此型号当前模式最多支持 ${rule.referenceLimits[mode].max} 张参考图，请明确移除多余图片。`,'review-references');
+    else if(draft.inputAssets.length<rule.referenceLimits[mode].min&&draft.inputAssets.length>=expectedCount)add('video-reference-minimum',`此型号当前模式至少需要 ${rule.referenceLimits[mode].min} 张参考图。`,'add-references');
+  }
+  if (workNameError(draft.workName || '')) add('work-name',workNameError(draft.workName || ''));
   if (!draft.prompt.trim()) add('prompt', '请填写提示词。', 'prompt');
   const count = draft.inputAssets.length;
   if (!image) {
@@ -56,15 +64,15 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   if (image && imageControls && (Object.keys(parameters).some(key => !['size', 'quality'].includes(key)) || parameters.size !== undefined && !sizes.includes(String(parameters.size)) || parameters.quality !== undefined && !qualities.includes(String(parameters.quality))))
     add('image-parameters', '草稿保留了当前能力未确认的图片规格，请核对后明确调整。', 'parameters');
   // Without a matching capability, report that missing evidence rather than inventing parameter errors.
-  if (!image && rule && videoConfiguration && !validVideoParameters(rule, parameters))
+  if (!image && rule && videoConfiguration && !validVideoParameters(rule, parameters,mode))
     add('video-parameters', '请输入 ' + rule.minSeconds + '～' + rule.maxSeconds + ' 的整数秒，并核对画面尺寸。', !Number.isInteger(parameters.seconds) || Number(parameters.seconds) < rule.minSeconds || Number(parameters.seconds) > rule.maxSeconds ? 'duration' : 'parameters');
   if (!image && capability && !videoConfiguration && (parameters.seconds !== capability.parameters.seconds || parameters.size !== capability.parameters.size || Object.keys(parameters).some(key => !(typeof capability.parameters.size === 'string' ? ['seconds', 'size'] : ['seconds']).includes(key))))
     add('historical-parameters', '历史规格与当前能力不一致，未自动修改，请核对草稿。', 'parameters');
   const blocked = issues[0]?.message || '';
   return { image, model, mode, capability, rule, videoConfiguration, unverifiedMulti, unverifiedImage, sizes, qualities, parameters: parameters as WorkbenchTaskInput['parameters'], issues, blocked };
 }
-export function reusableDraft(task: HistoryTask): Pick<Draft, 'model' | 'prompt' | 'parameters' | 'inputAssets'> {
-  return { model: task.model, prompt: task.prompt, parameters: { ...task.parameters }, inputAssets: [...(task.inputAssets || [])] };
+export function reusableDraft(task: HistoryTask): Pick<Draft, 'workName' | 'model' | 'prompt' | 'parameters' | 'inputAssets'> {
+  return { workName: task.workName || '', model: task.model, prompt: task.prompt, parameters: { ...task.parameters }, inputAssets: [...(task.inputAssets || [])] };
 }
 export const taskExecutionActive = (task: HistoryTask) => task.downloadAttempt?.active === true || (typeof task.localExecutionActive === 'boolean' ? task.localExecutionActive : !task.localOutcome && !terminalTask(task.status));
 const PHASE_LABELS: Record<string,string> = {reference_upload:'准备参考图',submitting:'提交与等待响应',receiving:'接收响应',parsing:'解析结果',remote_waiting:'远端等待',downloading:'下载结果',validating:'验证媒体',saving:'保存作品'};

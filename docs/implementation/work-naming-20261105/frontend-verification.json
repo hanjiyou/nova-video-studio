@@ -1,0 +1,55 @@
+{
+  "scope": "8 targeted frontend test files, not full suite",
+  "passed": 107,
+  "failed": 0,
+  "suites": [
+    {
+      "file": "frontend/src/components/workbench/__tests__/draft-save-feedback.test.tsx",
+      "status": "passed",
+      "tests": 6
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/group-operations.test.tsx",
+      "status": "passed",
+      "tests": 12
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/grouped-workspace.test.tsx",
+      "status": "passed",
+      "tests": 18
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/library-enhancements.test.tsx",
+      "status": "passed",
+      "tests": 15
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/library-preview.test.tsx",
+      "status": "passed",
+      "tests": 18
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/reference-paste.test.tsx",
+      "status": "passed",
+      "tests": 14
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/work-names.test.tsx",
+      "status": "passed",
+      "tests": 15
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/workbench-b4.test.tsx",
+      "status": "passed",
+      "tests": 9
+    }
+  ],
+  "finalLabelAdjustment": {
+    "targetedPassed": 15,
+    "typecheck": "passed"
+  },
+  "mainReview": {
+    "targetedPassed": 15,
+    "typecheck": "passed"
+  }
+}

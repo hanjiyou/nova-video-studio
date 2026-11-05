@@ -251,7 +251,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
                 const item=visible?.find(item=>item.model===modelId), override=saved[modelId], classification=catalog.classify(modelId,item?.endpointTypes,override?.categories);
                 return {model:modelId,endpointTypes:item?.endpointTypes || [],...classification,custom:override?.custom===true,
                     submissionEnabled:classification.categories.some(kind=>submissionEnabled(version,modelId,kind)),submissionEnabledByKind:Object.fromEntries(['image','video'].map(kind=>[kind,classification.categories.includes(kind)&&submissionEnabled(version,modelId,kind)])),visibility:visible?(item?'visible':'absent'):'unknown'};
-            }), capabilities };
+            }), capabilities, videoRules:require('./video-rules').videoRules({provider:version.provider,baseUrl:version.base_url,protocol:version.protocol}), videoRuleVersion:catalog.RULES.version };
     }
     async function ensureModels(versionId) {
         const selected=getTransportRoute(versionId);

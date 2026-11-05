@@ -1,7 +1,8 @@
 'use strict';
 const fs = require('node:fs');
 const path = require('node:path');
-const { randomUUID, createHash } = require('node:crypto');
+const { randomUUID } = require('node:crypto');
+const { outputFilename, workNameFor } = require('./work-names');
 const DEFAULT_GROUP = '00000000-0000-4000-8000-000000000002';
 const LIMITS = Object.freeze({ groupName: 48, description: 24, filename: 100, fullPath: 240 });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -33,14 +34,17 @@ function safeDirectory(root, pieces, create = false) {
     }
     return current;
 }
-function safeFile(root, key, strict = false) {
+function safeFile(root, key, strict = false, namedLegacy = false) {
     if (typeof key !== 'string' || path.isAbsolute(key)) throw invalid('ASSET_PATH_REJECTED', '受管文件路径无效。');
     const pieces = key.split(/[\\/]/);
     if (pieces.length !== (strict ? 3 : 2) || pieces.some(part => !part || part === '.' || part === '..')) throw invalid('ASSET_PATH_REJECTED', '受管文件路径无效。');
-    if (!strict && !/^[a-f0-9]{2}[\\/][a-f0-9]{64}\.[a-z0-9]+$/.test(key)) throw invalid('ASSET_PATH_REJECTED', '受管文件路径无效。');
+    if (!strict && !/^[a-f0-9]{2}[\\/][a-f0-9]{64}\.[a-z0-9]+$/.test(key)) {
+        // Only an explicit durable asset marker permits a renamed legacy leaf.
+        if (!namedLegacy || !/^[a-f0-9]{2}$/.test(pieces[0]) || /[<>:"|?*\p{Cc}\p{Cs}]/u.test(pieces[1]) || /[. ]$/.test(pieces[1]) || !/\.[a-z0-9]{2,5}$/.test(pieces[1]) || pieces[1].length > LIMITS.filename) throw invalid('ASSET_PATH_REJECTED', '受管文件路径无效。');
+    }
     const candidate = path.resolve(root, ...pieces);
     if (!contained(root, candidate)) throw invalid('ASSET_PATH_REJECTED', '受管文件路径无效。');
-    if (strict) {
+    if (strict || namedLegacy) {
         bounded(candidate);
         if (!safeDirectory(root, pieces.slice(0, -1))) return null;
     }
@@ -55,11 +59,7 @@ function probe(directory) {
     try { fd = fs.openSync(file, 'wx'); fs.writeSync(fd, 'probe'); fs.fsyncSync(fd); }
     finally { if (fd !== undefined) fs.closeSync(fd); if (fs.existsSync(file)) fs.unlinkSync(file); }
 }
-function clipped(value, length) {
-    let result = '';
-    for (const letter of value) { if (result.length + letter.length > length) break; result += letter; }
-    return result;
-}
+
 function createGroups({ db, outputDirectories }) {
     function get(id = DEFAULT_GROUP) {
         if (typeof id !== 'string' || !UUID.test(id)) throw invalid('GROUP_NOT_FOUND', '找不到剧本分组。', 404);
@@ -146,8 +146,14 @@ function createGroups({ db, outputDirectories }) {
     function location(task, position, ext) {
         if (!Number.isInteger(position) || position < 0 || position > 31 || !/^[a-z0-9]{2,5}$/.test(ext)) throw invalid('ASSET_TYPE_INVALID', '结果文件类型或序号无效。', 400);
         const member = membership(task.id), snapshot = JSON.parse(task.input_snapshot_json || '{}');
-        if (!member?.directory_version_id) return null;
-        if (!member?.directory_version_id) throw invalid('OUTPUT_DIRECTORY_INVALID', '任务当前分组目录缺失。');
+        if (!member?.directory_version_id) {
+            const prior = db.prepare("SELECT a.* FROM task_assets ta JOIN assets a ON a.id=ta.asset_id WHERE ta.task_id=? AND ta.role='output' AND ta.position=? AND a.named_legacy=1").get(task.id, position);
+            if (!prior) return null;
+            if (path.extname(prior.storage_key) !== '.' + ext) throw invalid('OUTPUT_DIRECTORY_INVALID', '恢复结果扩展名与原输出不一致。');
+            const base = outputDirectories.directory(prior.root_ref || outputDirectories.DEFAULT);
+            safeDirectory(base, ['assets', prior.storage_key.split(/[\\/]/)[0]], true);
+            return { root_ref: prior.root_ref, group_id: null, storage_key: prior.storage_key, named_legacy: 1 };
+        }
         const root = outputDirectories.directory(member.root_ref), media = task.execution_media_kind === 'image' || String(snapshot.mode).startsWith('image.') ? '图片' : '视频';
         const directory = safeDirectory(root, ['assets', member.directory_name, media], true);
         const prior = db.prepare('SELECT * FROM task_output_locations WHERE task_id=? AND position=?').get(task.id, position);
@@ -156,16 +162,10 @@ function createGroups({ db, outputDirectories }) {
             bounded(path.join(root, 'assets', prior.storage_key));
             return prior;
         }
-        const when = new Date(task.created_at);
-        if (!Number.isFinite(when.getTime())) throw invalid('OUTPUT_DIRECTORY_INVALID', '任务创建时间无效。');
-        const pad = number => String(number).padStart(2, '0');
-        const timestamp = String(when.getFullYear()) + pad(when.getMonth()+1) + pad(when.getDate()) + '-' + pad(when.getHours()) + pad(when.getMinutes()) + pad(when.getSeconds());
-        const description = clipped(String(snapshot.prompt || '').replace(/[<>:"/\\|?*\p{Cc}\uD800-\uDFFF]/gu, ' ').replace(/\s+/gu, ' ').trim().replace(/[. ]+$/g, ''), LIMITS.description) || media;
-        const stable = createHash('sha256').update(task.id + ':' + position).digest('hex').slice(0, 12);
-        const stem = timestamp + '_' + description + '_' + stable + (position ? '_' + (position + 1) : '');
+        let count = 1;
+        try { count = JSON.parse(task.result_sources_json || '[]').length || 1; } catch {}
         for (let collision = 0; collision < 100; collision++) {
-            const filename = stem + (collision ? '_' + collision : '') + '.' + ext;
-            if (filename.length > LIMITS.filename) throw invalid('PATH_TOO_LONG', '结果文件名过长。');
+            const filename = outputFilename({ taskId: task.id, createdAt: task.created_at, position, ext, workName: workNameFor(task, snapshot), prompt: snapshot.prompt, media, count, collision, directory });
             const storageKey = path.join(member.directory_name, media, filename);
             const target = bounded(path.join(directory, filename));
             if (fs.existsSync(target) || db.prepare('SELECT 1 FROM assets WHERE root_ref IS ? AND storage_key=? UNION ALL SELECT 1 FROM task_output_locations WHERE root_ref=? AND storage_key=?').get(member.root_ref, storageKey, member.root_ref, storageKey)) continue;

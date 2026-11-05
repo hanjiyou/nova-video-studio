@@ -40,7 +40,7 @@ export interface ConnectionVersionInput { connectionId: string; expectedVersionI
 export interface ConnectionResult { ok: boolean; connection?: ConnectionSummary; code?: string }
 export interface CapabilitySummary {
   capabilityVersionId: string; provider: string; baseUrl: string; model: string; mode: string; protocol: string;
-  parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean;
+  parameters: Record<string, unknown>; evidenceLevel: string; evidenceVersion: string; isCurrent?: boolean; configurationCurrent?:boolean;
   evidence: { sourceIds: string[]; applicationVerified: boolean; referenceSemantics?: string; submissionPolicy?: string; supplierMaximumReferences?: number | null; configuredProtocol?: string; submissionEnabled?: boolean };
 }
 export interface ModelDisplaySettings {
@@ -52,6 +52,8 @@ export interface ModelDisplaySettings {
   pricingGroup: string | null;
 }
 export interface ConnectionModels extends ConnectionRouteFields {
+  videoRules?: Record<string, import('./workbench-model-catalog').VideoRule>;
+  videoRuleVersion?: string;
   displaySettings?: ModelDisplaySettings;
   pricingGroups?: string[];
   transportEvidence?: 'generation_unverified' | 'see_capability_evidence';

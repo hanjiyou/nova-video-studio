@@ -28,7 +28,10 @@ test('no-size candidate needs exact host grant; every other request keeps ordina
 test('canonical adapter sends exactly three scalar fields and no size/files through actual CONNECT wire once',async t=>{
  const env=await rig(t);let posts=0;gate.configure(options(()=>posts===0));t.after(()=>gate.revoke());
  const snapshot=snapshotFor(input,'1');assert.deepEqual(snapshot.parameters,{seconds:6});
- assert.throws(()=>snapshotFor({...input,mode:'video.single_reference',inputAssets:[{assetId:randomUUID(),position:0,role:'reference'}]},'1'),{code:'INPUT_INVALID'});for(const diff of [{localRequestId:randomUUID()},{model:'grok-imagine-video-6s'}])assert.throws(()=>validateCapability({prepare:()=>({get:()=>capability})},snapshotFor({...input,...diff},'1'),auth),{code:'CAPABILITY_UNVERIFIED'});
+ // Current configured reference modes also omit size; this historical text-only
+ // grant must still reject them at the capability boundary.
+ const reference=snapshotFor({...input,mode:'video.single_reference',inputAssets:[{assetId:randomUUID(),position:0,role:'reference'}]},'1');
+ assert.throws(()=>validateCapability({prepare:()=>({get:()=>capability})},reference,auth),{code:'CAPABILITY_UNVERIFIED'});for(const diff of [{localRequestId:randomUUID()},{model:'grok-imagine-video-6s'}])assert.throws(()=>validateCapability({prepare:()=>({get:()=>capability})},snapshotFor({...input,...diff},'1'),auth),{code:'CAPABILITY_UNVERIFIED'});
  const context={...auth,mode:input.mode,model:input.model,parameters:{seconds:6},fields:{prompt:input.prompt},inputAssets:[],candidate:'without-size'};assert.throws(()=>driver.buildSubmit(context),{code:'CAPABILITY_UNVERIFIED'});
  const db={prepare:()=>({get:()=>capability})},validate=(s,a)=>validateCapability(db,s,a),plugin={id:'opensosen-video',allowedHosts:new Set(['newapi.opensosen.com']),manifest:{version:'1',runtime:{}},driver};
  const adapter=createPluginAdapter(plugin,{readAsset:()=>{throw Error('NO_FILES_ALLOWED')},validateCapability:validate,authorizeContext:(ctx,s,a)=>gate.authorizeContext(ctx,s,a,validate(s,a))});

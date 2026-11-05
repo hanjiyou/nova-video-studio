@@ -1,0 +1,289 @@
+{
+  "ok": true,
+  "scope": "source host and rebuilt original editor service under Electron; no installer or real user profile",
+  "elapsedMs": 28737,
+  "result": {
+    "ok": true,
+    "state": {
+      "phase": "ready",
+      "available": true,
+      "engineCommit": "7fa4b7903e7ebecf832a36249f0c0c755200cc17"
+    }
+  },
+  "dom": {
+    "shell": true,
+    "library": true,
+    "timeline": true,
+    "tabs": 6,
+    "novaBridge": "undefined"
+  },
+  "phases": [
+    "entry",
+    "profile",
+    "imports",
+    "plugins",
+    "projects",
+    "listen",
+    "ready"
+  ],
+  "diagnostics": {
+    "format": "nova-editor-diagnostics-v1",
+    "omitted": 0,
+    "writeFailures": 0,
+    "events": [
+      {
+        "event": "session_started",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "at": "2026-11-02T13:01:23.010Z",
+        "currentVersion": "3.6.11-source"
+      },
+      {
+        "event": "open_requested",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:23.287Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 0,
+        "stageElapsedMs": 0,
+        "deadlineMs": 30000,
+        "stage": "preflight"
+      },
+      {
+        "event": "preflight_started",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:23.289Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 2,
+        "stageElapsedMs": 2,
+        "stage": "preflight"
+      },
+      {
+        "event": "preflight_completed",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:23.485Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 198,
+        "stageElapsedMs": 198,
+        "stage": "preflight"
+      },
+      {
+        "event": "service_spawn_started",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:23.487Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 201,
+        "stageElapsedMs": 0,
+        "stage": "spawn"
+      },
+      {
+        "event": "service_spawned",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:23.508Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 222,
+        "stageElapsedMs": 2,
+        "stage": "service-start"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.460Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26173,
+        "stageElapsedMs": 25953,
+        "serviceElapsedMs": 0,
+        "stage": "service-start",
+        "servicePhase": "entry"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.473Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26187,
+        "stageElapsedMs": 25967,
+        "serviceElapsedMs": 15,
+        "stage": "service-start",
+        "servicePhase": "profile"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.476Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26190,
+        "stageElapsedMs": 25970,
+        "serviceElapsedMs": 15,
+        "stage": "service-start",
+        "servicePhase": "imports"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.724Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26438,
+        "stageElapsedMs": 26218,
+        "serviceElapsedMs": 266,
+        "stage": "service-start",
+        "servicePhase": "plugins"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.755Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26469,
+        "stageElapsedMs": 26248,
+        "serviceElapsedMs": 297,
+        "stage": "service-start",
+        "servicePhase": "projects"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.783Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26496,
+        "stageElapsedMs": 26276,
+        "serviceElapsedMs": 324,
+        "stage": "service-start",
+        "servicePhase": "listen"
+      },
+      {
+        "event": "service_phase",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.794Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26508,
+        "stageElapsedMs": 26287,
+        "serviceElapsedMs": 335,
+        "stage": "service-start",
+        "servicePhase": "ready"
+      },
+      {
+        "event": "service_ready",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.798Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26511,
+        "stageElapsedMs": 26291,
+        "stage": "service-start"
+      },
+      {
+        "event": "view_created",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.808Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26522,
+        "stageElapsedMs": 8,
+        "stage": "page-load"
+      },
+      {
+        "event": "page_load_started",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:49.812Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 26525,
+        "stageElapsedMs": 0,
+        "stage": "page-load"
+      },
+      {
+        "event": "page_dom_ready",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:50.326Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 27039,
+        "stageElapsedMs": 514,
+        "stage": "page-load"
+      },
+      {
+        "event": "page_loaded",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:50.383Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 27096,
+        "stageElapsedMs": 571,
+        "stage": "page-load"
+      },
+      {
+        "event": "shell_wait_started",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:50.385Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 27098,
+        "stageElapsedMs": 0,
+        "deadlineMs": 10000,
+        "stage": "shell-ready"
+      },
+      {
+        "event": "shell_ready",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:51.899Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 28612,
+        "stageElapsedMs": 1514,
+        "stage": "shell-ready"
+      },
+      {
+        "event": "startup_completed",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:51.904Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 28617,
+        "stageElapsedMs": 0,
+        "stage": "ready"
+      },
+      {
+        "event": "stop_requested",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:51.961Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 28674,
+        "stageElapsedMs": 0,
+        "stage": "stop"
+      },
+      {
+        "event": "service_exit",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:52.016Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 28730,
+        "stageElapsedMs": 56,
+        "stage": "stop",
+        "exitCode": 0
+      },
+      {
+        "event": "stop_completed",
+        "sessionId": "7f8b89f9-8e79-49da-8f44-926f6a05d396",
+        "attemptId": "68c19952-5fe4-4d7e-8937-40a4606d156a",
+        "at": "2026-11-02T13:01:52.019Z",
+        "currentVersion": "3.6.11-source",
+        "elapsedMs": 28733,
+        "stageElapsedMs": 59,
+        "stage": "stop"
+      }
+    ]
+  }
+}

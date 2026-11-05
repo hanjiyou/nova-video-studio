@@ -1209,7 +1209,8 @@ async function createWorkbenchTask(body, req) {
   if (!taskService) throw createHttpError(404,'NOT_FOUND','工作台任务需要桌面宿主。');
   workbenchStore.validateSubmissionInput(body);
   const plugin=pluginRegistry.getPlugin('opensosen-video');
-  let snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable');
+  const selectedCapability=typeof body.capabilityVersionId==='string'?db.prepare('SELECT * FROM model_capabilities WHERE id=?').get(body.capabilityVersionId.toLowerCase()):null;
+  let snapshot=workbenchInput.snapshotFor(body,plugin?.manifest.version || 'unavailable',selectedCapability);
   const prior=db.prepare('SELECT input_snapshot_json FROM tasks WHERE local_request_id=?').get(snapshot.localRequestId);
   if(prior){let saved;try{saved=JSON.parse(prior.input_snapshot_json);}catch{saved=null;}snapshot=require('./tasks/plugin-compatibility').replaySnapshot(snapshot,saved);}
   const duplicate=taskService.findDuplicate(snapshot);if(duplicate)return duplicate;
@@ -1221,6 +1222,7 @@ async function createWorkbenchTask(body, req) {
   if(catalog.modelsFetchedAt&&(!listed||listed.visibility==='absent')&&!listed?.custom)throw createHttpError(400,'MODEL_UNAVAILABLE','当前服务未列出此型号，请刷新或选择其他型号。');
   const auth=connectionService.getAuth(snapshot.connectionVersionId);
   if (snapshot.mode.startsWith('image.') && !require('./tasks/image-policy').allowsNewSubmission(snapshot,auth)) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前图片型号或模式尚未开放提交。');
+  if (snapshot.mode.startsWith('video.') && !require('./tasks/video-policy').allowsNewSubmission(snapshot,auth)) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前视频型号或模式尚未配置开放；请核对型号配置与协议。');
   workbenchInput.validateInputs(snapshot,auth,workbenchStore);
   workbenchInput.validateCapability(db,snapshot,auth);
   if (snapshot.mode.startsWith('video.') && !plugin) throw createHttpError(400,'ADAPTER_UNAVAILABLE','视频适配器不可用。');
@@ -2705,7 +2707,8 @@ function handleSubscribeTasks(ws, taskIds) {
     const row = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
     const task = serializeTask(row) || { id, status: 'expired', error: '该任务已超出取回时间' };
     safeSendJson(ws, { type: 'task', task });
-    if (task.status === 'completed' || task.status === 'failed' || task.status === 'expired') {
+    // Desktop works remain editable after completion; retain their bounded subscription.
+    if (!task.localTaskId && (task.status === 'completed' || task.status === 'failed' || task.status === 'expired')) {
       set.delete(id);
     }
   }

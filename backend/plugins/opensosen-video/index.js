@@ -4,18 +4,20 @@ const { controlledVideoTextValidation } = require('../../tasks/controlled-video-
 const multiReference = require('../../tasks/multi-reference-policy');
 const { MAX_VIDEO_REFERENCE_ASSETS } = require('../../storage/application-limits');
 const videoPolicy = require('../../tasks/video-policy');
+const {RULES,LEGACY,videoRule,validReferences}=require('../../connections/video-rules');
 const BASE_URL = 'https://newapi.opensosen.com/v1';
-const MODELS = ['grok-imagine-video-6s', 'grok-imagine-video-1.5-6s','grok-imagine-video-1.5-preview'];
+const MODELS = [...new Set([...LEGACY.driverModels,...Object.keys(RULES.models).filter(model=>videoRule(model))])];
 function failure(code) { return Object.assign(new Error(code === 'CAPABILITY_UNVERIFIED' ? '当前服务、模型与模式组合缺少协议证据。' : '视频输入无效。'), { code, statusCode: 400 }); }
 function validate(context) {
     const counts = { 'video.text': 0, 'video.single_reference': 1, 'video.dual_reference': 2, 'video.multi_reference': null };
     const multi = context.mode === 'video.multi_reference';
     const input = context.inputAssets;
-    if (!MODELS.includes(context.model) || !Object.hasOwn(counts, context.mode) || typeof context.fields?.prompt !== 'string' ||
+    if ((!MODELS.includes(context.model)&&!videoPolicy.isAuthorizedContext(context)) || !Object.hasOwn(counts, context.mode) || typeof context.fields?.prompt !== 'string' ||
         !context.fields.prompt.trim() || !Array.isArray(input) || (multi ? input.length < 3 || input.length > MAX_VIDEO_REFERENCE_ASSETS : input.length !== counts[context.mode]) ||
         input.some((item, index) => item.position !== index || item.role !== 'reference')) throw failure('INPUT_INVALID');
-    if (videoPolicy.isAuthorizedContext(context)) { videoPolicy.descriptor(context); if(input.some(item=>!['image/png','image/jpeg'].includes(item.mimeType)))throw failure('INPUT_INVALID'); return; }
-    if (context.baseUrl !== BASE_URL || context.model !== MODELS[1] || (context.mode === 'video.text' && !controlledVideoTextValidation.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
+    if (videoPolicy.isAuthorizedContext(context)) { videoPolicy.descriptor(context); if(!validReferences(videoPolicy.contextRule(context),context.mode,input)||input.some(item=>!['image/png','image/jpeg'].includes(item.mimeType)))throw failure('INPUT_INVALID'); return; }
+    // Legacy authority is isolated from new configuration-driven submissions.
+    if (context.baseUrl !== BASE_URL || context.model !== LEGACY.primaryModel || (context.mode === 'video.text' && !controlledVideoTextValidation.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
     if (multi && !multiReference.isAuthorizedContext(context)) throw failure('CAPABILITY_UNVERIFIED');
     if (!context.connectionVersionId) throw failure('INPUT_INVALID');
     const parameters = context.parameters;
@@ -48,7 +50,7 @@ function parseSubmitResponse(payload) {
     return { upstreamTaskId };
 }
 function buildQuery(upstreamTaskId, context) {
-    if (context.baseUrl !== BASE_URL || !MODELS.includes(context.model)) throw failure('CAPABILITY_UNVERIFIED');
+    if (context.baseUrl !== BASE_URL || (!MODELS.includes(context.model)&&!videoPolicy.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
     return { method: 'GET', url: context.baseUrl + '/videos/' + encodeUpstreamTaskId(upstreamTaskId), auth: { connectionVersionId: context.connectionVersionId } };
 }
 function parseTaskResult(payload, context) {
@@ -60,4 +62,13 @@ function parseTaskResult(payload, context) {
     const assets = state === 'completed' ? [{ kind: 'video', url: context.baseUrl + '/videos/' + encodeUpstreamTaskId(context.upstreamTaskId) + '/content' }] : [];
     return { state, rawStatus, progress, assets };
 }
-module.exports = { buildSubmit, extractAcceptedId, parseSubmitResponse, buildQuery, parseTaskResult, MODELS };
+function projectConfiguration({manifest,uiSchema}) {
+    // This legacy plugin form keeps its original request contract. The modern
+    // workbench consumes all configured models through the connection catalog.
+    const models=Object.entries(RULES.models).filter(([model,rule])=>rule.legacyUi&&videoRule(model)).map(([id,rule])=>({id,name:rule.label||id}));
+    const schema=structuredClone(uiSchema);
+    schema.modelSelector.facetOptions.targetModel=models.map(model=>({value:model.id,label:model.name}));
+    schema.modelSelector.variants=models.map(model=>({model:model.id,targetModel:model.id}));
+    return {manifest:{...manifest,models},uiSchema:schema};
+}
+module.exports = { buildSubmit, extractAcceptedId, parseSubmitResponse, buildQuery, parseTaskResult, MODELS,projectConfiguration };

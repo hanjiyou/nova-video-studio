@@ -1,0 +1,43 @@
+{
+  "model": "doubao-seedance-2.0-mini",
+  "connectionVersionId": "8d0cabe5-077c-4101-985d-7776e2e7dadd",
+  "identityBase": "https://newapi.opensosen.com/v1",
+  "route": "cn",
+  "routeRevision": 1,
+  "credentialStorage": "process memory only",
+  "credentialSource": "user-explicitly-authorized T15 operator provider configuration",
+  "posts": 0,
+  "models": {
+    "httpStatus": 200,
+    "matching": [
+      {
+        "id": "doubao-seedance-2.0-mini",
+        "supported_endpoint_types": [
+          "openai"
+        ]
+      }
+    ]
+  },
+  "pricing": {
+    "httpStatus": 200,
+    "matching": [
+      {
+        "model_name": "doubao-seedance-2.0-mini",
+        "quota_type": 1,
+        "model_ratio": 0,
+        "model_price": 0.25,
+        "completion_ratio": 0,
+        "enable_groups": [
+          "【视频】视频接口使用Sora协议"
+        ],
+        "supported_endpoint_types": [
+          "openai"
+        ]
+      }
+    ]
+  },
+  "status": {
+    "httpStatus": 200,
+    "links": {}
+  }
+}

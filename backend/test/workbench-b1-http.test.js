@@ -46,8 +46,8 @@ async function rig(t,behavior={}){
     const refs=imported.map((asset,position)=>({assetId:asset.assetId,position,role:'reference'}));
     const input=(extra={})=>{
         const mode=extra.mode||'video.dual_reference',model=extra.model||MODEL;
-        return {localRequestId:randomUUID(),connectionVersionId:connection.connectionVersionId,mode,model,prompt,parameters:mode.startsWith('video.')?{seconds:6,size:'1280x720'}:{},
-            capabilityVersionId:models.capabilities.find(item=>item.mode===mode&&item.model===model)?.capabilityVersionId,inputAssets:mode==='video.single_reference'?refs.slice(0,1):mode.endsWith('.text')?[]:refs,...extra};
+        return {localRequestId:randomUUID(),connectionVersionId:connection.connectionVersionId,mode,model,prompt,parameters:mode.startsWith('video.')?{seconds:6}:{},
+            capabilityVersionId:models.capabilities.find(item=>item.mode===mode&&item.model===model&&(mode.startsWith('image.')||item.configurationCurrent))?.capabilityVersionId,inputAssets:mode==='video.single_reference'?refs.slice(0,1):mode.endsWith('.text')?[]:refs,...extra};
     };
     const post=(route,body)=>runtime.request(route,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body||{})});
     const create=async body=>{const response=await post('/api/nova/workbench/tasks',body||input());assert.equal(response.status,202,JSON.stringify(await response.clone().json()));return(await response.json()).taskId;};
@@ -61,10 +61,10 @@ for(const count of[1,2])test('actual desktop B1 '+count+' file request freezes o
     if(count===2)input.inputAssets=[{...f.refs[1],position:0},{...f.refs[0],position:1}];
     const id=await f.create(input);await until(async()=>(await f.task(id)).status==='remote_queued');
     const post=f.posts()[0];assert.ok(post.dispatch.dispatch_started_at);assert.equal(f.posts().length,1);assert.match(post.contentType,/multipart\/form-data; boundary=/);
-    assert.deepEqual(post.parts.slice(0,4),[{name:'model',value:MODEL},{name:'prompt',value:prompt.replace(/\r?\n/g,'\r\n')},{name:'seconds',value:'6'},{name:'size',value:'1280x720'}]);
+    assert.deepEqual(post.parts.slice(0,3),[{name:'model',value:MODEL},{name:'prompt',value:prompt.replace(/\r?\n/g,'\r\n')},{name:'seconds',value:'6'}]);
     const referenceBytes=count===1?[fixture('reference-a.png')]:[fixture('reference-single.jpg'),fixture('reference-a.png')];
-    assert.deepEqual(post.parts.slice(4).map(item=>item.name),Array(count).fill('input_reference'));
-    post.parts.slice(4).forEach((item,index)=>assert.deepEqual(item.bytes,referenceBytes[index]));
+    assert.deepEqual(post.parts.slice(3).map(item=>item.name),Array(count).fill('input_reference'));
+    post.parts.slice(3).forEach((item,index)=>assert.deepEqual(item.bytes,referenceBytes[index]));
     const snapshot=JSON.parse(post.dispatch.input_snapshot_json);assert.equal(snapshot.prompt,prompt);assert.deepEqual(snapshot.inputAssets,input.inputAssets);assert.equal(snapshot.adapterVersion,'1.1.0');assert.equal(snapshot.capabilityVersionId,input.capabilityVersionId);
     assert.equal(await f.create(input),id);
     await f.runtime.saveConnection({connectionId:f.connection.connectionId,expectedVersionId:f.connection.connectionVersionId,baseUrl:'https://other.invalid/v1',apiKey:'synthetic-new-b1'});
@@ -86,7 +86,7 @@ test('canonical admission rejects legacy ungranted scopes, unknown models, malfo
     const f=await rig(t);
     for(const extra of [
         {mode:'image.text',model:'gpt-image-2.5-flare',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.text'&&item.model==='gpt-image-2.5-flare'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{mode:'image.reference',model:'gpt-image-2.5-flare',inputAssets:f.refs.slice(0,1),capabilityVersionId:f.models.capabilities.find(item=>item.mode==='image.reference'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
-        {mode:'video.text',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{mode:'video.text',model:'grok-imagine-video-6s',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{model:'grok-imagine-video-6s',capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.dual_reference'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
+        {mode:'video.text',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{mode:'video.text',model:'grok-imagine-video-6s',parameters:{seconds:6},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},{model:'grok-imagine-video-6s',parameters:{seconds:6,size:'1280x720'},capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.dual_reference'&&item.model==='grok-imagine-video-6s'&&item.evidenceVersion==='opensosen-evidence-v1').capabilityVersionId},
     ]){const response=await f.post('/api/nova/workbench/tasks',f.input(extra)),hidden=extra.model==='grok-imagine-video-6s';assert.equal(response.status,hidden?409:400);assert.equal((await response.json()).code,hidden?'MODEL_HIDDEN':'CAPABILITY_UNVERIFIED');}
     for(const extra of [{model:'gpt-image-unregistered',mode:'image.text',parameters:{},capabilityVersionId:randomUUID()},{inputAssets:f.refs.slice(0,1)},{inputAssets:[{...f.refs[1],position:1},f.refs[0]]},{parameters:{seconds:6,size:'720x1280'}},{apiKey:KEY},
         {inputAssets:[{...f.refs[0],filePath:'private.png'},f.refs[1]]},{capabilityVersionId:f.models.capabilities.find(item=>item.mode==='video.text'&&item.model===MODEL).capabilityVersionId}]){

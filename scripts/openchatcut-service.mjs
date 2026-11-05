@@ -8,6 +8,9 @@ const ENGINE_COMMIT = runtimeConfiguration.engineCommit;
 let server;
 let closing = false;
 const report = message => process.send?.(message);
+const started=performance.now();
+const phase=name=>report({type:'openchatcut:phase',phase:name,elapsedMs:Math.max(0,Math.round(performance.now()-started))});
+phase('entry');
 async function stop(exitCode = 0) {
   if (closing) return;
   closing = true;
@@ -31,6 +34,7 @@ async function main() {
   }
   // Resolve native profile singletons only after cwd and environment isolation.
   process.chdir(root);
+  phase('profile');phase('imports');
   const [{ serverPlugins }, { createMiniConnect }, { distStaticMiddleware, uploadsMiddleware }, { registerProductAssetRoot }, projects, { listenWithAffinity }] = await Promise.all([
     import('../third_party/openchatcut/server/plugins/index.ts'),
     import('../third_party/openchatcut/desktop/mini-connect.ts'),
@@ -54,6 +58,7 @@ async function main() {
     res.end(JSON.stringify({ code: 'EDITOR_CREDENTIAL_BRIDGE_NOT_READY', error: '凭据与外部工具接入尚未就绪；当前仅验证本地编辑。' }));
   });
   const fake = { middlewares: { use: app.use.bind(app) }, httpServer: server, config: { logger: { info() {}, warn() {}, error() {} } } };
+  phase('plugins');
   for (const plugin of serverPlugins({ projectStoreHttp: true })) {
     const hook = plugin.configureServer;
     const run = typeof hook === 'function' ? hook : hook?.handler;
@@ -61,12 +66,15 @@ async function main() {
   }
   app.use('/media/uploads', uploadsMiddleware());
   app.use(distStaticMiddleware(distDir));
+  phase('projects');
   let project = (await projects.listExternalProjects())[0];
   if (!project) project = await projects.createExternalProject({ name: '未命名剪辑', compositionWidth: 1920, compositionHeight: 1080, fps: 30 });
   if (closing) return;
   // Keep browser storage on the same origin across normal restarts. The native
   // fallback also remembers a new port if another local service occupies it.
+  phase('listen');
   const port = await listenWithAffinity(server, { home: process.env.HOME, profileId: process.env.OPENCHATCUT_DEV_PROFILE_ID, log() {} });
+  phase('ready');
   report({ type: 'openchatcut:ready', origin: `http://127.0.0.1:${port}`, editorPath: `/#/editor/${encodeURIComponent(project.id)}`, engineCommit: ENGINE_COMMIT });
 }
-main().catch(() => { report({ type: 'openchatcut:failed', code: 'EDITOR_START_FAILED' }); void stop(1).catch(() => process.exit(1)); });
+main().catch(error => { const names=new Set(['Error','TypeError','SyntaxError','ReferenceError','RangeError']);const codes=new Set(['ENOENT','EACCES','EPERM','EADDRINUSE','ENOMEM','EMFILE','ENOSPC','MODULE_NOT_FOUND','ERR_MODULE_NOT_FOUND','ERR_DLOPEN_FAILED']);report({ type: 'openchatcut:failed', code: 'EDITOR_START_FAILED',...(names.has(error?.name)?{errorName:error.name}:{}),...(codes.has(error?.code)?{systemCode:error.code}:{}) }); void stop(1).catch(() => process.exit(1)); });

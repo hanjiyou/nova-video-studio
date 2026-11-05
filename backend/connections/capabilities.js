@@ -3,21 +3,23 @@ const { randomUUID } = require('node:crypto');
 const multiReference = require('../tasks/multi-reference-policy');
 const imagePolicy = require('../tasks/image-policy');
 const OPENSOSEN_URL = 'https://newapi.opensosen.com/v1';
-const PRESET_MODELS = Object.freeze(['gpt-image-2.5-flare', 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s']);
+const videoRules = require('./video-rules');
+const LEGACY_PRESET_MODELS = videoRules.LEGACY.presetModels;
+const PRESET_MODELS = Object.freeze([imagePolicy.POLICY.model,...Object.entries(videoRules.RULES.models).filter(([,rule])=>rule.preset).map(([model])=>model)]);
 const EVIDENCE_VERSION = 'opensosen-evidence-v1';
 const APPLICATION_EVIDENCE_VERSION = 'opensosen-application-evidence-2026-10-24-v1';
 const TEXT_VIDEO_EVIDENCE_VERSION = 'opensosen-text-video-evidence-2026-10-24-v1';
-const TEXT_VIDEO_CAPABILITY = Object.freeze({ model: PRESET_MODELS[2], mode: 'video.text',
+const TEXT_VIDEO_CAPABILITY = Object.freeze({ model: LEGACY_PRESET_MODELS[2], mode: 'video.text',
     parameters: { seconds: 6, encoding: 'multipart', referenceCount: 0 }, sourceIds: ['T15-TEXT-NO-SIZE-20261024'],
     outputSha256: '251b0407a70d9abbc67c16077092cab5884599f863471383bde5b05e1abaca75' });
 // Reviewed actual application runs. Add a new version for new evidence; never rewrite a saved row.
 const APPLICATION_CAPABILITIES = Object.freeze([
-    { model: PRESET_MODELS[0], mode: 'image.text', parameters: {}, sourceIds: ['T15-FLARE-MINIMUM-20261024'],
+    { model: LEGACY_PRESET_MODELS[0], mode: 'image.text', parameters: {}, sourceIds: ['T15-FLARE-MINIMUM-20261024'],
         outputSha256: '30cf2191fd880ecf786a6a1353874e248a8ad0a633b60a9d746d77c64f6c4c8f',
         submit: { method: 'POST', path: '/images/generations', encoding: 'json', fields: ['model', 'prompt', 'n'], n: 1 } },
-    { model: PRESET_MODELS[2], mode: 'video.single_reference', parameters: { seconds: 6, size: '1280x720', encoding: 'multipart', inputReferenceName: 'input_reference', referenceCount: 1 },
+    { model: LEGACY_PRESET_MODELS[2], mode: 'video.single_reference', parameters: { seconds: 6, size: '1280x720', encoding: 'multipart', inputReferenceName: 'input_reference', referenceCount: 1 },
         sourceIds: ['T15-REFERENCE-RETEST-SINGLE-20261024'], outputSha256: '3754d2991674d27b2653ad95de224906b424676f6ca6f2ed41400fa94a58d1cd' },
-    { model: PRESET_MODELS[2], mode: 'video.dual_reference', parameters: { seconds: 6, size: '1280x720', encoding: 'multipart', inputReferenceName: 'input_reference', referenceCount: 2 },
+    { model: LEGACY_PRESET_MODELS[2], mode: 'video.dual_reference', parameters: { seconds: 6, size: '1280x720', encoding: 'multipart', inputReferenceName: 'input_reference', referenceCount: 2 },
         sourceIds: ['T15-REFERENCE-RETEST-DUAL-20261024'], outputSha256: '49d2730c7500623ab1e85cb973e87f4b2ba4b136fc605a384fe6a268bc91a025' },
 ]);
 function evidenceRank(level) { return ({ application_verified: 3, historically_verified: 2, unverified: 1 })[level] || 0; }
@@ -49,10 +51,10 @@ function normalizeBaseUrl(value) {
 function invalid() { return Object.assign(new Error('请输入不含凭据、查询或片段的HTTP(S)服务基础地址。'), { code: 'CONNECTION_URL_INVALID', statusCode: 400, connectionError: true }); }
 function seedCapabilities(db, provider, baseUrl) {
     const insert = db.prepare(`INSERT OR IGNORE INTO model_capabilities(id,provider,base_url,model,mode,protocol,parameters_json,evidence_level,evidence_version,evidence_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)`);
-    for (const model of PRESET_MODELS) {
-        const modes = model === PRESET_MODELS[0] ? ['image.text', 'image.reference'] : ['video.text', 'video.single_reference', 'video.dual_reference'];
+    for (const model of LEGACY_PRESET_MODELS) {
+        const modes = model === LEGACY_PRESET_MODELS[0] ? ['image.text', 'image.reference'] : ['video.text', 'video.single_reference', 'video.dual_reference'];
         for (const mode of modes) {
-            const historical = provider === 'opensosen' && baseUrl === OPENSOSEN_URL && model === PRESET_MODELS[2] && mode !== 'video.text';
+            const historical = provider === 'opensosen' && baseUrl === OPENSOSEN_URL && model === LEGACY_PRESET_MODELS[2] && mode !== 'video.text';
             const parameters = historical ? { seconds: 6, size: '1280x720', encoding: 'multipart', inputReferenceName: 'input_reference', referenceCount: mode === 'video.dual_reference' ? 2 : 1 } : {};
             const evidence = historical ? { sourceIds: mode === 'video.dual_reference' ? ['H02', 'H03', 'H06'] : ['H01'], applicationVerified: false, referenceSemantics: 'ordered_references' } : { sourceIds: [], applicationVerified: false };
             insert.run(randomUUID(), provider, baseUrl, model, mode, 'openai', JSON.stringify(parameters), historical ? 'historically_verified' : 'unverified', EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
@@ -66,9 +68,14 @@ function seedCapabilities(db, provider, baseUrl) {
             'application_verified', APPLICATION_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
     const videoPolicy = require('../tasks/video-policy');
-    if (provider === videoPolicy.RULES.provider && baseUrl === videoPolicy.RULES.baseUrl) for (const [model, rule] of Object.entries(videoPolicy.RULES.models)) for (const mode of videoPolicy.MODES) {
-        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoPolicy.RULES.version,
+    // Keep old configured rows immutable, including their original UUIDs and evidence.
+    if (provider === videoRules.LEGACY.provider && baseUrl === videoRules.LEGACY.baseUrl) for (const [model, rule] of Object.entries(videoRules.LEGACY.models)) for (const mode of videoPolicy.MODES) {
+        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoRules.LEGACY.version,
             JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:rule.submissionEnabled?'user-configured-video-parameters':'prepared-awaiting-validation',supplierMaximumReferences:null}),new Date().toISOString());
+    }
+    for (const [model, rule] of Object.entries(videoRules.videoRules({provider,baseUrl}))) for (const mode of rule.modes) {
+        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoPolicy.RULES.version,
+            JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:'configured-video-profile-v1',configuredProtocol:rule.profile,submissionEnabled:rule.submissionEnabled,supplierMaximumReferences:null}),new Date().toISOString());
     }
     seedMultiReferenceCapability(db, provider, baseUrl);
     if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) {
@@ -108,7 +115,8 @@ function listCapabilities(db, provider, baseUrl) {
     return rows.map(row => {
         const key = JSON.stringify([row.model, row.mode, row.protocol]), isCurrent = !current.has(key); current.add(key);
         return { capabilityVersionId: row.id, provider: row.provider, baseUrl: row.base_url, model: row.model, mode: row.mode, protocol: row.protocol,
-            parameters: JSON.parse(row.parameters_json), evidenceLevel: row.evidence_level, evidenceVersion: row.evidence_version, evidence: JSON.parse(row.evidence_json), isCurrent };
+            parameters: JSON.parse(row.parameters_json), evidenceLevel: row.evidence_level, evidenceVersion: row.evidence_version, evidence: JSON.parse(row.evidence_json), isCurrent,
+            ...(row.evidence_version===videoRules.RULES.version?{configurationCurrent:row.parameters_json===JSON.stringify(videoRules.videoRule(row.model,{provider,baseUrl}))}:{}) };
     });
 }
 module.exports = { OPENSOSEN_URL, PRESET_MODELS, EVIDENCE_VERSION, APPLICATION_EVIDENCE_VERSION, APPLICATION_CAPABILITIES, TEXT_VIDEO_EVIDENCE_VERSION, TEXT_VIDEO_CAPABILITY, generationEvidenceVerified, normalizeBaseUrl, seedCapabilities, listCapabilities };

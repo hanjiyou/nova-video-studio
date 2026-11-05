@@ -1,0 +1,53 @@
+{
+  "scope": "Production component SSR with synthetic media; generation and rename actual components; library shell composed around actual cards. Not installed app validation.",
+  "results": [
+    {
+      "view": "generation",
+      "width": 1600,
+      "overflow": false,
+      "scrollWidth": 1600,
+      "hasName": true,
+      "height": 1484
+    },
+    {
+      "view": "library",
+      "width": 1600,
+      "overflow": false,
+      "scrollWidth": 1600,
+      "hasName": true,
+      "height": 1100
+    },
+    {
+      "view": "rename",
+      "width": 1600,
+      "overflow": false,
+      "scrollWidth": 1600,
+      "hasName": true,
+      "height": 1100
+    },
+    {
+      "view": "generation",
+      "width": 390,
+      "overflow": false,
+      "scrollWidth": 390,
+      "hasName": true,
+      "height": 3693
+    },
+    {
+      "view": "library",
+      "width": 390,
+      "overflow": false,
+      "scrollWidth": 390,
+      "hasName": true,
+      "height": 1925
+    },
+    {
+      "view": "rename",
+      "width": 390,
+      "overflow": false,
+      "scrollWidth": 390,
+      "hasName": true,
+      "height": 1925
+    }
+  ]
+}

@@ -80,7 +80,7 @@ it('library joins group/type/search on the server and removes task status filter
   vi.stubGlobal('fetch', vi.fn(async (route: string) => { requests.push(new URL(route, 'http://synthetic.invalid')); return Response.json({ items: [task('库结果', other)], total: 1 }); }));
   render(<WorkbenchLibrary revision={0} groups={groups} onDetails={vi.fn()} onVideo={vi.fn()} onImage={vi.fn()}/>);
   await screen.findByText('库结果'); expect(screen.queryByLabelText('任务状态')).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole('button', { name: '海边短片1' })); fireEvent.change(screen.getByLabelText('作品类型'), { target: { value: 'video' } }); fireEvent.change(screen.getByLabelText('搜索提示词或模型'), { target: { value: '海边' } });
+  fireEvent.click(screen.getByRole('button', { name: '海边短片1' })); fireEvent.change(screen.getByLabelText('作品类型'), { target: { value: 'video' } }); fireEvent.change(screen.getByLabelText('搜索名称、提示词或模型'), { target: { value: '海边' } });
   await waitFor(() => expect(requests.at(-1)?.searchParams.get('search')).toBe('海边'));
   expect(Object.fromEntries(requests.at(-1)!.searchParams)).toMatchObject({ scope: 'library', groupId: other, kind: 'video', search: '海边', offset: '0' }); expect(requests.at(-1)!.searchParams.has('status')).toBe(false);
 });

@@ -39,7 +39,7 @@ export function useWorkbenchDrafts() {
     });
     running.current.set(mode, operation); return operation;
   }, [publish]);
-  const update = useCallback((mode: DraftMode, patch: Partial<Pick<Draft, 'prompt' | 'model' | 'parameters' | 'inputAssets'>>, defaultModel?: string, expectedGroup?: string) => {
+  const update = useCallback((mode: DraftMode, patch: Partial<Pick<Draft, 'workName' | 'prompt' | 'model' | 'parameters' | 'inputAssets'>>, defaultModel?: string, expectedGroup?: string) => {
     if (isUpdateFrozen() || switchLock.current || (expectedGroup && expectedGroup !== activeGroup.current) || !values.current[mode]) return;
     values.current[mode] = { ...values.current[mode]!, model: values.current[mode]!.model || defaultModel || '', ...patch };
     dirty.current.add(mode); publish(); void persist(mode);

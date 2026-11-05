@@ -215,7 +215,7 @@ test('G03 rename rejects active other-group input/checkpoint/candidate/physical 
         const reader=task(f,b.groupId,'generating');let referenced=asset.assetId;
         if(kind==='alias') {
             f.store.selectOutputDirectory(f.root);const aliasRoot=f.store.outputDirectory().outputRootRef;f.groups.ensure(a.groupId,aliasRoot);const original=f.db.prepare('SELECT * FROM assets WHERE id=?').get(asset.assetId);referenced=randomUUID();
-            f.db.prepare('INSERT INTO assets SELECT ?,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,?,group_id FROM assets WHERE id=?').run(referenced,aliasRoot,original.id);
+            f.db.prepare('INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id) SELECT ?,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,?,group_id FROM assets WHERE id=?').run(referenced,aliasRoot,original.id);
         }
         if(kind==='input'||kind==='alias')f.db.prepare('INSERT INTO task_assets VALUES(?,?,?,?)').run(reader.id,referenced,'input',0);
         if(kind==='checkpoint')f.db.prepare('INSERT INTO task_download_files VALUES(?,?,?,?,?,?)').run(reader.id,'reader-source',referenced,asset.sha256,asset.byteLength,0);

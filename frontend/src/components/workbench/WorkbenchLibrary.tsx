@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { groupOperationPending, unconfirmedGroupInput, watchCompletedGroupMoves, watchGroupOperations } from '@/lib/workbench-group-client';
+import { groupOperationPending, workRenameNotice, unconfirmedGroupInput, watchCompletedGroupMoves, watchGroupOperations } from '@/lib/workbench-group-client';
 import { FolderHeart, MoreHorizontal } from 'lucide-react';
 import { getLocalHistory, HistoryTask, localErrorMessage, removeHistoryTask, type WorkbenchGroup } from '@/lib/workbench-client';
 import { AssetSummary } from '@/lib/workbench-task-client';
@@ -13,6 +13,8 @@ import { MediaTaskCard } from './MediaTaskCard';
 import { DEFAULT_GROUP } from '@/hooks/useWorkbenchGroups';
 import { WorkbenchLibraryPreview } from './WorkbenchLibraryPreview';
 import { LibraryDateFilter } from './LibraryDateFilter';
+import { WorkRenameDialog } from './WorkRenameDialog';
+import { workTitle } from '@/lib/workbench-names';
 import { stopLibraryPreviews } from './LibraryVideoPreview';
 
 export function WorkbenchLibrary({ revision, onDetails, onVideo, onImage, onImageReference, picking, groups = [DEFAULT_GROUP], onManageGroups, onRegroup, onGroupsChanged, groupsReady=true }: { revision: number; onDetails: (task: HistoryTask) => void; onVideo: (assets: AssetSummary[]) => void; onImage: () => void; onImageReference?: (asset: AssetSummary) => void; picking?: boolean; groups?: WorkbenchGroup[]; onManageGroups?: () => void; onRegroup?: (task: HistoryTask) => void; onGroupsChanged?: () => void; groupsReady?: boolean }) {
@@ -21,7 +23,7 @@ export function WorkbenchLibrary({ revision, onDetails, onVideo, onImage, onImag
   const [selection,setSelection] = useState<AssetSummary[]>([]), [deleting,setDeleting] = useState<HistoryTask | null>(null), [deleteOutputs,setDeleteOutputs] = useState(false), [busy,setBusy] = useState(false);
   const [date,setDate]=useState<LibraryDateSelection>({mode:'all',start:'',end:''}),[today,setToday]=useState(localDay);
   const [managing,setManaging]=useState(false),[selectedIds,setSelectedIds]=useState<string[]>([]),[batchBusy,setBatchBusy]=useState(false),[batch,setBatch]=useState<LibraryMoveBatch|null>(null),[receipt,setReceipt]=useState<{tasks:HistoryTask[];groupId:string}|null>(null);
-  const [chooseTarget,setChooseTarget]=useState(false),[targetId,setTargetId]=useState(''),[preview,setPreview]=useState<HistoryTask|null>(null);
+  const [chooseTarget,setChooseTarget]=useState(false),[targetId,setTargetId]=useState(''),[preview,setPreview]=useState<HistoryTask|null>(null),[renaming,setRenaming]=useState<HistoryTask|null>(null);
   const [dragging,setDragging]=useState<HistoryTask[]>([]),[dropTarget,setDropTarget]=useState(''),[,renderMoves]=useState(0);
   const dragged=useRef<HistoryTask[]>([]),mounted=useRef(true),batchRunning=useRef(false),deletion=useRef(false),sequence=useRef(0),limit=24;
   const bounds=useMemo(()=>libraryDateBounds(date),[date,today]);
@@ -110,11 +112,12 @@ export function WorkbenchLibrary({ revision, onDetails, onVideo, onImage, onImag
       </nav>
       <div className="wb-library-content">
         <div className="wb-library-filters wb-library-enhanced-filters">
-          <label>搜索提示词或模型<input type="search" disabled={batchBusy} value={search} onChange={event=>{setSearch(event.target.value);resetRange();}} placeholder="输入关键词"/></label>
+          <label>搜索名称、提示词或模型<input type="search" disabled={batchBusy} value={search} onChange={event=>{setSearch(event.target.value);resetRange();}} placeholder="例如：镜头03 行李箱 grok"/></label>
           <label>作品类型<select disabled={batchBusy} value={kind} onChange={event=>{setKind(event.target.value);resetRange();}}><option value="">全部类型</option><option value="image">图片</option><option value="video">视频</option></select></label>
           <LibraryDateFilter disabled={batchBusy} value={date} onChange={value=>{setDate(value);setToday(localDay());resetRange();}}/>
           <button type="button" className="wb-library-mode" disabled={batchBusy} aria-pressed={managing} onClick={()=>{stopLibraryPreviews();setManaging(!managing);setSelectedIds([]);endDrag();}}>{managing?'退出多选':'多选'}</button>
         </div>
+        <p className="wb-help">多个关键词用空格分隔，顺序不限，需全部匹配。</p>
         {managing?<div className="wb-library-selection wb-library-batch-toolbar" aria-label="批量整理">
           <strong>已选 {selectedIds.length} 项</strong>
           <button type="button" disabled={batchBusy||loading||!visibleResult} onClick={()=>setSelectedIds((visibleResult?.items||[]).filter(task=>!sourceBlocked(task)).map(task=>task.localTaskId))}>全选当前页</button>
@@ -124,7 +127,7 @@ export function WorkbenchLibrary({ revision, onDetails, onVideo, onImage, onImag
           {selection.length>0&&<ol className="wb-library-picked" aria-label="已选图片顺序">{selection.map((asset,index)=><li key={asset.assetId}><span>{index+1}. {asset.displayName}</span><button type="button" aria-label={`已选图片 ${index+1} 前移`} disabled={index===0||batchBusy} onClick={()=>moveSelection(index,-1)}>前移</button><button type="button" aria-label={`已选图片 ${index+1} 后移`} disabled={index===selection.length-1||batchBusy} onClick={()=>moveSelection(index,1)}>后移</button><button type="button" aria-label={`移除已选图片 ${index+1}`} disabled={batchBusy} onClick={()=>setSelection(previous=>previous.filter((_,position)=>position!==index))}>移除</button></li>)}</ol>}</>}
         {batch&&<div className="wb-library-batch-result" role="status">
           <span>{batchBusy?`正在移动：已处理 ${batch.items.length} / ${batch.total} 项`:`已处理 ${batch.items.length} / ${batch.total} 项：成功 ${batch.succeeded}，失败 ${batch.failed}，跳过 ${batch.skipped}`}{batch.unknown>0&&`，回执待核对 ${batch.unknown}`}</span>
-          {batch.items.filter(item=>item.status==='failed'||item.status==='unknown').map(item=><p key={item.task.localTaskId}>{item.task.prompt||item.task.localTaskId}：{item.status==='unknown'?'移动回执未确认。':''}{item.message}</p>)}
+          {batch.items.filter(item=>item.status==='failed'||item.status==='unknown').map(item=><p key={item.task.localTaskId}>{workTitle(item.task,item.task.localTaskId)}：{item.status==='unknown'?'移动回执未确认。':''}{item.message}</p>)}
           {receipt&&<button type="button" disabled={batchBusy} onClick={()=>void move(receipt.tasks,receipt.groupId,true)}>核对原移动请求</button>}
         </div>}
         {notice&&<p role="status" className="wb-notice">{notice}</p>}{error&&<p role="alert" className="wb-error">{error}<button type="button" disabled={batchBusy} onClick={()=>setReload(value=>value+1)}>重新读取</button></p>}
@@ -134,17 +137,18 @@ export function WorkbenchLibrary({ revision, onDetails, onVideo, onImage, onImag
             const asset=task.outputAssets?.[0],selected=selection.findIndex(item=>item.assetId===asset?.assetId),selectable=asset?.kind==='image'&&asset.availability==='available'&&['image/png','image/jpeg'].includes(asset.mimeType);
             return <MediaTaskCard key={task.localTaskId} task={task} variant="library" draggable={!batchBusy&&!sourceBlocked(task)} onDragStart={event=>startDrag(task,event)} onDragEnd={endDrag}
               selection={managing?{checked:selectedIds.includes(task.localTaskId),disabled:batchBusy||sourceBlocked(task),onToggle:()=>{if(!batchRunning.current)setSelectedIds(previous=>previous.includes(task.localTaskId)?previous.filter(id=>id!==task.localTaskId):[...previous,task.localTaskId]);}}:undefined}
-              hoverDisabled={managing||batchBusy||dragging.length>0||Boolean(preview)||Boolean(deleting)||chooseTarget}
+              hoverDisabled={managing||batchBusy||dragging.length>0||Boolean(preview)||Boolean(deleting)||Boolean(renaming)||chooseTarget}
               onPreview={()=>openPreview(task)} onDetails={()=>{if(!batchBusy){stopLibraryPreviews();onDetails(task);}}}
               actions={!managing&&selectable&&<button type="button" aria-pressed={selected>=0} disabled={batchBusy||(selected<0&&selection.length>=MAX_VIDEO_REFERENCE_ASSETS)} onClick={()=>toggle(asset)}>{selected>=0?`已选 ${selected+1} · 取消`:'选择图片'}</button>}
-              menu={<details className="wb-card-menu"><summary aria-label="更多作品操作"><MoreHorizontal size={16}/></summary><div>{onRegroup&&<button type="button" disabled={batchBusy||taskExecutionActive(task)||groupOperationPending('task:'+task.localTaskId)} onClick={()=>{stopLibraryPreviews();onRegroup(task);}}>修改分组</button>}<button type="button" disabled={batchBusy||taskExecutionActive(task)||groupOperationPending('task:'+task.localTaskId)} title={taskExecutionActive(task)?'任务仍在本地执行，请先取消并等待服务确认。':undefined} onClick={()=>{stopLibraryPreviews();setDeleting(task);setDeleteOutputs(false);}}>从作品库隐藏</button></div></details>}/>;
+              menu={<details className="wb-card-menu"><summary aria-label="更多作品操作"><MoreHorizontal size={16}/></summary><div><button type="button" disabled={batchBusy||sourceBlocked(task)} title={sourceBlocked(task)?'任务或文件整理仍在进行，请稍后重命名。':undefined} onClick={()=>{stopLibraryPreviews();setRenaming(task);}}>重命名</button>{onRegroup&&<button type="button" disabled={batchBusy||taskExecutionActive(task)||groupOperationPending('task:'+task.localTaskId)} onClick={()=>{stopLibraryPreviews();onRegroup(task);}}>修改分组</button>}<button type="button" disabled={batchBusy||taskExecutionActive(task)||groupOperationPending('task:'+task.localTaskId)} title={taskExecutionActive(task)?'任务仍在本地执行，请先取消并等待服务确认。':undefined} onClick={()=>{stopLibraryPreviews();setDeleting(task);setDeleteOutputs(false);}}>从作品库隐藏</button></div></details>}/>;
           })}</div>
           <div className="wb-pagination"><button type="button" disabled={offset===0||loading||batchBusy} onClick={()=>{stopLibraryPreviews();setSelectedIds([]);setOffset(value=>Math.max(0,value-limit));}}>上一页</button><span>第 {Math.floor(offset/limit)+1} / {Math.max(1,Math.ceil(visibleResult.total/limit))} 页 · {visibleResult.total} 条</span><button type="button" disabled={offset+limit>=visibleResult.total||loading||batchBusy} onClick={()=>{stopLibraryPreviews();setSelectedIds([]);setOffset(value=>value+limit);}}>下一页</button></div>
         </>}
       </div>
     </div>
-    {preview&&<WorkbenchLibraryPreview key={preview.localTaskId+':'+preview.outputAssets?.[0]?.assetId} task={preview} onClose={()=>setPreview(null)}/>}
+    {preview&&<WorkbenchLibraryPreview key={preview.localTaskId+':'+preview.outputAssets?.[0]?.assetId} task={preview} onClose={()=>setPreview(null)} onRenamed={(task,pending)=>{setPreview(task);setNotice(workRenameNotice(pending));setReload(value=>value+1);onGroupsChanged?.();}}/>}
+    {renaming&&<WorkRenameDialog task={renaming} onClose={()=>setRenaming(null)} onRenamed={(_task,pending)=>{setNotice(workRenameNotice(pending));setReload(value=>value+1);onGroupsChanged?.();}}/>}
     {chooseTarget&&<WorkbenchDialog title="批量修改分组" onClose={()=>{if(!batchBusy)setChooseTarget(false);}}><p>将所选 {chosenTasks.length} 项作品的全部输出移动到目标分组。</p><label>目标剧本<select value={targetId} disabled={batchBusy} onChange={event=>setTargetId(event.target.value)}><option value="">请选择分组</option>{groups.map(group=><option key={group.groupId} value={group.groupId} disabled={group.archived||group.recoveryRequired}>{group.name}{group.archived?'（已归档）':group.recoveryRequired?'（待恢复）':''}</option>)}</select></label><div className="wb-actions"><button type="button" onClick={()=>setChooseTarget(false)}>取消</button><button type="button" className="wb-primary" disabled={!targetId||!accepting(targetId,chosenTasks)} onClick={()=>void move(chosenTasks,targetId)}>确认移动 {chosenTasks.length} 项</button></div></WorkbenchDialog>}
-    {deleting&&<WorkbenchDialog title="移除作品记录" onClose={()=>{if(!busy)setDeleting(null);}}><p>默认只从作品库移除记录，保留所有文件。任务去重事实仍保留。</p><p className="wb-help wb-prompt">{deleting.prompt}</p><label className="wb-checkbox"><input type="checkbox" checked={deleteOutputs} onChange={event=>setDeleteOutputs(event.target.checked)}/>同时删除该任务独占的应用生成输出文件</label><p className="wb-warning">共享输出、其他任务输入、草稿引用及用户导入源文件均保留。文件删除不可撤销；执行时会再次检查引用。</p><div className="wb-actions"><button type="button" disabled={busy} onClick={()=>setDeleting(null)}>保留记录</button><button type="button" disabled={busy} onClick={()=>void remove()}>确认移除记录{deleteOutputs?'并清理独占输出':''}</button></div></WorkbenchDialog>}
+    {deleting&&<WorkbenchDialog title="移除作品记录" onClose={()=>{if(!busy)setDeleting(null);}}><p>默认只从作品库移除记录，保留所有文件。任务去重事实仍保留。</p><p className="wb-help wb-prompt">{workTitle(deleting)}</p><label className="wb-checkbox"><input type="checkbox" checked={deleteOutputs} onChange={event=>setDeleteOutputs(event.target.checked)}/>同时删除该任务独占的应用生成输出文件</label><p className="wb-warning">共享输出、其他任务输入、草稿引用及用户导入源文件均保留。文件删除不可撤销；执行时会再次检查引用。</p><div className="wb-actions"><button type="button" disabled={busy} onClick={()=>setDeleting(null)}>保留记录</button><button type="button" disabled={busy} onClick={()=>void remove()}>确认移除记录{deleteOutputs?'并清理独占输出':''}</button></div></WorkbenchDialog>}
   </section>;
 }

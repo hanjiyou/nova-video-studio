@@ -1,5 +1,15 @@
 # 连接、凭据与能力接口 v1
 
+> 2026-11-05 Seedance实测补充：用户批准按Grok同协议候选进行文生/单图各一次1秒，实际通过原Nova驱动向cn线路提交；两次HTTP500 get_channel_failed，后台提示auto分组下该模型无可用渠道。目录包含型号及公开Sora协议分组标签不等于Key能分配渠道，也未验证1秒、上传语义、查询或取回。正式模型配置未开放，详见[实测记录](implementation/Seedance一秒文生与图生实测.md)。
+
+## 2026-11-02 当前源码：视频有效配置
+
+型号差异集中在`backend/connections/model-rules.json`，由共享`video-rules.js`合并已实现协议后校验。models响应新增`videoRules:Record<model,VideoRule>`和`videoRuleVersion:string`，沿用原连接版本及线路/revision身份。规则包含profile、modes、referenceLimits、时长范围/默认值、sendSize、候选/默认尺寸、可空费率和submissionEnabled。不支持的驱动、模式或畸形规则不返回可用能力；应用参考图总预算仍来自统一资源策略。
+
+当前配置能力以新版本追加，证据仍为unverified/applicationVerified=false；`configured-video-profile-v1`说明配置授权，不等于真实调用成功。此类能力新增`configurationCurrent:boolean`，界面仅选择与当前规则一致的快照；旧记录不删除、不改写。新生成同时校验当前规则和所选不可变能力，历史任务按原规则恢复，不借新配置改参数。
+
+Seedance现已明确登记为视频类别；profile为空且submissionEnabled=false，原因protocol-unconfirmed。旧版手动分类定位仍属历史阶段，当前新增分类配置不表示协议已接通。已有用户显示勾选、上游新增默认隐藏、默认型号、路由和凭据规则保持。详见[实施记录](implementation/视频模型集中配置规则实施记录.md)。本次源码尚未打包发布。
+
 > 2026-11-02发布后状态：GitHub Test 3.6.11已提交、推送、独立构建并公开发布，包含剪辑基础入口、参考图粘贴和保存提示优化。素材/工程/成片进一步融合继续暂缓，未验证能力与正式签名/安装升级门槛保持；旧local.1/local.2不变。以下“仅源码/未打包/3.6.10基线”均为发布前阶段记录，当前以[3.6.11交付记录](implementation/3.6.11-交付记录.md)为准。
 
 > 2026-11-02 模型定位补充：当前服务清单已包含doubao-seedance-2.0-mini；其通用openai端点标记不足以自动归为视频，当前名称规则也未识别Seedance。手动指定视频类别可解决列表显示，但不会增加生成能力；现有视频规则与驱动尚未接入该型号，仍应显示“未接入”。本轮仅定位并说明，未新增协议、付费调用或成功验收；当前源码/安装包状态见[总任务清单](Nova-Studio落地任务清单.md)。

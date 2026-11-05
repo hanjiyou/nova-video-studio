@@ -1,0 +1,90 @@
+{
+  "authorization": "user-seedance-text-and-image-one-second-each-20261105",
+  "model": "doubao-seedance-2.0-mini",
+  "requestedSeconds": 1,
+  "maxGenerationPosts": 2,
+  "actualGenerationPosts": 2,
+  "identityBase": "https://newapi.opensosen.com/v1",
+  "route": {
+    "route": "cn",
+    "revision": 1
+  },
+  "credentialSource": "explicitly authorized operator file; memory only",
+  "scope": "isolated real provider protocol test through original Nova driver/download/media validator; no production model enablement or installed app changes",
+  "modes": {
+    "video.text": {
+      "localRequestId": "9a81e944-3e3c-4097-9066-468df5481e90",
+      "promptSha256": "7547b4365488631919f6bb4169cd17b64fd94353e81426dd5f55a1d2d66a45ba",
+      "requestedSeconds": 1,
+      "posts": 1,
+      "state": "rejected",
+      "requestFields": [
+        "model",
+        "prompt",
+        "seconds"
+      ],
+      "referenceFiles": 0,
+      "localPreDispatchFailures": [
+        {
+          "reservationAt": "2026-11-05T06:30:34.980Z",
+          "error": {
+            "errorName": "TypeError",
+            "code": "UND_ERR_INVALID_ARG"
+          },
+          "reason": "Undici handler API mismatch before socket creation",
+          "evidence": "offline-transport-proof.json",
+          "providerRequestsSent": 0
+        }
+      ],
+      "dispatchReservedAt": "2026-11-05T06:33:00.255Z",
+      "httpStatus": 500,
+      "responseAt": "2026-11-05T06:33:24.278Z",
+      "providerError": {
+        "httpStatus": 500,
+        "code": "get_channel_failed",
+        "message": "分组 auto 下模型 doubao-seedance-2.0-mini 的可用渠道不存在（retry）",
+        "requestId": "202611050633017093139608268d9d68VhP0cXb",
+        "bodyTruncated": false,
+        "bodyTimedOut": false,
+        "credentialEchoSuppressed": false
+      }
+    },
+    "video.single_reference": {
+      "localRequestId": "04accdaa-fbc6-4d10-b505-c45fadcdc9c2",
+      "promptSha256": "f9a8c1b72bf2f8c0e9915ef02be0e54864b6fefa8c83ead885a57997a9fb8794",
+      "requestedSeconds": 1,
+      "posts": 1,
+      "state": "rejected",
+      "requestFields": [
+        "model",
+        "prompt",
+        "seconds"
+      ],
+      "referenceFiles": 1,
+      "localPreDispatchFailures": [
+        {
+          "reservationAt": "2026-11-05T06:30:34.990Z",
+          "error": {
+            "errorName": "TypeError",
+            "code": "UND_ERR_INVALID_ARG"
+          },
+          "reason": "Undici handler API mismatch before socket creation",
+          "evidence": "offline-transport-proof.json",
+          "providerRequestsSent": 0
+        }
+      ],
+      "dispatchReservedAt": "2026-11-05T06:33:24.285Z",
+      "httpStatus": 500,
+      "responseAt": "2026-11-05T06:33:47.918Z",
+      "providerError": {
+        "httpStatus": 500,
+        "code": "get_channel_failed",
+        "message": "分组 auto 下模型 doubao-seedance-2.0-mini 的可用渠道不存在（retry）",
+        "requestId": "202611050633259676868938268d9d6DUqVAfde",
+        "bodyTruncated": false,
+        "bodyTimedOut": false,
+        "credentialEchoSuppressed": false
+      }
+    }
+  }
+}

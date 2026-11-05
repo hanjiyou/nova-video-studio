@@ -1,9 +1,29 @@
 {
   "provider": "opensosen",
   "baseUrl": "https://newapi.opensosen.com/v1",
-  "version": "video-config-20261025-v1",
+  "version": "video-profiles-20261102-v1",
   "models": {
+    "grok-imagine-video-6s": {
+      "label": "Grok 6s（能力待验证）",
+      "profile": "openai-video-multipart-v1",
+      "preset": true,
+      "legacyUi": true,
+      "minSeconds": 6,
+      "maxSeconds": 6,
+      "defaultSeconds": 6,
+      "sendSize": true,
+      "sizes": [
+        "1280x720"
+      ],
+      "defaultSize": "1280x720",
+      "centsPerSecond": null,
+      "submissionEnabled": false
+    },
     "grok-imagine-video-1.5-6s": {
+      "label": "Grok 1.5 6s",
+      "profile": "openai-video-multipart-v1",
+      "preset": true,
+      "legacyUi": true,
       "minSeconds": 1,
       "maxSeconds": 6,
       "defaultSeconds": 6,
@@ -14,6 +34,10 @@
       "submissionEnabled": true
     },
     "grok-imagine-video-1.5-preview": {
+      "label": "Grok 1.5 Preview",
+      "profile": "openai-video-multipart-v1",
+      "preset": false,
+      "legacyUi": false,
       "minSeconds": 1,
       "maxSeconds": 15,
       "defaultSeconds": 10,
@@ -27,6 +51,42 @@
       "defaultSize": "1920x1080",
       "centsPerSecond": 20,
       "submissionEnabled": false
+    },
+    "doubao-seedance-2.0-mini": {
+      "label": "Seedance 2.0 Mini",
+      "profile": null,
+      "submissionEnabled": false,
+      "configurationReason": "protocol-unconfirmed"
+    }
+  },
+  "classification": { "videoPatterns": ["^(grok-imagine-video(?:-|$)|sora(?:-|$)|veo(?:-|$))"] },
+  "profiles": {
+    "openai-video-multipart-v1": {
+      "driver": "openai-video-multipart-v1",
+      "modes": [
+        "video.text",
+        "video.single_reference",
+        "video.dual_reference",
+        "video.multi_reference"
+      ],
+      "referenceLimits": {
+        "video.text": {
+          "min": 0,
+          "max": 0
+        },
+        "video.single_reference": {
+          "min": 1,
+          "max": 1
+        },
+        "video.dual_reference": {
+          "min": 2,
+          "max": 2
+        },
+        "video.multi_reference": {
+          "min": 3,
+          "max": 7
+        }
+      }
     }
   }
 }

@@ -9,6 +9,7 @@ import { generationPlan, generationEvidenceVerified } from '@/lib/workbench-gene
 import { MAX_VIDEO_REFERENCE_ASSETS } from '@/lib/reference-policy';
 import { IMAGE_QUALITY_LABELS } from '@/lib/image-policy';
 import { ImagePrice } from './ImagePrice';
+import { MAX_WORK_NAME_CHARACTERS, workNameLength, workNameError } from '@/lib/workbench-names';
 import { VideoDurationControl } from './VideoDurationControl';
 import { useWorkbenchPanelHeight } from '@/hooks/useWorkbenchPanelHeight';
 import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
@@ -31,10 +32,12 @@ export function DraftEditor({ draft, connection, models, saving, error, onChange
   const panel = useWorkbenchPanelHeight();
   const importBusy = useRef(false);
   useUpdateBlocker(() => importBusy.current);
-  const image = draft.mode === 'image.text', multiDraft = draft.mode === 'video.dual_reference', count = draft.mode === 'video.text' ? 0 : multiDraft ? MAX_VIDEO_REFERENCE_ASSETS : 1;
+  const plan = generationPlan(draft, connection, models), selectedModel = plan.model, capability = plan.capability;
+  const image = draft.mode === 'image.text', multiDraft = draft.mode === 'video.dual_reference';
+  const configuredCount=plan.rule?(multiDraft?Math.max(plan.rule.referenceLimits['video.dual_reference']?.max||0,plan.rule.referenceLimits['video.multi_reference']?.max||0):plan.rule.referenceLimits[draft.mode]?.max||0):null;
+  const count=draft.mode==='video.text'?0:image?1:Math.min(MAX_VIDEO_REFERENCE_ASSETS,configuredCount??(multiDraft?MAX_VIDEO_REFERENCE_ASSETS:1));
   const refs = useRef(draft.inputAssets); useEffect(() => { refs.current = draft.inputAssets; }, [draft.inputAssets]);
   const referenceMode = image || draft.mode !== 'video.text' || draft.inputAssets.length > 0;
-  const plan = generationPlan(draft, connection, models), selectedModel = plan.model, capability = plan.capability;
   const hiddenModel = modelHidden(models,image?'image':'video',selectedModel,connection);
   const options = modelOptions(models,image?'image':'video',selectedModel,connection);
   const visibility = models?.models.find(item => item.model === selectedModel)?.visibility;
@@ -107,11 +110,12 @@ export function DraftEditor({ draft, connection, models, saving, error, onChange
   return <section ref={panel} className="wb-panel wb-editor" aria-label={image ? '图片草稿' : '视频草稿'} onPaste={pasteReferences}>
     <div className="wb-section-heading"><h2>创作参数</h2><span id={reasonsId + '-save-status'} aria-label="草稿保存状态" aria-busy={saving} className={error ? 'wb-error' : 'wb-help'} aria-live="polite">{error ? '草稿未保存' : saving && slowSaving ? '正在保存草稿…' : '草稿自动保存'}</span></div>
     <label>生成模型<select ref={modelInput} value={hiddenModel || !options.includes(selectedModel) ? '' : selectedModel} onChange={event => {
-      const model=event.target.value,rule=videoRule(model,connection); if(!model || !options.includes(model))return;
+      const model=event.target.value,rule=videoRule(model,connection,models); if(!model || !options.includes(model))return;
       if(!image && rule) {const parameters={...plan.parameters}; if(!rule.sendSize)delete parameters.size;else if(!parameters.size)parameters.size=rule.defaultSize || rule.sizes[0];
         const valid=validVideoParameters(rule,parameters);onChange({model,parameters:valid?parameters:videoDefaults(model,rule,models)});setParameterNotice(valid?'已按所选型号更新参数规则。':'原参数不适用于此型号，已使用该型号默认参数。');
       } else onChange({model});
     }}>{(hiddenModel || !options.includes(selectedModel)) && <option value="" disabled hidden>{selectedModel ? selectedModel + (hiddenModel ? ' · 已隐藏' : ' · 当前未列出') : '请选择模型'}</option>}{options.map(name => {const item=models?.models.find(item=>item.model===name);return <option key={name} value={name}>{name}{item?.visibility==='absent'&&!item.custom?' · 当前未列出':item?.custom&&item.visibility!=='visible'?' · 手动添加':!connection?' · 待配置':''}</option>;})}</select></label>
+    <div className="wb-work-name"><label><span className="wb-work-name-label">作品名称 <small className="wb-help">选填</small></span><input value={draft.workName || ''} aria-invalid={Boolean(workNameError(draft.workName || ''))} aria-describedby={reasonsId + '-name-help'} onChange={event => onChange({workName:event.target.value})} placeholder="例如：镜头03_瓶身推进_近景" /></label><div className="wb-work-name-hint"><p id={reasonsId + '-name-help'} className="wb-help">给这次创作起个好记的名字，方便查找。</p><span>{workNameLength(draft.workName || '')}/{MAX_WORK_NAME_CHARACTERS}</span></div>{workNameError(draft.workName || '') && <p role="alert" className="wb-error">{workNameError(draft.workName || '')}</p>}</div>
     {hiddenModel && <div className="wb-hidden-model" role="status"><Info size={19} /><div><strong>当前模型已隐藏</strong><p>请选择其他模型，提示词和参考图会保留。</p></div><button type="button" onClick={chooseModel}>选择模型</button></div>}
     {!hiddenModel && <p className={plan.unverifiedMulti || plan.unverifiedImage ? "wb-warning" : "wb-help"}>{capabilityText}</p>}
     {image && <><label>{image ? '画面描述' : '剧情描述'}<textarea ref={promptInput} rows={8} value={draft.prompt} onChange={event => onChange({ prompt: event.target.value })} placeholder={image ? '描述你想创作的画面、光线和氛围…' : '描述镜头、人物动作与对白…'} /></label><p className="wb-character-count">{draft.prompt.length} 字</p></>}
@@ -127,7 +131,7 @@ export function DraftEditor({ draft, connection, models, saving, error, onChange
       {parameterNotice&&<p role="status" className="wb-help">{parameterNotice}</p>}
     </div>:<div ref={parametersPanel} tabIndex={-1} className="wb-specs" aria-label="视频规格">{plan.unverifiedMulti ? <><span>6 秒 · 尝试参数</span><span>1280 × 720 · 请求参数</span><small>3张及以上尚未实测，能否生成以服务返回结果为准。</small></> : generationEvidenceVerified(capability) && typeof capability?.parameters.seconds === 'number' ? <><span>{capability.parameters.seconds} 秒 · 固定</span>{typeof capability.parameters.size === 'string' ? <><span>{videoRatio(capability.parameters.size)}</span><span>{capability.parameters.size.replace('x',' × ')}</span><small>当前能力记录的固定规格</small></> : <><span>分辨率由服务决定</span><small>不传尺寸参数</small>{Object.hasOwn(draft.parameters,'size') && <button type="button" onClick={() => { const parameters = { ...draft.parameters }; delete parameters.size; onChange({ parameters }); }}>使用服务默认分辨率</button>}</>}</> : <small>此组合的规格尚未验证</small>}</div>)}
     {Boolean(error) && <div ref={saveError} tabIndex={-1} role="alert" className="wb-error">{localErrorMessage(error)}<button type="button" onClick={onRetry}>重试保存</button><button type="button" onClick={onReload}>重新读取本机草稿（放弃未保存修改）</button></div>}
-    {image ? <ImagePrice connection={connection} model={selectedModel} models={models} /> : <div className="wb-generation-price" aria-live="polite"><span>本次预计费用</span><strong>{videoPrice(plan.rule,plan.parameters.seconds)!==null?'¥'+videoPrice(plan.rule,plan.parameters.seconds):plan.rule?'请输入有效时长':'暂无法估算'}</strong>{plan.rule&&videoPrice(plan.rule,plan.parameters.seconds)!==null&&<small>{String(plan.parameters.seconds)} 秒 × ¥{(plan.rule.centsPerSecond/100).toFixed(2)}/秒</small>}<small>按配置单价估算，实际扣费以中转结算为准。</small></div>}
+    {image ? <ImagePrice connection={connection} model={selectedModel} models={models} /> : <div className="wb-generation-price" aria-live="polite"><span>本次预计费用</span><strong>{videoPrice(plan.rule,plan.parameters.seconds)!==null?'¥'+videoPrice(plan.rule,plan.parameters.seconds):plan.rule&&plan.rule.centsPerSecond!==null?'请输入有效时长':'暂无法估算'}</strong>{plan.rule&&typeof plan.rule.centsPerSecond==='number'&&videoPrice(plan.rule,plan.parameters.seconds)!==null&&<small>{String(plan.parameters.seconds)} 秒 × ¥{(plan.rule.centsPerSecond/100).toFixed(2)}/秒</small>}<small>按配置单价估算，实际扣费以中转结算为准。</small></div>}
     <div className="wb-editor-footer">
       {showGuidance ? <div id={reasonsId} className="wb-generation-guidance" aria-live="polite" aria-label="生成条件"><div className="wb-guidance-title"><Info size={16} aria-hidden="true" /><span>{waiting ? '正在处理，请稍候' : '生成前还需完成'}</span></div><ul>{blockers.filter(item => item.code !== 'model-hidden').map((item, index) => <li key={item.code + '-' + index}><span>{item.message}</span>{!waiting && item.onAction && <button type="button" className="wb-guidance-action" onClick={item.onAction}>{item.actionLabel}</button>}</li>)}</ul></div> : hiddenModel ? <p className="wb-help">选择可用模型后即可生成</p> : <p className="wb-help">草稿自动保存，保存完成后可生成。点击后加入本地队列；派发会调用配置的生成服务，可能产生费用。</p>}
       {!connection?.hasCredential ? <button type="button" className="wb-primary" onClick={onConfigure}><Sparkles size={17} />配置连接后生成</button> : <button type="button" className="wb-primary" aria-describedby={[reasonsId + '-save-status', ...(showGuidance ? [reasonsId] : [])].join(' ')} disabled={generationDisabled} onClick={() => { if (!generationDisabled) onSubmit?.(); }}><Sparkles size={17} />{submitting ? '正在建立本地任务…' : image ? '生成图片' : '生成视频'}</button>}

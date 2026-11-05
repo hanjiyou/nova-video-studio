@@ -7,14 +7,15 @@ const { controlledVideoTextValidation } = require('./controlled-video-text-valid
 const { generationEvidenceVerified } = require('../connections/capabilities');
 const videoPolicy = require('./video-policy');
 const {videoRule,validParameters}=require('../connections/model-catalog');
-const MODELS = require('../plugins/opensosen-video').MODELS;
+const {LEGACY,validReferences}=require('../connections/video-rules');
 const multiReference = require('./multi-reference-policy');
 const imagePolicy = require('./image-policy');
 const { MAX_VIDEO_REFERENCE_ASSETS } = require('../storage/application-limits');
+const { normalizeWorkName } = require('../storage/work-names');
 const COUNTS = { 'image.text': [0,0], 'image.reference': [1,1], 'video.text': [0,0], 'video.single_reference': [1,1], 'video.dual_reference': [2,2], 'video.multi_reference': [3,MAX_VIDEO_REFERENCE_ASSETS] };
 function invalid() { return fail('INPUT_INVALID', '模式、参数或有序素材引用无效。'); }
-function snapshotFor(body, videoVersion) {
-    const keys = ['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId'];
+function snapshotFor(body, videoVersion, capability) {
+    const keys = ['localRequestId','connectionVersionId','capabilityVersionId','mode','model','prompt','parameters','inputAssets','outputDirectoryVersionId','outputRootRef','groupId','groupName','groupDirectoryVersionId','workName'];
     if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(key => !keys.includes(key))) throw invalid();
     if (!Object.hasOwn(COUNTS, body.mode) || typeof body.prompt !== 'string' || !body.prompt.trim() || body.prompt.length > 65536 ||
         !body.parameters || typeof body.parameters !== 'object' || Array.isArray(body.parameters) || !Array.isArray(body.inputAssets)) throw invalid();
@@ -22,6 +23,7 @@ function snapshotFor(body, videoVersion) {
         if ((['localRequestId','connectionVersionId','capabilityVersionId'].includes(key) || body[key] !== undefined) &&
             (typeof body[key] !== 'string' || !UUID.test(body[key]))) throw invalid();
     }
+    const workName = body.workName === undefined ? undefined : normalizeWorkName(body.workName);
     if (body.groupName !== undefined && (typeof body.groupName !== 'string' || body.groupName.length > 48)) throw invalid();
     if (body.mode === 'video.multi_reference' && videoVersion !== '1.1.0') throw invalid();
     const [min,max] = COUNTS[body.mode];
@@ -32,16 +34,22 @@ function snapshotFor(body, videoVersion) {
         return {assetId:item.assetId.toLowerCase(),position,role:'reference'};
     });
     const image = body.mode.startsWith('image.');
-    if (image ? !imagePolicy.imageRule(body.model)?.modes.includes(body.mode) : !MODELS.includes(body.model)) throw invalid();
+    // Parse an explicitly selected immutable rule before duplicate detection.
+    // A new intent still passes the current-rule gate in createWorkbenchTask.
+    const frozen=!image&&capability?.model===body.model&&capability.mode===body.mode?videoPolicy.frozenRule(capability):null;
+    const rule=image?null:frozen||videoRule(body.model,{provider:videoPolicy.RULES.provider,baseUrl:videoPolicy.RULES.baseUrl});
+    if (image ? !imagePolicy.imageRule(body.model)?.modes.includes(body.mode) : !rule&&!LEGACY.driverModels.includes(body.model)) throw invalid();
     if (image) {
         if (!imagePolicy.validParameters(body.parameters, body.model, body.mode)) throw invalid();
-    } else if (validParameters(videoRule(body.model,{provider:'opensosen',baseUrl:videoPolicy.RULES.baseUrl}),body.parameters)) {
+    } else if (validParameters(rule,body.parameters,body.mode) && validReferences(rule,body.mode,body.inputAssets)) {
         // The immutable capability version below distinguishes configured rules from legacy evidence.
-    } else if (body.mode === 'video.text') {
+    } else if (!LEGACY.driverModels.includes(body.model)) throw invalid();
+    else if (body.mode === 'video.text') {
         if (!controlledVideoTextValidation.allowsInput(body) && (body.parameters.seconds !== 6 || Object.keys(body.parameters).length !== 1)) throw invalid();
     } else if (Object.keys(body.parameters).some(key => !['seconds','size'].includes(key)) || body.parameters.seconds !== 6 || body.parameters.size !== '1280x720') throw invalid();
     return {contractVersion:1,localRequestId:body.localRequestId.toLowerCase(),connectionVersionId:body.connectionVersionId.toLowerCase(),
         capabilityVersionId:body.capabilityVersionId.toLowerCase(),mode:body.mode,model:body.model,prompt:body.prompt,
+        ...(workName === undefined ? {} : {workName}),
         parameters:{...body.parameters},inputAssets,adapterId:image?'opensosen-flare-image':'plugin:opensosen-video',adapterVersion:image?VERSION:videoVersion,
         ...(body.outputDirectoryVersionId?{outputDirectoryVersionId:body.outputDirectoryVersionId.toLowerCase()}:{}),
         ...(body.outputRootRef?{outputRootRef:body.outputRootRef.toLowerCase()}:{} ),

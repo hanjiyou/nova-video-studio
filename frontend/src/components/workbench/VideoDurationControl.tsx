@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { Check } from 'lucide-react';
 import { saveModelSettings, sameConnectionTransport, type ConnectionModels, type ConnectionSummary } from '@/lib/connection-client';
-import { videoDefaults, videoPrice, type VideoRule } from '@/lib/workbench-model-catalog';
+import { videoDefaults, type VideoRule } from '@/lib/workbench-model-catalog';
 import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 
 export function VideoDurationControl({ connection, model, rule, models, seconds, inputRef, onChange, onModels }: {
@@ -17,7 +17,7 @@ export function VideoDurationControl({ connection, model, rule, models, seconds,
   useUpdateBlocker(() => busy.current);
   const scopedModels = connection && models && sameConnectionTransport(connection, models) ? models : null;
   const defaultSeconds = confirmed?.source === models ? confirmed.seconds : videoDefaults(model, rule, scopedModels).seconds;
-  const validSeconds = videoPrice(rule, seconds) !== null;
+  const validSeconds = Number.isInteger(seconds) && Number(seconds)>=rule.minSeconds && Number(seconds)<=rule.maxSeconds;
   const alreadyDefault = validSeconds && Number(seconds) === defaultSeconds;
   async function save() {
     if (!connection || busy.current || alreadyDefault || !validSeconds) return;

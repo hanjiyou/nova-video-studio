@@ -383,6 +383,17 @@ ALTER TABLE workbench_groups ADD COLUMN archived_at TEXT;
 ALTER TABLE workbench_groups ADD COLUMN deleted_at TEXT;
 CREATE TABLE group_file_operations(id TEXT PRIMARY KEY,request_id TEXT NOT NULL UNIQUE COLLATE NOCASE,kind TEXT NOT NULL,task_id TEXT,group_id TEXT NOT NULL,state TEXT NOT NULL,plan_json TEXT NOT NULL,result_json TEXT,error_code TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL);
 ` },
+    { version: 14, name: 'work-names-and-draft-names', sql: `
+ALTER TABLE tasks ADD COLUMN work_name TEXT;
+ALTER TABLE tasks ADD COLUMN work_name_revision INTEGER NOT NULL DEFAULT 0 CHECK(work_name_revision>=0);
+ALTER TABLE drafts ADD COLUMN work_name TEXT NOT NULL DEFAULT '';
+ALTER TABLE group_drafts ADD COLUMN work_name TEXT NOT NULL DEFAULT '';
+ALTER TABLE assets ADD COLUMN named_legacy INTEGER NOT NULL DEFAULT 0 CHECK(named_legacy IN(0,1));
+DROP INDEX idx_assets_default_identity;
+DROP INDEX idx_assets_root_identity;
+CREATE UNIQUE INDEX idx_assets_default_identity ON assets(sha256,mime_type,kind) WHERE root_ref IS NULL AND group_id IS NULL AND named_legacy=0;
+CREATE UNIQUE INDEX idx_assets_root_identity ON assets(root_ref,sha256,mime_type,kind) WHERE root_ref IS NOT NULL AND group_id IS NULL AND named_legacy=0;
+` },
 ];
 const checksum = text => createHash('sha256').update(text).digest('hex');
 async function migrateDatabase({ db, dbPath, backupDirectory, migrations = MIGRATIONS }) {

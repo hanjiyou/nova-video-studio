@@ -3,6 +3,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
 const { failure, fileFailure } = require('../backend/storage/download-errors');
+const { outputFilename } = require('../backend/storage/work-names');
 async function snapshot(file) {
     try { const stat=await fs.lstat(file);if(!stat.isFile()||stat.isSymbolicLink())throw failure('SAVE_TARGET_CHANGED');return {ino:stat.ino,dev:stat.dev,size:stat.size,mtimeMs:stat.mtimeMs}; }
     catch(error){if(error.code==='ENOENT')return null;throw error;}
@@ -13,9 +14,15 @@ function createAssetActions({getStore,dialog,shell,getWindow}) {
         const checked=store.readAsset(id);return {...checked,file:store.resolveAssetPath(id)};
     }
     return {
-        async save(id) {
+        async save(id, taskId) {
             const original=source(id),extension=path.extname(original.file).slice(1);
-            const result=await dialog.showSaveDialog(getWindow(),{title:'另存副本',defaultPath:'Nova-'+id.slice(0,8)+'.'+extension,
+            let defaultPath=path.basename(original.file);
+            if(taskId!==undefined){
+                const task=getStore().getTask(taskId),position=task?.outputAssets?.findIndex(asset=>asset.assetId===id)??-1;
+                if(position<0)throw Object.assign(new Error('素材不属于此作品。'),{code:'ASSET_TASK_MISMATCH',statusCode:400});
+                defaultPath=outputFilename({taskId:task.localTaskId,createdAt:task.createdAt,position,ext:extension,workName:task.workName||'',prompt:task.prompt,media:original.asset.kind==='video'?'视频':'图片',existingFilename:path.basename(original.file),existingNamed:Boolean(task.workName),count:task.outputAssets.length});
+            }
+            const result=await dialog.showSaveDialog(getWindow(),{title:'另存副本',defaultPath,
                 filters:[{name:original.asset.kind==='video'?'视频':'图片',extensions:[extension]}],properties:['createDirectory','showOverwriteConfirmation']});
             if(result.canceled||!result.filePath)return {ok:true,cancelled:true};
             let temporary,handle;

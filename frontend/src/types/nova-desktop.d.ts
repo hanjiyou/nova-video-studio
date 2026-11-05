@@ -30,7 +30,7 @@ declare global {
       onUpdateFlush: (listener: (value: {id: string}) => void) => () => void;
       chooseOutputDirectory: () => Promise<{ ok: boolean; cancelled?: boolean; selectionId?: string; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;
       getOutputDirectory: () => Promise<{ ok: boolean; displayName?: string; outputDirectoryVersionId?: string; outputRootRef?: string; code?: string }>;
-      saveAssetCopy: (assetId: string) => Promise<{ ok: boolean; cancelled?: boolean; assetId?: string; code?: string }>;
+      saveAssetCopy: (assetId: string, taskId?: string) => Promise<{ ok: boolean; cancelled?: boolean; assetId?: string; code?: string }>;
       revealAsset: (assetId: string) => Promise<{ ok: boolean; assetId?: string; code?: string }>;
     };
   }

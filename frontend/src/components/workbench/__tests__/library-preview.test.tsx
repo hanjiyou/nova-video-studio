@@ -42,7 +42,7 @@ it('single click does nothing, double click previews only the first image, and d
   expect(within(dialog).getByRole('img')).toHaveAttribute('src', first.previewUrl);
   expect(within(dialog).queryByRole('video')).not.toBeInTheDocument();
   fireEvent.click(within(dialog).getByRole('button', { name: '另存副本' }));
-  await waitFor(() => expect(window.novaDesktop?.saveAssetCopy).toHaveBeenCalledWith('first'));
+  await waitFor(() => expect(window.novaDesktop?.saveAssetCopy).toHaveBeenCalledWith('first','图片作品'));
   await waitFor(() => expect(within(dialog).getByRole('button', { name: '打开结果目录' })).toBeEnabled());
   fireEvent.click(within(dialog).getByRole('button', { name: '打开结果目录' }));
   await waitFor(() => expect(window.novaDesktop?.revealAsset).toHaveBeenCalledWith('first'));
@@ -78,7 +78,7 @@ it('a page 2 old video uses native controls and closing preserves filters, page 
   fireEvent.click(screen.getByRole('button', { name: '选择图片' }));
   fireEvent.change(screen.getByLabelText('作品类型'), { target: { value: 'video' } });
   expect(screen.queryByLabelText('任务状态')).not.toBeInTheDocument();
-  fireEvent.change(screen.getByLabelText('搜索提示词或模型'), { target: { value: '旧视频' } });
+  fireEvent.change(screen.getByLabelText('搜索名称、提示词或模型'), { target: { value: '旧视频' } });
   await waitFor(() => expect(screen.getByText('第 1 / 2 页 · 25 条')).toBeInTheDocument());
   await waitFor(() => expect(screen.getByRole('button', { name: '下一页' })).toBeEnabled());
   fireEvent.click(screen.getByRole('button', { name: '下一页' }));
@@ -89,7 +89,7 @@ it('a page 2 old video uses native controls and closing preserves filters, page 
   expect(player).toHaveAttribute('controls'); expect(player).not.toHaveAttribute('autoplay');
   fireEvent.keyDown(dialog, { key: 'Escape' });
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(screen.getByLabelText('作品类型')).toHaveValue('video'); expect(screen.queryByLabelText('任务状态')).not.toBeInTheDocument(); expect(screen.getByLabelText('搜索提示词或模型')).toHaveValue('旧视频');
+  expect(screen.getByLabelText('作品类型')).toHaveValue('video'); expect(screen.queryByLabelText('任务状态')).not.toBeInTheDocument(); expect(screen.getByLabelText('搜索名称、提示词或模型')).toHaveValue('旧视频');
   expect(screen.getByText('第 2 / 2 页 · 25 条')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: '带入多图参考草稿' }));
   expect(props.onVideo).toHaveBeenCalledWith(images);

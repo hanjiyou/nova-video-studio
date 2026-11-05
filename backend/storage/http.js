@@ -93,6 +93,13 @@ function createStorageHttp({ getStore, getConnections, onSettingChanged = () => 
             }
             const groupDelete=pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)$/);
             if(groupDelete && req.method==='DELETE'){sendJson(res,200,store.deleteGroup(decodeURIComponent(groupDelete[1])));return true;}
+            const taskName=pathname.match(/^\/api\/nova\/storage\/tasks\/([^/]+)\/name$/);
+            if(taskName && req.method==='POST') {
+                const body=await jsonBody(req);
+                if(!body || Object.getPrototypeOf(body)!==Object.prototype || Object.keys(body).some(key=>!['requestId','expectedNameRevision','workName'].includes(key)) || !Number.isSafeInteger(body.expectedNameRevision) || body.expectedNameRevision<0 || typeof body.workName!=='string' || typeof body.requestId!=='string' || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.requestId)) throw fail('INVALID_STORAGE_INPUT');
+                const result=store.renameTaskWork(decodeURIComponent(taskName[1]),body);
+                onTaskChanged(result.taskId);sendJson(res,200,result);return true;
+            }
             const taskGroup=pathname.match(/^\/api\/nova\/storage\/tasks\/([^/]+)\/group$/);
             if(taskGroup && req.method==='POST'){const result=store.moveTaskToGroup(decodeURIComponent(taskGroup[1]),await jsonBody(req));onTaskChanged(result.taskId);sendJson(res,200,result);return true;}
             const groupDraft = pathname.match(/^\/api\/nova\/storage\/groups\/([^/]+)\/drafts\/([^/]+)$/);

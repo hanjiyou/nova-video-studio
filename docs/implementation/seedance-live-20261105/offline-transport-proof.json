@@ -1,0 +1,15 @@
+{
+  "scope": "loopback only, synthetic credentials",
+  "explicitDispatcher": {
+    "name": "TypeError",
+    "causeCode": "UND_ERR_INVALID_ARG",
+    "causeMessage": "invalid onRequestStart method",
+    "received": 0,
+    "connectionAttempts": 0
+  },
+  "compatibleGlobalDispatcher": {
+    "httpStatus": 200,
+    "received": 1,
+    "connectionAttempts": 1
+  }
+}

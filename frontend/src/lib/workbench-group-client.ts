@@ -32,6 +32,14 @@ export async function moveTaskGroup(task: HistoryTask, groupId: string) {
   const result = await tracked<{task: HistoryTask; movedFiles: number; unchanged?: boolean}>('task:' + task.localTaskId, { groupId, expectedRevision: task.groupRevision }, requestId => request('tasks/' + encodeURIComponent(task.localTaskId) + '/group', 'POST', { groupId, requestId, ...(task.groupRevision === undefined ? {} : { expectedRevision: task.groupRevision }) }));
   const after=acceptTask(result.task);moveListeners.forEach(listener=>listener(task,after));return { ...result, task: after };
 }
+export const workRenameNotice = (cleanupPending = false) => cleanupPending ? '名称与文件名已更新，旧文件整理尚待恢复。' : '作品名称与本机文件名已更新。';
+export interface WorkNameIntent { kind: 'work-name'; workName: string; expectedNameRevision: number }
+export async function renameTaskWork(task: HistoryTask, workName: string) {
+  const key = 'task:' + task.localTaskId, previous = unconfirmedGroupInput(key) as WorkNameIntent | undefined;
+  const signature: WorkNameIntent = {kind:'work-name',workName:workName.trim(),expectedNameRevision:previous?.kind === 'work-name' && previous.workName === workName.trim() ? previous.expectedNameRevision : task.nameRevision || 0};
+  const result = await tracked<{task:HistoryTask;taskId:string;unchanged?:boolean;cleanupPending?:boolean}>(key,signature,requestId => request('tasks/' + encodeURIComponent(task.localTaskId) + '/name','POST',{requestId,workName:signature.workName,expectedNameRevision:signature.expectedNameRevision}));
+  const after = acceptTask(result.task); moveListeners.forEach(listener=>listener(task,after)); return {...result,task:after};
+}
 export const renameWorkbenchGroup = (groupId: string, name: string) => tracked<{group: WorkbenchGroup}>('rename:' + groupId, {name}, requestId => request('groups/' + encodeURIComponent(groupId) + '/rename', 'POST', { name, requestId }));
 export const archiveWorkbenchGroup = (groupId: string, archived: boolean) => request<{group: WorkbenchGroup}>('groups/' + encodeURIComponent(groupId) + '/archive', 'POST', { archived });
 export const deleteWorkbenchGroup = (groupId: string) => request<{groupId: string; deleted: boolean}>('groups/' + encodeURIComponent(groupId), 'DELETE');

@@ -2,6 +2,7 @@
 const electron = require('electron');
 const { app, BrowserWindow, Menu, dialog, shell, ipcMain, session, safeStorage, net: electronNet } = electron;
 const { createEditorHost } = require('./openchatcut/host.cjs');
+const { createEditorDiagnostics } = require('./openchatcut/diagnostics.cjs');
 const { createEditorCloseGuard } = require('./openchatcut/lifecycle.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
@@ -110,6 +111,8 @@ async function start() {
   await session.defaultSession.clearStorageData({ origin, storages: ['serviceworkers', 'cachestorage'] });
   detachSession = policy.attach(session.defaultSession);
   editor = createEditorHost({ electron, getWindow: () => mainWindow,
+    getSettings:()=>backend?.storage?.getSetting('editor').value,
+    diagnostics:createEditorDiagnostics({directory:dataPolicy.directory,currentVersion:app.getVersion()}),
     dataDirectory: path.join(dataPolicy.directory, 'openchatcut'), repositoryRoot: path.resolve(__dirname, '..'),
     resourcesPath: process.resourcesPath, packaged: app.isPackaged,
     sendState(state) { const contents = mainWindow?.webContents; if (contents && policy.isTrustedSender({ sender: contents, senderFrame: contents.mainFrame })) contents.send('nova:editor-state-changed', state); },

@@ -4,6 +4,8 @@ const path = require('node:path');
 const { randomUUID, createHash } = require('node:crypto');
 const { DEFAULT_GROUP, LIMITS, validName, bounded } = require('./groups');
 const { localOutcome } = require('../tasks/lifecycle-contract');
+const { normalizeWorkName, workNameFor, outputFilename } = require('./work-names');
+const { fileFailure } = require('./download-errors');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const error = (code, message, statusCode = 409) => Object.assign(new Error(message), { code, statusCode });
 const digest = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -64,7 +66,12 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
         if (bytes.length !== asset.byte_length || digest(bytes) !== asset.sha256) throw error('ASSET_CORRUPT', '作品文件与校验记录不一致，原文件已保留。');
     }
     function targetPath(entry, create = false, allowMissing = false) {
-        const root = outputDirectories.directory(entry.root_ref), parts = entry.storage_key.split(/[\\/]/);
+        const root = outputDirectories.directory(entry.root_ref || outputDirectories.DEFAULT), parts = entry.storage_key.split(/[\\/]/);
+        if (entry.named_legacy && !entry.group_id) {
+            if (parts.length !== 2 || !/^[a-f0-9]{2}$/.test(parts[0]) || !parts[1] || /[<>:"|?*\p{Cc}\p{Cs}]/u.test(parts[1]) || /[. ]$/.test(parts[1]) || parts[1].length > LIMITS.filename || !/\.[a-z0-9]{2,5}$/.test(parts[1])) throw error('ASSET_PATH_REJECTED', '旧作品的新文件名无效。');
+            if (!groups.safeDirectory(root, ['assets', parts[0]], create) && !allowMissing) throw error('DIRECTORY_NOT_WRITABLE', '旧作品原目录不可用。');
+            return bounded(path.join(root, 'assets', ...parts));
+        }
         if (parts.length !== 3 || !['图片','视频'].includes(parts[1])) throw error('ASSET_PATH_REJECTED', '目标受管路径无效。');
         validName(parts[0]);
         if (!parts[2] || parts[2] === '.' || parts[2] === '..' || /[<>:"|?*\p{Cc}]/u.test(parts[2])) throw error('ASSET_PATH_REJECTED', '目标文件名无效。');
@@ -74,12 +81,9 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
     function filename(value, position, asset) {
         const location = db.prepare('SELECT storage_key FROM task_output_locations WHERE task_id=? AND position=?').get(value.id, position);
         if (location) return path.basename(location.storage_key);
-        const when = new Date(value.created_at), snapshot = JSON.parse(value.input_snapshot_json || value.request_json || '{}');
-        if (!Number.isFinite(when.getTime())) throw error('OUTPUT_DIRECTORY_INVALID', '历史任务创建时间无效，不能确定成品名称。');
-        const pad = number => String(number).padStart(2, '0');
-        const stamp = String(when.getFullYear()) + pad(when.getMonth() + 1) + pad(when.getDate()) + '-' + pad(when.getHours()) + pad(when.getMinutes()) + pad(when.getSeconds());
-        const description = Array.from(String(snapshot.prompt || '').replace(/[<>:"/\\|?*\p{Cc}\uD800-\uDFFF]/gu, ' ').replace(/\s+/gu, ' ').trim().replace(/[. ]+$/g, '')).reduce((result, letter) => result.length + letter.length <= LIMITS.description ? result + letter : result, '') || (asset.kind === 'image' ? '图片' : '视频');
-        return stamp + '_' + description + '_' + digest(Buffer.from(value.id + ':' + position)).slice(0, 12) + (position ? '_' + (position + 1) : '') + path.extname(asset.storage_key);
+        if (asset.named_legacy) return path.basename(asset.storage_key);
+        const snapshot = JSON.parse(value.input_snapshot_json || value.request_json || '{}');
+        return outputFilename({ taskId: value.id, createdAt: value.created_at, position, ext: path.extname(asset.storage_key).slice(1).toLowerCase(), workName: workNameFor(value, snapshot), prompt: snapshot.prompt, media: asset.kind === 'image' ? '图片' : '视频', existingFilename: path.basename(asset.storage_key) });
     }
     function newPlan(value, groupId, organize = false, preview = false) {
         idleTask(value); const group = available(groupId), member = groups.membership(value.id);
@@ -103,7 +107,7 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
         for (const asset of bySlot.values()) {
             if (asset.validation_state !== 'verified' || asset.availability !== 'available') throw error('ASSET_CORRUPT', '作品尚未完整校验，不能迁移。');
             const source = sourcePath(asset), media = asset.kind === 'image' ? '图片' : '视频';
-            const entry = { ...asset, source_asset_id: asset.id, target_asset_id: randomUUID(), source_root_ref: asset.root_ref, source_storage_key: asset.storage_key, source_group_id: asset.group_id, root_ref: rootRef, storage_key: path.join(version.directory_name, media, filename(value, asset.position, asset)), group_id: group.id, directory_version_id: version.id };
+            const entry = { ...asset, source_asset_id: asset.id, target_asset_id: randomUUID(), source_root_ref: asset.root_ref, source_storage_key: asset.storage_key, source_group_id: asset.group_id, source_named_legacy: asset.named_legacy || 0, root_ref: rootRef, storage_key: path.join(version.directory_name, media, filename(value, asset.position, asset)), group_id: group.id, directory_version_id: version.id };
             const destination = targetPath(entry, false, preview);
             if (identity(source) === identity(destination)) { entry.keep = true; entry.target_asset_id = asset.id; }
             else if (fs.existsSync(destination) || db.prepare('SELECT 1 FROM assets WHERE root_ref=? AND storage_key=? UNION ALL SELECT 1 FROM task_output_locations WHERE root_ref=? AND storage_key=? AND task_id<>?').get(rootRef, entry.storage_key, rootRef, entry.storage_key, value.id)) throw error('ASSET_FILE_CONFLICT', '目标已有同名文件或受管记录，请处理冲突后再整理。');
@@ -130,7 +134,7 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
     }
     function copyFile(entry, operationId) {
         if (entry.keep) return;
-        const source = sourcePath({ ...entry, id: entry.source_asset_id, root_ref: entry.source_root_ref, storage_key: entry.source_storage_key, group_id: entry.source_group_id });
+        const source = sourcePath({ ...entry, id: entry.source_asset_id, root_ref: entry.source_root_ref, storage_key: entry.source_storage_key, group_id: entry.source_group_id, named_legacy: entry.source_named_legacy || 0 });
         const target = targetPath(entry), temporary = bounded(path.join(path.dirname(target), '.nova-' + operationId + '-' + entry.position + '.part'));
         fs.copyFileSync(source, temporary, fs.constants.COPYFILE_EXCL);
         verify(temporary, entry); const fd = fs.openSync(temporary, 'r+'); try { fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
@@ -191,7 +195,7 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
                 if (!fs.existsSync(temporary) || fs.lstatSync(temporary).isSymbolicLink()) throw error('GROUP_RECOVERY_REQUIRED', '无法确认整理目标所有权，原文件已保留。');
                 const owner = fs.statSync(temporary), candidate = fs.statSync(target);
                 if (owner.dev !== candidate.dev || owner.ino !== candidate.ino) throw error('GROUP_RECOVERY_REQUIRED', '整理目标已被其他文件替换。');
-                if (db.prepare('SELECT 1 FROM assets WHERE root_ref=? AND storage_key=?').get(entry.root_ref, entry.storage_key)) throw error('GROUP_RECOVERY_REQUIRED', '整理目标已有新的引用。');
+                if (db.prepare('SELECT 1 FROM assets WHERE root_ref IS ? AND storage_key=?').get(entry.root_ref, entry.storage_key)) throw error('GROUP_RECOVERY_REQUIRED', '整理目标已有新的引用。');
                 fs.unlinkSync(target);
             }
             if (fs.existsSync(temporary)) { if (fs.lstatSync(temporary).isSymbolicLink()) throw error('GROUP_RECOVERY_REQUIRED', '整理临时文件发生变化。'); fs.unlinkSync(temporary); }
@@ -246,6 +250,117 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
         const selectedGroups = new Set([scope?.groupId, ...(scope?.groupIds || [])].filter(Boolean));
         if (scope && unresolved.some(op => scope.taskId && op.taskId === scope.taskId || op.groupIds.some(groupId => selectedGroups.has(groupId)))) throw error('GROUP_RECOVERY_REQUIRED', '此剧本上次文件整理尚未恢复，请解除文件占用或恢复受管目录后再试。');
         return { unresolved };
+    }
+
+    function occupied(rootRef, storageKey, currentTaskId, position) {
+        const root = outputDirectories.directory(rootRef || outputDirectories.DEFAULT), target = identity(path.join(root, 'assets', storageKey));
+        try { fs.lstatSync(target); return true; } catch (cause) { if (cause.code !== 'ENOENT') throw cause; }
+        // Root versions may alias the same physical directory. Check physical identities.
+        const roots = new Map(db.prepare('SELECT id,directory FROM storage_roots').all().map(row => [row.id, row.directory]));
+        const physical = row => identity(path.join(roots.get(row.root_ref || outputDirectories.DEFAULT) || '', 'assets', row.storage_key));
+        if (db.prepare('SELECT root_ref,storage_key FROM assets').all().some(row => physical(row) === target)) return true;
+        return db.prepare('SELECT * FROM task_output_locations').all().some(row => !(row.task_id === currentTaskId && row.position === position) && physical(row) === target);
+    }
+    function workNamePlan(current, name) {
+        const member = groups.membership(current.id), snapshot = JSON.parse(current.input_snapshot_json || current.request_json || '{}');
+        const formal = db.prepare("SELECT a.*,ta.position FROM task_assets ta JOIN assets a ON a.id=ta.asset_id WHERE ta.task_id=? AND ta.role='output' ORDER BY ta.position").all(current.id);
+        const checkpoints = db.prepare('SELECT a.*,f.position FROM task_download_files f JOIN assets a ON a.id=f.asset_id WHERE f.task_id=? ORDER BY f.position').all(current.id);
+        const bySlot = new Map(formal.map(asset => [asset.position, asset]));
+        for (const asset of checkpoints) if (!bySlot.has(asset.position) && asset.validation_state === 'verified' && asset.availability === 'available' && trustedPath(asset)) bySlot.set(asset.position, asset);
+        const locations = db.prepare('SELECT * FROM task_output_locations WHERE task_id=?').all(current.id);
+        const count = Math.max(1, ...[...bySlot.keys(), ...locations.map(row => row.position)].map(position => position + 1));
+        const files = [], reservations = [], chosen = new Set();
+        function choose(sourceKey, rootRef, position, media, source) {
+            const directory = path.join(outputDirectories.directory(rootRef || outputDirectories.DEFAULT), 'assets', path.dirname(sourceKey));
+            for (let collision = 0; collision < 100; collision++) {
+                const next = outputFilename({ taskId: current.id, createdAt: current.created_at, position, ext: path.extname(sourceKey).slice(1).toLowerCase(), workName: name, prompt: snapshot.prompt, media, existingFilename: path.basename(sourceKey), existingNamed: Boolean(workNameFor(current, snapshot)), count, collision, directory });
+                const key = path.join(path.dirname(sourceKey), next), target = path.join(directory, next), physical = identity(target);
+                if (chosen.has(physical)) continue;
+                if (source === target) { chosen.add(physical); return { key, keep: true }; }
+                if (occupied(rootRef, key, current.id, position)) continue;
+                chosen.add(physical); return { key, keep: false };
+            }
+            throw error('ASSET_FILE_CONFLICT', '同名目标过多，请整理原目录后重试。');
+        }
+        for (const asset of bySlot.values()) {
+            if (asset.validation_state !== 'verified' || asset.availability !== 'available') throw error('ASSET_CORRUPT', '作品尚未完整校验，不能修改文件名。');
+            const source = sourcePath(asset), selected = choose(asset.storage_key, asset.root_ref, asset.position, asset.kind === 'image' ? '图片' : '视频', source);
+            files.push({ ...asset, source_asset_id: asset.id, target_asset_id: selected.keep ? asset.id : randomUUID(), source_root_ref: asset.root_ref, source_storage_key: asset.storage_key, source_group_id: asset.group_id, source_named_legacy: asset.named_legacy || 0, storage_key: selected.key, named_legacy: asset.group_id ? 0 : 1, directory_version_id: asset.group_id ? member.directory_version_id : null, keep: selected.keep });
+        }
+        for (const location of locations.filter(row => !bySlot.has(row.position))) {
+            const root = outputDirectories.directory(location.root_ref || outputDirectories.DEFAULT), previous = path.join(root, 'assets', location.storage_key);
+            // An unbound file is never assumed to belong to this rename operation.
+            if (fs.existsSync(previous)) throw error('ASSET_FILE_CONFLICT', '原预留位置存在未关联文件，请先恢复下载或核对文件。');
+            const selected = choose(location.storage_key, location.root_ref, location.position, String(snapshot.mode).startsWith('image.') ? '图片' : '视频');
+            reservations.push({ ...location, storage_key: selected.key });
+        }
+        return { task_id: current.id, group_id: member.group_id, from_group_id: member.group_id, membership_revision: member.revision, expected_name_revision: current.work_name_revision, name, files, reservations };
+    }
+    function bindWorkNamePlan(plan) {
+        const current = task(plan.task_id); idleTask(current);
+        if (current.work_name_revision !== plan.expected_name_revision) throw error('WORK_NAME_REVISION_CONFLICT', '作品名称已更新，请重新读取后再修改。');
+        const member = groups.membership(current.id);
+        if (member.revision !== plan.membership_revision) throw error('GROUP_REVISION_CONFLICT', '作品分组已变化，请刷新后再修改名称。');
+        for (const entry of plan.files) {
+            verify(targetPath(entry), entry);
+            if (!entry.keep) db.prepare('INSERT INTO assets(id,kind,storage_key,display_name,mime_type,byte_length,sha256,width,height,duration_seconds,source_kind,validation_state,availability,created_at,root_ref,group_id,named_legacy) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(entry.target_asset_id, entry.kind, entry.storage_key, path.basename(entry.storage_key), entry.mime_type, entry.byte_length, entry.sha256, entry.width, entry.height, entry.duration_seconds, 'generated', 'verified', 'available', entry.created_at, entry.root_ref, entry.group_id, entry.named_legacy);
+            db.prepare("UPDATE task_assets SET asset_id=? WHERE task_id=? AND role='output' AND position=? AND asset_id=?").run(entry.target_asset_id, current.id, entry.position, entry.source_asset_id);
+            db.prepare('UPDATE task_download_files SET asset_id=? WHERE task_id=? AND position=? AND asset_id=?').run(entry.target_asset_id, current.id, entry.position, entry.source_asset_id);
+            if (entry.group_id) db.prepare('INSERT INTO task_output_locations VALUES(?,?,?,?,?,?) ON CONFLICT(task_id,position) DO UPDATE SET storage_key=excluded.storage_key').run(current.id, entry.position, entry.root_ref, entry.group_id, entry.directory_version_id, entry.storage_key);
+        }
+        for (const row of plan.reservations) db.prepare('UPDATE task_output_locations SET storage_key=? WHERE task_id=? AND position=?').run(row.storage_key, current.id, row.position);
+        const sources = JSON.parse(current.result_sources_json || 'null');
+        if (Array.isArray(sources)) {
+            let changed = false;
+            for (const [position, source] of sources.entries()) {
+                const entry = source && plan.files.find(entry => entry.position === position && entry.source_asset_id === source.assetId);
+                if (entry) { source.assetId = entry.target_asset_id; changed = true; }
+            }
+            if (changed) db.prepare('UPDATE tasks SET result_sources_json=? WHERE id=?').run(JSON.stringify(sources), current.id);
+        }
+        db.prepare('UPDATE tasks SET work_name=?,work_name_revision=work_name_revision+1,revision=revision+1 WHERE id=? AND work_name_revision=?').run(plan.name, current.id, plan.expected_name_revision);
+    }
+    function renameTaskWork(taskId, value) {
+        input(value, ['requestId','expectedNameRevision','workName']);
+        taskId = id(taskId); const requestId = id(value.requestId), name = normalizeWorkName(value.workName);
+        if (!Number.isSafeInteger(value.expectedNameRevision) || value.expectedNameRevision < 0) throw error('INVALID_STORAGE_INPUT', '作品名称版本无效。', 400);
+        const current = task(taskId), member = groups.membership(taskId), scope = { taskId, groupId: member.group_id }, prior = operation(requestId);
+        if (prior) {
+            const saved = JSON.parse(prior.plan_json);
+            if (prior.kind !== 'work-name' || prior.task_id !== taskId || saved.name !== name || saved.expected_name_revision !== value.expectedNameRevision) throw error('WORK_NAME_REQUEST_CONFLICT', '同一改名请求不能用于其他作品或名称。');
+        }
+        try { recover(scope); } catch (cause) {
+            const saved = operation(requestId);
+            if (prior && saved?.result_json && saved.state === 'needs-recovery') return { ...JSON.parse(saved.result_json), cleanupPending: true };
+            throw cause;
+        }
+        if (prior) return resultFor(operation(requestId), 'work-name', taskId, prior.group_id);
+        if (current.work_name_revision !== value.expectedNameRevision) throw error('WORK_NAME_REVISION_CONFLICT', '作品名称已更新，请重新读取后再修改。');
+        idleTask(current);
+        const snapshot = JSON.parse(current.input_snapshot_json || current.request_json || '{}');
+        const unchanged = workNameFor(current, snapshot) === name;
+        const plan = unchanged ? { task_id: taskId, group_id: member.group_id, expected_name_revision: current.work_name_revision, name, files: [], reservations: [] } : workNamePlan(current, name);
+        const op = persist(requestId, 'work-name', member.group_id, plan);
+        try {
+            fault('prepared', op);
+            for (const entry of plan.files) { copyFile(entry, op.id); fault('copied', op, entry); }
+            const result = { operationId: op.id, taskId, nameRevision: current.work_name_revision + (unchanged ? 0 : 1), renamedFiles: plan.files.filter(entry => !entry.keep).length, ...(unchanged ? { unchanged: true } : {}) };
+            db.transaction(() => { if (!unchanged) bindWorkNamePlan(plan); fault('before-commit', op); setState(op.id, 'committed', { result }); })();
+            fault('committed', op); recover(scope); return result;
+        } catch (cause) {
+            if (cause.simulateCrash) throw cause;
+            recover();
+            const saved = operation(requestId);
+            if (saved?.state === 'completed') return JSON.parse(saved.result_json);
+            if (saved?.state === 'needs-recovery') {
+                if (saved.result_json) return { ...JSON.parse(saved.result_json), cleanupPending: true };
+                throw error('GROUP_RECOVERY_REQUIRED', '改名尚需安全恢复，请解除占用后重试。');
+            }
+            const knownFile = ['ENOSPC','EDQUOT','EBUSY','EPERM','ETXTBSY','EACCES','ENOENT','ENOTDIR','ENAMETOOLONG'].includes(cause.code);
+            const safe = cause.statusCode ? cause : knownFile ? fileFailure(cause) : Object.assign(error('WORK_RENAME_FAILED', '作品改名失败，原名称和文件保留。'), { cause });
+            setState(op.id, 'failed', { code: safe.code });
+            throw safe;
+        }
     }
     function moveTask(taskId, value, organize = false) {
         input(value, ['groupId','requestId','expectedRevision']); value = { ...value, groupId: id(value.groupId) }; const requestId = id(value.requestId); taskId = id(taskId);
@@ -379,6 +494,6 @@ function createGroupMoves({ db, groups, outputDirectories, trustedPath, isTaskEx
         const result = { items, succeeded: items.filter(item => item.ok).length, failed: items.filter(item => !item.ok).length };
         setState(parent.id, 'completed', { result }); return result;
     }
-    return { moveTask, renameGroup, archiveGroup, deleteGroup, previewHistory, organizeHistory, recover, recoveryStatus };
+    return { moveTask, renameTaskWork, renameGroup, archiveGroup, deleteGroup, previewHistory, organizeHistory, recover, recoveryStatus };
 }
 module.exports = { createGroupMoves };

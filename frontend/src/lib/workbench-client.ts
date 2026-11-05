@@ -7,7 +7,7 @@ export type WorkbenchPage = 'image' | 'video' | 'editor' | 'library' | 'settings
 export const WORKBENCH_PAGES: WorkbenchPage[] = ['image', 'video', 'editor', 'library', 'settings'];
 export const PRODUCT_FEATURES = Object.freeze({ image: true, video: true, editor: true, library: true, settings: true, agent: false, canvas: false, gif: false, promptGallery: false, browserAutomation: false, pluginManagement: false });
 export interface Draft {
-  groupId?: string; mode: DraftMode; prompt: string; model: string; parameters: Record<string, string | number | boolean>;
+  groupId?: string; mode: DraftMode; workName?: string; prompt: string; model: string; parameters: Record<string, string | number | boolean>;
   inputAssets: AssetSummary[]; revision: number; updatedAt: string | null;
 }
 export interface WorkspacePreferences { activeGroupId?: string; activeMode?: DraftMode; activePage?: WorkbenchPage; returnPage?: 'image' | 'video' | 'editor' | 'library'; wideMode?: boolean; recentVideoTaskLimit?: number }
@@ -30,7 +30,7 @@ export const getWorkbenchGroups = () => localRead<WorkbenchGroups>('/api/nova/st
 export const createWorkbenchGroup = async (name: string) => (await localRead<{ group: WorkbenchGroup }>('/api/nova/storage/groups', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name }) })).group;
 const draftRoute = (mode: DraftMode, groupId = DEFAULT_GROUP_ID) => groupId === DEFAULT_GROUP_ID ? '/api/nova/storage/drafts/' + mode : '/api/nova/storage/groups/' + encodeURIComponent(groupId) + '/drafts/' + mode;
 export const getDraft = async (mode: DraftMode, groupId = DEFAULT_GROUP_ID) => { const draft = (await localRead<{ draft: Draft }>(draftRoute(mode, groupId))).draft; return { ...draft, groupId: draft.groupId || groupId }; };
-export const putDraft = async (draft: Draft) => { const saved = (await localRead<{ draft: Draft }>(draftRoute(draft.mode, draft.groupId), { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: draft.prompt, model: draft.model, parameters: draft.parameters, inputAssets: draft.inputAssets.map((asset, position) => ({ assetId: asset.assetId, role: 'reference', position })), expectedRevision: draft.revision }) })).draft; return { ...saved, groupId: saved.groupId || draft.groupId || DEFAULT_GROUP_ID }; };
+export const putDraft = async (draft: Draft) => { const saved = (await localRead<{ draft: Draft }>(draftRoute(draft.mode, draft.groupId), { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...(draft.workName === undefined ? {} : {workName:draft.workName}), prompt: draft.prompt, model: draft.model, parameters: draft.parameters, inputAssets: draft.inputAssets.map((asset, position) => ({ assetId: asset.assetId, role: 'reference', position })), expectedRevision: draft.revision }) })).draft; return { ...saved, groupId: saved.groupId || draft.groupId || DEFAULT_GROUP_ID }; };
 export const getSetting = async <T>(key: string) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key)).setting;
 export const putSetting = async <T>(key: string, value: T, expectedRevision: number) => (await localRead<{ setting: Setting<T> }>('/api/nova/storage/settings/' + key, { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ value, expectedRevision }) })).setting;
 export interface HistoryTask extends WorkbenchTaskResponse { prompt: string; model: string; parameters: Record<string, string | number | boolean>; capabilityVersionId?: string; outputDirectoryVersionId?: string; outputRootRef?: string; outputLocation?: string; groupId?: string; groupName?: string; groupRevision?: number; submittedGroupId?: string; submittedGroupName?: string; savedAt?: string | null; taskCategory?: 'active' | 'unfinished' | 'completed' }
@@ -47,7 +47,7 @@ export const dismissSubmission = (id: string) => localRead('/api/nova/storage/su
 export async function importReference(file: File): Promise<AssetSummary> {
   return (await localRead<{ asset: AssetSummary }>('/api/nova/assets/import', { method: 'POST', headers: { 'content-type': file.type, 'x-nova-filename': encodeURIComponent(file.name) }, body: file })).asset;
 }
-export const PRESET_MODELS = ['gpt-image-2.5-flare', 'grok-imagine-video-6s', 'grok-imagine-video-1.5-6s'] as const;
+export const PRESET_MODELS = [require('../../../backend/tasks/image-policy.json').model,...Object.entries(require('../../../backend/connections/model-rules.json').models).filter(([,rule])=>(rule as {preset?:boolean}).preset).map(([model])=>model)] as string[];
 export const OPENSOSEN_BASE = 'https://newapi.opensosen.com/v1';
 export const OPENSOSEN_ROUTE_BASES: Record<import('./connection-client').TransportRoute, string> = { cn: 'https://newapi.opensosen.cn/v1', com: OPENSOSEN_BASE };
 export function validateBaseUrl(value: string): { canonical?: string; error?: string } {
@@ -87,6 +87,7 @@ export function connectionBanner(connection: import('./connection-client').Conne
 export function localErrorMessage(error: unknown) {
   const code = error instanceof Error ? error.message : 'LOCAL_SERVICE_FAILED';
   const messages: Record<string, string> = {
+    WORK_NAME_INVALID: '作品名称最多60个字符，不能包含换行或控制字符。', WORK_NAME_REVISION_CONFLICT: '作品名称已在其他操作中更新，请重新读取后再修改。', WORK_NAME_REQUEST_CONFLICT: '改名请求编号与原操作不一致，请重新读取作品。', WORK_RENAME_FAILED: '作品改名未完成，原名称与文件保留，请检查文件占用或权限后重试。',
     DRAFT_SWITCH_BUSY: '草稿正在保存、切换或导入素材，请稍后重试。', GROUP_RECOVERY_REQUIRED: '文件整理尚未安全收尾，请解除文件占用后重试恢复。原文件与记录保留。', GROUP_MOVE_INTERRUPTED: '上次整理被中断，请先恢复整理状态后重试。', GROUP_ACTIVE: '剧本仍有活动任务或待提交意图，请处理后再管理。', GROUP_NOT_EMPTY: '仅可删除没有任务、作品、草稿内容和目录文件的空剧本。', GROUP_ARCHIVED: '剧本已归档，请先取消归档或选择其他分组。', GROUP_DEFAULT_IMMUTABLE: '未分组是系统分组，不能重命名、归档或删除。', GROUP_REQUEST_CONFLICT: '整理请求编号与原操作不一致，请刷新后重新操作。', GROUP_REQUEST_UNCONFIRMED: '上次整理回执未确认，请先按原目标重试核对，避免并行整理。', GROUP_REVISION_CONFLICT: '任务归属已被其他操作更新，请刷新后重试。', ASSET_FILE_CONFLICT: '目标已有同名文件或受管记录，原归属与文件保留，请先处理冲突。', GROUP_MOVE_FAILED: '文件改组失败，原归属与文件保留，请检查目录或占用后重试。', GROUP_RENAME_FAILED: '分组目录重命名失败，原记录保留，请检查目录或占用后重试。', EACCES: '目录没有写入权限，请检查权限后重试。', EPERM: '文件或目录被占用或无操作权限，请解除占用后重试。', ENOSPC: '磁盘空间不足，请清理后重试。',
     GROUP_NAME_INVALID: '剧本名称最多48个字符，不能包含路径符号、Windows保留名或末尾点和空格。', GROUP_NAME_CONFLICT: '已存在同名剧本，请使用其他名称。', GROUP_DIRECTORY_CONFLICT: '同名目录已存在且不属于此分组，请更名或先整理该目录。', GROUP_NOT_FOUND: '剧本分组不存在，请重新读取。', PATH_TOO_LONG: '保存路径超过240个字符，请缩短根目录或剧本名称。', ASSET_PATH_REJECTED: '受管文件目录已改变或包含越界链接，请检查保存目录。',
     CONNECTION_ROUTE_CONFLICT: '访问线路已在其他操作中更新。请重新读取线路与版本；本次输入仍保留。', TRANSPORT_ROUTE_INVALID: '访问线路或线路版本无效，请重新读取设置。',

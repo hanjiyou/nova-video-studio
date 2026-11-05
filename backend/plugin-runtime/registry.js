@@ -46,7 +46,7 @@ function loadOnePlugin(dirName) {
     throw new Error('缺少必需文件 manifest.json');
   }
 
-  const manifest = readJsonFile(manifestPath);
+  let manifest = readJsonFile(manifestPath);
 
   const scriptPath = path.join(dir, 'index.js');
   const hasScriptDriver = fs.existsSync(scriptPath);
@@ -74,6 +74,12 @@ function loadOnePlugin(dirName) {
   let uiSchema = null;
   if (fs.existsSync(uiSchemaPath)) {
     uiSchema = readJsonFile(uiSchemaPath);
+  }
+  // Trusted bundled script drivers may project their versioned configuration.
+  // Package validation still runs after projection; JSON is never executable.
+  if (typeof driver?.projectConfiguration === 'function') {
+    const projected=driver.projectConfiguration({manifest,uiSchema});
+    manifest=projected.manifest;uiSchema=projected.uiSchema;
   }
 
   const result = validatePluginPackage({

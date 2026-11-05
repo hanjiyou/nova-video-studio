@@ -64,7 +64,7 @@ export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', conne
   const subscriptionIds=[...new Set([...(history?.items.map(task=>task.localTaskId)||[]),...Object.values(selected).filter(Boolean).map(task=>task!.localTaskId)])].join(',');
   useEffect(()=>{if(!ready)return;const stops=subscriptionIds.split(',').filter(Boolean).map(id=>novaTaskSocket.subscribeTask(id,task=>{if(task.localTaskId)acceptTask(task as unknown as HistoryTask);}));return()=>stops.forEach(stop=>stop());},[ready,subscriptionIds]);
   const draftKey = (draft: Draft) => (draft.groupId || DEFAULT_GROUP_ID) + ':' + draft.mode;
-  const fingerprint = (draft: Draft) => { const plan = generationPlan(draft,connection,models); return JSON.stringify([draft.groupId || DEFAULT_GROUP_ID,connection?.connectionVersionId,plan.capability?.capabilityVersionId,plan.mode,plan.model,draft.prompt,plan.parameters,draft.inputAssets.map(item => item.assetId)]); };
+  const fingerprint = (draft: Draft) => { const plan = generationPlan(draft,connection,models); return JSON.stringify([draft.groupId || DEFAULT_GROUP_ID,connection?.connectionVersionId,plan.capability?.capabilityVersionId,plan.mode,plan.model,draft.workName?.trim() || '',draft.prompt,plan.parameters,draft.inputAssets.map(item => item.assetId)]); };
   async function submit(draft: Draft) {
     let plan = generationPlan(draft,connection,models); const signature = fingerprint(draft);
     if (isUpdateFrozen() || busy.current || !reconciliationReady || plan.blocked || !connection || !plan.capability || fingerprints.current[draftKey(draft)] === signature || intents.length) return;
@@ -75,7 +75,7 @@ export function useWorkbenchTasks(ready: boolean, kind: 'image' | 'video', conne
       const refreshed=await checkConnection(connection,false,'submit').catch(error=>{if(['CONNECTION_VERSION_CONFLICT','CONNECTION_ROUTE_CONFLICT'].includes(error?.message))throw error;return null;});
       if(refreshed?.stale)throw Error('CONNECTION_VERSION_CONFLICT');
       if(refreshed?.models){onModels?.(refreshed as ConnectionModels);plan=generationPlan(draft,connection,refreshed as ConnectionModels);if(plan.blocked||!plan.capability){setNotice(plan.blocked||localErrorMessage(Error('CAPABILITY_UNVERIFIED')));return;}}
-      const frozen = await prepareSubmission({groupId:draft.groupId || DEFAULT_GROUP_ID,localRequestId:generateUUID(),connectionVersionId:connection.connectionVersionId,capabilityVersionId:plan.capability.capabilityVersionId,mode:plan.mode,model:plan.model,prompt:draft.prompt,parameters:plan.parameters,inputAssets:draft.inputAssets.map((asset,position) => ({assetId:asset.assetId,role:'reference',position}))});
+      const frozen = await prepareSubmission({groupId:draft.groupId || DEFAULT_GROUP_ID,localRequestId:generateUUID(),connectionVersionId:connection.connectionVersionId,capabilityVersionId:plan.capability.capabilityVersionId,mode:plan.mode,model:plan.model,...(draft.workName?.trim()?{workName:draft.workName.trim()}:{}),prompt:draft.prompt,parameters:plan.parameters,inputAssets:draft.inputAssets.map((asset,position) => ({assetId:asset.assetId,role:'reference',position}))});
       prepared = true; preparedId=frozen.localRequestId;
       fingerprints.current = {...fingerprints.current,[draftKey(draft)]:signature}; setConsumed(fingerprints.current);
       await markSubmissionAttempt(frozen.localRequestId); attempting = true;

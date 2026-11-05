@@ -1,0 +1,70 @@
+{
+  "provider": "opensosen",
+  "baseUrl": "https://newapi.opensosen.com/v1",
+  "version": "video-config-20261025-v1",
+  "models": {
+    "grok-imagine-video-1.5-6s": {
+      "minSeconds": 1,
+      "maxSeconds": 6,
+      "defaultSeconds": 6,
+      "sendSize": false,
+      "sizes": [],
+      "defaultSize": null,
+      "centsPerSecond": 5,
+      "submissionEnabled": true
+    },
+    "grok-imagine-video-1.5-preview": {
+      "minSeconds": 1,
+      "maxSeconds": 15,
+      "defaultSeconds": 10,
+      "sendSize": true,
+      "sizes": [
+        "1280x720",
+        "1920x1080",
+        "720x1280",
+        "1080x1920"
+      ],
+      "defaultSize": "1920x1080",
+      "centsPerSecond": 20,
+      "submissionEnabled": false
+    }
+  },
+  "presetModels": [
+    "gpt-image-2.5-flare",
+    "grok-imagine-video-6s",
+    "grok-imagine-video-1.5-6s"
+  ],
+  "driverModels": [
+    "grok-imagine-video-6s",
+    "grok-imagine-video-1.5-6s",
+    "grok-imagine-video-1.5-preview"
+  ],
+  "primaryModel": "grok-imagine-video-1.5-6s",
+  "profileDefaults": {
+    "driver": "openai-video-multipart-v1",
+    "modes": [
+      "video.text",
+      "video.single_reference",
+      "video.dual_reference",
+      "video.multi_reference"
+    ],
+    "referenceLimits": {
+      "video.text": {
+        "min": 0,
+        "max": 0
+      },
+      "video.single_reference": {
+        "min": 1,
+        "max": 1
+      },
+      "video.dual_reference": {
+        "min": 2,
+        "max": 2
+      },
+      "video.multi_reference": {
+        "min": 3,
+        "max": 7
+      }
+    }
+  }
+}

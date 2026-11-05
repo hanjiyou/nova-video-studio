@@ -83,9 +83,11 @@ function registerDesktopIpc({ ipcMain, dialog, shell, getWindow, policy, runtime
   register('nova:export-diagnostics', (...args) => args.length ? {ok:false,code:'INVALID_ARGUMENT'} : diagnosticActions.export());
   const assetActions=createAssetActions({getStore:getAssetService,dialog,shell,getWindow});
   for (const channel of ['nova:save-asset-copy', 'nova:reveal-asset']) register(channel, (...args) => {
-    if (args.length !== 1 || typeof args[0] !== 'string' || !UUID.test(args[0])) return { ok: false, code: 'INVALID_ASSET_ID' };
+    const save = channel === 'nova:save-asset-copy';
+    if ((args.length !== 1 && !(save && args.length === 2)) || typeof args[0] !== 'string' || !UUID.test(args[0])) return { ok: false, code: 'INVALID_ASSET_ID' };
+    if (args.length === 2 && (typeof args[1] !== 'string' || !UUID.test(args[1]))) return { ok: false, code: 'INVALID_TASK_ID' };
     if(!getAssetService())return {ok:false,code:'ASSET_SERVICE_NOT_READY'};
-    return channel==='nova:save-asset-copy'?assetActions.save(args[0]):assetActions.reveal(args[0]);
+    return save?assetActions.save(...args):assetActions.reveal(args[0]);
   });
   return {
     resolveDirectorySelection: id => selections.get(id) || null, // Host-only T03 integration point.

@@ -1,0 +1,134 @@
+{
+  "date": "2026-11-20",
+  "reviewer": "/root/protocol_independent_review",
+  "status": "passed source review and scoped independent offline checks",
+  "findings": [],
+  "reviewedBoundaries": [
+    "Rule resolution is separate from video classification and current-catalog admission; chat/openai labels and arbitrary origins do not gain video authorization.",
+    "Exact closed/null/invalid configuration wins over defaults; maxSeconds null and optional size are applied consistently.",
+    "Dynamic capabilities are appended independently per model/mode; old capability records and task snapshots remain immutable.",
+    "Original localRequestId replay precedes current-directory gates; new intents intersect current classification, visibility, display and rule.",
+    "Known model metadata reads legacy strings and persists only model and approved endpointTypes; old metadata does not imply current visibility.",
+    "Absent/custom cannot be newly selected or become a new default; unchanged previous absent default is retained only as historical fact.",
+    "Both primary refresh entrances share a synchronous gate; failures retain successful rows/timestamp and unsaved selections.",
+    "UI has real disabled gray rows, explicit old-choice removal, valid per-kind counts and stable ready/middle/absent grouping.",
+    "Plugin manifest adds only exact approved cn host, preserving version 1.1.0 and existing legacy adapter compatibility."
+  ],
+  "independentChecks": {
+    "type": "31 inline assertions / pure function checks, not node:test cases",
+    "command": "$reviewScript | node (PowerShell here-string; require actual backend/connections/video-rules, model-catalog and plugin manifest)",
+    "cwd": "E:\\Learn\\AI\\nova-image-studio",
+    "exitCode": 0,
+    "assertionsPassed": 31,
+    "assertionsFailed": 0,
+    "nodeTestCases": 0,
+    "networkCalls": 0,
+    "credentialReads": 0,
+    "productionWrites": 0,
+    "stdout": "{\"status\":\"passed\",\"checks\":31,\"scope\":\"Independent offline rule and source boundary inspection; no network, credentials or production writes\"}"
+  },
+  "visualInspection": [
+    "Actual-component synthetic settings-1280.png inspected",
+    "Actual-component synthetic settings-390.png inspected",
+    "Reviewed subsequent four-column header and ready-priority diff"
+  ],
+  "testEvidenceReviewed": [
+    "Backend focused 19/19; related initial 95/96 with superseded assertion corrected and affected file 1/1; extra known metadata 1/1, no claim all related files were rerun together",
+    "Frontend final six files 91/91 and complete TypeScript reported by owner; four synthetic responsive scenes passed"
+  ],
+  "limitations": [
+    "Did not repeat implementation agents entire regression groups or real HTTP loopback E2E",
+    "No real supplier generation, paid calls, credentials, installation, packaging or release",
+    "Source/isolated evidence review is not installed application acceptance"
+  ],
+  "files": [
+    {
+      "name": "backend/connections/capabilities.js",
+      "sha256": "4ae3915aa7d91c0e4c306a3fae277b7e66cb12f4fda9b72d48274022870cae9a"
+    },
+    {
+      "name": "backend/connections/model-rules.json",
+      "sha256": "7b3afae5728906d2d0ecacdda98f41207b0561d0637c835b170964a7f365c732"
+    },
+    {
+      "name": "backend/connections/service.js",
+      "sha256": "099b4e677e2751d7aed5dcba51ac9cf3f29c4b166ee0b509517dbe1cd030e705"
+    },
+    {
+      "name": "backend/connections/video-rules.js",
+      "sha256": "74e51d3d6909974732d19b90c4197590a2ed7d7413f78970ce4bff2ff6bf2587"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/index.js",
+      "sha256": "4f0940e58da1916ab5e56321e2e2ba02b7fe989e4bef1dabe5fa3d4ec671fe86"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/manifest.json",
+      "sha256": "3894ac58a2b5f398cdb944fa3d52eb3d8ed0215935892b90ba5ea1a914d9e1f8"
+    },
+    {
+      "name": "backend/server.js",
+      "sha256": "3b33a032608482fe90732fe33898c9339f459940d83bddd9fadc667e62238a82"
+    },
+    {
+      "name": "backend/tasks/video-policy.js",
+      "sha256": "2cf8c77d28781be29106c0427bec79494864388b71dcd7bd872c23774ff05b2d"
+    },
+    {
+      "name": "backend/test/model-catalog-http.test.js",
+      "sha256": "3b5a2d4dfeecef43dfd99355adab42c8c901756fcc4e3eae502fc061854e96e6"
+    },
+    {
+      "name": "backend/test/model-display-settings.test.js",
+      "sha256": "906f8233f308e3a8afb52cd6e71e9ce98089f1d65b9019be3f9af93349fd5e95"
+    },
+    {
+      "name": "backend/test/video-config-profiles.test.js",
+      "sha256": "1a6b58f1ede8c13292ab5ce60805cb47ad675ab39bcc9c5bbaf19fcbaf6d067a"
+    },
+    {
+      "name": "backend/test/video-protocol-inheritance.test.js",
+      "sha256": "d7604b1bd50709b1122797ab37c0729fe44690c3532d15d0dda9bdaed9642753"
+    },
+    {
+      "name": "frontend/src/app/globals.css",
+      "sha256": "a846315c41dbb482841f49f743a37d1d4b7b43e14e7c4f8e6100836ca1ccc97e"
+    },
+    {
+      "name": "frontend/src/components/workbench/__tests__/model-display.test.tsx",
+      "sha256": "b608c79c12c9899f443ecf5feff0184aeffa2a615af52056bc23adaccc3881ef"
+    },
+    {
+      "name": "frontend/src/components/workbench/__tests__/video-config-profiles.test.tsx",
+      "sha256": "c3102793255d0ab8aa95392d62683ec24a43e1474e6175854c83209570701a1d"
+    },
+    {
+      "name": "frontend/src/components/workbench/DefaultSettings.tsx",
+      "sha256": "ca3f7b91c2d556562143f52eb213da5691def371d5075317da705c631a97cf1c"
+    },
+    {
+      "name": "frontend/src/components/workbench/DraftEditor.tsx",
+      "sha256": "9dbd67ad0229a7218a49e0b0a3943096618d192ec1824535cb2396b189b29d76"
+    },
+    {
+      "name": "frontend/src/components/workbench/ModelDisplaySettings.tsx",
+      "sha256": "ebf45a55ec9285f7c44e91555c0b2c53345fc5b48f6d3e2ccc324bd2c6d07bec"
+    },
+    {
+      "name": "frontend/src/components/workbench/VideoDurationControl.tsx",
+      "sha256": "f3d30b3d67e5b21b442c2be14890b215b6931b08555f5334f21fb72e4824a4e2"
+    },
+    {
+      "name": "frontend/src/lib/connection-client.ts",
+      "sha256": "be73ea89a1b0632258715f9ae79d0e38b5e369acc65449acc1d5cc82764e3421"
+    },
+    {
+      "name": "frontend/src/lib/workbench-generation.ts",
+      "sha256": "0499e5a3fd64216a79d28bf67a6ca047d2cb8d4d387e9407994825552d376ab2"
+    },
+    {
+      "name": "frontend/src/lib/workbench-model-catalog.ts",
+      "sha256": "eddac00562b749e4e98fcc47e4fd607a5484c085c63c1caa3792f3474f9a4394"
+    }
+  ]
+}

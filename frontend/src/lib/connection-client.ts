@@ -58,7 +58,7 @@ export interface ConnectionModels extends ConnectionRouteFields {
   pricingGroups?: string[];
   transportEvidence?: 'generation_unverified' | 'see_capability_evidence';
   connectionVersionId: string; modelsFetchedAt: string | null;
-  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean; submissionEnabled?: boolean; submissionEnabledByKind?: {image:boolean;video:boolean}}>;
+  models: Array<{model: string; visibility: 'visible' | 'absent' | 'unknown'; categories?: string[]; classificationSource?: string; endpointTypes?: string[]; custom?: boolean; submissionEnabled?: boolean; submissionEnabledByKind?: {image:boolean;video:boolean}; submissionReasonByKind?: {image:string|null;video:string|null}}>;
   refreshError?: string | null;
   modelSettings?: Record<string,{categories?: string[];custom?: boolean;defaultSeconds?: number}>;
   capabilities: CapabilitySummary[];

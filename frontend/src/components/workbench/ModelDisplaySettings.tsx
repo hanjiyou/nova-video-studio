@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { Film, Image as ImageIcon, Info, RefreshCw, Search } from 'lucide-react';
 import { checkConnection, getModelDisplay, sameConnectionTransport, saveConnection, saveModelDisplay, type ConnectionModels, type ConnectionSummary, type ModelDisplaySettings, type TransportRoute } from '@/lib/connection-client';
-import { classifiedModels, modelSubmissionEnabled } from '@/lib/workbench-model-catalog';
+import { classifiedModels, modelSelectable, modelSubmissionEnabled } from '@/lib/workbench-model-catalog';
 import { connectionMessage, localErrorMessage } from '@/lib/workbench-client';
 import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 import { ModelCatalogSettings } from './DefaultSettings';
@@ -15,14 +15,14 @@ export function ModelDisplaySettings({ connection, models, onModels, onSaved }: 
   const [baseline, setBaseline] = useState(catalog?.displaySettings || empty), [draft, setDraft] = useState(catalog?.displaySettings || empty);
   const [busy, setBusy] = useState(false), [notice, setNotice] = useState(''), [conflict, setConflict] = useState(false);
   const [search, setSearch] = useState({ image: '', video: '' }), [manage, setManage] = useState(false);
-  const scope = scopeOf(connection), currentScope = useRef(scope), identity = useRef({ id: connection.connectionId, version: connection.connectionVersionId }), ticket = useRef(0), mounted = useRef(true);
+  const scope = scopeOf(connection), currentScope = useRef(scope), identity = useRef({ id: connection.connectionId, version: connection.connectionVersionId }), ticket = useRef(0), mounted = useRef(true), busyRef=useRef(false);
   currentScope.current = scope;
   const dirty = !equal(draft, baseline), dirtyRef = useRef(dirty); dirtyRef.current = dirty;
   const latest = useRef(catalog); latest.current = catalog;
   const management = useRef<HTMLDivElement>(null);
   useUpdateBlocker(() => dirtyRef.current || busy);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; ticket.current++; }; }, []);
-  useEffect(() => { ticket.current++; setBusy(false); }, [scope]);
+  useEffect(() => { ticket.current++; busyRef.current=false; setBusy(false); }, [scope]);
   useEffect(() => {
     if (identity.current.id !== connection.connectionId) {
       identity.current = { id:connection.connectionId,version:connection.connectionVersionId }; setBaseline(catalog?.displaySettings || empty); setDraft(catalog?.displaySettings || empty); setNotice(''); setConflict(false); setSearch({image:'',video:''}); return;
@@ -38,69 +38,87 @@ export function ModelDisplaySettings({ connection, models, onModels, onSaved }: 
   }, [catalog?.displaySettings, connection.connectionId, connection.connectionVersionId, baseline.revision]);
   const valid = (sequence: number, captured: string) => mounted.current && sequence === ticket.current && currentScope.current === captured;
   function toggle(kind: 'image' | 'video', model: string, checked: boolean) {
+    if(checked&&!catalog?.models.some(item=>item.model===model&&modelSelectable(item)))return;
     const list = kind === 'image' ? 'imageModels' : 'videoModels', key = kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel';
     setDraft(value => ({ ...value, [list]: checked ? [...new Set([...value[list], model])] : value[list].filter(name => name !== model), ...(!checked && value[key] === model ? { [key]: null } : {}) })); setNotice('');
   }
   async function refresh() {
+    if(busyRef.current)return; busyRef.current=true;
     const sequence = ++ticket.current, captured = scope; setBusy(true); setNotice('');
     try { const value = await checkConnection(connection, true, 'manual'); if (!valid(sequence, captured)) return;
       if (value.stale || !value.models || !sameConnectionTransport(connection, value as ConnectionModels)) throw Error('CONNECTION_VERSION_CONFLICT');
-      if (value.connection) onSaved(value.connection); onModels(value as ConnectionModels); setNotice(value.refreshError || value.connection?.validationState !== 'verified' ? '刷新未成功，保留上次清单和本次选择。' : '模型列表已更新，已保留本次选择；新型号默认不勾选。');
+      const failed=Boolean(value.refreshError||value.connection?.validationState!=='verified');
+      if (value.connection) onSaved(value.connection);
+      const previous=latest.current;
+      // A failed check may update health, but cannot replace a successful catalog
+      // or its timestamp with an empty/partial response from the failed attempt.
+      onModels(failed&&previous?{...value,models:previous.models,modelsFetchedAt:previous.modelsFetchedAt,capabilities:previous.capabilities,videoRules:previous.videoRules,videoRuleVersion:previous.videoRuleVersion} as ConnectionModels:value as ConnectionModels);
+      setNotice(failed ? '刷新未成功，保留上次清单和本次选择。' : '模型列表已更新，已保留本次选择；新型号默认不勾选。');
     } catch (error) { if (valid(sequence, captured)) setNotice('刷新失败，保留上次清单和本次选择。' + localErrorMessage(error)); }
-    finally { if (valid(sequence, captured)) setBusy(false); }
+    finally { if (valid(sequence, captured)) {busyRef.current=false;setBusy(false);} }
   }
   async function changeRoute(route: TransportRoute) {
+    if(busyRef.current)return; busyRef.current=true;
     const sequence = ++ticket.current, captured = scope; setBusy(true); setNotice('');
     try { const saved = await saveConnection({ connectionId: connection.connectionId, expectedVersionId: connection.connectionVersionId, expectedRouteRevision: connection.routeRevision ?? 1, route });
       if (!valid(sequence, captured)) return; onSaved(saved); setNotice('线路已保存。本次模型显示修改仍保留。');
     } catch (error) { if (valid(sequence, captured)) setNotice(localErrorMessage(error)); }
-    finally { if (valid(sequence, captured)) setBusy(false); }
+    finally { if (valid(sequence, captured)) {busyRef.current=false;setBusy(false);} }
   }
   async function save() {
-    if (busy || !dirty || !catalog?.displaySettings) return;
+    if (busyRef.current || !dirty || !catalog?.displaySettings) return;
+    busyRef.current=true;
     const sequence = ++ticket.current, captured = scope, sent = draft; setBusy(true); setNotice('');
     try { const value = await saveModelDisplay(connection, sent); if (!valid(sequence, captured)) return;
       if (!sameConnectionTransport(connection, value) || !value.displaySettings || value.displaySettings.revision <= sent.revision) throw Error('CONNECTION_VERSION_CONFLICT');
       setBaseline(value.displaySettings); setDraft(value.displaySettings); setConflict(false); onModels(value); setNotice('配置已保存。默认型号仅用于新草稿。');
     } catch (error) { if (valid(sequence, captured)) { setConflict(error instanceof Error && ['MODEL_DISPLAY_CONFLICT','CONNECTION_VERSION_CONFLICT','CONNECTION_ROUTE_CONFLICT'].includes(error.message)); setNotice('保存失败，本次选择已保留。' + localErrorMessage(error)); } }
-    finally { if (valid(sequence, captured)) setBusy(false); }
+    finally { if (valid(sequence, captured)) {busyRef.current=false;setBusy(false);} }
   }
   async function reload() {
+    if(busyRef.current)return; busyRef.current=true;
     const sequence = ++ticket.current, captured = scope; setBusy(true);
     try { const value = await getModelDisplay(connection.connectionId); if (!valid(sequence, captured)) return; if (!sameConnectionTransport(connection,value) || !value.displaySettings) throw Error('CONNECTION_VERSION_CONFLICT');
       // Explicit reload discards edits and adopts the current connection baseline.
       setBaseline(value.displaySettings); setDraft(value.displaySettings); setConflict(false); onModels(value); setNotice('已重新读取保存的配置，请重新核对选择。');
     } catch (error) { if (valid(sequence,captured)) setNotice(localErrorMessage(error)); }
-    finally { if (valid(sequence,captured)) setBusy(false); }
+    finally { if (valid(sequence,captured)) {busyRef.current=false;setBusy(false);} }
   }
   function cancel() { const incoming = latest.current?.displaySettings; const saved = incoming && (conflict || incoming.revision >= baseline.revision) ? incoming : baseline; setBaseline(saved); setDraft(saved); setConflict(false); setNotice('已取消本次模型显示更改。'); }
   function openManagement() { setManage(true); requestAnimationFrame(() => { management.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' }); management.current?.focus(); }); }
   const invalidDefault = (['image','video'] as const).some(kind => {
-    const names=draft[kind==='image'?'imageModels':'videoModels'],name=draft[kind==='image'?'defaultImageModel':'defaultVideoModel'];
-    return names.length>0 && (!name || !names.includes(name) || !catalog?.models.some(item=>item.model===name && item.visibility==='visible' && classifiedModels(catalog,kind).some(entry=>entry.model===item.model) && modelSubmissionEnabled(item,kind)));
+    const list=kind==='image'?'imageModels':'videoModels',key=kind==='image'?'defaultImageModel':'defaultVideoModel',names=draft[list],name=draft[key];
+    const rows=classifiedModels(catalog,kind),item=rows.find(row=>row.model===name);
+    const keptAbsent=Boolean(name&&name===baseline[key]&&baseline[list].includes(name)&&names.includes(name)&&item?.visibility==='absent');
+    return names.length>0 && (!name || !names.includes(name) || !keptAbsent&&!(item?.visibility==='visible'&&modelSubmissionEnabled(item,kind)));
   });
   const connected = connection.hasCredential && connection.credentialState === 'ready' && connection.validationState === 'verified';
   return <div className="wb-model-settings">
     <div className="wb-model-connection"><div className="wb-current-connection">当前连接：<strong>{connection.displayName}</strong><span className={connected ? 'wb-model-state ready' : 'wb-model-state'} title={connectionMessage(connection)}><i />{connected ? '已连接' : connectionMessage(connection)}</span></div>
       {connection.routeSupported && <label className="wb-route-compact">线路<select aria-label="当前访问线路" value={connection.route || 'cn'} disabled={busy} onChange={event => void changeRoute(event.target.value as TransportRoute)}><option value="cn">CN</option><option value="com">COM</option></select></label>}
-      <button type="button" disabled={busy} onClick={() => void refresh()}><RefreshCw size={18} />{busy ? '正在处理…' : '刷新模型'}</button>
+      <button type="button" aria-label="刷新模型" aria-busy={busy} disabled={busy} onClick={() => void refresh()}><RefreshCw size={18} />{busy ? '正在处理…' : '刷新模型'}</button>
     </div>
-    <div className="wb-model-intro"><h2>模型显示</h2><p>勾选后显示在生成页，取消勾选仅隐藏入口，不影响历史任务和作品。</p><small>列表来自当前连接，刷新后保留选择，新模型默认不勾选。</small></div>
+    <div className="wb-model-intro"><div className="wb-model-intro-heading"><h2>模型显示</h2><button type="button" aria-label="刷新列表" aria-busy={busy} disabled={busy} onClick={()=>void refresh()}><RefreshCw size={17}/>{busy?'正在处理…':'刷新列表'}</button></div><p>勾选后显示在生成页，取消勾选仅隐藏入口，不影响历史任务和作品。</p><small>列表来自当前连接，刷新后保留选择，新模型默认不勾选。</small><p className="wb-model-refreshed">最近成功刷新：{catalog?.modelsFetchedAt&&Number.isFinite(Date.parse(catalog.modelsFetchedAt))?<time dateTime={catalog.modelsFetchedAt}>{new Date(catalog.modelsFetchedAt).toLocaleString('zh-CN')}</time>:'尚未成功刷新'}</p><small>“未列出”表示最近成功刷新时，此连接未返回该型号，不代表平台永久删除。</small></div>
     {!catalog?.displaySettings && <p className="wb-warning" role="status">正在读取当前连接的模型显示配置…</p>}
     {catalog?.refreshError && <p className="wb-warning">最近刷新未成功，当前使用上次模型清单。</p>}
     <div className="wb-model-columns">{(['image','video'] as const).map(kind => {
       const title = kind === 'image' ? '图片模型' : '视频模型', Icon = kind === 'image' ? ImageIcon : Film, list = kind === 'image' ? 'imageModels' : 'videoModels', key = kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel';
       const orphaned = (catalog?.models || []).filter(item=>draft[list].includes(item.model) && !classifiedModels(catalog,kind).some(entry=>entry.model===item.model));
-      const entries = classifiedModels(catalog, kind).filter(item => item.model.toLocaleLowerCase().includes(search[kind].toLocaleLowerCase()));
-      return <section className="wb-model-card" key={kind} aria-label={title}><header><h3><Icon size={25} />{title}</h3><span>已显示 {draft[list].length} 个</span></header>
+      const allEntries=classifiedModels(catalog,kind),readyCount=allEntries.filter(item=>modelSelectable(item)&&modelSubmissionEnabled(item,kind)).length;
+      const priority=(item:ConnectionModels['models'][number])=>item.visibility==='absent'?2:modelSelectable(item)&&modelSubmissionEnabled(item,kind)?0:1;
+      const entries = allEntries.filter(item => item.model.toLocaleLowerCase().includes(search[kind].toLocaleLowerCase())).sort((a,b)=>priority(a)-priority(b));
+      return <section className="wb-model-card" key={kind} aria-label={title}><header><h3><Icon size={25} />{title}</h3><span>可用 {readyCount} 个 / 共 {allEntries.length} 个</span></header>
         <label className="wb-model-search"><Search size={19} /><input aria-label={'搜索' + title} placeholder="搜索模型" value={search[kind]} onChange={event => setSearch(value => ({ ...value, [kind]: event.target.value }))} /></label>
-        <div className="wb-model-table"><div className="wb-model-table-heading"><span>生成页显示</span><span>模型</span></div>
-          {entries.map(item => { const checked = draft[list].includes(item.model), active = draft[key] === item.model, ready = modelSubmissionEnabled(item,kind) && (item.visibility === 'visible' || item.custom); return <div className="wb-model-row" key={item.model}>
-            <label className="wb-model-check"><input type="checkbox" aria-label={'在生成页显示 ' + item.model} checked={checked} disabled={busy || !catalog?.displaySettings} onChange={event => toggle(kind,item.model,event.target.checked)} /></label>
-            <span className="wb-model-name" title={item.model}>{item.model}</span><span className={'wb-model-state' + (ready ? ' ready' : '')}><i />{item.visibility === 'absent' && !item.custom ? '未列出' : ready ? '可生成' : '未接入'}</span>
-            {active ? <span className="wb-default-badge">默认</span> : checked && ready && item.visibility === 'visible' ? <button type="button" className="wb-link" disabled={busy} aria-label={'将 ' + item.model + ' 设为默认'} onClick={() => { setDraft(value => ({ ...value,[key]:item.model })); setNotice(''); }}>设为默认</button> : <span />}
-          </div>; })}{!entries.length && <p className="wb-model-empty">{search[kind] ? '没有匹配的模型' : '当前连接暂无此类模型'}</p>}
-        </div>{orphaned.map(item=><div key={item.model} className="wb-model-orphan"><span>原选择已不属于此分类：{item.model}</span><button type="button" className="wb-link" disabled={busy} aria-label={'从'+title+'移除旧选择 '+item.model} onClick={()=>toggle(kind,item.model,false)}>移除旧选择</button></div>)}<p className="wb-help">默认型号必须是已勾选且已接入的模型。{draft[key] === null && '当前未设置默认型号。'}</p>
+        <div className="wb-model-table"><div className="wb-model-table-heading"><span>显示</span><span>模型</span><span>状态</span><span>默认</span></div>
+          {entries.map((item,index) => { const checked = draft[list].includes(item.model), active = draft[key] === item.model, absent=item.visibility==='absent',ready=modelSelectable(item)&&modelSubmissionEnabled(item,kind);
+            const closed=item.submissionReasonByKind?.[kind]==='disabled'||kind==='video'&&catalog?.videoRules?.[item.model]?.submissionEnabled===false;
+            const state=absent?'未列出':item.visibility==='unknown'&&!item.custom?'尚未核对':closed?'已关闭':ready?(kind==='video'?'可使用':'可生成'):'未接入';
+            return <Fragment key={item.model}>{absent&&(index===0||entries[index-1].visibility!=='absent')&&<div className="wb-model-unlisted-heading">当前连接未列出</div>}<div className={'wb-model-row'+(absent?' wb-model-row-unavailable':'')}>
+            <label className="wb-model-check"><input type="checkbox" aria-label={'在生成页显示 ' + item.model} checked={checked} disabled={busy || !catalog?.displaySettings||!modelSelectable(item)} title={absent?'当前连接未列出，不可新增选择':undefined} onChange={event => toggle(kind,item.model,event.target.checked)} /></label>
+            <span className="wb-model-name" title={item.model}>{item.model}</span><span className={'wb-model-state' + (ready ? ' ready' : '')} title={absent?'最近成功刷新时当前连接未返回此型号，不代表平台永久删除':undefined}><i />{state}</span>
+            <div className="wb-model-row-actions">{active&&<span className={'wb-default-badge'+(!ready?' wb-default-unavailable':'')}>{ready?'默认':'原默认·不可用'}</span>}{absent&&checked?<button type="button" className="wb-link" disabled={busy} aria-label={'移除旧选择 '+item.model} onClick={()=>toggle(kind,item.model,false)}>移除旧选择</button>:!active&&checked&&ready&&item.visibility==='visible'?<button type="button" className="wb-link" disabled={busy} aria-label={'将 '+item.model+' 设为默认'} onClick={()=>{setDraft(value=>({...value,[key]:item.model}));setNotice('');}}>设为默认</button>:null}</div>
+          </div></Fragment>; })}{!entries.length && <p className="wb-model-empty">{search[kind] ? '没有匹配的模型' : '当前连接暂无此类模型'}</p>}
+        </div>{orphaned.map(item=><div key={item.model} className="wb-model-orphan"><span>原选择已不属于此分类：{item.model}</span><button type="button" className="wb-link" disabled={busy} aria-label={'从'+title+'移除旧选择 '+item.model} onClick={()=>toggle(kind,item.model,false)}>移除旧选择</button></div>)}<p className="wb-help">新默认型号必须是已勾选且当前可用的模型。未列出型号不可新选；旧选择可移除，历史任务和草稿保留。{draft[key] === null && '当前未设置默认型号。'}</p>
 
       </section>;
     })}</div>

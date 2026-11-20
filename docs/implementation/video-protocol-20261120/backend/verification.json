@@ -1,0 +1,103 @@
+{
+  "date": "2026-11-20",
+  "scope": "VP01 backend dynamic video protocol inheritance and model display admission",
+  "status": "implemented; local synthetic checks passed; awaiting independent review",
+  "productionNetworkCalls": 0,
+  "credentialFilesRead": 0,
+  "committed": false,
+  "packaged": false,
+  "files": [
+    {
+      "name": "backend/connections/model-rules.json",
+      "sha256": "7b3afae5728906d2d0ecacdda98f41207b0561d0637c835b170964a7f365c732"
+    },
+    {
+      "name": "backend/connections/video-rules.js",
+      "sha256": "74e51d3d6909974732d19b90c4197590a2ed7d7413f78970ce4bff2ff6bf2587"
+    },
+    {
+      "name": "backend/connections/capabilities.js",
+      "sha256": "4ae3915aa7d91c0e4c306a3fae277b7e66cb12f4fda9b72d48274022870cae9a"
+    },
+    {
+      "name": "backend/connections/service.js",
+      "sha256": "099b4e677e2751d7aed5dcba51ac9cf3f29c4b166ee0b509517dbe1cd030e705"
+    },
+    {
+      "name": "backend/tasks/video-policy.js",
+      "sha256": "2cf8c77d28781be29106c0427bec79494864388b71dcd7bd872c23774ff05b2d"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/index.js",
+      "sha256": "4f0940e58da1916ab5e56321e2e2ba02b7fe989e4bef1dabe5fa3d4ec671fe86"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/manifest.json",
+      "sha256": "3894ac58a2b5f398cdb944fa3d52eb3d8ed0215935892b90ba5ea1a914d9e1f8"
+    },
+    {
+      "name": "backend/server.js",
+      "sha256": "3b33a032608482fe90732fe33898c9339f459940d83bddd9fadc667e62238a82"
+    },
+    {
+      "name": "backend/test/video-config-profiles.test.js",
+      "sha256": "1a6b58f1ede8c13292ab5ce60805cb47ad675ab39bcc9c5bbaf19fcbaf6d067a"
+    },
+    {
+      "name": "backend/test/model-display-settings.test.js",
+      "sha256": "906f8233f308e3a8afb52cd6e71e9ce98089f1d65b9019be3f9af93349fd5e95"
+    },
+    {
+      "name": "backend/test/model-catalog-http.test.js",
+      "sha256": "3b5a2d4dfeecef43dfd99355adab42c8c901756fcc4e3eae502fc061854e96e6"
+    },
+    {
+      "name": "backend/test/video-protocol-inheritance.test.js",
+      "sha256": "d7604b1bd50709b1122797ab37c0729fe44690c3532d15d0dda9bdaed9642753"
+    }
+  ],
+  "checks": [
+    {
+      "command": "node --test test/video-protocol-inheritance.test.js test/video-config-profiles.test.js test/model-display-settings.test.js",
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "log": "focused-final.log"
+    },
+    {
+      "command": "node --test test/model-catalog.test.js test/model-catalog-http.test.js test/workbench-connections.test.js test/workbench-connections-http.test.js test/workbench-b1-adapters.test.js test/workbench-b1-http.test.js test/video-text-capability.test.js test/t15-video-text-no-size.test.js test/controlled-video-text-validation.test.js",
+      "passed": 95,
+      "failed": 1,
+      "skipped": 0,
+      "log": "related-initial.log",
+      "note": "Only the old unregistered-video capability-denial assertion failed, superseded by the new inherited capability requirement."
+    },
+    {
+      "command": "node --test test/model-catalog-http.test.js",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": "related-corrected.log"
+    },
+    {
+      "command": "node --test --test-name-pattern 'legacy string known' test/video-protocol-inheritance.test.js",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "log": "known-metadata-final.log"
+    }
+  ],
+  "correctedInitialChecks": [
+    "Initial focused 17/19: old explicit dual-classification assertion expected no video capability; updated for the confirmed inheritance policy.",
+    "Initial focused HTTP chat-model negative expected 400; actual earlier MODEL_HIDDEN gate correctly returned 409. Expected code corrected."
+  ],
+  "syntaxJavaScriptFiles": 10,
+  "jsonFiles": 2,
+  "ownedGitDiffCheck": "passed",
+  "boundaries": [
+    "No real supplier generation, credential access, paid test, installation or release.",
+    "Existing unrelated working-tree changes retained.",
+    "Backend supports explicitly bound OpenSosen cn/com; arbitrary custom service origins do not inherit.",
+    "Historical closed model entries and immutable capability/task snapshots retained."
+  ]
+}

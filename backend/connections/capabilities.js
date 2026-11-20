@@ -73,10 +73,7 @@ function seedCapabilities(db, provider, baseUrl) {
         insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoRules.LEGACY.version,
             JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:rule.submissionEnabled?'user-configured-video-parameters':'prepared-awaiting-validation',supplierMaximumReferences:null}),new Date().toISOString());
     }
-    for (const [model, rule] of Object.entries(videoRules.videoRules({provider,baseUrl}))) for (const mode of rule.modes) {
-        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoPolicy.RULES.version,
-            JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:'configured-video-profile-v1',configuredProtocol:rule.profile,submissionEnabled:rule.submissionEnabled,supplierMaximumReferences:null}),new Date().toISOString());
-    }
+    seedVideoCapabilities(db,provider,baseUrl);
     seedMultiReferenceCapability(db, provider, baseUrl);
     if (provider === imagePolicy.POLICY.provider && baseUrl === imagePolicy.POLICY.baseUrl) {
         // Preserve the old immutable flare scopes, including saved task UUIDs and evidence bytes.
@@ -102,6 +99,12 @@ function seedCapabilities(db, provider, baseUrl) {
             'application_verified', TEXT_VIDEO_EVIDENCE_VERSION, JSON.stringify(evidence), new Date().toISOString());
     }
 }
+function seedVideoCapabilities(db, provider, baseUrl, models) {
+    const insert=db.prepare('INSERT OR IGNORE INTO model_capabilities(id,provider,base_url,model,mode,protocol,parameters_json,evidence_level,evidence_version,evidence_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)');
+    for (const [model,rule] of Object.entries(videoRules.videoRules({provider,baseUrl},models))) for (const mode of rule.modes)
+        insert.run(randomUUID(),provider,baseUrl,model,mode,'openai',JSON.stringify(rule),'unverified',videoRules.RULES.version,
+            JSON.stringify({sourceIds:[],applicationVerified:false,submissionPolicy:'configured-video-profile-v1',configuredProtocol:rule.profile,submissionEnabled:rule.submissionEnabled,supplierMaximumReferences:null}),new Date().toISOString());
+}
 function seedMultiReferenceCapability(db, provider, baseUrl) {
     const { POLICY, PARAMETERS, EVIDENCE } = multiReference;
     if (provider !== POLICY.provider || baseUrl !== POLICY.baseUrl) return;
@@ -119,4 +122,4 @@ function listCapabilities(db, provider, baseUrl) {
             ...(row.evidence_version===videoRules.RULES.version?{configurationCurrent:row.parameters_json===JSON.stringify(videoRules.videoRule(row.model,{provider,baseUrl}))}:{}) };
     });
 }
-module.exports = { OPENSOSEN_URL, PRESET_MODELS, EVIDENCE_VERSION, APPLICATION_EVIDENCE_VERSION, APPLICATION_CAPABILITIES, TEXT_VIDEO_EVIDENCE_VERSION, TEXT_VIDEO_CAPABILITY, generationEvidenceVerified, normalizeBaseUrl, seedCapabilities, listCapabilities };
+module.exports = { OPENSOSEN_URL, PRESET_MODELS, EVIDENCE_VERSION, APPLICATION_EVIDENCE_VERSION, APPLICATION_CAPABILITIES, TEXT_VIDEO_EVIDENCE_VERSION, TEXT_VIDEO_CAPABILITY, generationEvidenceVerified, normalizeBaseUrl, seedCapabilities, seedVideoCapabilities, listCapabilities };

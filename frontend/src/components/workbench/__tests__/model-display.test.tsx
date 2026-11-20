@@ -28,7 +28,7 @@ it('model display client sends only the current scope and an atomic CAS payload'
  await saveModelDisplay(connection,{...settings,pricingGroup:group});const [url,init]=fetcher.mock.calls.at(-1)! as unknown as [string,RequestInit];expect(url).toBe('/api/nova/connections/fixture/model-display');expect(init.method).toBe('PUT');expect(JSON.parse(String(init.body))).toEqual({connectionVersionId:'v1',expectedRouteRevision:1,expectedRevision:0,imageModels:[flare,sunburst],videoModels:[six],defaultImageModel:flare,defaultVideoModel:six,pricingGroup:group});
 });
 it('shows classified API rows, exact enabled states, independent search, counts, and real classification management',()=>{
- render(panel());expect(screen.queryByText('chat-only')).not.toBeInTheDocument();expect(screen.getByRole('region',{name:'图片模型'})).toHaveTextContent('已显示 2 个');expect(screen.getByRole('region',{name:'视频模型'})).toHaveTextContent('已显示 1 个');expect(screen.getAllByText('未接入')).toHaveLength(2);expect(screen.queryByRole('button',{name:'将 unmapped-image 设为默认'})).not.toBeInTheDocument();
+ render(panel());expect(screen.queryByText('chat-only')).not.toBeInTheDocument();expect(screen.getByRole('region',{name:'图片模型'})).toHaveTextContent('可用 2 个 / 共 3 个');expect(screen.getByRole('region',{name:'视频模型'})).toHaveTextContent('可用 1 个 / 共 2 个');expect(screen.getAllByText('未接入')).toHaveLength(2);expect(screen.queryByRole('button',{name:'将 unmapped-image 设为默认'})).not.toBeInTheDocument();
  fireEvent.change(screen.getByLabelText('搜索图片模型'),{target:{value:'SUNBURST'}});expect(screen.queryByRole('checkbox',{name:'在生成页显示 '+flare})).not.toBeInTheDocument();expect(checkbox(six)).toBeInTheDocument();expect(checkbox(sunburst)).toBeChecked();
  fireEvent.click(screen.getByRole('button',{name:'模型管理'}));expect(screen.getByLabelText('选择已有型号')).toBeInTheDocument();
 });
@@ -93,4 +93,54 @@ it('classification changes expose an explicit removal action for old choices wit
 });
 it('late lower display revisions cannot roll back an acknowledged configuration in the shell reducer or the editor',()=>{
  const current={...models,displaySettings:{...settings,revision:3,imageModels:[sunburst],defaultImageModel:sunburst}};expect(acceptModelSnapshot(connection,current,models)).toBe(current);expect(acceptModelSnapshot(connection,current,{...models,route:'com',routeRevision:2})).toBe(current);expect(acceptModelSnapshot(connection,current,{...current,modelsFetchedAt:'later'})?.modelsFetchedAt).toBe('later');const view=render(panel(connection,current));view.rerender(panel(connection,models));expect(checkbox(flare)).not.toBeChecked();expect(screen.getByRole('button',{name:'保存配置'})).toBeDisabled();
+});
+
+it('both refresh entrances share a synchronous gate and pending state, even for clicks in one tick',async()=>{
+ const pending=deferred<Response>(),fetcher=vi.fn(()=>pending.promise);vi.stubGlobal('fetch',fetcher);render(<Harness/>);
+ const top=screen.getByRole('button',{name:'刷新模型'}),list=screen.getByRole('button',{name:'刷新列表'});
+ act(()=>{fireEvent.click(top);fireEvent.click(list);fireEvent.click(top);});
+ expect(fetcher).toHaveBeenCalledTimes(1);expect(top).toBeDisabled();expect(list).toBeDisabled();
+ await act(async()=>pending.resolve(Response.json({...models,stale:false,connection})));
+ expect(top).toBeEnabled();expect(list).toBeEnabled();expect(screen.getByText('最近成功刷新：').querySelector('time')).toHaveAttribute('datetime',models.modelsFetchedAt!);
+});
+it('failed check responses cannot clear successful rows or refresh time, and keep dirty selections',async()=>{
+ const failed={...models,models:[],modelsFetchedAt:null,refreshError:'CONNECTION_OFFLINE',connection:{...connection,validationState:'offline'},stale:false};vi.stubGlobal('fetch',vi.fn(async()=>Response.json(failed)));
+ render(<Harness/>);fireEvent.click(checkbox(sunburst));fireEvent.click(screen.getByRole('button',{name:'刷新列表'}));await screen.findByText('刷新未成功，保留上次清单和本次选择。');
+ expect(checkbox(flare)).toBeChecked();expect(checkbox(sunburst)).not.toBeChecked();expect(screen.getByText('最近成功刷新：').querySelector('time')).toHaveAttribute('datetime',models.modelsFetchedAt!);
+});
+it('absent rows including custom models are disabled, preserve old default facts, and support explicit removal',()=>{
+ const old={...models,models:[...models.models.map(item=>item.model===six?{...item,visibility:'absent' as const}:item),{model:'former-custom',categories:['video'],visibility:'absent' as const,custom:true,submissionEnabled:true}]};
+ render(panel(connection,old));const video=screen.getByRole('region',{name:'视频模型'});
+ expect(checkbox(six)).toBeChecked();expect(checkbox(six)).toBeDisabled();expect(checkbox('former-custom')).toBeDisabled();expect(checkbox(six).closest('.wb-model-row')).toHaveClass('wb-model-row-unavailable');
+ expect(within(video).getByText('原默认·不可用')).toBeInTheDocument();expect(within(video).queryByRole('button',{name:'将 '+six+' 设为默认'})).not.toBeInTheDocument();
+ fireEvent.change(screen.getByLabelText('图片参考价分组'),{target:{value:group}});expect(screen.getByRole('button',{name:'保存配置'})).toBeEnabled();
+ expect(defaultModel(connection,old,'video')).toBe('');expect(modelOptions(old,'video',six,connection)).not.toContain(six);expect(modelOptions(old,'video','former-custom',connection)).not.toContain('former-custom');
+ fireEvent.click(screen.getByRole('button',{name:'移除旧选择 '+six}));expect(checkbox(six)).not.toBeChecked();expect(checkbox(six)).toBeDisabled();expect(within(video).queryByText('原默认·不可用')).not.toBeInTheDocument();expect(screen.getByRole('button',{name:'保存配置'})).toBeEnabled();
+});
+it('availability counts cover the whole card and distinguish closed, absent, unknown and unintegrated rows',()=>{
+ const catalog:ConnectionModels={...models,models:[...models.models.map(item=>item.model===six?{...item,submissionEnabled:false,submissionReasonByKind:{image:'category-mismatch',video:'disabled'}}:item),{model:'unknown-video',categories:['video'],visibility:'unknown',submissionEnabled:true},{model:'new-video',categories:['video'],visibility:'visible',submissionEnabled:true},{model:'gone-video',categories:['video'],visibility:'absent',submissionEnabled:true}]};
+ render(panel(connection,catalog));const video=screen.getByRole('region',{name:'视频模型'});
+ expect(video).toHaveTextContent('可用 1 个 / 共 5 个');expect(within(video).getByText('已关闭')).toBeInTheDocument();expect(within(video).getByText('尚未核对')).toBeInTheDocument();expect(within(video).getByText('未列出')).toBeInTheDocument();expect(within(video).getByText('未接入')).toBeInTheDocument();expect(checkbox('unknown-video')).toBeDisabled();
+ fireEvent.change(screen.getByLabelText('搜索视频模型'),{target:{value:'new-video'}});expect(video).toHaveTextContent('可用 1 个 / 共 5 个');expect(checkbox('new-video')).not.toBeChecked();
+});
+it('an absent selected draft stays a disabled placeholder and retains its original inputs',()=>{
+ const catalog={...models,models:models.models.map(item=>item.model===flare?{...item,visibility:'absent' as const,custom:true}:item),capabilities:imageCapabilities(flare)};
+ const original:Draft={mode:'image.text',model:flare,prompt:'保留原稿',parameters:{quality:'high'},inputAssets:[],revision:2,updatedAt:null};
+ render(<DraftEditor draft={original} connection={connection} models={catalog} saving={false} onChange={noop} onConfigure={noop} onRetry={noop} onReload={noop} onSubmit={noop}/>);
+ const select=screen.getByLabelText('生成模型'),placeholder=select.querySelector('option[hidden]')!;
+ expect(select).toHaveValue('');expect(placeholder).toBeDisabled();expect(placeholder).toHaveTextContent(flare+' · 当前未列出');expect(screen.getByRole('button',{name:'生成图片'})).toBeDisabled();expect(screen.getByLabelText('画面描述')).toHaveValue('保留原稿');expect(original.parameters).toEqual({quality:'high'});
+});
+
+it('classification management confirms recalculated availability instead of claiming video protocols stay disconnected',async()=>{
+ const onModels=vi.fn(),fetcher=vi.fn(async()=>Response.json(models));vi.stubGlobal('fetch',fetcher);render(panel(connection,models,onModels));
+ fireEvent.click(screen.getByRole('button',{name:'模型管理'}));fireEvent.change(screen.getByLabelText('选择已有型号'),{target:{value:six}});fireEvent.click(screen.getByRole('button',{name:'保存分类'}));
+ await screen.findByText('已保存当前连接的型号设置；可使用状态按当前连接规则重新计算。');expect(onModels).toHaveBeenCalledWith(models);
+ expect(screen.getByText('未分类型号不会混入生成列表。视频型号可复用当前连接已接入的接口，分类不代表实际生成已验证。')).toBeInTheDocument();
+});
+
+it('ready rows come first, closed or unintegrated rows follow, and absent rows stay last with stable group order',()=>{
+ const items:ConnectionModels['models']=[{model:'absent-first',categories:['video'],visibility:'absent',submissionEnabled:true},{model:'not-integrated',categories:['video'],visibility:'visible',submissionEnabled:false},{model:'ready-later',categories:['video'],visibility:'visible',submissionEnabled:true},{model:'closed-early',categories:['video'],visibility:'visible',submissionEnabled:false,submissionReasonByKind:{image:'category-mismatch',video:'disabled'}},{model:'ready-final',categories:['video'],visibility:'visible',submissionEnabled:true}];
+ render(panel(connection,{...models,models:items}));const video=screen.getByRole('region',{name:'视频模型'});
+ expect([...video.querySelectorAll('.wb-model-name')].map(node=>node.textContent)).toEqual(['ready-later','ready-final','not-integrated','closed-early','absent-first']);
+ expect(video).toHaveTextContent('可用 2 个 / 共 5 个');
 });

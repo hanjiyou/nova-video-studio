@@ -1,0 +1,171 @@
+{
+  "date": "2026-11-20",
+  "status": "Source implementation and scoped offline acceptance passed; not committed, pushed, packaged, released or installed",
+  "branch": "dev",
+  "head": "5d1d807fb07b59b14eb3421fb8935c611e6b6bcd",
+  "implementationAgents": [
+    "/root/video_protocol_backend",
+    "/root/model_display_frontend"
+  ],
+  "reviewAgent": "/root/protocol_independent_review",
+  "ownedCodeFiles": 22,
+  "records": {
+    "backend": "backend/verification.json",
+    "frontend": "frontend/verification.json",
+    "independentReview": "review.json",
+    "visual": "visual/report.json"
+  },
+  "results": {
+    "backendFocused": "19/19 in one final run",
+    "backendRelated": "Initial 95/96; superseded assertion corrected; affected file rerun 1/1. Not a same-run full related pass.",
+    "knownMetadata": "Additional 1/1",
+    "frontend": "Final six files 91/91",
+    "typescript": "Complete noEmit/incremental=false exit 0",
+    "visual": "Four actual-component synthetic SSR scenes passed at 1536/1280/390",
+    "rootFocused": "Four node:test cases passed independently",
+    "review": "31 pure function assertions passed; not counted as node:test cases",
+    "syntax": "10 JS files and 2 JSON files checked by backend owner; root independently checked six production JS files",
+    "diffCheck": "passed before documentation closure; final check recorded in final-checks.json"
+  },
+  "correctedFailures": [
+    "Initial focused 17/19: old explicit dual-classification assertion expected no video capability; updated for the confirmed inheritance policy.",
+    "Initial focused HTTP chat-model negative expected 400; actual earlier MODEL_HIDDEN gate correctly returned 409. Expected code corrected.",
+    "Related HTTP catalog test initially expected an unregistered user-classified video model to have no capability; corrected to inherited unverified capability with current visibility/display still enforced."
+  ],
+  "boundaries": [
+    "No real supplier, credential, paid generation, installation or delivery action during implementation.",
+    "The earlier separately authorized live 2-second portrait test is not this implementation end-to-end acceptance.",
+    "Static synthetic component screenshots are not installed application acceptance.",
+    "OpenSosen cn/com explicitly bound protocol only; arbitrary origins and chat models are not automatically granted video generation.",
+    "Known closed models, old immutable task/capability snapshots and unrelated workspace edits retained."
+  ],
+  "files": [
+    {
+      "name": "backend/connections/model-rules.json",
+      "sha256": "7b3afae5728906d2d0ecacdda98f41207b0561d0637c835b170964a7f365c732"
+    },
+    {
+      "name": "backend/connections/video-rules.js",
+      "sha256": "74e51d3d6909974732d19b90c4197590a2ed7d7413f78970ce4bff2ff6bf2587"
+    },
+    {
+      "name": "backend/connections/capabilities.js",
+      "sha256": "4ae3915aa7d91c0e4c306a3fae277b7e66cb12f4fda9b72d48274022870cae9a"
+    },
+    {
+      "name": "backend/connections/service.js",
+      "sha256": "099b4e677e2751d7aed5dcba51ac9cf3f29c4b166ee0b509517dbe1cd030e705"
+    },
+    {
+      "name": "backend/tasks/video-policy.js",
+      "sha256": "2cf8c77d28781be29106c0427bec79494864388b71dcd7bd872c23774ff05b2d"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/index.js",
+      "sha256": "4f0940e58da1916ab5e56321e2e2ba02b7fe989e4bef1dabe5fa3d4ec671fe86"
+    },
+    {
+      "name": "backend/plugins/opensosen-video/manifest.json",
+      "sha256": "3894ac58a2b5f398cdb944fa3d52eb3d8ed0215935892b90ba5ea1a914d9e1f8"
+    },
+    {
+      "name": "backend/server.js",
+      "sha256": "3b33a032608482fe90732fe33898c9339f459940d83bddd9fadc667e62238a82"
+    },
+    {
+      "name": "backend/test/video-config-profiles.test.js",
+      "sha256": "1a6b58f1ede8c13292ab5ce60805cb47ad675ab39bcc9c5bbaf19fcbaf6d067a"
+    },
+    {
+      "name": "backend/test/model-display-settings.test.js",
+      "sha256": "906f8233f308e3a8afb52cd6e71e9ce98089f1d65b9019be3f9af93349fd5e95"
+    },
+    {
+      "name": "backend/test/model-catalog-http.test.js",
+      "sha256": "3b5a2d4dfeecef43dfd99355adab42c8c901756fcc4e3eae502fc061854e96e6"
+    },
+    {
+      "name": "backend/test/video-protocol-inheritance.test.js",
+      "sha256": "d7604b1bd50709b1122797ab37c0729fe44690c3532d15d0dda9bdaed9642753"
+    },
+    {
+      "name": "frontend/src/lib/workbench-model-catalog.ts",
+      "sha256": "eddac00562b749e4e98fcc47e4fd607a5484c085c63c1caa3792f3474f9a4394"
+    },
+    {
+      "name": "frontend/src/lib/workbench-generation.ts",
+      "sha256": "0499e5a3fd64216a79d28bf67a6ca047d2cb8d4d387e9407994825552d376ab2"
+    },
+    {
+      "name": "frontend/src/lib/connection-client.ts",
+      "sha256": "be73ea89a1b0632258715f9ae79d0e38b5e369acc65449acc1d5cc82764e3421"
+    },
+    {
+      "name": "frontend/src/components/workbench/ModelDisplaySettings.tsx",
+      "sha256": "ebf45a55ec9285f7c44e91555c0b2c53345fc5b48f6d3e2ccc324bd2c6d07bec"
+    },
+    {
+      "name": "frontend/src/components/workbench/DraftEditor.tsx",
+      "sha256": "9dbd67ad0229a7218a49e0b0a3943096618d192ec1824535cb2396b189b29d76"
+    },
+    {
+      "name": "frontend/src/components/workbench/VideoDurationControl.tsx",
+      "sha256": "f3d30b3d67e5b21b442c2be14890b215b6931b08555f5334f21fb72e4824a4e2"
+    },
+    {
+      "name": "frontend/src/components/workbench/DefaultSettings.tsx",
+      "sha256": "ca3f7b91c2d556562143f52eb213da5691def371d5075317da705c631a97cf1c"
+    },
+    {
+      "name": "frontend/src/app/globals.css",
+      "sha256": "a846315c41dbb482841f49f743a37d1d4b7b43e14e7c4f8e6100836ca1ccc97e"
+    },
+    {
+      "name": "frontend/src/components/workbench/__tests__/video-config-profiles.test.tsx",
+      "sha256": "c3102793255d0ab8aa95392d62683ec24a43e1474e6175854c83209570701a1d"
+    },
+    {
+      "name": "frontend/src/components/workbench/__tests__/model-display.test.tsx",
+      "sha256": "b608c79c12c9899f443ecf5feff0184aeffa2a615af52056bc23adaccc3881ef"
+    }
+  ],
+  "rawLogArchive": {
+    "file": "test-logs.zip",
+    "sha256": "5e9f4626345901b98c58a6d8719b126e41d23405585fd550d5b1d502077c7650",
+    "note": "Original log bytes retained; raw .log files also remain locally but are excluded from Git because original whitespace triggers diff --check.",
+    "members": [
+      {
+        "name": "backend/focused-final.log",
+        "sha256": "a4e5a7d92a92bdc6d54bb796f2bcbd408594b4733ec4d80639540fbcb751975e"
+      },
+      {
+        "name": "backend/focused-initial.log",
+        "sha256": "6a7888b3a9a7e868ec69f2270b0a9c61a16795739356a60efa85dedd0160563d"
+      },
+      {
+        "name": "backend/known-metadata-final.log",
+        "sha256": "1e4705bed0e1b344359e6d0311e512869f29e5efe388de3a8726b4a25602619b"
+      },
+      {
+        "name": "backend/related-corrected.log",
+        "sha256": "fb7dcad35429c40fc652a734993039c36e827f403b20e6a7238b637706fbb223"
+      },
+      {
+        "name": "backend/related-initial.log",
+        "sha256": "bc47f08711c35e8edeb759043af6eb3f84deab4bf08202235aba205edbb99c01"
+      },
+      {
+        "name": "frontend/final-tests.log",
+        "sha256": "43dc2952df267aee159550ba8d9712ac1b45951cb53b12cdc8258a4e38b0fe32"
+      },
+      {
+        "name": "frontend/final-typescript.log",
+        "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627"
+      },
+      {
+        "name": "root-focused.log",
+        "sha256": "67f6adb1fc4312bc4a13dc0dd31989bb895818e3781941c387286eafecc2da81"
+      }
+    ]
+  }
+}

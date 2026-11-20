@@ -47,10 +47,10 @@ test('display writes are atomic CAS, reject stale routes/versions, invalid defau
     for(const patch of [{defaultImageModel:NEW,imageModels:[NEW]},{defaultVideoModel:PREVIEW,videoModels:[PREVIEW]},{imageModels:[SIX],defaultImageModel:SIX},{imageModels:[FLARE,FLARE]},{imageModels:[],defaultImageModel:FLARE},{defaultImageModel:null},{pricingGroup:'【生图分组】Image2原生-中质量'}]) {
         assert.throws(()=>saveDisplay(f.service,id,patch),{code:'MODEL_DISPLAY_INVALID'});assert.deepEqual(f.service.models(id).displaySettings,saved.displaySettings);
     }
-    f.service.updateModelSettings(id,{connectionVersionId:before.connectionVersionId,model:FLARE,categories:['video']});assert.equal(f.service.models(id).models.find(item=>item.model===FLARE).submissionEnabled,false);
-    assert.throws(()=>saveDisplay(f.service,id,{imageModels:[],defaultImageModel:null,videoModels:[FLARE],defaultVideoModel:FLARE}),{code:'MODEL_DISPLAY_INVALID'});
+    f.service.updateModelSettings(id,{connectionVersionId:before.connectionVersionId,model:FLARE,categories:['video']});assert.equal(f.service.models(id).models.find(item=>item.model===FLARE).submissionEnabledByKind.video,true);
+    assert.throws(()=>saveDisplay(f.service,id,{imageModels:[FLARE],defaultImageModel:FLARE}),{code:'MODEL_DISPLAY_INVALID'},'Current classification still gates media-specific display choices');
     f.service.updateModelSettings(id,{connectionVersionId:before.connectionVersionId,model:FLARE,categories:['image']});
-    f.setList([SIX,SUN]);await f.check();assert.throws(()=>saveDisplay(f.service,id),{code:'MODEL_DISPLAY_INVALID'});
+    f.setList([SIX,SUN]);await f.check();assert.equal(saveDisplay(f.service,id).displaySettings.defaultImageModel,FLARE,'An unchanged absent old default may be retained as a historical choice');
     const old=f.service.summary(id),route=f.service.save({connectionId:id,expectedVersionId:old.connectionVersionId,route:'com',expectedRouteRevision:old.routeRevision});
     assert.throws(()=>f.service.updateModelDisplay(id,{...input,expectedRevision:1}),{code:'CONNECTION_ROUTE_CONFLICT'});
     const changed=f.service.save({connectionId:id,expectedVersionId:route.connectionVersionId,apiKey:'synthetic-second-key'});
@@ -132,10 +132,10 @@ test('protected HTTP display API persists atomically, validates defaults, and on
     assert.equal((await runtime.request(url+'/model-display',{method:'DELETE'})).status,405);
 });
 
-test('dual classification exposes submission state per media kind without granting an image model a video protocol',async t=>{
+test('explicit dual classification may inherit the connection video protocol while preserving per-kind state',async t=>{
     const f=await setup(t),id=f.connection.connectionId;await f.check();
     f.service.updateModelSettings(id,{connectionVersionId:f.connection.connectionVersionId,model:SUN,categories:['image','video']});
     const item=f.service.models(id).models.find(item=>item.model===SUN);
-    assert.equal(item.submissionEnabled,true);assert.deepEqual(item.submissionEnabledByKind,{image:true,video:false});
-    assert.throws(()=>saveDisplay(f.service,id,{videoModels:[SUN],defaultVideoModel:SUN}),{code:'MODEL_DISPLAY_INVALID'});
+    assert.equal(item.submissionEnabled,true);assert.deepEqual(item.submissionEnabledByKind,{image:true,video:true});
+    assert.equal(saveDisplay(f.service,id,{videoModels:[SUN],defaultVideoModel:SUN}).displaySettings.defaultVideoModel,SUN);
 });

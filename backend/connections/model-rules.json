@@ -1,7 +1,19 @@
 {
   "provider": "opensosen",
   "baseUrl": "https://newapi.opensosen.com/v1",
-  "version": "video-profiles-20261102-v1",
+  "version": "video-profiles-20261120-v2",
+  "videoDefaults": {
+    "profile": "openai-video-multipart-v1",
+    "minSeconds": 1,
+    "maxSeconds": null,
+    "defaultSeconds": 2,
+    "sendSize": true,
+    "sizeOptional": true,
+    "sizes": ["720x1280", "1280x720", "1080x1920", "1920x1080"],
+    "defaultSize": null,
+    "centsPerSecond": null,
+    "submissionEnabled": true
+  },
   "models": {
     "grok-imagine-video-6s": {
       "label": "Grok 6s（能力待验证）",

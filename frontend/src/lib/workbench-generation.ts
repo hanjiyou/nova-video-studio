@@ -1,4 +1,4 @@
-import {videoRule,configuredVideo,validVideoParameters,validVideoReferences,videoDefaults,modelHidden,defaultModel} from './workbench-model-catalog';
+import {videoRule,configuredVideo,validVideoParameters,validVideoReferences,validVideoSeconds,videoDurationHint,videoDefaults,modelHidden,defaultModel} from './workbench-model-catalog';
 import { sameConnectionTransport, type CapabilitySummary, type ConnectionModels, type ConnectionSummary } from './connection-client';
 import type { Draft, HistoryTask } from './workbench-client';
 import type { WorkbenchTaskInput } from './workbench-task-client';
@@ -23,7 +23,7 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const imageControls = image ? matching.find(item => unverifiedImageCapability(item,connection)) : undefined;
   const wantsImageControls = image && (mode === 'image.reference' || Object.keys(draft.parameters).length > 0);
   const rule = !image ? videoRule(model,connection,models) : null;
-  const videoConfiguration = rule ? matching.find(configuredVideo) : undefined;
+  const videoConfiguration = rule ? matching.find(item=>configuredVideo(item,models?.videoRuleVersion)) : undefined;
   const configuredImage = imageControls?.evidence.configuredProtocol ? imageControls : undefined;
   const capability = videoConfiguration || configuredImage || (wantsImageControls ? imageControls : matching.filter(item => item.isCurrent !== false && (!image || Object.keys(item.parameters).length === 0)).sort((a,b) => Number(b.isCurrent === true) - Number(a.isCurrent === true))[0]);
   const unverifiedImage = Boolean((wantsImageControls || configuredImage) && imageControls);
@@ -37,7 +37,7 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
   const connectionReady = Boolean(connection?.hasCredential && connection.credentialState === 'ready');
   if (!connectionReady) add('connection', '请先配置可用的连接凭据。', 'configure');
   if (modelHidden(models,image?'image':'video',model)) add('model-hidden', '当前模型已隐藏，请选择其他模型，提示词和参考图会保留。', 'model');
-  if (connectionReady && models?.modelsFetchedAt && models.models.find(item => item.model === model)?.visibility !== 'visible' && !models.models.find(item => item.model === model)?.custom)
+  if (connectionReady && (models?.models.find(item=>item.model===model)?.visibility==='absent'||models?.modelsFetchedAt&&!models.models.some(item=>item.model===model&&(item.visibility==='visible'||item.visibility==='unknown'&&item.custom))))
     add('model-unavailable', '该完整型号不在当前模型列表中，请明确选择型号或刷新列表。', 'model');
   if (connectionReady && !model) add('model-required', '请在设置中显示可用型号，或选择一个生成模型。', 'configure');
   if (connectionReady && model && !generationEvidenceVerified(capability) && !unverifiedMulti && !unverifiedImage && !(videoConfiguration && rule?.submissionEnabled))
@@ -65,7 +65,7 @@ export function generationPlan(draft: Draft, connection: ConnectionSummary | nul
     add('image-parameters', '草稿保留了当前能力未确认的图片规格，请核对后明确调整。', 'parameters');
   // Without a matching capability, report that missing evidence rather than inventing parameter errors.
   if (!image && rule && videoConfiguration && !validVideoParameters(rule, parameters,mode))
-    add('video-parameters', '请输入 ' + rule.minSeconds + '～' + rule.maxSeconds + ' 的整数秒，并核对画面尺寸。', !Number.isInteger(parameters.seconds) || Number(parameters.seconds) < rule.minSeconds || Number(parameters.seconds) > rule.maxSeconds ? 'duration' : 'parameters');
+    add('video-parameters', videoDurationHint(rule)+'请核对画面尺寸。', !validVideoSeconds(rule,parameters.seconds) ? 'duration' : 'parameters');
   if (!image && capability && !videoConfiguration && (parameters.seconds !== capability.parameters.seconds || parameters.size !== capability.parameters.size || Object.keys(parameters).some(key => !(typeof capability.parameters.size === 'string' ? ['seconds', 'size'] : ['seconds']).includes(key))))
     add('historical-parameters', '历史规格与当前能力不一致，未自动修改，请核对草稿。', 'parameters');
   const blocked = issues[0]?.message || '';

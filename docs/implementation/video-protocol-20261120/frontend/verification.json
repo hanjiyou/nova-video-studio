@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-20",
+  "scope": "VP02 frontend dynamic video parameters, model display and refresh",
+  "status": "implemented and focused offline verification passed; not committed, built into installer or released",
+  "tests": {
+    "command": "npx vitest run src/components/workbench/__tests__/video-config-profiles.test.tsx src/components/workbench/__tests__/model-display.test.tsx src/components/workbench/__tests__/connection-routes.test.tsx src/components/workbench/__tests__/model-catalog.test.tsx src/components/workbench/__tests__/draft-guidance.test.tsx src/components/workbench/__tests__/reference-paste.test.tsx --reporter=dot",
+    "files": 6,
+    "passed": 91,
+    "failed": 0,
+    "skipped": 0,
+    "log": "final-tests.log",
+    "logSha256": "43dc2952df267aee159550ba8d9712ac1b45951cb53b12cdc8258a4e38b0fe32"
+  },
+  "typecheck": {
+    "command": "npx tsc --noEmit --incremental false",
+    "exitCode": 0,
+    "diagnostics": 0,
+    "log": "final-typescript.log"
+  },
+  "visual": {
+    "command": "node render-vp02.cjs",
+    "report": "visual/report.json",
+    "checks": 4,
+    "viewports": [
+      1536,
+      1280,
+      390
+    ],
+    "status": "passed",
+    "scope": "Actual SSR components and current global CSS with synthetic props; CSP denies all network; screenshots inspected; not installed application E2E"
+  },
+  "diffCheck": {
+    "result": "passed",
+    "scope": "10 owned frontend files",
+    "notes": "Git emitted existing LF-to-CRLF notices; no whitespace errors"
+  },
+  "boundaries": [
+    "No real provider request, credential read or paid generation.",
+    "No commit, push, installer build, publishing, installation or cleanup of existing user files.",
+    "Image protocol scope unchanged.",
+    "Headless screenshots use synthetic data and static SSR; behavioral interactions covered by Vitest.",
+    "Unrelated workspace edits were preserved."
+  ],
+  "files": [
+    {
+      "file": "frontend/src/lib/workbench-model-catalog.ts",
+      "sha256": "eddac00562b749e4e98fcc47e4fd607a5484c085c63c1caa3792f3474f9a4394"
+    },
+    {
+      "file": "frontend/src/lib/workbench-generation.ts",
+      "sha256": "0499e5a3fd64216a79d28bf67a6ca047d2cb8d4d387e9407994825552d376ab2"
+    },
+    {
+      "file": "frontend/src/lib/connection-client.ts",
+      "sha256": "be73ea89a1b0632258715f9ae79d0e38b5e369acc65449acc1d5cc82764e3421"
+    },
+    {
+      "file": "frontend/src/components/workbench/ModelDisplaySettings.tsx",
+      "sha256": "ebf45a55ec9285f7c44e91555c0b2c53345fc5b48f6d3e2ccc324bd2c6d07bec"
+    },
+    {
+      "file": "frontend/src/components/workbench/DraftEditor.tsx",
+      "sha256": "9dbd67ad0229a7218a49e0b0a3943096618d192ec1824535cb2396b189b29d76"
+    },
+    {
+      "file": "frontend/src/components/workbench/VideoDurationControl.tsx",
+      "sha256": "f3d30b3d67e5b21b442c2be14890b215b6931b08555f5334f21fb72e4824a4e2"
+    },
+    {
+      "file": "frontend/src/components/workbench/DefaultSettings.tsx",
+      "sha256": "ca3f7b91c2d556562143f52eb213da5691def371d5075317da705c631a97cf1c"
+    },
+    {
+      "file": "frontend/src/app/globals.css",
+      "sha256": "a846315c41dbb482841f49f743a37d1d4b7b43e14e7c4f8e6100836ca1ccc97e"
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/video-config-profiles.test.tsx",
+      "sha256": "c3102793255d0ab8aa95392d62683ec24a43e1474e6175854c83209570701a1d"
+    },
+    {
+      "file": "frontend/src/components/workbench/__tests__/model-display.test.tsx",
+      "sha256": "b608c79c12c9899f443ecf5feff0184aeffa2a615af52056bc23adaccc3881ef"
+    }
+  ]
+}

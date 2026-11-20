@@ -972,6 +972,9 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-model-intro h2 { font-size:20px; margin:4px 0 9px; }
 .wb-model-intro p { color:#d3cedf; font-size:14px; margin:0 0 6px; }
 .wb-model-intro small { font-size:12px; }
+.wb-model-intro-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.wb-model-intro-heading>button { display:inline-flex; align-items:center; justify-content:center; gap:8px; flex-shrink:0; min-height:40px; }
+.wb-model-intro .wb-model-refreshed { font-size:12px; color:#b5afc1; margin:7px 0 5px; }
 .wb-model-columns { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; align-items:stretch; }
 .wb-model-card { border:1px solid #414150; border-radius:10px; padding:18px 16px; min-width:0; background:linear-gradient(145deg,#24243155,#1a1b2400); }
 .wb-model-card>header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:15px; }
@@ -982,9 +985,18 @@ body:has(.nova-workbench) { overflow-x:clip; }
 .wb-model-search svg { position:absolute; left:13px; top:13px; color:#aca6bc; }
 .nova-workbench .wb-model-search input { padding-left:42px; background:#25263080; font-size:13px; }
 .wb-model-table { min-width:0; }
-.wb-model-table-heading { display:grid; grid-template-columns:90px minmax(0,1fr); gap:10px; background:#28293377; border:1px solid #353642; border-radius:8px 8px 0 0; padding:10px 12px; color:#b3adc3; font-size:12px; }
-.wb-model-row { display:grid; grid-template-columns:28px minmax(0,1fr) 69px 64px; gap:12px; align-items:center; padding:15px 10px; border-bottom:1px solid #373743; min-width:0; min-height:60px; }
+.wb-model-table-heading { display:grid; grid-template-columns:28px minmax(0,1fr) 76px 104px; gap:12px; background:#28293377; border:1px solid #353642; border-radius:8px 8px 0 0; padding:10px; color:#b3adc3; font-size:12px; }
+.wb-model-row { display:grid; grid-template-columns:28px minmax(0,1fr) 76px 104px; gap:12px; align-items:center; padding:15px 10px; border-bottom:1px solid #373743; min-width:0; min-height:60px; }
+.wb-model-unlisted-heading { display:flex; align-items:center; gap:12px; color:#bcb5c9; font-size:12px; padding:20px 10px 6px; }
+.wb-model-unlisted-heading::after { content:''; flex:1; border-top:1px solid #45424f; }
+.wb-model-row-unavailable .wb-model-name { color:#9c97a8; }
+.wb-model-row-unavailable .wb-model-state { color:#a7a1b4; }
+.wb-model-row-actions { display:flex; align-items:flex-end; flex-direction:column; gap:7px; min-width:0; }
+.wb-model-row-actions .wb-default-badge { white-space:nowrap; }
+.wb-model-row-actions .wb-default-unavailable { font-size:11px; color:#aaa4b6; border-color:#55505f; background:#33313b; padding:3px 5px; }
 .nova-workbench .wb-model-row input[type=checkbox] { appearance:auto; width:21px; min-height:21px; height:21px; margin:0; padding:0; accent-color:#8a57ff; cursor:pointer; }
+.nova-workbench .wb-model-row input[type=checkbox]:disabled { cursor:not-allowed; }
+.nova-workbench .wb-model-row-unavailable input[type=checkbox] { accent-color:#76717f; filter:grayscale(1); }
 .wb-model-name { min-width:0; font-size:13px; overflow-wrap:anywhere; line-height:1.5; }
 .wb-model-state { display:inline-flex; align-items:center; gap:8px; color:#b5afc1; font-size:12px; white-space:nowrap; }
 .wb-model-state i { display:inline-block; width:9px; height:9px; flex-shrink:0; border-radius:50%; background:#9e9baa; }
@@ -1093,3 +1105,13 @@ body:has(.nova-workbench) { overflow-x:clip; }
 
 .wb-work-name-label { display:flex; align-items:center; gap:8px; }
 .wb-work-name-label small { font-weight:400; }
+@media(max-width:650px) {
+  .wb-model-intro-heading { align-items:flex-start; gap:10px; }
+  .wb-model-intro-heading>button { min-height:38px; font-size:12px; }
+  .wb-model-card>header { flex-wrap:wrap; }
+  .wb-model-table-heading { grid-template-columns:22px minmax(0,1fr) 55px; gap:9px; padding:10px 5px; }
+  .wb-model-table-heading>span { white-space:nowrap; }
+  .wb-model-table-heading>span:last-child { display:none; }
+  .wb-model-row>.wb-model-row-actions { grid-column:2/-1; justify-self:start; flex-direction:row; align-items:center; flex-wrap:wrap; }
+  .wb-model-refreshed { overflow-wrap:anywhere; }
+}

@@ -1,0 +1,126 @@
+{
+  "scope": "Actual WorkbenchSettings, ModelDisplaySettings, DraftEditor and current global CSS. Static SSR with synthetic props. CSP denies all network. No user profile, credentials or generation.",
+  "checks": [
+    {
+      "name": "settings-1536",
+      "status": "passed",
+      "screenshot": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\11\\07\\01a1b4bd-afe1-7fb1-9b3b-cc2c7d1258f5\\vp02-frontend\\visual\\settings-1536.png",
+      "viewport": 1536,
+      "noHorizontalOverflow": true,
+      "cards": [
+        {
+          "left": 232,
+          "right": 861,
+          "top": 421.34375,
+          "bottom": 975.78125
+        },
+        {
+          "left": 877,
+          "right": 1506,
+          "top": 421.34375,
+          "bottom": 975.78125
+        }
+      ],
+      "refreshButtons": 2,
+      "counts": [
+        "可用 1 个 / 共 3 个",
+        "可用 2 个 / 共 4 个"
+      ],
+      "unavailableRows": 2,
+      "unavailableCheckboxesDisabled": true,
+      "oldDefault": "原默认·不可用",
+      "removeOldChoice": true,
+      "longNamesWithinCard": true,
+      "controlsWithinCard": true,
+      "durationNoMax": null,
+      "serviceDefaultSize": null
+    },
+    {
+      "name": "settings-1280",
+      "status": "passed",
+      "screenshot": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\11\\07\\01a1b4bd-afe1-7fb1-9b3b-cc2c7d1258f5\\vp02-frontend\\visual\\settings-1280.png",
+      "viewport": 1280,
+      "noHorizontalOverflow": true,
+      "cards": [
+        {
+          "left": 232,
+          "right": 733,
+          "top": 421.34375,
+          "bottom": 1033.96875
+        },
+        {
+          "left": 749,
+          "right": 1250,
+          "top": 421.34375,
+          "bottom": 1033.96875
+        }
+      ],
+      "refreshButtons": 2,
+      "counts": [
+        "可用 1 个 / 共 3 个",
+        "可用 2 个 / 共 4 个"
+      ],
+      "unavailableRows": 2,
+      "unavailableCheckboxesDisabled": true,
+      "oldDefault": "原默认·不可用",
+      "removeOldChoice": true,
+      "longNamesWithinCard": true,
+      "controlsWithinCard": true,
+      "durationNoMax": null,
+      "serviceDefaultSize": null
+    },
+    {
+      "name": "settings-390",
+      "status": "passed",
+      "screenshot": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\11\\07\\01a1b4bd-afe1-7fb1-9b3b-cc2c7d1258f5\\vp02-frontend\\visual\\settings-390.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "cards": [
+        {
+          "left": 14,
+          "right": 376,
+          "top": 638.484375,
+          "bottom": 1115.015625
+        },
+        {
+          "left": 14,
+          "right": 376,
+          "top": 1131.015625,
+          "bottom": 1737.140625
+        }
+      ],
+      "refreshButtons": 2,
+      "counts": [
+        "可用 1 个 / 共 3 个",
+        "可用 2 个 / 共 4 个"
+      ],
+      "unavailableRows": 2,
+      "unavailableCheckboxesDisabled": true,
+      "oldDefault": "原默认·不可用",
+      "removeOldChoice": true,
+      "longNamesWithinCard": true,
+      "controlsWithinCard": true,
+      "durationNoMax": null,
+      "serviceDefaultSize": null
+    },
+    {
+      "name": "parameters-390",
+      "status": "passed",
+      "screenshot": "C:\\Users\\Administrator\\.codex\\visualizations\\2026\\11\\07\\01a1b4bd-afe1-7fb1-9b3b-cc2c7d1258f5\\vp02-frontend\\visual\\parameters-390.png",
+      "viewport": 390,
+      "noHorizontalOverflow": true,
+      "cards": [],
+      "refreshButtons": 0,
+      "counts": [],
+      "unavailableRows": 0,
+      "unavailableCheckboxesDisabled": true,
+      "oldDefault": null,
+      "removeOldChoice": false,
+      "longNamesWithinCard": true,
+      "controlsWithinCard": true,
+      "durationNoMax": true,
+      "serviceDefaultSize": ""
+    }
+  ],
+  "status": "passed"
+}

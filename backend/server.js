@@ -1219,10 +1219,10 @@ async function createWorkbenchTask(body, req) {
   // Only a new intent is subject to current display preferences; existing IDs returned above remain replayable.
   connectionService.assertModelDisplay(snapshot.connectionVersionId,snapshot.model,snapshot.mode.startsWith('image.')?'image':'video');
   const listed=catalog.models.find(item=>item.model===snapshot.model);
-  if(catalog.modelsFetchedAt&&(!listed||listed.visibility==='absent')&&!listed?.custom)throw createHttpError(400,'MODEL_UNAVAILABLE','当前服务未列出此型号，请刷新或选择其他型号。');
+  if(catalog.modelsFetchedAt&&(!listed||listed.visibility==='absent'))throw createHttpError(400,'MODEL_UNAVAILABLE','当前服务未列出此型号，请刷新或选择其他型号。');
   const auth=connectionService.getAuth(snapshot.connectionVersionId);
   if (snapshot.mode.startsWith('image.') && !require('./tasks/image-policy').allowsNewSubmission(snapshot,auth)) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前图片型号或模式尚未开放提交。');
-  if (snapshot.mode.startsWith('video.') && !require('./tasks/video-policy').allowsNewSubmission(snapshot,auth)) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前视频型号或模式尚未配置开放；请核对型号配置与协议。');
+  if (snapshot.mode.startsWith('video.') && (!listed?.categories.includes('video') || !listed.submissionEnabledByKind.video || !require('./tasks/video-policy').allowsNewSubmission(snapshot,auth))) throw createHttpError(400,'CAPABILITY_UNVERIFIED','当前连接的视频协议或所选模式不可用；请核对模型分类和参数。');
   workbenchInput.validateInputs(snapshot,auth,workbenchStore);
   workbenchInput.validateCapability(db,snapshot,auth);
   if (snapshot.mode.startsWith('video.') && !plugin) throw createHttpError(400,'ADAPTER_UNAVAILABLE','视频适配器不可用。');

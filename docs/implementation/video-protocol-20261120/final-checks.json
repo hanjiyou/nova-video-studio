@@ -1,0 +1,42 @@
+{
+  "status": "passed",
+  "date": "2026-11-20",
+  "branch": "dev",
+  "staged": [],
+  "codeEvidenceMatches": true,
+  "oldTemporaryCleanupVerificationUnmodified": "08B39F71BAEB9E91944A84073CA8B96FADEA7B15886671BC6539E2F1919A25B0",
+  "head": "5d1d807fb07b59b14eb3421fb8935c611e6b6bcd",
+  "duplicatePlanAbsent": true,
+  "unrelatedFiles": [
+    {
+      "file": "desktop/credential-vault.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/deliver.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/build-openchatcut.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/verify-openchatcut-preview.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/lib/owned-temp.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/lib/delivery-cleanup.cjs",
+      "unchanged": true
+    },
+    {
+      "file": "scripts/temp-cleanup.test.cjs",
+      "unchanged": true
+    }
+  ],
+  "gitDiffCheckOutput": [],
+  "gitDiffCheckExit": 0
+}

@@ -2,7 +2,7 @@
 import { useEffect, useId, useRef, useState, type RefObject } from 'react';
 import { Check } from 'lucide-react';
 import { saveModelSettings, sameConnectionTransport, type ConnectionModels, type ConnectionSummary } from '@/lib/connection-client';
-import { videoDefaults, type VideoRule } from '@/lib/workbench-model-catalog';
+import { videoDefaults, validVideoSeconds, type VideoRule } from '@/lib/workbench-model-catalog';
 import { useUpdateBlocker } from '@/hooks/useUpdateBlocker';
 
 export function VideoDurationControl({ connection, model, rule, models, seconds, inputRef, onChange, onModels }: {
@@ -17,7 +17,7 @@ export function VideoDurationControl({ connection, model, rule, models, seconds,
   useUpdateBlocker(() => busy.current);
   const scopedModels = connection && models && sameConnectionTransport(connection, models) ? models : null;
   const defaultSeconds = confirmed?.source === models ? confirmed.seconds : videoDefaults(model, rule, scopedModels).seconds;
-  const validSeconds = Number.isInteger(seconds) && Number(seconds)>=rule.minSeconds && Number(seconds)<=rule.maxSeconds;
+  const validSeconds = validVideoSeconds(rule,seconds);
   const alreadyDefault = validSeconds && Number(seconds) === defaultSeconds;
   async function save() {
     if (!connection || busy.current || alreadyDefault || !validSeconds) return;
@@ -35,7 +35,7 @@ export function VideoDurationControl({ connection, model, rule, models, seconds,
   }
   return <div className="wb-duration-control">
     <div className="wb-duration-label"><label htmlFor={id}>视频时长（秒）</label><small>默认 {defaultSeconds} 秒</small></div>
-    <div className="wb-duration-row"><input ref={inputRef} id={id} aria-label="视频时长（秒）" type="number" min={rule.minSeconds} max={rule.maxSeconds} step="1" value={String(seconds ?? '')} onChange={event => onChange(event.target.value === '' ? '' : Number(event.target.value))} />
+    <div className="wb-duration-row"><input ref={inputRef} id={id} aria-label="视频时长（秒）" type="number" min={rule.minSeconds} max={rule.maxSeconds??undefined} step="1" value={String(seconds ?? '')} onChange={event => onChange(event.target.value === '' ? '' : Number(event.target.value))} />
       <button type="button" className="wb-duration-default" disabled={saving || alreadyDefault || !validSeconds || !connection} onClick={() => void save()}>{saving ? '保存中…' : alreadyDefault ? <><Check size={15} aria-hidden="true" />已设为默认</> : '设为默认'}</button>
     </div>
     {notice && <p role="status" className={notice.includes('失败') ? 'wb-error' : 'wb-help'}>{notice}</p>}

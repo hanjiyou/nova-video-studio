@@ -7,7 +7,7 @@ const credentialInModel=(name,key)=>Boolean(key&&(containsCredential(name,key)||
 const { createHash, randomUUID } = require('node:crypto');
 const { UUID } = require('../storage/store');
 const { containsCredential } = require('./redaction');
-const { OPENSOSEN_URL, PRESET_MODELS, normalizeBaseUrl, seedCapabilities, listCapabilities } = require('./capabilities');
+const { OPENSOSEN_URL, PRESET_MODELS, normalizeBaseUrl, seedCapabilities, seedVideoCapabilities, listCapabilities } = require('./capabilities');
 const publicError = (code, message, statusCode = 400) => Object.assign(new Error(message), { code, statusCode, connectionError: true });
 function exact(value, keys) {
     if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(key => !keys.includes(key)))
@@ -161,6 +161,8 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         return 'model-settings:' + createHash('sha256').update(JSON.stringify([version.connection_id,version.provider,version.base_url,version.credential_ref])).digest('hex');
     }
     function preferences(version) { const row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)); return row?JSON.parse(row.value_json):{}; }
+    function knownModels(version) { const row=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)+':known'); return row?catalog.entries(JSON.parse(row.value_json)):[]; }
+    function rememberModels(version, entries) { const known=new Map([...knownModels(version),...entries].map(item=>[item.model,item])); writeSetting(settingsKey(version)+':known',[...known.values()].slice(-5000)); }
     function writeSetting(key,value) { db.prepare('INSERT INTO app_settings VALUES(?,?,1,?) ON CONFLICT(key) DO UPDATE SET value_json=excluded.value_json,revision=app_settings.revision+1,updated_at=excluded.updated_at').run(key,JSON.stringify(value),new Date(clock()).toISOString()); }
     function submissionEnabled(version, name, kind) {
         const scope = { provider: version.provider, baseUrl: version.base_url, protocol: version.protocol };
@@ -201,9 +203,11 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             const available = models(connectionId).models;
             for (const kind of ['image','video']) {
                 const names = input[kind + 'Models'], defaultName = input[kind === 'image' ? 'defaultImageModel' : 'defaultVideoModel'];
-                if (!Array.isArray(names) || names.length > 5000 || new Set(names).size !== names.length || names.some(name => typeof name !== 'string' || !catalog.ID.test(name) || !available.some(item => item.model === name && item.categories.includes(kind)))) throw publicError('MODEL_DISPLAY_INVALID','请选择当前清单中分类正确的完整型号。');
+                if (!Array.isArray(names) || names.length > 5000 || new Set(names).size !== names.length || names.some(name => typeof name !== 'string' || !catalog.ID.test(name) || !available.some(item => item.model === name && item.categories.includes(kind) && (previous[kind+'Models'].includes(name) || item.visibility==='visible' || item.visibility==='unknown'&&item.custom)))) throw publicError('MODEL_DISPLAY_INVALID','请选择当前清单中分类正确且可用的完整型号；未列出旧选择只可保留或移除。');
                 if (defaultName !== null && (typeof defaultName !== 'string' || !names.includes(defaultName)) || names.length > 0 && defaultName === null) throw publicError('MODEL_DISPLAY_INVALID','默认模型必须在已显示型号中；全部隐藏时默认模型须为空。');
-                if (defaultName !== null && !available.some(item => item.model === defaultName && item.categories.includes(kind) && item.visibility === 'visible' && submissionEnabled(version, defaultName, kind))) throw publicError('MODEL_DISPLAY_INVALID','默认模型须为上游当前可见且已接入的型号。');
+                const priorDefault=previous[kind==='image'?'defaultImageModel':'defaultVideoModel'];
+                const retainedAbsentDefault=defaultName!==null && defaultName===priorDefault && previous[kind+'Models'].includes(defaultName) && available.some(item=>item.model===defaultName && item.visibility==='absent' && item.categories.includes(kind));
+                if (defaultName !== null && !retainedAbsentDefault && !available.some(item => item.model === defaultName && item.categories.includes(kind) && item.visibility === 'visible' && submissionEnabled(version, defaultName, kind))) throw publicError('MODEL_DISPLAY_INVALID','默认模型须为上游当前可见且已接入的型号；原未列出默认仅可原样保留。');
             }
             if (input.pricingGroup !== null && !PRICING_GROUPS.includes(input.pricingGroup)) throw publicError('MODEL_DISPLAY_INVALID','请选择现行图片价格分组。');
             const value = { imageModels: input.imageModels, videoModels: input.videoModels, defaultImageModel: input.defaultImageModel, defaultVideoModel: input.defaultVideoModel, pricingGroup: input.pricingGroup };
@@ -231,7 +235,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         if(input.categories!==undefined&&input.categories!==null&&(!Array.isArray(input.categories)||input.categories.length>2||input.categories.some(c=>!['image','video'].includes(c))))throw publicError('CONNECTION_INPUT_INVALID','分类无效。');
         if(input.custom!==undefined&&typeof input.custom!=='boolean')throw publicError('CONNECTION_INPUT_INVALID','型号设置无效。');
         const rule=catalog.videoRule(name,version);
-        if(input.defaultSeconds!==undefined&&(!rule||!Number.isInteger(input.defaultSeconds)||input.defaultSeconds<rule.minSeconds||input.defaultSeconds>rule.maxSeconds))throw publicError('CONNECTION_INPUT_INVALID','默认秒数超出型号范围。');
+        if(input.defaultSeconds!==undefined&&!require('./video-rules').validSeconds(rule,input.defaultSeconds))throw publicError('CONNECTION_INPUT_INVALID','默认秒数超出型号范围。');
         const saved=preferences(version),previous=saved[name]||{};
         if(!Object.hasOwn(saved,name)&&Object.keys(saved).length>=500)throw publicError('CONNECTION_INPUT_INVALID','手动型号设置过多。');
         saved[name]={...previous,...(input.categories!==undefined?{categories:input.categories===null?undefined:[...new Set(input.categories)]}:{}),...(input.custom!==undefined?{custom:input.custom}:{}),...(input.defaultSeconds!==undefined?{defaultSeconds:input.defaultSeconds}:{})};
@@ -241,17 +245,21 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
         const connection = active(connectionId), version = getVersion(connection.current_version_id), route=routeFields(version.id);
         const check = db.prepare('SELECT * FROM connection_checks WHERE connection_version_id=?').get(version.id);
         const visible = check?.models_fetched_at ? catalog.entries(JSON.parse(check.models_json)) : null;
-        const saved=preferences(version),history=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(settingsKey(version)+':known');
-        const known=history?JSON.parse(history.value_json):[];
-        const capabilities=listCapabilities(db,version.provider,version.base_url);
+        const saved=preferences(version),known=knownModels(version);
         const display = displaySettings(version);
-        const ids = [...new Set([...PRESET_MODELS,version.default_image_model,version.default_video_model,...Object.keys(saved),...known,...display.imageModels,...display.videoModels,...(visible || []).map(item=>item.model)])];
+        const ids = [...new Set([...PRESET_MODELS,version.default_image_model,version.default_video_model,...Object.keys(saved),...known.map(item=>item.model),...display.imageModels,...display.videoModels,...(visible || []).map(item=>item.model)])];
+        const types=name=>visible?.find(item=>item.model===name)?.endpointTypes ?? known.find(item=>item.model===name)?.endpointTypes ?? [];
+        const classificationFor=name=>catalog.classify(name,types(name),saved[name]?.categories);
+        const videoModels=ids.filter(name=>classificationFor(name).categories.includes('video'));
+        seedVideoCapabilities(db,version.provider,version.base_url,videoModels);
+        const capabilities=listCapabilities(db,version.provider,version.base_url);
         return { ...route, transportEvidence:getTransportRoute(version.id)?.route==='cn'?'generation_unverified':'see_capability_evidence', connectionVersionId: version.id, modelsFetchedAt: check?.models_fetched_at || null, refreshError:check?.error_code || null, modelSettings:saved, displaySettings:display, pricingGroups:[...PRICING_GROUPS],
             models: ids.map(modelId => {
-                const item=visible?.find(item=>item.model===modelId), override=saved[modelId], classification=catalog.classify(modelId,item?.endpointTypes,override?.categories);
-                return {model:modelId,endpointTypes:item?.endpointTypes || [],...classification,custom:override?.custom===true,
+                const item=visible?.find(item=>item.model===modelId), override=saved[modelId], classification=classificationFor(modelId);
+                const reason=kind=>!classification.categories.includes(kind)?'category-mismatch':submissionEnabled(version,modelId,kind)?null:kind==='video'&&Object.hasOwn(catalog.RULES.models,modelId)&&catalog.RULES.models[modelId]?.submissionEnabled===false?'disabled':'protocol-unavailable';
+                return {model:modelId,endpointTypes:types(modelId),...classification,custom:override?.custom===true,submissionReasonByKind:Object.fromEntries(['image','video'].map(kind=>[kind,reason(kind)])),
                     submissionEnabled:classification.categories.some(kind=>submissionEnabled(version,modelId,kind)),submissionEnabledByKind:Object.fromEntries(['image','video'].map(kind=>[kind,classification.categories.includes(kind)&&submissionEnabled(version,modelId,kind)])),visibility:visible?(item?'visible':'absent'):'unknown'};
-            }), capabilities, videoRules:require('./video-rules').videoRules({provider:version.provider,baseUrl:version.base_url,protocol:version.protocol}), videoRuleVersion:catalog.RULES.version };
+            }), capabilities, videoRules:require('./video-rules').videoRules({provider:version.provider,baseUrl:version.base_url,protocol:version.protocol},videoModels), videoRuleVersion:catalog.RULES.version };
     }
     async function ensureModels(versionId) {
         const selected=getTransportRoute(versionId);
@@ -356,7 +364,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
             const now = new Date(clock()).toISOString();
             db.prepare(`INSERT INTO connection_checks(connection_version_id,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code) VALUES(?,?,?,?,?,?,?) ON CONFLICT(connection_version_id) DO UPDATE SET validation_state=excluded.validation_state,last_checked_at=excluded.last_checked_at,last_success_at=excluded.last_success_at,models_fetched_at=excluded.models_fetched_at,models_json=excluded.models_json,error_code=excluded.error_code`)
                 .run(versionId, state, now, state === 'verified' ? now : (old?.last_success_at || null), visible ? now : (old?.models_fetched_at || null), visible ? JSON.stringify(visible) : (old?.models_json || '[]'), errorCode);
-            if(visible){const version=getVersion(versionId),key=settingsKey(version)+':known',prior=db.prepare('SELECT value_json FROM app_settings WHERE key=?').get(key);writeSetting(key,[...new Set([...(prior?JSON.parse(prior.value_json):[]),...catalog.entries(JSON.parse(old?.models_json||'[]')).map(item=>item.model),...visible.map(item=>item.model)])].slice(-5000));}
+            if(visible)rememberModels(getVersion(versionId),[...catalog.entries(JSON.parse(old?.models_json||'[]')),...visible]);
             const previousNames=new Set(catalog.entries(JSON.parse(old?.models_json||'[]')).map(item=>item.model)),nextNames=new Set((visible||[]).map(item=>item.model));
             diagnostic(reason,state,{operation:'models',route:selected?.route||null,routeRevision:selected?.revision||null,targetHost:selected?new URL(routing.BASES[selected.route]).hostname:null,count:visible?.length || 0,usingCache:!visible&&Boolean(old?.models_fetched_at),removedCount:visible?[...previousNames].filter(name=>!nextNames.has(name)).length:0,addedCount:visible?[...nextNames].filter(name=>!previousNames.has(name)).length:0,classificationCounts:visible?visible.reduce((counts,item)=>{const source=catalog.classify(item.model,item.endpointTypes).classificationSource;counts[source]=(counts[source]||0)+1;return counts;},{}):{}});
             return { stale: false, cached: false, connection: summary(connectionId), ...models(connectionId) };
@@ -422,6 +430,7 @@ function createConnectionService({ db, vault, fetchImpl = (...args) => fetch(...
                 const connection = unchanged&&sameRoute(prepared.transportRoute,getTransportRoute(old.connectionVersionId)) ? old : persist(fields), now = new Date(clock()).toISOString();
                 db.prepare('INSERT INTO connection_checks(connection_version_id,validation_state,last_checked_at,last_success_at,models_fetched_at,models_json,error_code) VALUES(?,?,?,?,?,?,?) ON CONFLICT(connection_version_id) DO UPDATE SET validation_state=excluded.validation_state,last_checked_at=excluded.last_checked_at,last_success_at=excluded.last_success_at,models_fetched_at=excluded.models_fetched_at,models_json=excluded.models_json,error_code=excluded.error_code')
                     .run(connection.connectionVersionId,'verified',now,now,now,JSON.stringify(result.visible),null);
+                rememberModels(getVersion(connection.connectionVersionId),result.visible);
                 const onboarding = expectedOnboardingRevision === undefined ? undefined : store.putSetting('onboarding',{ value:{dismissed:false,step:'defaults'},expectedRevision:expectedOnboardingRevision });
                 return { stale:false, connection:summary(connection.connectionId), ...models(connection.connectionId), ...(onboarding ? {onboarding} : {}) };
             })();

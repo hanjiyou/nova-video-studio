@@ -16,7 +16,8 @@
   },
   "permissions": {
     "hosts": [
-      "newapi.opensosen.com"
+      "newapi.opensosen.com",
+      "newapi.opensosen.cn"
     ]
   },
   "media": {

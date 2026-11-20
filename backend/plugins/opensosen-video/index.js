@@ -50,7 +50,7 @@ function parseSubmitResponse(payload) {
     return { upstreamTaskId };
 }
 function buildQuery(upstreamTaskId, context) {
-    if (context.baseUrl !== BASE_URL || (!MODELS.includes(context.model)&&!videoPolicy.isAuthorizedContext(context))) throw failure('CAPABILITY_UNVERIFIED');
+    if (!videoPolicy.isAuthorizedContext(context) && (context.baseUrl !== BASE_URL || !MODELS.includes(context.model))) throw failure('CAPABILITY_UNVERIFIED');
     return { method: 'GET', url: context.baseUrl + '/videos/' + encodeUpstreamTaskId(upstreamTaskId), auth: { connectionVersionId: context.connectionVersionId } };
 }
 function parseTaskResult(payload, context) {

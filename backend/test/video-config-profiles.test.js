@@ -34,7 +34,8 @@ test('configured mode, integer bounds, reference budget, price and driver suppor
   const unsupported={...definitions()[first],modes:['video.first_last_frame']};assert.equal(rules.videoRule('fixture-video-unsupported',null,{...rules.RULES,models:{'fixture-video-unsupported':unsupported}}),null);
   assert.equal(rules.videoRule('toString'),null);assert.equal(rules.videoRule(first,{provider:'other',baseUrl:rules.RULES.baseUrl}),null);
   for(const malformed of [null,[],{...definitions()[first],profile:'missing-driver'},{...definitions()[first],maxSeconds:Number.MAX_SAFE_INTEGER+1}])assert.equal(rules.videoRule(first,null,{...rules.RULES,models:{[first]:malformed}}),null);
-  assert.throws(()=>snapshotFor({...input(f,first),model:'fixture-video-unregistered'},'1.1.0'),{code:'INPUT_INVALID'});
+  const unregistered=snapshotFor({...input(f,first),model:'fixture-video-unregistered'},'1.1.0');
+  assert.throws(()=>validateCapability(f.db,unregistered,f.auth),{code:'CAPABILITY_UNVERIFIED'},'Parsing a compatible request shape does not borrow another model capability');
   const existing=input(f,first),snapshot=snapshotFor(existing,'1.1.0'),cap=validateCapability(f.db,snapshot,f.auth);
   rules.RULES.models[first].maxSeconds=3;rules.RULES.models[first].defaultSeconds=3;
   assert.equal(policy.allowsNewSubmission(snapshot,f.auth),false,'A stale capability cannot bypass current duration limits for a new intent');

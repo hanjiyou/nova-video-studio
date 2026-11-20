@@ -1,0 +1,13 @@
+{
+  "scope": "read actual packaged app.asar without launching or user data",
+  "version": "3.6.13",
+  "ruleVersion": "video-profiles-20261120-v2",
+  "modelIsNotStaticEntry": true,
+  "genericRuleAvailable": true,
+  "maxSeconds": null,
+  "sizeOptional": true,
+  "portrait2sAccepted": true,
+  "serviceDefaultAccepted": true,
+  "closedSeedancePreserved": true,
+  "inspectionCorrection": "Initial local archive read used slash separators; Windows asar reader requires native path separators. Reader command corrected; artifact unchanged."
+}

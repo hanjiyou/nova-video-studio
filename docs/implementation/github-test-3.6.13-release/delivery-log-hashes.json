@@ -1,0 +1,14 @@
+[
+  {
+    "name": "build.log",
+    "sha256": "8c1b626fb32f8f1944fd7f47096c821f0821eabf4c6f0a216012a9406c5b764c"
+  },
+  {
+    "name": "build-and-publication.log",
+    "sha256": "91acbd91ce3470cf876689fc9196d7d6919ff2dfac1aa35e5ac5e53ca0996747"
+  },
+  {
+    "name": "initial-precommit-stop.log",
+    "sha256": "9dbeb644da940d6dc887c8aa8814353cd51bf32a22659aa59304503323e3e883"
+  }
+]

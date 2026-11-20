@@ -1,0 +1,39 @@
+{
+  "version": "3.6.13",
+  "releaseId": "452268400",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.13",
+  "published": true,
+  "latest": true,
+  "source": "a984ac7331a9fe54e6f61df37f07921c224a6fe7",
+  "tagMatchesSource": true,
+  "assets": [
+    {
+      "name": "Nova-Studio-3.6.13-github-test-x64.exe",
+      "bytes": 557669085,
+      "state": "uploaded",
+      "sha256": "70d1b00929554c264f431631baf903b795079731af6733f9b8e25aa62f1e3a89",
+      "githubDigest": "sha256:70d1b00929554c264f431631baf903b795079731af6733f9b8e25aa62f1e3a89",
+      "matches": true
+    },
+    {
+      "name": "Nova-Studio-3.6.13-github-test-x64.exe.blockmap",
+      "bytes": 566132,
+      "state": "uploaded",
+      "sha256": "d54cedd177951a8bcd9ab44d12821c416d961ccaaeebc3264751cc86bd22a1f6",
+      "githubDigest": "sha256:d54cedd177951a8bcd9ab44d12821c416d961ccaaeebc3264751cc86bd22a1f6",
+      "matches": true
+    },
+    {
+      "name": "nova-test.yml",
+      "bytes": 374,
+      "state": "uploaded",
+      "sha256": "0a57a773c01d474ed4d5cf0a19033d610344bfc40e95e4c4a1680b8c5e58dddf",
+      "githubDigest": "sha256:0a57a773c01d474ed4d5cf0a19033d610344bfc40e95e4c4a1680b8c5e58dddf",
+      "matches": true
+    }
+  ],
+  "publicManifestExactMatch": true,
+  "manifestBytes": 374,
+  "remoteInstallerDownloaded": false,
+  "installed": false
+}

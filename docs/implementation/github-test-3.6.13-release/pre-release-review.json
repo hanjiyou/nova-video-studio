@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-20",
+  "reviewer": "/root/protocol_independent_review",
+  "status": "ready for a new original unified review/preview after byte-preserved log archiving; prior attempt stopped before commit",
+  "version": "3.6.13",
+  "profile": "github-test",
+  "fileCount": 46,
+  "reviewedCodeHashesMatch": true,
+  "allSelectedHashesMatch": true,
+  "documentScopeReviewed": [
+    "docs/Nova-Studio落地任务清单.md",
+    "docs/implementation/3.6.13-交付前审核.md",
+    "12 selected requirement/contract/implementation files and approved design"
+  ],
+  "excludedSource": [
+    "desktop/credential-vault.cjs",
+    "all working-tree cleanup scripts, helpers, tests and cleanup documents",
+    "unrelated historical evidence and temporary files"
+  ],
+  "mixedTaskDocument": "Keeps cleanup as pending plain-text historical fact; no broken reference or cleanup code inclusion",
+  "controller": "deliver-reviewed-head.cjs",
+  "engine": "Unmodified git show HEAD:scripts/deliver.cjs compiled at original filename and required via original exported main(root, opts)",
+  "engineSha256": "cdb18ee56250943477c04678dadcca67a9af13a8f03a78cf83e708e5d3c32f48",
+  "controllerCheck": "node --check exit 0; --inspect exit 0; 9 unchanged HEAD dependencies/configuration verified",
+  "noEngineLogicChanges": true,
+  "noInjectedDependencies": true,
+  "credentialAccessPerformed": false,
+  "gitWritesPerformed": false,
+  "packagingPerformed": false,
+  "releasePerformed": false,
+  "notes": [
+    "Original CLI --proxy/--direct/timeouts are passed through untouched. Git/npm networking is supplied only through the actual invoking process.",
+    "Main agent obtains existing Git login token only in memory for the executing process; controller never retrieves credentials.",
+    "Original engine builds/verifies/releases from the audited clean commit checkout, retaining the pre-cleanup build workspace semantics.",
+    "Do not call the working-tree npm run deliver entry for this delivery; it contains out-of-scope cleanup changes.",
+    "If selected source/docs change before review, regenerate the manifest and controller-bound scope rather than bypassing checks.",
+    "The prior review b78eaea9-19c0-49cd-be0c-c15a223c984a and private index/state remain untouched. New 46-file review must be generated; do not resume its different tree."
+  ],
+  "rawLogArchive": {
+    "file": "docs/implementation/video-protocol-20261120/test-logs.zip",
+    "memberCount": 8,
+    "sha256": "5e9f4626345901b98c58a6d8719b126e41d23405585fd550d5b1d502077c7650",
+    "allMemberHashesMatchRawFilesAndParentRecord": true,
+    "rawLogFilesRetainedLocally": true,
+    "zipExcludedByIgnore": false,
+    "review": "log-archive-review.json"
+  }
+}

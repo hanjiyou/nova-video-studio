@@ -1,0 +1,43 @@
+{
+  "version": "3.6.13",
+  "commit": "a984ac7331a9fe54e6f61df37f07921c224a6fe7",
+  "done": [
+    "commit",
+    "push",
+    "build",
+    "verify",
+    "release"
+  ],
+  "output": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\nova-delivery-7d5daa64-35de-441f-b265-f019a20ac27f\\release-updates\\github-test\\3.6.13",
+  "checkout": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\nova-delivery-7d5daa64-35de-441f-b265-f019a20ac27f",
+  "releaseId": "452268400",
+  "releaseUrl": "https://github.com/hanjiyou/nova-video-studio/releases/tag/v3.6.13",
+  "published": true,
+  "remoteVerification": [
+    {
+      "name": "Nova-Studio-3.6.13-github-test-x64.exe",
+      "assetId": "770446222",
+      "size": 557669085,
+      "sha256": "70d1b00929554c264f431631baf903b795079731af6733f9b8e25aa62f1e3a89",
+      "method": "github-server-sha256",
+      "reused": true
+    },
+    {
+      "name": "Nova-Studio-3.6.13-github-test-x64.exe.blockmap",
+      "assetId": "770454944",
+      "size": 566132,
+      "sha256": "d54cedd177951a8bcd9ab44d12821c416d961ccaaeebc3264751cc86bd22a1f6",
+      "method": "github-server-sha256",
+      "reused": true
+    },
+    {
+      "name": "nova-test.yml",
+      "assetId": "770455015",
+      "size": 374,
+      "sha256": "0a57a773c01d474ed4d5cf0a19033d610344bfc40e95e4c4a1680b8c5e58dddf",
+      "method": "github-server-sha256",
+      "reused": true
+    }
+  ],
+  "reviewId": "d8bcd2a9-04ed-4ba6-90e5-1b6b1ea30c15"
+}

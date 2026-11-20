@@ -1,0 +1,52 @@
+{
+  "status": "passed",
+  "archive": "docs/implementation/video-protocol-20261120/test-logs.zip",
+  "archiveSha256": "5e9f4626345901b98c58a6d8719b126e41d23405585fd550d5b1d502077c7650",
+  "rawLogCount": 8,
+  "members": [
+    {
+      "name": "backend/focused-final.log",
+      "sha256": "a4e5a7d92a92bdc6d54bb796f2bcbd408594b4733ec4d80639540fbcb751975e",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "backend/focused-initial.log",
+      "sha256": "6a7888b3a9a7e868ec69f2270b0a9c61a16795739356a60efa85dedd0160563d",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "backend/known-metadata-final.log",
+      "sha256": "1e4705bed0e1b344359e6d0311e512869f29e5efe388de3a8726b4a25602619b",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "backend/related-corrected.log",
+      "sha256": "fb7dcad35429c40fc652a734993039c36e827f403b20e6a7238b637706fbb223",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "backend/related-initial.log",
+      "sha256": "bc47f08711c35e8edeb759043af6eb3f84deab4bf08202235aba205edbb99c01",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "frontend/final-tests.log",
+      "sha256": "43dc2952df267aee159550ba8d9712ac1b45951cb53b12cdc8258a4e38b0fe32",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "frontend/final-typescript.log",
+      "sha256": "a9f58776a09b5dac438049683f24bf85764e0ff8e7455952456165c68c158627",
+      "matchesRawAndRecord": true
+    },
+    {
+      "name": "root-focused.log",
+      "sha256": "67f6adb1fc4312bc4a13dc0dd31989bb895818e3781941c387286eafecc2da81",
+      "matchesRawAndRecord": true
+    }
+  ],
+  "rawFilesRetained": true,
+  "oldReviewAndIndexRetained": true,
+  "zipUnignored": true,
+  "newReviewRequired": true
+}
